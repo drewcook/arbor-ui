@@ -1,23 +1,22 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import Header from '../components/Header'
-import styles from '../styles/Home.module.css'
+import Header from '../../components/Header'
+import styles from '../../styles/Home.module.css'
 
 const Home: NextPage = () => {
 	return (
-		<>
+		<div>
 			<Head>
-				<title>ETHDenver Hack Web App | Welcome</title>
+				<title>ETHDenver Hack Web App | Explore Music Projects</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
 			<Header />
-
 			<main className={styles.main}>
 				<div className={styles.container}>
-					<h1>Welcome to our music app.</h1>
+					<h1>Explore Music Projects</h1>
 				</div>
 			</main>
 
@@ -33,7 +32,7 @@ const Home: NextPage = () => {
 					</span>
 				</a>
 			</footer>
-		</>
+		</div>
 	)
 }
 
