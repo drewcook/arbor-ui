@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, Project } from '../../../models/project.model'
-import dbConnect from '../../../lib/mongodb'
+import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
