@@ -1,10 +1,65 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
+import Footer from '../../components/Footer'
+import Notification from '../../components/Notification'
 import Header from '../../components/Header'
-import styles from '../../styles/Home.module.css'
+import { Button, Container, TextField, Typography } from '@mui/material'
+import { useState } from 'react'
+import { post } from '../../utils/http'
+import { useRouter } from 'next/router'
+import { ResetTvOutlined } from '@mui/icons-material'
 
-const Home: NextPage = () => {
+const styles = {
+	centered: {
+		textAlign: 'center',
+	},
+	submitBtn: {
+		marginTop: 2,
+	},
+	formCaption: {
+		marginY: 3,
+		textAlign: 'center',
+		fontStyle: 'italic',
+		color: '#555',
+	},
+}
+
+type NewProjectResponseData = {
+	id: string,
+	status: string,
+}
+
+const NewProjectPage: NextPage = () => {
+	const [name, setName] = useState('')
+	const [description, setDescription] = useState('')
+	const [successOpen, setSuccessOpen] = useState(false)
+	const [successMsg, setSuccessMsg] = useState('')
+	const router = useRouter()
+
+	const handleSubmit = async () => {
+		try {
+			const res: NewProjectResponseData = await post('/project/create', { name, description })
+			console.log('added return data', { res })
+			setSuccessOpen(true)
+			setSuccessMsg('Successfully created fundraiser')
+			resetForm()
+			// Redirect to project page if success
+			// if (status === 'ongoing') router.push(`/projects/${id}`)
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
+	const resetForm = () => {
+		setName('')
+		setDescription('')
+	}
+
+	const onNotificationClose = () => {
+		setSuccessOpen(false)
+		setSuccessMsg('')
+	}
+
 	return (
 		<>
 			<Head>
@@ -15,26 +70,54 @@ const Home: NextPage = () => {
 
 			<Header />
 
-			<main className={styles.main}>
-				<div className={styles.container}>
-					<h1>Create A New Project</h1>
-				</div>
+			<main>
+				<Container maxWidth="md" sx={styles.centered}>
+					<Typography variant="h3" component="h1">
+						Create A New Project
+					</Typography>
+					<Typography>Create a new project by filling out the details below.</Typography>
+					<TextField
+						label="Project Name"
+						variant="filled"
+						margin="normal"
+						value={name}
+						onChange={e => setName(e.target.value)}
+						placeholder="Give it a catchy name!"
+						fullWidth
+					/>
+					<TextField
+						label="Project Description"
+						variant="filled"
+						margin="normal"
+						value={description}
+						onChange={e => setDescription(e.target.value)}
+						placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
+						fullWidth
+					/>
+					<Button
+						variant="contained"
+						color="primary"
+						size="large"
+						onClick={handleSubmit}
+						fullWidth
+						sx={styles.submitBtn}
+					>
+						Create Project
+					</Button>
+				</Container>
 			</main>
 
-			<footer className={styles.footer}>
-				<a
-					href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Powered by{' '}
-					<span className={styles.logo}>
-						<Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-					</span>
-				</a>
-			</footer>
+			<Footer />
+			{successOpen && (
+				<Notification
+					open={successOpen}
+					msg={successMsg}
+					type="success"
+					onClose={onNotificationClose}
+				/>
+			)}
 		</>
 	)
 }
 
-export default Home
+export default NewProjectPage
