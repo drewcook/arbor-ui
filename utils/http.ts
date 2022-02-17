@@ -1,8 +1,10 @@
 import axios from 'axios'
 
-export const get = async (path: string, params?: any): Promise<any> => {
+const host = process.env.CLIENT_HOST
+
+export const get = async (pathname: string, params?: any): Promise<any> => {
 	try {
-		const { data } = await axios.get(`http://localhost:3000/api${path}`, params)
+		const { data } = await axios.get(`${host}/api${pathname}`, params)
 		return data
 	} catch (e: any) {
     console.error(e)
@@ -10,9 +12,9 @@ export const get = async (path: string, params?: any): Promise<any> => {
 	}
 }
 
-export const post = async (path: string, data?: any): Promise<any> => {
+export const post = async (pathname: string, data?: any): Promise<any> => {
 	try {
-		const res = await axios.post(`http://localhost:3000/api${path}`, data)
+		const res = await axios.post(`${host}/api${pathname}`, data)
 		return res.data
 	} catch (e: any) {
     console.error(e)
