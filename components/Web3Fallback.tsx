@@ -14,6 +14,7 @@ import CoinbaseIcon from '../public/coinbasewallet_icon.png'
 import EthereumIcon from '../public/ethereum_icon.png'
 import MetaMaskIcon from '../public/metamask_icon.png'
 import PortisIcon from '../public/portis_icon.png'
+import TallyIcon from '../public/tally_icon.svg'
 import TorusIcon from '../public/torus_icon.svg'
 
 const styles = {
@@ -56,6 +57,20 @@ const Web3Fallback = (): JSX.Element => (
 			</Typography>
 			<Container maxWidth="sm">
 				<List disablePadding sx={styles.list}>
+					<Link href="https://tally.cash/community-edition" underline="none" color="#111">
+						<ListItem disablePadding divider>
+							<ListItemButton>
+								<ListItemIcon sx={styles.icon}>
+									<Image src={TallyIcon} alt="Tally" title="Tally" />
+								</ListItemIcon>
+								<ListItemText primary="Tally" />
+								<ListItemText
+									secondary="Recommended"
+									secondaryTypographyProps={{ align: 'right' }}
+								/>
+							</ListItemButton>
+						</ListItem>
+					</Link>
 					<Link href="https://metamask.io/download/" underline="none" color="#111">
 						<ListItem disablePadding divider>
 							<ListItemButton>
@@ -63,10 +78,7 @@ const Web3Fallback = (): JSX.Element => (
 									<Image src={MetaMaskIcon} alt="MetaMask" title="MetaMask" />
 								</ListItemIcon>
 								<ListItemText primary="MetaMask" />
-								<ListItemText
-									secondary="Most Popular"
-									secondaryTypographyProps={{ align: 'right' }}
-								/>
+								<ListItemText secondaryTypographyProps={{ align: 'right' }} />
 							</ListItemButton>
 						</ListItem>
 					</Link>

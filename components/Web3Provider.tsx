@@ -2,9 +2,12 @@ import PropTypes from 'prop-types'
 import type { ReactNode} from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import getWeb3 from '../utils/getWeb3'
+import Onboard from 'bnc-onboard'
 import FullPageLoading from './FullPageLoading'
 import Web3Fallback from './Web3Fallback'
+import wallets from '../utils/web3wallets'
 
+// Context types
 type Web3ContextProps = {
 	web3?: any,
 	accounts?: any,
@@ -14,8 +17,10 @@ type ProviderProps = {
   children: ReactNode
 }
 
+// Create context
 const Web3Context = createContext<Web3ContextProps>({})
 
+// Context provider
 export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	const [web3, setWeb3] = useState(null)
 	const [accounts, setAccounts] = useState<string[]|null>(null)
@@ -29,24 +34,36 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	const loadWeb3 = async () => {
 		try {
 			// Get network provider and web3 instance
-			const web3Instance = await getWeb3()
-			setWeb3(web3Instance)
+			let web3Instance = await getWeb3()
+      setWeb3(web3Instance)
+
+      // initialize onboard
+      const onboard = Onboard({
+        dappId: process.env.BLOCKNATIVE_KEY,
+        networkId: 4, // Rinkeby
+        darkMode: true,
+        subscriptions: {
+          wallet: async wallet => {
+            // instantiate web3 when the user has selected a wallet
+            web3Instance = await getWeb3()
+            setWeb3(web3Instance)
+            console.log(`${wallet.name} connected!`)
+          }
+        },
+        walletSelect: { wallets }
+      })
+
+      // Prompt user to select a wallet
+      await onboard.walletSelect('tally')
+
+      // Run wallet checks to make sure that user is ready to transact
+      await onboard.walletCheck()
 
 			// Get accounts initially
 			const connectedAccounts = await web3Instance.eth.getAccounts()
 			setAccounts(connectedAccounts)
 
-			// Get the Factory contract instance
-			// const networkId = await web3Instance.eth.net.getId()
-			// const deployedNetwork = FactoryContract.networks[networkId]
-			// const factoryContract = new web3Instance.eth.Contract(
-			// 	FactoryContract.abi,
-			// 	deployedNetwork && deployedNetwork.address,
-			// )
-			// setFactory(factoryContract)
-
 			// Listen for account changes
-			// TODO: if (web3Instance.currentProvider.isMetaMask) ?
 			web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
 				console.info('Switching wallet accounts')
 				setAccounts(newAccounts)
@@ -79,6 +96,7 @@ Web3Provider.propTypes = {
 	children: PropTypes.node.isRequired,
 }
 
+// Context hook
 export const useWeb3 = () => {
 	const context: Web3ContextProps = useContext(Web3Context)
 	if (context === undefined) {
