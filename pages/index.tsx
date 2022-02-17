@@ -1,8 +1,14 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
+import Footer from '../components/Footer'
 import Header from '../components/Header'
-import styles from '../styles/Home.module.css'
+import { Box, Container, Typography } from '@mui/material'
+
+const styles = {
+	centered: {
+		textAlign: 'center',
+	},
+}
 
 const Home: NextPage = () => {
 	return (
@@ -15,24 +21,20 @@ const Home: NextPage = () => {
 
 			<Header />
 
-			<main className={styles.main}>
-				<div className={styles.container}>
-					<h1>Welcome to our music app.</h1>
-				</div>
+			<main>
+				<Container maxWidth="lg">
+					<Box sx={styles.centered}>
+						<Typography variant="h3" component="h1">
+							Welcome!
+						</Typography>
+						<Typography variant="h5" component="p">
+							Collaborate with others and mint music NFTs, together!
+						</Typography>
+					</Box>
+				</Container>
 			</main>
 
-			<footer className={styles.footer}>
-				<a
-					href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Powered by{' '}
-					<span className={styles.logo}>
-						<Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-					</span>
-				</a>
-			</footer>
+			<Footer />
 		</>
 	)
 }
