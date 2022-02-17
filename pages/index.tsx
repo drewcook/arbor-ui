@@ -30,6 +30,9 @@ const Home: NextPage = () => {
 						<Typography variant="h5" component="p">
 							Collaborate with others and mint music NFTs, together!
 						</Typography>
+						<Typography variant="h5" component="p">
+							Split the proceeds when the NFT sales, have ownership forever.
+						</Typography>
 					</Box>
 				</Container>
 			</main>
