@@ -11,7 +11,6 @@ const instance = axios.create({ baseURL: host });
  * @returns - Resources from our database
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
-  console.log({host})
 	try {
 		const { data } = await instance.get(`/api${pathname}`, params)
 		return data
@@ -28,7 +27,6 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
  * @returns - Resources from our database
  */
 export const post = async (pathname: string, data?: any): Promise<any> => {
-  console.log({host})
 	try {
 		const res = await instance.post(`/api${pathname}`, data)
 		return res.data
