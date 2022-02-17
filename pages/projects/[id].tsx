@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
@@ -20,7 +20,7 @@ type ProjectPageProps = {
 	data: IProjectDoc | null,
 }
 
-const ProjectPage: NextPage = (props: ProjectPageProps) => {
+const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data } = props
 
 	return (
@@ -67,7 +67,7 @@ const ProjectPage: NextPage = (props: ProjectPageProps) => {
 	)
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async context => {
 	const projectId = context.query.id
 	const res = await get(`/projects/${projectId}`)
 	let data: IProjectDoc | null = res.success ? res.data : null
