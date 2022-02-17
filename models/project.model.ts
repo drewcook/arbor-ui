@@ -18,14 +18,14 @@ const projectSchema = new mongoose.Schema(
 		},
 		description: String,
 		createdBy: {
-			type: mongoose.SchemaTypes.ObjectId,
-			ref: 'user',
+			type: String,
 			required: true,
 		},
 	},
 	{ timestamps: true },
 )
 
+// Require that projects have unique names
 projectSchema.index({ name: 1 }, { unique: true })
 
-export const Project = mongoose.model<IProjectDoc>('project', projectSchema)
+export const Project = mongoose.models.Project || mongoose.model<IProjectDoc>('project', projectSchema)

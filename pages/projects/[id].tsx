@@ -2,12 +2,22 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
-import { Container, Typography } from '@mui/material'
-import type { ProjectData } from '../api/project/[id]'
+import { Container, Divider, Grid, Typography } from '@mui/material'
 import { get } from '../../utils/http'
+import { IProjectDoc } from '../../models/project.model'
+
+const styles = {
+	eyebrow: {
+		color: '#666',
+	},
+	error: {
+		textAlign: 'center',
+		marginY: 4,
+	},
+}
 
 type ProjectPageProps = {
-	data: ProjectData,
+	data: IProjectDoc | null,
 }
 
 const ProjectPage: NextPage = (props: ProjectPageProps) => {
@@ -25,7 +35,30 @@ const ProjectPage: NextPage = (props: ProjectPageProps) => {
 
 			<main>
 				<Container maxWidth="lg">
-					<Typography variant="h1">Project Details {data.id}</Typography>
+					{data ? (
+						<>
+							<Grid container spacing={4}>
+								<Grid item md={9}>
+									<Typography gutterBottom variant="h5" component="h1" sx={styles.eyebrow}>
+										Project Details
+									</Typography>
+									<Typography gutterBottom variant="h3" component="h2">
+										{data.name}
+									</Typography>
+									<Typography>{data.description}</Typography>
+									<Divider />
+									sound clips will go here
+								</Grid>
+								<Grid item md={3}>
+									this is the sidebar
+								</Grid>
+							</Grid>
+						</>
+					) : (
+						<Typography sx={styles.error} color="error">
+							Sorry, no details were found for this project.
+						</Typography>
+					)}
 				</Container>
 			</main>
 
@@ -36,13 +69,11 @@ const ProjectPage: NextPage = (props: ProjectPageProps) => {
 
 export async function getServerSideProps(context) {
 	const projectId = context.query.id
-	const res: ProjectData = await get(`/project/${projectId}`)
-	console.log('got project data', { res })
-	// const { id, name } = res
-
+	const res = await get(`/projects/${projectId}`)
+	let data: IProjectDoc | null = res.success ? res.data : null
 	return {
 		props: {
-			data: { id: '0', name: 'fail' },
+			data,
 		},
 	}
 }

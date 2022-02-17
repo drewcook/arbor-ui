@@ -7,7 +7,6 @@ import { Button, Container, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { post } from '../../utils/http'
 import { useRouter } from 'next/router'
-import { ResetTvOutlined } from '@mui/icons-material'
 
 const styles = {
 	centered: {
@@ -16,17 +15,6 @@ const styles = {
 	submitBtn: {
 		marginTop: 2,
 	},
-	formCaption: {
-		marginY: 3,
-		textAlign: 'center',
-		fontStyle: 'italic',
-		color: '#555',
-	},
-}
-
-type NewProjectResponseData = {
-	id: string,
-	status: string,
 }
 
 const NewProjectPage: NextPage = () => {
@@ -34,19 +22,25 @@ const NewProjectPage: NextPage = () => {
 	const [description, setDescription] = useState('')
 	const [successOpen, setSuccessOpen] = useState(false)
 	const [successMsg, setSuccessMsg] = useState('')
+	const [errorOpen, setErrorOpen] = useState(false)
+	const [errorMsg, setErrorMsg] = useState('')
 	const router = useRouter()
 
 	const handleSubmit = async () => {
 		try {
-			const res: NewProjectResponseData = await post('/project/create', { name, description })
-			console.log('added return data', { res })
-			setSuccessOpen(true)
-			setSuccessMsg('Successfully created fundraiser')
-			resetForm()
-			// Redirect to project page if success
-			// if (status === 'ongoing') router.push(`/projects/${id}`)
+			const res = await post('/projects', { name, description })
+			if (res.success) {
+				setSuccessOpen(true)
+				setSuccessMsg('Successfully created project')
+				resetForm()
+				// Redirect to project page
+				router.push(`/projects/${res.data._id}`)
+			} else {
+				setErrorOpen(true)
+				setErrorMsg('An error occurred creating the project')
+			}
 		} catch (e) {
-			console.error(e)
+			console.error('Project creation failed')
 		}
 	}
 
@@ -58,6 +52,8 @@ const NewProjectPage: NextPage = () => {
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
 		setSuccessMsg('')
+		setErrorOpen(false)
+		setErrorMsg('')
 	}
 
 	return (
@@ -115,6 +111,9 @@ const NewProjectPage: NextPage = () => {
 					type="success"
 					onClose={onNotificationClose}
 				/>
+			)}
+			{errorOpen && (
+				<Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />
 			)}
 		</>
 	)
