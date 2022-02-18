@@ -22,7 +22,7 @@ const Home: NextPage = () => {
 
 			<AppHeader />
 
-			<main>
+			<main id="app-main">
 				<Container maxWidth="lg">
 					<Box sx={styles.centered}>
 						<Typography variant="h3" component="h1">

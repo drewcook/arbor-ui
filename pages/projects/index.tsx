@@ -14,7 +14,6 @@ const styles = {
 	noProjects: {
 		textAlign: 'center',
 		marginY: 4,
-		color: '#666',
 	},
 }
 
@@ -35,7 +34,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 
 			<AppHeader />
 
-			<main>
+			<main id="app-main">
 				<Container maxWidth="lg">
 					{data ? (
 						<>

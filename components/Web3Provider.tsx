@@ -11,6 +11,7 @@ import wallets from '../utils/web3wallets'
 type Web3ContextProps = {
 	web3?: any,
 	accounts?: any,
+  onboard: any,
 }
 
 type ProviderProps = {
@@ -24,6 +25,7 @@ const Web3Context = createContext<Web3ContextProps>({})
 export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	const [web3, setWeb3] = useState(null)
 	const [accounts, setAccounts] = useState<string[]|null>(null)
+  const [onboard, setOnboard] = useState<unknown|null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string|null>(null)
 
@@ -38,26 +40,31 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
       setWeb3(web3Instance)
 
       // initialize onboard
-      const onboard = Onboard({
+      const onboardInstance = Onboard({
         dappId: process.env.BLOCKNATIVE_KEY,
         networkId: 4, // Rinkeby
         darkMode: true,
         subscriptions: {
-          wallet: async wallet => {
-            // instantiate web3 when the user has selected a wallet
-            web3Instance = await getWeb3()
-            setWeb3(web3Instance)
+          address: async (address: string) => {
+            setAccounts([address])
+          },
+          wallet: async (wallet: unknown) => {
+            console.log('wallet changed', wallet)
             console.log(`${wallet.name} connected!`)
-          }
+            const event = new Event('walletChanged', wallet)
+            window.dispatchEvent(event)
+          },
         },
         walletSelect: { wallets }
       })
+      setOnboard(onboardInstance)
 
       // Prompt user to select a wallet
-      await onboard.walletSelect('tally')
+      console.log(onboardInstance, onboardInstance.getState())
+      // await onboardInstance.walletSelect('metamask')
 
       // Run wallet checks to make sure that user is ready to transact
-      await onboard.walletCheck()
+      // await onboardInstance.walletCheck()
 
 			// Get accounts initially
 			const connectedAccounts = await web3Instance.eth.getAccounts()
@@ -89,12 +96,9 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	if (loading) return <FullPageLoading />
 	if (error) return <Web3Fallback />
 
-	return <Web3Context.Provider value={{ web3, accounts }}>{children}</Web3Context.Provider>
+	return <Web3Context.Provider value={{ web3, accounts, onboard }}>{children}</Web3Context.Provider>
 }
 
-Web3Provider.propTypes = {
-	children: PropTypes.node.isRequired,
-}
 
 // Context hook
 export const useWeb3 = () => {

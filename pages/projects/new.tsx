@@ -66,7 +66,7 @@ const NewProjectPage: NextPage = () => {
 
 			<AppHeader />
 
-			<main>
+			<main id="app-main">
 				<Container maxWidth="md" sx={styles.centered}>
 					<Typography variant="h3" component="h1">
 						Create A New Project

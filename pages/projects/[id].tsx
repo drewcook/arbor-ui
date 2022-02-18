@@ -7,8 +7,9 @@ import { get } from '../../utils/http'
 import { IProjectDoc } from '../../models/project.model'
 
 const styles = {
-	eyebrow: {
-		color: '#666',
+	title: {},
+	desc: {
+		textTransform: 'uppercase',
 	},
 	error: {
 		textAlign: 'center',
@@ -33,19 +34,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 			<AppHeader />
 
-			<main>
+			<main id="app-main">
 				<Container maxWidth="lg">
 					{data ? (
 						<>
 							<Grid container spacing={4}>
 								<Grid item md={9}>
-									<Typography gutterBottom variant="h5" component="h1" sx={styles.eyebrow}>
-										Project Details
-									</Typography>
-									<Typography gutterBottom variant="h3" component="h2">
+									<Typography gutterBottom variant="h3" component="h2" sx={styles.title}>
 										{data.name}
 									</Typography>
-									<Typography>{data.description}</Typography>
+									<Typography sx={styles.desc}>{data.description}</Typography>
 									<Divider />
 									sound clips will go here
 								</Grid>

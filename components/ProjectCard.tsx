@@ -33,7 +33,9 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 			</CardContent>
 			<CardActions>
 				<Link href={`/projects/${details._id}`} passHref>
-					<Button size="small">View More</Button>
+					<Button size="small" color="secondary">
+						View More
+					</Button>
 				</Link>
 			</CardActions>
 		</Card>

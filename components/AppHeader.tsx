@@ -8,12 +8,10 @@ import {
 	Typography,
 	Menu,
 	Container,
-	Avatar,
 	Button,
-	Tooltip,
 	MenuItem,
 } from '@mui/material'
-import MenuIcon from '@mui/icons-material'
+import MenuIcon from '@mui/icons-material/Menu'
 import ConnectedAccount from './ConnectedAccount'
 
 const styles = {
@@ -28,29 +26,19 @@ const pages = [
 	{ href: '/projects/new', title: 'Collab' },
 ]
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
-
 const AppHeader = (): JSX.Element => {
 	const [anchorElNav, setAnchorElNav] = useState(null)
-	const [anchorElUser, setAnchorElUser] = useState(null)
 
-	// const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-	// 	setAnchorElNav(event.currentTarget)
-	// }
-	// const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-	// 	setAnchorElUser(event.currentTarget)
-	// }
+	const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorElNav(event.currentTarget)
+	}
 
 	const handleCloseNavMenu = () => {
 		setAnchorElNav(null)
 	}
 
-	const handleCloseUserMenu = () => {
-		setAnchorElUser(null)
-	}
-
 	return (
-		<AppBar position="static" sx={styles.wrapper}>
+		<AppBar position="static" sx={styles.wrapper} enableColorOnDark>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Typography
@@ -68,10 +56,10 @@ const AppHeader = (): JSX.Element => {
 							aria-label="account of current user"
 							aria-controls="menu-appbar"
 							aria-haspopup="true"
-							onClick={() => console.log('open menu')}
+							onClick={handleOpenNavMenu}
 							color="inherit"
 						>
-							menuicon
+							<MenuIcon />
 						</IconButton>
 						<Menu
 							id="menu-appbar"
@@ -92,11 +80,9 @@ const AppHeader = (): JSX.Element => {
 							}}
 						>
 							{pages.map(page => (
-								<Fragment key={page.href}>
-									<MenuItem onClick={handleCloseNavMenu}>
-										<Typography textAlign="center">{page.title}</Typography>
-									</MenuItem>
-								</Fragment>
+								<MenuItem onClick={handleCloseNavMenu} key={page.href}>
+									<Typography textAlign="center">{page.title}</Typography>
+								</MenuItem>
 							))}
 						</Menu>
 					</Box>
@@ -119,34 +105,7 @@ const AppHeader = (): JSX.Element => {
 					</Box>
 
 					<Box sx={{ flexGrow: 0 }}>
-						<Tooltip title="Open settings">
-							<IconButton onClick={() => console.log('open menu')} sx={{ p: 0 }}>
-								<Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-								<ConnectedAccount />
-							</IconButton>
-						</Tooltip>
-						<Menu
-							sx={{ mt: '45px' }}
-							id="menu-appbar"
-							anchorEl={anchorElUser}
-							anchorOrigin={{
-								vertical: 'top',
-								horizontal: 'right',
-							}}
-							keepMounted
-							transformOrigin={{
-								vertical: 'top',
-								horizontal: 'right',
-							}}
-							open={Boolean(anchorElUser)}
-							onClose={handleCloseUserMenu}
-						>
-							{settings.map(setting => (
-								<MenuItem key={setting} onClick={handleCloseUserMenu}>
-									<Typography textAlign="center">{setting}</Typography>
-								</MenuItem>
-							))}
-						</Menu>
+						<ConnectedAccount />
 					</Box>
 				</Toolbar>
 			</Container>

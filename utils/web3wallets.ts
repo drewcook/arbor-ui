@@ -10,8 +10,8 @@ interface IWeb3Wallet {
 
 const wallets: IWeb3Wallet[] = [
 	{ walletName: 'tally', preferred: true }, // preferred
+	{ walletName: 'metamask', preferred: true },
 	{ walletName: 'coinbase', preferred: true }, // mobile wallet
-	{ walletName: 'metamask' },
 	{ walletName: 'torus' },
 	{ walletName: 'opera' },
 	{ walletName: 'operaTouch' },

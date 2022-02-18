@@ -4,6 +4,8 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #010102;
+  color: #eee;
 }
 
 a {
@@ -14,3 +16,8 @@ a {
 * {
   box-sizing: border-box;
 }
+
+#app-main {
+  min-height: calc(100vh - 185.52px);
+}
+
