@@ -25,8 +25,6 @@ const ConnectedAccount = (): JSX.Element => {
 	useEffect(() => {
 		const { address } = onboard.getState()
 		if (address) setAuthenticated(true)
-
-		window.addEventListener('walletChange', data => console.log('wallet changed', { data }))
 	}, [])
 
 	useEffect(() => {
