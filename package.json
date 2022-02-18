@@ -6,6 +6,7 @@
   "author": "Drew Cook <drewcook29@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "vercel-build": "cd client && yarn build",
     "deploy:dev": "truffle migrate --network develop --reset",
     "deploy:test": "truffle migrate --network rinkeby --reset"
   },
