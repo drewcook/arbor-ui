@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
-import Header from '../../components/Header'
+import AppHeader from '../../components/AppHeader'
 import { Container, Divider, Grid, Typography } from '@mui/material'
 import { get } from '../../utils/http'
 import { IProjectDoc } from '../../models/project.model'
@@ -31,7 +31,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-			<Header />
+			<AppHeader />
 
 			<main>
 				<Container maxWidth="lg">

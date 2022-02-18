@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
+import Link from 'next/link'
 import {
 	AppBar,
 	Box,
@@ -13,8 +14,20 @@ import {
 	MenuItem,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material'
+import ConnectedAccount from './ConnectedAccount'
 
-const pages = ['Products', 'Pricing', 'Blog']
+const styles = {
+	wrapper: {
+		marginBottom: 4,
+	},
+}
+
+const pages = [
+	{ href: '/', title: 'Home' },
+	{ href: '/projects', title: 'Explore' },
+	{ href: '/projects/new', title: 'Collab' },
+]
+
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 const AppHeader = (): JSX.Element => {
@@ -37,7 +50,7 @@ const AppHeader = (): JSX.Element => {
 	}
 
 	return (
-		<AppBar position="static">
+		<AppBar position="static" sx={styles.wrapper}>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Typography
@@ -46,7 +59,7 @@ const AppHeader = (): JSX.Element => {
 						component="div"
 						sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
 					>
-						LOGO
+						PolyEcho
 					</Typography>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -55,7 +68,7 @@ const AppHeader = (): JSX.Element => {
 							aria-label="account of current user"
 							aria-controls="menu-appbar"
 							aria-haspopup="true"
-							// onClick={handleOpenNavMenu}
+							onClick={() => console.log('open menu')}
 							color="inherit"
 						>
 							menuicon
@@ -79,9 +92,11 @@ const AppHeader = (): JSX.Element => {
 							}}
 						>
 							{pages.map(page => (
-								<MenuItem key={page} onClick={handleCloseNavMenu}>
-									<Typography textAlign="center">{page}</Typography>
-								</MenuItem>
+								<Fragment key={page.href}>
+									<MenuItem onClick={handleCloseNavMenu}>
+										<Typography textAlign="center">{page.title}</Typography>
+									</MenuItem>
+								</Fragment>
 							))}
 						</Menu>
 					</Box>
@@ -95,20 +110,19 @@ const AppHeader = (): JSX.Element => {
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map(page => (
-							<Button
-								key={page}
-								onClick={handleCloseNavMenu}
-								sx={{ my: 2, color: 'white', display: 'block' }}
-							>
-								{page}
-							</Button>
+							<Link key={page.href} href={page.href} passHref>
+								<Button key={page.href} sx={{ my: 2, color: 'white', display: 'block' }}>
+									{page.title}
+								</Button>
+							</Link>
 						))}
 					</Box>
 
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title="Open settings">
-							<IconButton onClick={() => console.log('icon click')} sx={{ p: 0 }}>
+							<IconButton onClick={() => console.log('open menu')} sx={{ p: 0 }}>
 								<Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+								<ConnectedAccount />
 							</IconButton>
 						</Tooltip>
 						<Menu

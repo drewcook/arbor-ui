@@ -43,9 +43,7 @@ const Header = (): JSX.Element => {
 								</ul>
 							</nav>
 						</Grid>
-						<Grid item sm={6}>
-							<ConnectedAccount />
-						</Grid>
+						<Grid item sm={6}></Grid>
 					</Grid>
 				</Container>
 			</header>

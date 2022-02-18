@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import Notification from '../../components/Notification'
-import Header from '../../components/Header'
+import AppHeader from '../../components/AppHeader'
 import { Button, Container, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { post } from '../../utils/http'
@@ -64,7 +64,7 @@ const NewProjectPage: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-			<Header />
+			<AppHeader />
 
 			<main>
 				<Container maxWidth="md" sx={styles.centered}>
