@@ -120,7 +120,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									<Typography sx={styles.desc}>{data.description}</Typography>
 									{data.tags.length > 0 &&
 										data.tags.map((tag: string) => (
-											<Chip key={tag} label={tag} variant="filled" color="secondary" />
+											<Chip
+												key={tag}
+												label={tag}
+												variant="filled"
+												color="secondary"
+												sx={styles.tag}
+											/>
 										))}
 									<Divider light sx={styles.divider} />
 									<SampleDropzone />
