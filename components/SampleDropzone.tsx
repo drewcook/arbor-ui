@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 const styles = {
@@ -80,18 +80,8 @@ const SampleDropzone = (): JSX.Element => {
 			}
 		},
 	})
-	// Accept only audio files - wav, aiff, mp3
-	const fileRejectionItems = fileRejections.map(({ file, errors }) => (
-		<li key={file.path}>
-			{file.path} - {file.size} bytes
-			<ul>
-				{errors.map(e => (
-					<li key={e.code}>{e.message}</li>
-				))}
-			</ul>
-		</li>
-	))
 
+	// Styles
 	const dropzoneStyles = useMemo(
 		() => ({
 			...baseStyle,
@@ -113,6 +103,7 @@ const SampleDropzone = (): JSX.Element => {
 				of the existing project samples to create one of a kind song that can be minted into a new
 				NFT.
 			</Typography>
+			{/* @ts-ignore */}
 			<div {...getRootProps({ style: dropzoneStyles })}>
 				<input {...getInputProps()} />
 				{isDragActive
@@ -124,8 +115,7 @@ const SampleDropzone = (): JSX.Element => {
 				{fileRejections.length > 0 && (
 					<aside>
 						<Box sx={styles.errorMsg}>
-							<Typography color="error">Files rejected, must be supported filetype</Typography>
-							<ul>{fileRejectionItems}</ul>
+							<Typography color="error">File rejected, must be supported filetype</Typography>
 						</Box>
 					</aside>
 				)}
