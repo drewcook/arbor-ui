@@ -18,6 +18,6 @@
     "noImplicitThis": true,
     "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/db.js", "utils/getWeb3.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/db.js", "utils/getWeb3.js", "utils/ipfsClient.js"],
   "exclude": ["node_modules"]
 }

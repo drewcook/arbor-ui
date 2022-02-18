@@ -79,6 +79,10 @@ const styles = {
 	cut: {
 		py: 3,
 	},
+	noSamplesMsg: {
+		textAlign: 'center',
+		marginY: 4,
+	},
 }
 
 type ProjectPageProps = {
@@ -96,6 +100,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 	const handleCut = () => {
 		console.log('cutting new sample')
+	}
+
+	const onUploadSuccess = () => {
+		console.log('Sweeeeeeet, callback')
 	}
 
 	return (
@@ -130,13 +138,21 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											/>
 										))}
 									<Divider light sx={styles.divider} />
-									<SampleDropzone />
+									<SampleDropzone
+										projectId={data._id}
+										projectSamples={data.samples}
+										onSuccess={onUploadSuccess}
+									/>
 									<Divider light sx={styles.divider} />
-									{[0, 2, 3, 4].map((sample, idx) => (
-										<Fragment key={idx}>
-											<Sample />
-										</Fragment>
-									))}
+									{data.samples.length > 0 ? (
+										data.samples.map((sample, idx) => (
+											<Fragment key={idx}>
+												<Sample details={sample} />
+											</Fragment>
+										))
+									) : (
+										<Typography sx={styles.noSamplesMsg}>No samples to show, add one!</Typography>
+									)}
 								</Grid>
 								<Grid item md={3}>
 									<Paper sx={styles.sidebar} elevation={2}>
@@ -148,13 +164,22 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										</Typography>
 										<Box sx={styles.stats}>
 											<Typography sx={styles.stat}>
-												6 <Typography sx={styles.statSmall}>Plays</Typography>
+												6{' '}
+												<Typography sx={styles.statSmall} component="span">
+													Plays
+												</Typography>
 											</Typography>
 											<Typography sx={styles.stat}>
-												2 <Typography sx={styles.statSmall}>Samples</Typography>
+												2{' '}
+												<Typography sx={styles.statSmall} component="span">
+													Samples
+												</Typography>
 											</Typography>
 											<Typography sx={styles.stat}>
-												1 <Typography sx={styles.statSmall}>Cuts</Typography>
+												1{' '}
+												<Typography sx={styles.statSmall} component="span">
+													Cuts
+												</Typography>
 											</Typography>
 										</Box>
 										<Divider light sx={styles.divider} />

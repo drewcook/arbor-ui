@@ -5,6 +5,7 @@ import dbConnect from '../../../utils/db'
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
 		query: { id },
+		body,
 		method,
 	} = req
 
@@ -25,10 +26,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'PUT' /* Edit a model by its ID */:
 			try {
-				const project = await Project.findByIdAndUpdate(id, req.body, {
+				// Update samples
+				const project = await Project.findByIdAndUpdate(id, body, {
 					new: true,
 					runValidators: true,
 				})
+
 				if (!project) {
 					return res.status(400).json({ success: false })
 				}

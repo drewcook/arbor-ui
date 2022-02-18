@@ -1,5 +1,7 @@
-import { PlayArrowRounded } from '@mui/icons-material'
+import { Howl, Howler } from 'howler'
 import { Grid, IconButton, Paper, Typography } from '@mui/material'
+import { PlayArrowRounded } from '@mui/icons-material'
+import type { ISample } from '../models/sample.model'
 
 const styles = {
 	sample: {
@@ -19,9 +21,21 @@ const styles = {
 	},
 }
 
-const Sample = (): JSX.Element => {
+type SampleProps = {
+	details: ISample,
+}
+
+const Sample = (props: SampleProps): JSX.Element => {
+	const { details } = props
+
+	var sound = new Howl({
+		src: [
+			'https://ipfs.io/ipfs/QmRAJ7tH3xZGoEykLedDoHLVcs4m5eKvYJvu76qq34oMZ6/PMRW_Arp_Loop_100_Dmaj_Story.wav',
+		],
+	})
+
 	const handlePlay = () => {
-		console.log('playing..')
+		sound.play()
 	}
 
 	return (
@@ -33,7 +47,11 @@ const Sample = (): JSX.Element => {
 					</IconButton>
 				</Grid>
 				<Grid item xs={10}>
-					<Typography>Sound clip goes here...</Typography>
+					<Typography>IPFS Hash: {details.hash}</Typography>
+					<Typography>File Name: {details.filename}</Typography>
+					<Typography>File Type: {details.filetype}</Typography>
+					<Typography>File Size: {details.filesize}</Typography>
+					<Typography>Created By: {details.createdBy}</Typography>
 				</Grid>
 			</Grid>
 		</Paper>

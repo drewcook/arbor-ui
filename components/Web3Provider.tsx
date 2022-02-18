@@ -1,8 +1,9 @@
-import PropTypes from 'prop-types'
 import type { ReactNode} from 'react'
+import type { Wallet } from 'bnc-onboard/dist/src/interfaces'
+import type { IPFSHTTPClient } from 'ipfs-http-client'
 import { createContext, useContext, useEffect, useState } from 'react'
 import getWeb3 from '../utils/getWeb3'
-import type { Wallet } from 'bnc-onboard/dist/src/interfaces'
+import ipfsClient from '../utils/ipfsClient'
 import Onboard from 'bnc-onboard'
 import FullPageLoading from './FullPageLoading'
 import Web3Fallback from './Web3Fallback'
@@ -10,9 +11,10 @@ import wallets from '../utils/web3wallets'
 
 // Context types
 type Web3ContextProps = {
-	web3?: any,
-	accounts?: any,
-  onboard?: any,
+	web3: any,
+	accounts: any,
+  onboard: any,
+  ipfs: IPFSHTTPClient | undefined,
 }
 
 type ProviderProps = {
@@ -20,10 +22,11 @@ type ProviderProps = {
 }
 
 // Create context
-const Web3Context = createContext<Web3ContextProps>({})
+const Web3Context = createContext<Partial<Web3ContextProps>>({})
 
 // Context provider
 export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
+  const [ipfs, setIpfs] = useState<IPFSHTTPClient>()
 	const [web3, setWeb3] = useState(null)
 	const [accounts, setAccounts] = useState<string[]|null>(null)
   const [onboard, setOnboard] = useState<unknown|null>(null)
@@ -33,6 +36,23 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	useEffect(() => {
 		loadWeb3()
 	}, [])
+
+  /**
+	 * Connect to IPFS Node
+	 */
+	const connectIpfsDaemon = async () => {
+		try {
+			const node = ipfsClient
+			const isOnline = node.isOnline()
+
+			if (isOnline) {
+				setIpfs(node)
+        console.info('Connected to IPFS node')
+			}
+		} catch (err) {
+			console.error('Failed to connect to IPFS node', err)
+		}
+	}
 
 	const loadWeb3 = async () => {
 		try {
@@ -57,8 +77,10 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
       })
       setOnboard(onboardInstance)
 
+      // Connect to IPFS
+      await connectIpfsDaemon()
+
       // Prompt user to select a wallet
-      console.log(onboardInstance, onboardInstance.getState())
       // await onboardInstance.walletSelect('metamask')
 
       // Run wallet checks to make sure that user is ready to transact
@@ -94,13 +116,13 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	if (loading) return <FullPageLoading />
 	if (error) return <Web3Fallback />
 
-	return <Web3Context.Provider value={{ web3, accounts, onboard }}>{children}</Web3Context.Provider>
+	return <Web3Context.Provider value={{ web3, accounts, ipfs, onboard }}>{children}</Web3Context.Provider>
 }
 
 
 // Context hook
 export const useWeb3 = () => {
-	const context: Web3ContextProps = useContext(Web3Context)
+	const context: Partial<Web3ContextProps> = useContext(Web3Context)
 	if (context === undefined) {
 		throw new Error('useWeb3 must be used within an Web3Provider component.')
 	}

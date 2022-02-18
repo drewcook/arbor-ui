@@ -1,10 +1,13 @@
 import mongoose,{ Document } from 'mongoose'
+import type { ISample } from './sample.model'
+import { sampleSchema } from './sample.model'
 
 export interface IProject {
-    name: string
-    description: string
-    tags: string[]
-    createdBy: string
+  createdBy: string
+  name: string
+  description: string
+  tags: string[]
+  samples: ISample[]
 }
 
 export interface IProjectDoc extends Document, IProject {}
@@ -32,6 +35,11 @@ const projectSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+    samples: {
+      type: [sampleSchema],
+      required: false,
+      default: []
+    }
 	},
 	{ timestamps: true },
 )

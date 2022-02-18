@@ -1,6 +1,9 @@
 import { Box, Typography } from '@mui/material'
 import React, { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { useWeb3 } from './Web3Provider'
+import { update } from '../utils/http'
+import { ISample } from '../models/sample.model'
 
 const styles = {
 	uploadTitle: {
@@ -33,6 +36,7 @@ const baseStyle = {
 	color: '#eee',
 	outline: 'none',
 	transition: 'border .24s ease-in-out',
+	cursor: 'pointer',
 }
 
 const focusedStyle = {
@@ -47,7 +51,15 @@ const rejectStyle = {
 	borderColor: '#ff1744',
 }
 
-const SampleDropzone = (): JSX.Element => {
+type SampleDropzoneProps = {
+	projectId: string,
+	projectSamples: ISample[],
+	onSuccess: () => void,
+}
+
+const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
+	const { projectId, projectSamples, onSuccess } = props
+	const { ipfs, accounts } = useWeb3()
 	const {
 		getRootProps,
 		getInputProps,
@@ -58,23 +70,54 @@ const SampleDropzone = (): JSX.Element => {
 		fileRejections,
 	} = useDropzone({
 		maxFiles: 1,
-		accept: 'audio/vnd.wav,audio/mpeg,audio/x-aiff',
+		accept: 'audio/wav,audio/mpeg,audio/webm',
 		onDrop: async ([file]) => {
 			console.log('adding file', file)
 			try {
 				// Add file to IPFS
-				// const addedFile = await ipfs.add(fileDetails, options)
-				// Add file to smart contract
-				// const hash = addedFile.cid.toString()
-				// const filename = file.name
-				// const filetype = file.name.substr(file.name.lastIndexOf('.') + 1)
-				// const timestamp = Math.round(+new Date() / 1000)
-				// await contract.methods
-				// 	.add(hash, filename, filetype, timestamp)
-				// 	.send({ from: userAccount, gas: 300000 })
-				// // Get files after upload
-				// getFiles(contract, userAccount)
-				// alert('File(s) successfully uploaded to IPFS.')
+				// Wrap in directory of filename
+				if (ipfs) {
+					const fileDetails = {
+						// path: file.name,
+						content: file,
+					}
+					const options = {
+						wrapWithDirectory: false,
+						progress: prog => console.info(`Polling: ${prog}`),
+					}
+					const addedFile = await ipfs.add(fileDetails, options)
+					alert('File(s) successfully uploaded to IPFS.')
+
+					// Add sample data to overall project
+					const hash = addedFile.cid.toString()
+					const filename = file.name
+					const filetype = file.name.substr(file.name.lastIndexOf('.') + 1)
+					const filesize = addedFile.size
+					// const timestamp = Math.round(+new Date() / 1000)
+					const sample = {
+						hash,
+						filename,
+						filetype,
+						filesize,
+						createdBy: accounts[0],
+					}
+
+					// TODO: Write / update project
+					// get project samples, append to list, write new list to db
+					const samples = [...projectSamples, sample]
+					const res = await update(`/projects/${projectId}`, { samples })
+
+					if (res.success) {
+						console.log('All good!', { projectId, addedFile, sample })
+						onSuccess()
+					}
+
+					// await contract.methods
+					// 	.add(hash, filename, filetype, timestamp)
+					// 	.send({ from: userAccount, gas: 300000 })
+					// // Get files after upload
+					// getFiles(contract, userAccount)
+				}
 			} catch (err) {
 				console.error(err)
 			}
