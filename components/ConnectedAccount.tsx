@@ -1,11 +1,12 @@
 import { Avatar, Button, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useWeb3 } from './Web3Provider'
+import formatAddress from '../utils/formatAddress'
 
 const styles = {
 	wrapper: {
 		display: 'flex',
-		justifyContent: 'right',
+		justifyContent: 'flex-end',
 		alignItems: 'center',
 	},
 	avatar: {
@@ -108,9 +109,7 @@ const ConnectedAccount = (): JSX.Element => {
 						</Menu>
 						{currentAccount && (
 							<Typography sx={styles.address} variant="body2">
-								{currentAccount?.substring(0, 2) +
-									'.................' +
-									currentAccount?.substring(currentAccount.length - 4)}
+								{formatAddress(currentAccount)}
 							</Typography>
 						)}
 					</>
