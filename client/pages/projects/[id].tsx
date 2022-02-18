@@ -49,9 +49,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									<Divider />
 									sound clips will go here
 								</Grid>
-								<Grid item md={3}>
-									this is the sidebar
-								</Grid>
+								<Grid item md={3}></Grid>
 							</Grid>
 						</>
 					) : (
