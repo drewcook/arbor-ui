@@ -30,7 +30,7 @@ module.exports = {
 		},
 	},
 	// Contracts
-	contracts_build_directory: path.join(__dirname, 'client/contracts'),
+	contracts_build_directory: path.join(__dirname, '/../contracts'),
 	// Networks
 	networks: {
 		// Local
