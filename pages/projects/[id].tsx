@@ -20,6 +20,7 @@ import { IProjectDoc } from '../../models/project.model'
 import { ArrowBack, ArrowForward } from '@mui/icons-material'
 import formatAddress from '../../utils/formatAddress'
 import Sample from '../../components/Sample'
+import SampleDropzone from '../../components/SampleDropzone'
 
 const styles = {
 	error: {
@@ -114,6 +115,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									</Typography>
 									<Typography sx={styles.desc}>{data.description}</Typography>
 									<Divider light sx={styles.divider} />
+									<SampleDropzone />
+									<Divider light sx={styles.divider} />
 									{[0, 2, 3, 4].map((sample, idx) => (
 										<Fragment key={idx}>
 											<Sample />
@@ -121,7 +124,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									))}
 								</Grid>
 								<Grid item md={3}>
-									<Paper sx={styles.sidebar}>
+									<Paper sx={styles.sidebar} elevation={2}>
 										<IconButton size="small" sx={styles.toggleBtn} onClick={toggleSidebar}>
 											{sidebarOpen ? <ArrowForward /> : <ArrowBack />}
 										</IconButton>

@@ -21,3 +21,7 @@ a {
   min-height: calc(100vh - 185.52px);
 }
 
+ol, ul {
+  margin: 0;
+  padding: 0;
+}

@@ -25,7 +25,7 @@ const Sample = (): JSX.Element => {
 	}
 
 	return (
-		<Paper sx={styles.sample}>
+		<Paper sx={styles.sample} elevation={2}>
 			<Grid container spacing={2}>
 				<Grid item xs={2} sx={styles.actionsLeft}>
 					<IconButton size="large" onClick={handlePlay} sx={styles.playBtn}>
