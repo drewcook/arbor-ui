@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import AppHeader from '../components/AppHeader'
+// import Header from '../components/Header'
 import Footer from '../components/Footer'
-import Header from '../components/Header'
 import { Box, Container, Typography } from '@mui/material'
 
 const styles = {
@@ -19,7 +20,7 @@ const Home: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-			<Header />
+			<AppHeader />
 
 			<main>
 				<Container maxWidth="lg">

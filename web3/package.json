@@ -1,0 +1,19 @@
+{
+  "name": "ethdenver-hackathon-contracts",
+  "version": "1.0.0",
+  "description": "A music NFT web application",
+  "repository": "https://github.com/noahdahlman/ethden-hack-web.git",
+  "author": "Drew Cook <drewcook29@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "deploy:dev": "truffle migrate --network develop --reset",
+    "deploy:test": "truffle migrate --network rinkeby --reset"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.1",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "^2.0.0"
+  }
+}
