@@ -18,6 +18,7 @@ const styles = {
 	wrapper: {
 		marginBottom: 4,
 	},
+	logo: { display: { xs: 'flex', alignItems: 'center', md: 'none' }, marginLeft: 1 },
 }
 
 const pages = [
@@ -85,15 +86,11 @@ const AppHeader = (): JSX.Element => {
 								</MenuItem>
 							))}
 						</Menu>
+						<Typography variant="h6" noWrap component="div" sx={styles.logo}>
+							PolyEcho
+						</Typography>
 					</Box>
-					<Typography
-						variant="h6"
-						noWrap
-						component="div"
-						sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
-					>
-						LOGO
-					</Typography>
+
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map(page => (
 							<Link key={page.href} href={page.href} passHref>
