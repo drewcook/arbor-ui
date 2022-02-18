@@ -29,8 +29,9 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 				<Typography gutterBottom sx={styles.description}>
 					{details.description.slice(0, 60) + '...'}
 				</Typography>
-				{details.tags.length > 0 &&
-					details.tags.map((tag: string) => (
+				{details.tags &&
+					details.tags?.length > 0 &&
+					details.tags?.map((tag: string) => (
 						<Chip
 							key={tag}
 							label={tag}

@@ -118,8 +118,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										{data.name}
 									</Typography>
 									<Typography sx={styles.desc}>{data.description}</Typography>
-									{data.tags.length > 0 &&
-										data.tags.map((tag: string) => (
+									{data.tags &&
+										data.tags?.length > 0 &&
+										data.tags?.map((tag: string) => (
 											<Chip
 												key={tag}
 												label={tag}
