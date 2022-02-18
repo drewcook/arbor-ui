@@ -16,7 +16,7 @@ const styles = {
 
 const FullPageLoading = (): JSX.Element => (
 	<Box sx={styles.wrapper}>
-		<CircularProgress size={50} sx={styles.spinner} />
+		<CircularProgress size={50} sx={styles.spinner} color="secondary" />
 	</Box>
 )
 

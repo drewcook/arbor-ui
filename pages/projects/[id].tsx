@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
@@ -19,6 +19,7 @@ import {
 import { IProjectDoc } from '../../models/project.model'
 import { ArrowBack, ArrowForward } from '@mui/icons-material'
 import formatAddress from '../../utils/formatAddress'
+import Sample from '../../components/Sample'
 
 const styles = {
 	error: {
@@ -113,6 +114,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									</Typography>
 									<Typography sx={styles.desc}>{data.description}</Typography>
 									<Divider light sx={styles.divider} />
+									{[0, 2, 3, 4].map((sample, idx) => (
+										<Fragment key={idx}>
+											<Sample />
+										</Fragment>
+									))}
 								</Grid>
 								<Grid item md={3}>
 									<Paper sx={styles.sidebar}>
