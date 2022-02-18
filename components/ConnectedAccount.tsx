@@ -33,7 +33,7 @@ const ConnectedAccount = (): JSX.Element => {
 		setCurrentAccount(accounts[0])
 	}, [accounts])
 
-	const handleOpenMenu = e => {
+	const handleOpenMenu = (e: { target: any }) => {
 		if (authenticated) setAnchorEl(e.target)
 	}
 

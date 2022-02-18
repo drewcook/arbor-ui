@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import type { ReactNode} from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import getWeb3 from '../utils/getWeb3'
+import type { Wallet } from 'bnc-onboard/dist/src/interfaces'
 import Onboard from 'bnc-onboard'
 import FullPageLoading from './FullPageLoading'
 import Web3Fallback from './Web3Fallback'
@@ -11,7 +12,7 @@ import wallets from '../utils/web3wallets'
 type Web3ContextProps = {
 	web3?: any,
 	accounts?: any,
-  onboard: any,
+  onboard?: any,
 }
 
 type ProviderProps = {
@@ -48,11 +49,8 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
           address: async (address: string) => {
             setAccounts([address])
           },
-          wallet: async (wallet: unknown) => {
-            console.log('wallet changed', wallet)
+          wallet: async (wallet: Wallet) => {
             console.log(`${wallet.name} connected!`)
-            const event = new Event('walletChanged', wallet)
-            window.dispatchEvent(event)
           },
         },
         walletSelect: { wallets }

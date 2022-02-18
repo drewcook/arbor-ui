@@ -29,8 +29,8 @@ const pages = [
 const AppHeader = (): JSX.Element => {
 	const [anchorElNav, setAnchorElNav] = useState(null)
 
-	const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorElNav(event.currentTarget)
+	const handleOpenNavMenu = (e: { target: any }) => {
+		setAnchorElNav(e.target)
 	}
 
 	const handleCloseNavMenu = () => {
