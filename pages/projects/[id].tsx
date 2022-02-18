@@ -32,9 +32,14 @@ const styles = {
 	},
 	sidebar: {
 		p: 3,
+		pt: 1,
+	},
+	toggleBtn: {
+		mb: 2,
 	},
 	divider: {
 		my: 3,
+		borderColor: '#777',
 	},
 	stats: {
 		display: 'flex',
@@ -58,11 +63,11 @@ const styles = {
 		py: 2,
 	},
 	avatar: {
-		marginRight: 0.5,
-		height: 24,
-		width: 24,
+		height: 30,
+		width: 30,
 	},
 	address: {
+		marginLeft: 1.5,
 		color: '#fff',
 	},
 	cut: {
@@ -111,7 +116,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 								</Grid>
 								<Grid item md={3}>
 									<Paper sx={styles.sidebar}>
-										<IconButton onClick={toggleSidebar}>
+										<IconButton size="small" sx={styles.toggleBtn} onClick={toggleSidebar}>
 											{sidebarOpen ? <ArrowForward /> : <ArrowBack />}
 										</IconButton>
 										<Typography gutterBottom variant="h5">
@@ -134,16 +139,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										</Typography>
 										<Box sx={styles.pioneer}>
 											<Box sx={styles.account}>
-												<Icon
-													sx={styles.avatar}
-													aria-label="Current user menu"
-													aria-controls="user-menu"
-													aria-haspopup="true"
-													color="inherit"
-												>
+												<Icon sx={styles.avatar} color="inherit">
 													<Avatar
 														alt="Avatar"
-														src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=24&d=identicon&r=PG"
+														src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=30&d=identicon&r=PG"
+														sx={styles.avatar}
 													/>
 												</Icon>
 												<Typography sx={styles.address} variant="body2">
@@ -158,16 +158,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											</Typography>
 											{[0, 1, 2, 3, 4].map((item, idx) => (
 												<Box key={idx} sx={styles.account}>
-													<Icon
-														sx={styles.avatar}
-														aria-label="Current user menu"
-														aria-controls="user-menu"
-														aria-haspopup="true"
-														color="inherit"
-													>
+													<Icon sx={styles.avatar} color="inherit">
 														<Avatar
 															alt="Avatar"
-															src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=24&d=identicon&r=PG"
+															src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=30&d=identicon&r=PG"
+															sx={styles.avatar}
 														/>
 													</Icon>
 													<Typography sx={styles.address} variant="body2">
