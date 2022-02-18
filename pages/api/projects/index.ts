@@ -5,6 +5,7 @@ import dbConnect from '../../../utils/db'
 type CreateProjectPayload = {
 	name: string,
 	description: string,
+	tags: string[],
 	createdBy: string,
 }
 
@@ -27,6 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				const payload: CreateProjectPayload = {
 					name: req.body.name,
 					description: req.body.description,
+					tags: req.body.tags,
 					createdBy: 'myWalletAddress',
 				}
 				/* create a new model in the database */

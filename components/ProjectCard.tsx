@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Box, Card, CardActions, CardContent, Button, Typography } from '@mui/material'
+import { Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
 import type { IProjectDoc } from '../models/project.model'
 
 const styles = {
@@ -8,7 +8,9 @@ const styles = {
 	},
 	title: {},
 	description: {},
-	tags: {},
+	tag: {
+		m: 1,
+	},
 }
 
 type ProjectCardProps = {
@@ -27,9 +29,17 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 				<Typography gutterBottom sx={styles.description}>
 					{details.description.slice(0, 60) + '...'}
 				</Typography>
-				<Typography sx={styles.tags} color="text.secondary">
-					tags go here
-				</Typography>
+				{details.tags.length > 0 &&
+					details.tags.map((tag: string) => (
+						<Chip
+							key={tag}
+							label={tag}
+							variant="filled"
+							color="secondary"
+							size="small"
+							sx={styles.tag}
+						/>
+					))}
 			</CardContent>
 			<CardActions>
 				<Link href={`/projects/${details._id}`} passHref>

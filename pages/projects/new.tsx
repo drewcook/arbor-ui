@@ -7,6 +7,7 @@ import { Button, Container, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { post } from '../../utils/http'
 import { useRouter } from 'next/router'
+import TagsInput from '../../components/TagsInput'
 
 const styles = {
 	centered: {
@@ -20,15 +21,22 @@ const styles = {
 const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
+	const [tags, setTags] = useState<string[]>([])
 	const [successOpen, setSuccessOpen] = useState(false)
 	const [successMsg, setSuccessMsg] = useState('')
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
 	const router = useRouter()
 
+	// Tags
+	const handleAddTag = (tag: string) => setTags([...tags, tag])
+	const handleRemoveTag = (tag: string) => setTags(tags.filter(t => t !== tag))
+
 	const handleSubmit = async () => {
 		try {
-			const res = await post('/projects', { name, description })
+			const payload = { name, description, tags }
+			console.log({ payload })
+			const res = await post('/projects', payload)
 			if (res.success) {
 				setSuccessOpen(true)
 				setSuccessMsg('Successfully created project')
@@ -47,6 +55,7 @@ const NewProjectPage: NextPage = () => {
 	const resetForm = () => {
 		setName('')
 		setDescription('')
+    setTags([])
 	}
 
 	const onNotificationClose = () => {
@@ -89,6 +98,11 @@ const NewProjectPage: NextPage = () => {
 						onChange={e => setDescription(e.target.value)}
 						placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
 						fullWidth
+					/>
+					<TagsInput
+						tags={tags}
+						onAdd={tag => handleAddTag(tag)}
+						onDelete={(tag: string) => handleRemoveTag(tag)}
 					/>
 					<Button
 						variant="contained"

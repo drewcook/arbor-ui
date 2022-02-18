@@ -10,6 +10,7 @@ import ProjectCard from '../../components/ProjectCard'
 const styles = {
 	eyebrow: {
 		color: '#666',
+		mb: 4,
 	},
 	noProjects: {
 		textAlign: 'center',

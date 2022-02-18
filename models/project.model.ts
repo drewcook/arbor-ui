@@ -3,6 +3,7 @@ import mongoose,{ Document } from 'mongoose'
 export interface IProject {
     name: string
     description: string
+    tags: string[]
     createdBy: string
 }
 
@@ -16,7 +17,17 @@ const projectSchema = new mongoose.Schema(
 			trim: true,
 			maxlength: 50,
 		},
-		description: String,
+		description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxLength: 300,
+    },
+    tags: {
+      type: [String],
+      required: false,
+      default: []
+    },
 		createdBy: {
 			type: String,
 			required: true,

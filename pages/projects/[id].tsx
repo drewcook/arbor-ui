@@ -8,6 +8,7 @@ import {
 	Avatar,
 	Box,
 	Button,
+	Chip,
 	Container,
 	Divider,
 	Grid,
@@ -31,6 +32,9 @@ const styles = {
 	desc: {
 		textTransform: 'uppercase',
 		mb: 4,
+	},
+	tag: {
+		m: 1,
 	},
 	sidebar: {
 		p: 3,
@@ -84,7 +88,7 @@ type ProjectPageProps = {
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data } = props
 	const [sidebarOpen, setSidebarOpen] = useState(true)
-	const pioneerAddress = '3209r2nkxnd39023092nkl3209'
+	const pioneerAddress = '3209r2da3s39023092nkl3209'
 
 	const toggleSidebar = () => {
 		setSidebarOpen(!sidebarOpen)
@@ -114,6 +118,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										{data.name}
 									</Typography>
 									<Typography sx={styles.desc}>{data.description}</Typography>
+									{data.tags.length > 0 &&
+										data.tags.map((tag: string) => (
+											<Chip key={tag} label={tag} variant="filled" color="secondary" />
+										))}
 									<Divider light sx={styles.divider} />
 									<SampleDropzone />
 									<Divider light sx={styles.divider} />
