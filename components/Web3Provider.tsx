@@ -43,6 +43,7 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	const connectIpfsDaemon = async () => {
 		try {
 			const node = ipfsClient
+      console.log({ipfs})
 			const isOnline = node.isOnline()
 
 			if (isOnline) {
