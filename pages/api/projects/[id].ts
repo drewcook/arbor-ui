@@ -40,7 +40,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}))
 					project = await Project.findByIdAndUpdate(
 						id,
-						{ $set: { samples } },
+						{
+							$set: {
+								samples,
+								collaborators: body.collaborators,
+							},
+						},
 						{
 							new: true,
 							runValidators: true,

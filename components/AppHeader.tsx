@@ -39,7 +39,7 @@ const AppHeader = (): JSX.Element => {
 	}
 
 	return (
-		<AppBar position="static" sx={styles.wrapper} enableColorOnDark>
+		<AppBar position="static" sx={styles.wrapper} enableColorOnDark color="secondary">
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Typography

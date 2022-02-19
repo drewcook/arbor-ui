@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Howl } from 'howler'
-import { Button, ButtonGroup, Divider, Grid, IconButton, Paper, Typography } from '@mui/material'
-import { PauseCircleRounded, PlayArrowRounded } from '@mui/icons-material'
+import { Box, Fab, Grid, Typography } from '@mui/material'
+import { PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import type { ISample } from '../models/sample.model'
+import formatAddress from '../utils/formatAddress'
 
 const styles = {
 	sample: {
@@ -11,6 +12,26 @@ const styles = {
 		minHeight: '120px',
 		mb: 3,
 	},
+  metadata: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start'
+  },
+  metadataPlayBtn: {
+    color: "#fff",
+  },
+  metadataSmall: {
+    color: '#a8a8a8',
+    fontStyle: 'italic',
+    fontWeight: 900,
+    textTransform: 'uppercase',
+  },
+  metadataTitle: {
+    textTransform: 'uppercase',
+    fontStyle: 'italic',
+    fontWeight: 900,
+    wordBreak: 'break-all',
+  },
 	actionsLeft: {
 		display: 'flex',
 		flexDirection: 'column',
@@ -26,13 +47,15 @@ const styles = {
 }
 
 type SamplePlayerProps = {
+  idx: number,
 	details: ISample,
 }
 
 const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
-	const { details } = props
+	const { idx, details } = props
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [sound, setSound] = useState<Howl>()
+  const [isPlaying, setIsPlaying] = useState<boolean>(false)
 
 	useEffect(() => {
     // Initialize Howler.js player
@@ -76,50 +99,45 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
         });
         instance.load(details.audioUrl)
         setWavesurfer(instance)
-
     }
     initWavesurfer()
     return () => wavesurfer?.destroy()
 	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
 
-  const handlePlay = () => {
-    if (sound) sound.play()
-  }
+  // const handlePlay = () => {
+  //   if (sound) sound.play()
+  // }
 
-	const handlePause = () => {
-		if (sound) sound.pause()
-	}
+	// const handlePause = () => {
+	// 	if (sound) sound.pause()
+	// }
 
   const handlePlayPause = () => {
+    setIsPlaying(!isPlaying)
     wavesurfer?.playPause()
   }
 
 	return (
-		<Paper sx={styles.sample} elevation={2}>
+		<Box sx={styles.sample}>
 			<Grid container spacing={2}>
-				<Grid item xs={2} sx={styles.actionsLeft}>
-					{sound && sound.state() === 'loaded' ? (
-						<IconButton size="large" onClick={handlePause} sx={styles.pauseBtn}>
-							<PauseCircleRounded />
-						</IconButton>
-					) : (
-						<IconButton size="large" onClick={handlePlay} sx={styles.playBtn}>
-							<PlayArrowRounded />
-						</IconButton>
-					)}
+				<Grid item xs={12} md={4}>
+          <Box sx={styles.metadata}>
+            <Fab size="medium" onClick={handlePlayPause} sx={styles.metadataPlayBtn} color="primary">
+              {isPlaying ? <PlayArrowRounded /> : <PauseRounded />}
+            </Fab>
+            <Box>
+              <Typography sx={styles.metadataSmall}>Stem {idx}</Typography>
+              <Typography sx={styles.metadataTitle} variant="h4">{details.filename}</Typography>
+              <Typography sx={styles.metadataSmall}>Added by {formatAddress(details.createdBy)}</Typography>
+            </Box>
+          </Box>
 				</Grid>
-				<Grid item xs={10}>
+				<Grid item xs={12} md={8}>
           <div id="waveform" />
           <div id="timeline" />
-
-					<Typography>IPFS URL: {details.audioUrl}</Typography>
-					<Typography>File Name: {details.filename}</Typography>
-					<Typography>File Type: {details.filetype}</Typography>
-					<Typography>File Size: {details.filesize}</Typography>
-					<Typography>Created By: {details.createdBy}</Typography>
 				</Grid>
 			</Grid>
-		</Paper>
+		</Box>
 	)
 }
 

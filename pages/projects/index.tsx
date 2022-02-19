@@ -1,20 +1,25 @@
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import Footer from '../../components/Footer'
 import AppHeader from '../../components/AppHeader'
-import { Container, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Grid, Typography } from '@mui/material'
 import { get } from '../../utils/http'
 import { IProjectDoc } from '../../models/project.model'
 import ProjectCard from '../../components/ProjectCard'
 
 const styles = {
-	eyebrow: {
-		color: '#666',
+	title: {
+		textAlign: 'center',
 		mb: 4,
 	},
 	noProjects: {
 		textAlign: 'center',
-		marginY: 4,
+	},
+	noProjectsMsg: {
+		fontSize: '1.5rem',
+		color: '#555',
+		mb: 3,
 	},
 }
 
@@ -39,21 +44,32 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 				<Container maxWidth="lg">
 					{data ? (
 						<>
-							<Typography gutterBottom variant="h5" component="h1" sx={styles.eyebrow}>
+							<Typography variant="h4" component="h1" sx={styles.title}>
 								Explore Projects
 							</Typography>
-							<Grid container spacing={4}>
-								{data.map(project => (
-									<Grid item sm={6} md={4} key={project._id}>
-										<ProjectCard details={project} />
-									</Grid>
-								))}
-							</Grid>
+							{data.length > 0 ? (
+								<Grid container spacing={4}>
+									{data.map(project => (
+										<Grid item sm={6} md={4} key={project._id}>
+											<ProjectCard details={project} />
+										</Grid>
+									))}
+								</Grid>
+							) : (
+								<Box sx={styles.noProjects}>
+									<Typography sx={styles.noProjectsMsg}>
+										No projects to show. Create one!
+									</Typography>
+									<Link href="/projects/new" passHref>
+										<Button variant="contained" color="secondary">
+											Create Project
+										</Button>
+									</Link>
+								</Box>
+							)}
 						</>
 					) : (
-						<Typography sx={styles.noProjects}>
-							There are currently no projects, create one!
-						</Typography>
+						<Typography sx={styles.noProjects}>Something went wrong</Typography>
 					)}
 				</Container>
 			</main>

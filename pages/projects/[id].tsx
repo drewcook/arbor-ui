@@ -12,6 +12,7 @@ import {
 	Chip,
 	Container,
 	Divider,
+  Fab,
 	Grid,
 	Icon,
 	IconButton,
@@ -19,8 +20,7 @@ import {
 	Typography,
 } from '@mui/material'
 import { IProjectDoc } from '../../models/project.model'
-import { ArrowBack, ArrowForward, PauseCircleRounded, PlayArrowRounded } from '@mui/icons-material'
-import formatAddress from '../../utils/formatAddress'
+import { Download, PauseCircleRounded, PlayArrowOutlined, PlayArrowRounded } from '@mui/icons-material'
 import SamplePlayer from '../../components/SamplePlayer'
 import SampleDropzone from '../../components/SampleDropzone'
 
@@ -29,63 +29,74 @@ const styles = {
 		textAlign: 'center',
 		marginY: 4,
 	},
-	title: {},
+	title: {
+    textTransform: 'uppercase',
+    fontStyle: 'italic',
+    fontWeight: 900,
+    mb: 2,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  playAllBtn: {
+    mr: 2,
+    color: '#fff',
+  },
 	desc: {
-		textTransform: 'uppercase',
-		mb: 4,
+		color: "#777",
+		fontSize: '18px',
+    mb: 2,
+    fontWeight: 300,
 	},
+  metadataWrap: {
+    mb: 3,
+  },
+  metadata: {
+    display: 'inline-block',
+    mr: 5,
+  },
+  metadataKey: {
+    mr: 1,
+    display: 'inline-block',
+    color: '#a8a8a8',
+  },
 	tag: {
 		m: 1,
+    color: "#fff",
+    fontWeight: 500,
 	},
-	playBtn: {
-		backgroundColor: '#00d3a3',
-	},
-  pauseBtn: {
-		backgroundColor: '#00d3a3',
-	},
-	sidebar: {
-		p: 3,
-		pt: 1,
-	},
-	toggleBtn: {
-		mb: 2,
-	},
-	divider: {
+  divider: {
 		my: 3,
-		borderColor: '#777',
+		borderColor: '#ccc',
 	},
-	stats: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-	},
-	stat: {
-		textTransform: 'uppercase',
-		fontSize: '1.25rem',
-	},
-	statSmall: {
-		fontSize: '.75rem',
-		color: '#ccc',
-	},
-	pioneer: {},
-	collaborators: {},
-	account: {
-		display: 'flex',
-		justifyContent: 'flex-start',
-		alignItems: 'center',
-		py: 2,
-	},
-	avatar: {
-		height: 30,
-		width: 30,
-	},
-	address: {
-		marginLeft: 1.5,
-		color: '#fff',
-	},
-	cut: {
-		py: 3,
-	},
+  stemMetadata: {
+    mb: 4,
+  },
+  stemHistoryTitle: {
+    fontSize: '2rem',
+    fontStyle: 'italic',
+    fontWeight: 400,
+    textTransform: 'uppercase',
+  },
+  stemHistoryMeta: {
+    fontStyle: 'italic',
+    fontWeight: 300,
+    textTransform: 'uppercase',
+    color: "#777"
+  },
+  downloadAllWrap: {
+    display: 'flex',
+    alignItems: 'center',
+    pt: 1,
+  },
+  downloadAllBtn: {
+    mr: 1,
+  },
+  downloadAllText: {
+    color: '#a8a8a8',
+    fontStyle: 'italic',
+    fontWeight: 900,
+    textTransform: 'uppercase',
+  },
 	noSamplesMsg: {
 		textAlign: 'center',
 		marginY: 4,
@@ -101,7 +112,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [details, setDetails] = useState(data)
   const [sounds, setSounds] = useState<Howl[]>([])
 	const [sidebarOpen, setSidebarOpen] = useState(true)
-	const pioneerAddress = '3209r2da3s39023092nkl3209'
 
   useEffect(() => {
     if (data) {
@@ -129,20 +139,30 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	}, [details])
 
   const handlePlayAllSamples = () => {
-    for (let sound of sounds) {
-      sound.play()
-    }
+    console.log('play all samples')
+    // for (let sound of sounds) {
+    //   sound.play()
+    // }
   }
 
-  const handlePauseAllSamples = () => {}
+  const handlePauseAllSamples = () => {
+    console.log('pause all samples')
+  }
 
-	const toggleSidebar = () => {
-		setSidebarOpen(!sidebarOpen)
-	}
-
-	const handleCut = () => {
-		console.log('cutting new sample')
-	}
+  const handleDownloadAll = () => {
+    console.log('download all samples')
+    // if (details) {
+    //   details.samples.forEach(s => {
+    //     const a = document.createElement('a');
+    //     document.body.appendChild(a);
+    //     a.download = s.audioUrl
+    //     a.href = s.audioUrl
+    //     a.text = 'Click'
+        // a.click()
+        // document.body.removeChild(a)
+      // })
+    // }
+  }
 
 	const onUploadSuccess = (projectData: IProjectDoc) => {
 		// Refresh UI
@@ -165,127 +185,85 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			<main id="app-main">
 				<Container maxWidth="xl">
 					{details ? (
-						<>
-							<Grid container spacing={4}>
-								<Grid item md={9}>
-									<Typography gutterBottom variant="h3" component="h2" sx={styles.title}>
-										{details.name}
-									</Typography>
-									<Typography sx={styles.desc}>{details.description}</Typography>
-									{details.tags.length > 0 &&
-										details.tags.map((tag: string) => (
-											<Chip
-												key={tag}
-												label={tag}
-												variant="filled"
-												color="secondary"
-												sx={styles.tag}
-											/>
-										))}
-									<Divider light sx={styles.divider} />
-									<SampleDropzone
-										projectId={details._id}
-										projectSamples={details.samples}
-										onSuccess={onUploadSuccess}
-									/>
-									<Divider light sx={styles.divider} />
-									<Typography gutterBottom variant="h4">
-										Samples
-									</Typography>
-                  <IconButton size="large" onClick={handlePlayAllSamples} sx={styles.playBtn}>
-                    <PlayArrowRounded />
-                  </IconButton>
-									{details.samples.length > 0 ? (
-										details.samples.map((sample, idx) => (
-											<Fragment key={idx}>
-												<SamplePlayer details={sample} />
-											</Fragment>
-										))
-									) : (
-										<Typography sx={styles.noSamplesMsg}>No samples to show, add one!</Typography>
-									)}
-								</Grid>
-								<Grid item md={3}>
-									<Paper sx={styles.sidebar} elevation={2}>
-										<IconButton size="small" sx={styles.toggleBtn} onClick={toggleSidebar}>
-											{sidebarOpen ? <ArrowForward /> : <ArrowBack />}
-										</IconButton>
-										<Typography gutterBottom variant="h5">
-											Stats
-										</Typography>
-										<Box sx={styles.stats}>
-											<Typography sx={styles.stat}>
-												6{' '}
-												<Typography sx={styles.statSmall} component="span">
-													Plays
-												</Typography>
-											</Typography>
-											<Typography sx={styles.stat}>
-												2{' '}
-												<Typography sx={styles.statSmall} component="span">
-													Samples
-												</Typography>
-											</Typography>
-											<Typography sx={styles.stat}>
-												1{' '}
-												<Typography sx={styles.statSmall} component="span">
-													Cuts
-												</Typography>
-											</Typography>
-										</Box>
-										<Divider light sx={styles.divider} />
-										<Typography gutterBottom variant="h5">
-											Pioneer
-										</Typography>
-										<Box sx={styles.pioneer}>
-											<Box sx={styles.account}>
-												<Icon sx={styles.avatar} color="inherit">
-													<Avatar
-														alt="Avatar"
-														src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=30&d=identicon&r=PG"
-														sx={styles.avatar}
-													/>
-												</Icon>
-												<Typography sx={styles.address} variant="body2">
-													{formatAddress(pioneerAddress)}
-												</Typography>
-											</Box>
-										</Box>
-										<Divider light sx={styles.divider} />
-										<Box sx={styles.collaborators}>
-											<Typography gutterBottom variant="h5">
-												Collaborators
-											</Typography>
-											{[0, 1, 2, 3, 4].map((item, idx) => (
-												<Box key={idx} sx={styles.account}>
-													<Icon sx={styles.avatar} color="inherit">
-														<Avatar
-															alt="Avatar"
-															src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=30&d=identicon&r=PG"
-															sx={styles.avatar}
-														/>
-													</Icon>
-													<Typography sx={styles.address} variant="body2">
-														{formatAddress(pioneerAddress)}
-													</Typography>
-												</Box>
-											))}
-										</Box>
-										<Box sx={styles.cut}>
-											<Button
-												variant="contained"
-												color="secondary"
-												size="large"
-												onClick={handleCut}
-												fullWidth
-											>
-												Cut It!
-											</Button>
-										</Box>
-									</Paper>
-								</Grid>
-							</Grid>
-						</>
+            <>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={8}>
+                <Box>
+                  <Typography variant="h4" component="h2" sx={styles.title}>
+                    <Fab size="large" onClick={handlePlayAllSamples} sx={styles.playAllBtn} color="primary">
+                      <PlayArrowRounded />
+                    </Fab>
+                    {details.name}
+                  </Typography>
+                  <Typography sx={styles.desc}>{details.description}</Typography>
+                  <Box sx={styles.metadataWrap}>
+                    <Typography sx={styles.metadata}>
+                      <Typography component="span" sx={styles.metadataKey}>BPM:</Typography>
+                      {details.bpm}
+                    </Typography>
+                    <Typography sx={styles.metadata}>
+                      <Typography component="span" sx={styles.metadataKey}>Time Box:</Typography>
+                      {details.timeboxMins} Minutes
+                    </Typography>
+                    <Typography sx={styles.metadata}>
+                      <Typography component="span" sx={styles.metadataKey}>Open To:</Typography>
+                      Anyone
+                    </Typography>
+                  </Box>
+                </Box>
+                {details.tags.length > 0 &&
+                  details.tags.map((tag: string) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      variant="filled"
+                      color="secondary"
+                      sx={styles.tag}
+                    />
+                  ))}
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <SampleDropzone
+                  project={details}
+                  onSuccess={onUploadSuccess}
+                />
+              </Grid>
+            </Grid>
+              <Divider light sx={styles.divider} />
+              <Box sx={styles.stemMetadata}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} sm={4}>
+                      <Typography variant="h4" component="h3" sx={styles.stemHistoryTitle}>
+                        Stem History
+                      </Typography>
+                      <Typography sx={styles.stemHistoryMeta}>
+                        {details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from {details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                      <Box sx={styles.downloadAllWrap}>
+                        <IconButton
+                          sx={styles.downloadAllBtn}
+                          onClick={handleDownloadAll}
+                          color="primary"
+                        >
+                          <Download />
+                        </IconButton>
+                        <Typography sx={styles.downloadAllText} variant="body2">Download All Stems</Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+                {details.samples.length > 0 ? (
+                  details.samples.map((sample, idx) => (
+                    <Fragment key={idx}>
+                      <SamplePlayer idx={idx + 1} details={sample} />
+                    </Fragment>
+                  ))
+                ) : (
+                  <Typography sx={styles.noSamplesMsg}>No samples to show, add one!</Typography>
+                )}
+            </>
 					) : (
 						<Typography sx={styles.error} color="error">
 							Sorry, no details were found for this project.
@@ -299,15 +277,5 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	)
 }
 
-export const getServerSideProps: GetServerSideProps = async context => {
-	const projectId = context.query.id
-	const res = await get(`/projects/${projectId}`)
-	let data: IProjectDoc | null = res.success ? res.data : null
-	return {
-		props: {
-			data,
-		},
-	}
-}
 
 export default ProjectPage

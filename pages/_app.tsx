@@ -4,26 +4,21 @@ import { Web3Provider } from '../components/Web3Provider'
 
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 
-const darkTheme = createTheme({
+const polyEchoTheme = createTheme({
 	palette: {
-		mode: 'dark',
 		primary: {
-			main: '#0000aa',
+			main: '#00f0ff',
 		},
 		secondary: {
-			main: '#00d3a3',
+			main: '#0500ff',
 		},
-		background: {
-			paper: '#2d3e4c',
-			default: '#010102',
-		},
-		divider: '#aaa',
+		divider: '#ccc',
 	},
 })
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		<ThemeProvider theme={darkTheme}>
+		<ThemeProvider theme={polyEchoTheme}>
 			<Web3Provider>
 				<Component {...pageProps} />
 			</Web3Provider>

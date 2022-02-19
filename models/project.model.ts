@@ -4,8 +4,11 @@ import { sampleSchema } from './sample.model'
 
 export interface IProject {
   createdBy: string
+  collaborators: string[]
   name: string
   description: string
+  bpm: number,
+  timeboxMins: number,
   tags: string[]
   samples: ISample[]
 }
@@ -14,6 +17,14 @@ export interface IProjectDoc extends Document, IProject {}
 
 const projectSchema = new mongoose.Schema(
 	{
+    createdBy: {
+			type: String,
+			required: true,
+		},
+    collaborators: {
+			type: [String],
+			required: true,
+		},
 		name: {
 			type: String,
 			required: true,
@@ -28,20 +39,28 @@ const projectSchema = new mongoose.Schema(
       minLength: 1,
       maxLength: 300,
     },
+    bpm: {
+      type: Number,
+      required: true,
+      min: 40,
+      max: 300,
+    },
+    timeboxMins: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 30,
+    },
     tags: {
       type: [String],
       required: false,
       default: []
     },
-		createdBy: {
-			type: String,
-			required: true,
-		},
     samples: {
       type: [sampleSchema],
       required: false,
       default: []
-    }
+    },
 	},
 	{ timestamps: true },
 )

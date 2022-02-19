@@ -3,10 +3,13 @@ import { IProject, Project } from '../../../models/project.model'
 import { ISample } from '../../../models/sample.model'
 import dbConnect from '../../../utils/db'
 
-type CreateProjectPayload = {
+export type CreateProjectPayload = {
 	createdBy: string,
+	collaborators: string[],
 	name: string,
 	description: string,
+	bpm: number,
+	timeboxMins: number,
 	tags: string[],
 }
 
@@ -28,8 +31,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				const payload: CreateProjectPayload = {
 					createdBy: req.body.createdBy,
+					collaborators: req.body.collaborators,
 					name: req.body.name,
 					description: req.body.description,
+					bpm: req.body.bpm,
+					timeboxMins: req.body.timeboxMins,
 					tags: req.body.tags,
 				}
 				/* create a new model in the database */

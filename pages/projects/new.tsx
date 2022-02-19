@@ -9,6 +9,7 @@ import { post } from '../../utils/http'
 import { useRouter } from 'next/router'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
+import type { CreateProjectPayload } from '../api/projects'
 
 const styles = {
 	centered: {
@@ -16,12 +17,16 @@ const styles = {
 	},
 	submitBtn: {
 		marginTop: 2,
+    color: '#fff'
 	},
 }
+
 
 const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
+  const [bpm, setBpm] = useState(120)
+  const [timeboxMins, setTimeboxMins] = useState(2)
 	const [tags, setTags] = useState<string[]>([])
 	const [successOpen, setSuccessOpen] = useState(false)
 	const [successMsg, setSuccessMsg] = useState('')
@@ -36,10 +41,13 @@ const NewProjectPage: NextPage = () => {
 
 	const handleSubmit = async () => {
 		try {
-			const payload = {
+			const payload: CreateProjectPayload = {
         createdBy: accounts[0],
+        collaborators: [accounts[0]], // start as only collaborator
         name,
         description,
+        bpm,
+        timeboxMins,
         tags,
       }
 			const res = await post('/projects', payload)
@@ -61,6 +69,8 @@ const NewProjectPage: NextPage = () => {
 	const resetForm = () => {
 		setName('')
 		setDescription('')
+    setBpm(120)
+    setTimeboxMins(2)
     setTags([])
 	}
 
@@ -105,6 +115,26 @@ const NewProjectPage: NextPage = () => {
 						placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
 						fullWidth
 					/>
+          <TextField
+						label="Project BPM"
+						variant="filled"
+						margin="normal"
+            type="number"
+						value={bpm}
+						onChange={e => setBpm(parseInt(e.target.value))}
+						placeholder="What BPM is this project targetting?"
+						fullWidth
+					/>
+          <TextField
+						label="Project Timebox (mins)"
+						variant="filled"
+						margin="normal"
+            type="number"
+						value={timeboxMins}
+						onChange={e => setTimeboxMins(parseInt(e.target.value))}
+						placeholder="Set a maximum limit on how long samples should be."
+						fullWidth
+					/>
 					<TagsInput
 						tags={tags}
 						onAdd={tag => handleAddTag(tag)}
@@ -112,7 +142,7 @@ const NewProjectPage: NextPage = () => {
 					/>
 					<Button
 						variant="contained"
-						color="primary"
+						color="secondary"
 						size="large"
 						onClick={handleSubmit}
 						fullWidth
