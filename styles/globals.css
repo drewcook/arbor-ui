@@ -19,6 +19,7 @@ a {
 
 #app-main {
   min-height: calc(100vh - 185.52px);
+  padding-bottom: 5rem;
 }
 
 ol, ul {
