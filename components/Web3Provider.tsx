@@ -81,10 +81,10 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
       await connectIpfsDaemon()
 
       // Prompt user to select a wallet
-      // await onboardInstance.walletSelect('metamask')
+      await onboardInstance.walletSelect('tally')
 
       // Run wallet checks to make sure that user is ready to transact
-      // await onboardInstance.walletCheck()
+      await onboardInstance.walletCheck()
 
 			// Get accounts initially
 			const connectedAccounts = await web3Instance.eth.getAccounts()

@@ -1,4 +1,4 @@
-import { Howl, Howler } from 'howler'
+import { Howl } from 'howler'
 import { Grid, IconButton, Paper, Typography } from '@mui/material'
 import { PlayArrowRounded } from '@mui/icons-material'
 import type { ISample } from '../models/sample.model'
@@ -29,9 +29,8 @@ const Sample = (props: SampleProps): JSX.Element => {
 	const { details } = props
 
 	var sound = new Howl({
-		src: [
-			'https://ipfs.io/ipfs/QmRAJ7tH3xZGoEykLedDoHLVcs4m5eKvYJvu76qq34oMZ6/PMRW_Arp_Loop_100_Dmaj_Story.wav',
-		],
+		src: [`https://ipfs.io/ipfs/${details.hash}`],
+		format: [details.filetype],
 	})
 
 	const handlePlay = () => {
