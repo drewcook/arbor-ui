@@ -1,9 +1,6 @@
 {
   "name": "ethdenver-hackathon-web",
   "private": true,
-  "engines": {
-    "node": ">=15.0.0"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
