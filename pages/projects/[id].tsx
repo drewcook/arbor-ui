@@ -1,9 +1,10 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import AppHeader from '../../components/AppHeader'
 import { get } from '../../utils/http'
+import { Howl } from 'howler'
 import {
 	Avatar,
 	Box,
@@ -18,9 +19,9 @@ import {
 	Typography,
 } from '@mui/material'
 import { IProjectDoc } from '../../models/project.model'
-import { ArrowBack, ArrowForward } from '@mui/icons-material'
+import { ArrowBack, ArrowForward, PauseCircleRounded, PlayArrowRounded } from '@mui/icons-material'
 import formatAddress from '../../utils/formatAddress'
-import Sample from '../../components/Sample'
+import SamplePlayer from '../../components/SamplePlayer'
 import SampleDropzone from '../../components/SampleDropzone'
 
 const styles = {
@@ -35,6 +36,12 @@ const styles = {
 	},
 	tag: {
 		m: 1,
+	},
+	playBtn: {
+		backgroundColor: '#00d3a3',
+	},
+  pauseBtn: {
+		backgroundColor: '#00d3a3',
 	},
 	sidebar: {
 		p: 3,
@@ -92,8 +99,42 @@ type ProjectPageProps = {
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data } = props
 	const [details, setDetails] = useState(data)
+  const [sounds, setSounds] = useState<Howl[]>([])
 	const [sidebarOpen, setSidebarOpen] = useState(true)
 	const pioneerAddress = '3209r2da3s39023092nkl3209'
+
+  useEffect(() => {
+    if (data) {
+      const sources = []
+      for (let sample of data.samples) {
+        sources.push(new Howl({
+          src: sample.audioUrl
+        }))
+      }
+      setSounds(sources)
+    }
+	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
+
+	useEffect(() => {
+		// Re-initialize the play all button
+    if (details) {
+      const sources = []
+      for (let sample of details.samples) {
+        sources.push(new Howl({
+          src: sample.audioUrl
+        }))
+      }
+      setSounds(sources)
+    }
+	}, [details])
+
+  const handlePlayAllSamples = () => {
+    for (let sound of sounds) {
+      sound.play()
+    }
+  }
+
+  const handlePauseAllSamples = () => {}
 
 	const toggleSidebar = () => {
 		setSidebarOpen(!sidebarOpen)
@@ -148,10 +189,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										onSuccess={onUploadSuccess}
 									/>
 									<Divider light sx={styles.divider} />
+									<Typography gutterBottom variant="h4">
+										Samples
+									</Typography>
+                  <IconButton size="large" onClick={handlePlayAllSamples} sx={styles.playBtn}>
+                    <PlayArrowRounded />
+                  </IconButton>
 									{details.samples.length > 0 ? (
 										details.samples.map((sample, idx) => (
 											<Fragment key={idx}>
-												<Sample details={sample} />
+												<SamplePlayer details={sample} />
 											</Fragment>
 										))
 									) : (
