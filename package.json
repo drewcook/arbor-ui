@@ -16,7 +16,7 @@
     "bnc-onboard": "^1.38.1",
     "downshift": "^6.1.7",
     "howler": "^2.2.3",
-    "ipfs-http-client": "^56.0.1",
+    "ipfs-http-client": "^55.0.0",
     "mongoose": "^6.2.2",
     "next": "12.1.0",
     "react": "17.0.2",
