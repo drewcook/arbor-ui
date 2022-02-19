@@ -1,5 +1,5 @@
 import mongoose,{ Document } from 'mongoose'
-import type { ISample } from './sample.model'
+import type { ISampleDoc } from './sample.model'
 import { sampleSchema } from './sample.model'
 
 export interface IProject {
@@ -10,7 +10,7 @@ export interface IProject {
   bpm: number,
   timeboxMins: number,
   tags: string[]
-  samples: ISample[]
+  samples: ISampleDoc[]
 }
 
 export interface IProjectDoc extends Document, IProject {}
