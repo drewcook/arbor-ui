@@ -43,4 +43,4 @@ export const sampleSchema = new mongoose.Schema(
 // Require that projects have unique names
 sampleSchema.index({ name: 1 }, { unique: true })
 
-export const Sample = mongoose.models.Sample || mongoose.model<ISampleDoc>('sample', sampleSchema)
+export const Sample = mongoose.models.sample || mongoose.model<ISampleDoc>('sample', sampleSchema)
