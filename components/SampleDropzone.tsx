@@ -1,3 +1,4 @@
+import { File } from 'nft.storage'
 import { Box, Typography } from '@mui/material'
 import React, { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -36,7 +37,7 @@ const baseStyle = {
 	backgroundColor: '#183d74',
 	color: '#eee',
 	outline: 'none',
-	transition: 'border .24s ease-in-out',
+	transition: 'border 300ms ease-in-out',
 	cursor: 'pointer',
 }
 
@@ -60,7 +61,7 @@ type SampleDropzoneProps = {
 
 const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	const { projectId, projectSamples, onSuccess } = props
-	const { ipfs, accounts } = useWeb3()
+	const { NFTStore, accounts } = useWeb3()
 	const {
 		getRootProps,
 		getInputProps,
@@ -72,42 +73,40 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	} = useDropzone({
 		maxFiles: 1,
 		accept: 'audio/wav,audio/mpeg,audio/webm',
+		// Support only one file uploaded at a time
 		onDrop: async ([file]) => {
-			console.log('adding file', file)
 			try {
-				// Add file to IPFS
-				// Wrap in directory of filename
-				if (ipfs) {
-					const fileDetails = {
-						// path: file.name,
-						content: file,
-					}
-					const options = {
-						wrapWithDirectory: false,
-						progress: (prog: number) => console.info(`Polling: ${prog}`),
-					}
-					const addedFile = await ipfs.add(fileDetails, options)
-					alert('File(s) successfully uploaded to IPFS.')
+				// Add file to NFT.storage
+				if (NFTStore) {
+					const metadata = await NFTStore.store({
+						name: file.name,
+						description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
+						image: new File([], file.name, { type: 'image/*' }),
+						properties: {
+							audio: new File([file], file.name, { type: file.type }),
+						},
+					})
+					console.log('result from NFTStorage.store():', metadata)
+					console.log('IPFS URL for the metadata:', metadata.url)
+					console.log('metadata.json contents:', metadata.data)
+					console.log('metadata.json contents with IPFS gateway URLs:', metadata.embed())
 
-					// Add sample data to overall project
-					const hash = addedFile.cid.toString()
-					const filename = file.name
-					const filetype = file.name.substr(file.name.lastIndexOf('.') + 1)
-					const filesize = addedFile.size
-					// const timestamp = Math.round(+new Date() / 1000)
-					const sample = {
-						hash,
-						filename,
-						filetype,
-						filesize,
-						createdBy: accounts[0],
+					if (metadata) {
+						alert('File uploaded to NFT.storage')
+						// Add sample data to overall project
+						const sample = {
+							audioUrl: metadata.embed().properties.audio.href,
+							filename: file.name,
+							filetype: file.type,
+							filesize: file.size,
+							createdBy: accounts[0],
+						}
+						// Compile new sample to a
+						const samples = [...projectSamples, sample]
+						const res = await update(`/projects/${projectId}`, { samples })
+						// Success callback
+						if (res.success) onSuccess(res.data)
 					}
-
-					// Compile new sample to a
-					const samples = [...projectSamples, sample]
-					const res = await update(`/projects/${projectId}`, { samples })
-					// Success callback
-					if (res.success) onSuccess(res.data)
 				}
 			} catch (err) {
 				console.error(err)

@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose'
 
 export interface ISample {
-  hash: string
+  audioUrl: string
 	filename: string
   filetype: string
   filesize: number
@@ -12,7 +12,7 @@ export interface ISampleDoc extends Document, ISample {}
 
 export const sampleSchema = new mongoose.Schema(
 	{
-    hash: {
+    audioUrl: {
       type: String,
       required: true
     },

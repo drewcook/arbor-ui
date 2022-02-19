@@ -29,9 +29,10 @@ const Sample = (props: SampleProps): JSX.Element => {
 	const { details } = props
 
 	var sound = new Howl({
-		src: [`https://ipfs.io/ipfs/${details.hash}`],
-		format: [details.filetype],
+		src: [details.audioUrl],
 	})
+
+	console.log(sound)
 
 	const handlePlay = () => {
 		sound.play()
@@ -46,7 +47,7 @@ const Sample = (props: SampleProps): JSX.Element => {
 					</IconButton>
 				</Grid>
 				<Grid item xs={10}>
-					<Typography>IPFS Hash: {details.hash}</Typography>
+					<Typography>IPFS URL: {details.audioUrl}</Typography>
 					<Typography>File Name: {details.filename}</Typography>
 					<Typography>File Type: {details.filetype}</Typography>
 					<Typography>File Size: {details.filesize}</Typography>

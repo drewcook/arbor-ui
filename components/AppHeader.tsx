@@ -24,7 +24,7 @@ const styles = {
 const pages = [
 	{ href: '/', title: 'Home' },
 	{ href: '/projects', title: 'Explore' },
-	{ href: '/projects/new', title: 'Collab' },
+	{ href: '/projects/new', title: 'Create' },
 ]
 
 const AppHeader = (): JSX.Element => {
