@@ -140,6 +140,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
   const handlePlayAllSamples = () => {
     console.log('play all samples')
+    console.log(sounds)
     // for (let sound of sounds) {
     //   sound.play()
     // }
@@ -277,5 +278,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	)
 }
 
+export const getServerSideProps: GetServerSideProps = async context => {
+	const projectId = context.query.id
+	const res = await get(`/projects/${projectId}`)
+	let data: IProjectDoc | null = res.success ? res.data : null
+	return {
+		props: {
+			data,
+		},
+	}
+}
 
 export default ProjectPage

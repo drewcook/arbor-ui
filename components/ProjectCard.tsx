@@ -7,9 +7,21 @@ const styles = {
 		minWidth: '200px',
 	},
 	title: {},
-	description: {},
+	collaborators: {
+		textTransform: 'uppercase',
+		color: '#a8a8a8',
+		fontWeight: 700,
+		mb: 1,
+	},
+	description: {
+		fontWeight: 300,
+		mb: 2,
+	},
 	tag: {
 		m: 1,
+	},
+	actions: {
+		justifyContent: 'flex-end',
 	},
 }
 
@@ -21,10 +33,15 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 	const { details } = props
 
 	return (
-		<Card sx={styles.card}>
+		<Card sx={styles.card} elevation={2}>
 			<CardContent>
 				<Typography variant="h5" gutterBottom sx={styles.title}>
 					{details.name}
+				</Typography>
+				<Typography variant="body2" sx={styles.collaborators}>
+					{details.collaborators.length} Collaborator
+					{details.collaborators.length === 1 ? '' : 's'} • {details.samples.length} Sample
+					{details.samples.length === 1 ? '' : 's'}
 				</Typography>
 				<Typography gutterBottom sx={styles.description}>
 					{details.description.slice(0, 60) + '...'}
@@ -42,11 +59,9 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 						/>
 					))}
 			</CardContent>
-			<CardActions>
+			<CardActions sx={styles.actions}>
 				<Link href={`/projects/${details._id}`} passHref>
-					<Button size="small" color="secondary">
-						View More
-					</Button>
+					<Button color="secondary">View More</Button>
 				</Link>
 			</CardActions>
 		</Card>
