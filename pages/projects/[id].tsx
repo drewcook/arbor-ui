@@ -6,21 +6,17 @@ import AppHeader from '../../components/AppHeader'
 import { get } from '../../utils/http'
 import { Howl } from 'howler'
 import {
-	Avatar,
 	Box,
-	Button,
 	Chip,
 	Container,
 	Divider,
   Fab,
 	Grid,
-	Icon,
 	IconButton,
-	Paper,
 	Typography,
 } from '@mui/material'
 import { IProjectDoc } from '../../models/project.model'
-import { Download, PauseCircleRounded, PlayArrowOutlined, PlayArrowRounded } from '@mui/icons-material'
+import { Download, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import SamplePlayer from '../../components/SamplePlayer'
 import SampleDropzone from '../../components/SampleDropzone'
 
@@ -85,11 +81,12 @@ const styles = {
   },
   downloadAllWrap: {
     display: 'flex',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     pt: 1,
   },
   downloadAllBtn: {
-    mr: 1,
+    ml: 1,
   },
   downloadAllText: {
     color: '#a8a8a8',
@@ -111,7 +108,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data } = props
 	const [details, setDetails] = useState(data)
   const [sounds, setSounds] = useState<Howl[]>([])
-	const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 
   useEffect(() => {
     if (data) {
@@ -138,16 +135,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
     }
 	}, [details])
 
-  const handlePlayAllSamples = () => {
-    console.log('play all samples')
-    console.log(sounds)
-    // for (let sound of sounds) {
-    //   sound.play()
-    // }
-  }
-
-  const handlePauseAllSamples = () => {
-    console.log('pause all samples')
+  const handlePlayPauseAllSamples = () => {
+    for (let sound of sounds) isPlayingAll ? sound.pause() : sound.play()
+    setIsPlayingAll(!isPlayingAll)
   }
 
   const handleDownloadAll = () => {
@@ -191,8 +181,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
               <Grid item xs={12} md={8}>
                 <Box>
                   <Typography variant="h4" component="h2" sx={styles.title}>
-                    <Fab size="large" onClick={handlePlayAllSamples} sx={styles.playAllBtn} color="primary">
-                      <PlayArrowRounded />
+                    <Fab size="large" onClick={handlePlayPauseAllSamples} sx={styles.playAllBtn} color="primary">
+                      {isPlayingAll ? <PauseRounded /> : <PlayArrowRounded />}
                     </Fab>
                     {details.name}
                   </Typography>
@@ -243,6 +233,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                     </Grid>
                     <Grid item xs={12} sm={8}>
                       <Box sx={styles.downloadAllWrap}>
+                        <Typography sx={styles.downloadAllText} variant="body2">Download All Stems</Typography>
                         <IconButton
                           sx={styles.downloadAllBtn}
                           onClick={handleDownloadAll}
@@ -250,7 +241,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                         >
                           <Download />
                         </IconButton>
-                        <Typography sx={styles.downloadAllText} variant="body2">Download All Stems</Typography>
                       </Box>
                     </Grid>
                   </Grid>

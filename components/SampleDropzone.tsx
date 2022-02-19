@@ -1,5 +1,6 @@
 import { File } from 'nft.storage'
 import { Box, Typography } from '@mui/material'
+import { CloudUpload } from '@mui/icons-material'
 import React, { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useWeb3 } from './Web3Provider'
@@ -9,6 +10,9 @@ import type { IProjectDoc } from '../models/project.model'
 const styles = {
 	uploadTitle: {
 		textAlign: 'center',
+	},
+	uploadIcon: {
+		fontSize: '4rem',
 		mb: 2,
 	},
 	uploadText: {
@@ -34,6 +38,7 @@ const baseStyle = {
 	flexDirection: 'column',
 	alignItems: 'center',
 	padding: '20px',
+	color: '#555',
 	borderWidth: 4,
 	borderRadius: 10,
 	borderColor: '#0500ff',
@@ -134,6 +139,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 		<>
 			{/* @ts-ignore */}
 			<div {...getRootProps({ style: dropzoneStyles })}>
+				<CloudUpload sx={styles.uploadIcon} />
 				<Typography variant="h5" sx={styles.uploadTitle}>
 					Collaborate on an NFT!
 				</Typography>

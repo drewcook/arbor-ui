@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Howl } from 'howler'
 import { Box, Fab, Grid, Typography } from '@mui/material'
 import { PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import type { ISample } from '../models/sample.model'
+import type { ISampleDoc } from '../models/sample.model'
 import formatAddress from '../utils/formatAddress'
 
 const styles = {
@@ -19,6 +19,8 @@ const styles = {
   },
   metadataPlayBtn: {
     color: "#fff",
+    minWidth: '50px',
+    mr: 2,
   },
   metadataSmall: {
     color: '#a8a8a8',
@@ -32,23 +34,11 @@ const styles = {
     fontWeight: 900,
     wordBreak: 'break-all',
   },
-	actionsLeft: {
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	playBtn: {
-		backgroundColor: '#00d3a3',
-	},
-	pauseBtn: {
-		backgroundColor: '#00d3a3',
-	},
 }
 
 type SamplePlayerProps = {
   idx: number,
-	details: ISample,
+	details: ISampleDoc,
 }
 
 const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
@@ -72,7 +62,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
         /* @ts-ignore */
         const TimelinePlugin = await import('wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js')
         let instance = WaveSurfer.default.create({
-            container: '#waveform',
+            container: `#waveform-${details._id}-${idx}`,
             waveColor: '#D9DCFF',
             progressColor: '#4353FF',
             cursorColor: '#4353FF',
@@ -93,7 +83,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
                   }
               }),
               TimelinePlugin.default.create({
-                container: '#timeline'
+                container: `#timeline-${details._id}-${idx}`
               })
             ]
         });
@@ -104,14 +94,6 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
     return () => wavesurfer?.destroy()
 	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
 
-  // const handlePlay = () => {
-  //   if (sound) sound.play()
-  // }
-
-	// const handlePause = () => {
-	// 	if (sound) sound.pause()
-	// }
-
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying)
     wavesurfer?.playPause()
@@ -120,10 +102,10 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 	return (
 		<Box sx={styles.sample}>
 			<Grid container spacing={2}>
-				<Grid item xs={12} md={4}>
+				<Grid item xs={12} md={5}>
           <Box sx={styles.metadata}>
             <Fab size="medium" onClick={handlePlayPause} sx={styles.metadataPlayBtn} color="primary">
-              {isPlaying ? <PlayArrowRounded /> : <PauseRounded />}
+              {isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
             </Fab>
             <Box>
               <Typography sx={styles.metadataSmall}>Stem {idx}</Typography>
@@ -132,9 +114,9 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
             </Box>
           </Box>
 				</Grid>
-				<Grid item xs={12} md={8}>
-          <div id="waveform" />
-          <div id="timeline" />
+				<Grid item xs={12} md={7}>
+          <div id={`waveform-${details._id}-${idx}`} />
+          <div id={`timeline-${details._id}-${idx}`} />
 				</Grid>
 			</Grid>
 		</Box>
