@@ -8,7 +8,6 @@ type CreateProjectPayload = {
 	name: string,
 	description: string,
 	tags: string[],
-	samples: ISample[] | [],
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -32,7 +31,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					name: req.body.name,
 					description: req.body.description,
 					tags: req.body.tags,
-					samples: req.body.samples,
 				}
 				/* create a new model in the database */
 				const project: IProject = await Project.create(payload)

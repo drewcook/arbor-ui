@@ -41,9 +41,7 @@ const NewProjectPage: NextPage = () => {
         name,
         description,
         tags,
-        samples: [],
       }
-			console.log({ payload })
 			const res = await post('/projects', payload)
 			if (res.success) {
 				setSuccessOpen(true)
