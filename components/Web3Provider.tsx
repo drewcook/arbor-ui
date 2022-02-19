@@ -61,7 +61,7 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         await connectNFTStorage()
 
         // Prompt user to select a wallet
-        await onboardInstance.walletSelect('tally')
+        await onboardInstance.walletSelect('metamask')
 
         // Run wallet checks to make sure that user is ready to transact
         await onboardInstance.walletCheck()
