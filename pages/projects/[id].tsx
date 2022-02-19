@@ -7,6 +7,7 @@ import { get } from '../../utils/http'
 import { Howl } from 'howler'
 import {
 	Box,
+  Button,
 	Chip,
 	Container,
 	Divider,
@@ -60,6 +61,9 @@ const styles = {
     color: "#fff",
     fontWeight: 500,
 	},
+  mintAndBuy: {
+    mt: 3,
+  },
   divider: {
 		my: 3,
 		borderColor: '#ccc',
@@ -158,10 +162,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const onUploadSuccess = (projectData: IProjectDoc) => {
 		// Refresh UI
 		setDetails(projectData)
-		// TODO: Hit Python HTTP server and pass along array of project sample CIDs
+	}
+
+  const handleMintAndBuy = () => {
+    console.log('minting and buying...')
+    // TODO: Hit Python HTTP server and pass along array of project sample CIDs
 		// - Get back single CID representing layered samples as one
 		// TODO: Call smart contract and mint an nft out of the original CID
-	}
+  }
 
 	return (
 		<>
@@ -212,6 +220,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                       sx={styles.tag}
                     />
                   ))}
+                  <Box sx={styles.mintAndBuy}>
+                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary">
+                      Mint & Buy
+                    </Button>
+                  </Box>
               </Grid>
               <Grid item xs={12} md={4}>
                 <SampleDropzone
