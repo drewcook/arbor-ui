@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, Project } from '../../../models/project.model'
+import { ISample } from '../../../models/sample.model'
 import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -27,17 +28,43 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'PUT' /* Edit a model by its ID */:
 			try {
 				// Update samples
-				const project = await Project.findByIdAndUpdate(id, body, {
-					new: true,
-					runValidators: true,
-				})
-
-				if (!project) {
-					return res.status(400).json({ success: false })
+				let project
+				if (body.samples) {
+					// Strip out Mongo metadata prior to update (should just add a new sample?)
+					const samples = body.samples.map((s: ISample) => ({
+						hash: s.hash,
+						filename: s.filename,
+						filetype: s.filetype,
+						filesize: s.filesize,
+						createdBy: s.createdBy,
+					}))
+					project = await Project.findByIdAndUpdate(
+						id,
+						{ $set: { samples } },
+						{
+							new: true,
+							runValidators: true,
+						},
+					)
+					// Returns
+					if (!project) {
+						return res.status(400).json({ success: false, error: 'failed to add project' })
+					}
+					res.status(200).json({ success: true, data: project })
+				} else {
+					// Update anything else,
+					project = await Project.findByIdAndUpdate(id, body, {
+						new: true,
+						runValidators: true,
+					})
+					// Returns
+					if (!project) {
+						return res.status(400).json({ success: false, error: 'failed to add project' })
+					}
+					res.status(200).json({ success: true, data: project })
 				}
-				res.status(200).json({ success: true, data: project })
-			} catch (error) {
-				res.status(400).json({ success: false })
+			} catch (e) {
+				res.status(400).json({ success: false, error: e })
 			}
 			break
 
@@ -45,16 +72,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				const deletedProject = await Project.deleteOne({ _id: id })
 				if (!deletedProject) {
-					return res.status(400).json({ success: false })
+					return res.status(400).json({ success: false, error: 'failed to delete project' })
 				}
 				res.status(200).json({ success: true, data: {} })
-			} catch (error) {
-				res.status(400).json({ success: false })
+			} catch (e) {
+				res.status(400).json({ success: false, error: e })
 			}
 			break
 
 		default:
-			res.status(400).json({ success: false })
+			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })
 			break
 	}
 }

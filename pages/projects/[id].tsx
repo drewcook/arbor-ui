@@ -91,6 +91,7 @@ type ProjectPageProps = {
 
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data } = props
+	const [details, setDetails] = useState(data)
 	const [sidebarOpen, setSidebarOpen] = useState(true)
 	const pioneerAddress = '3209r2da3s39023092nkl3209'
 
@@ -102,8 +103,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		console.log('cutting new sample')
 	}
 
-	const onUploadSuccess = () => {
-		console.log('Sweeeeeeet, callback')
+	const onUploadSuccess = (projectData: IProjectDoc) => {
+		// Refresh UI
+		setDetails(projectData)
+		// TODO: Hit Python HTTP server and pass along array of project sample CIDs
+		// - Get back single CID representing layered samples as one
+		// TODO: Call smart contract and mint an nft out of the original CID
 	}
 
 	return (
@@ -118,17 +123,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 			<main id="app-main">
 				<Container maxWidth="xl">
-					{data ? (
+					{details ? (
 						<>
 							<Grid container spacing={4}>
 								<Grid item md={9}>
 									<Typography gutterBottom variant="h3" component="h2" sx={styles.title}>
-										{data.name}
+										{details.name}
 									</Typography>
-									<Typography sx={styles.desc}>{data.description}</Typography>
-									{data.tags &&
-										data.tags?.length > 0 &&
-										data.tags?.map((tag: string) => (
+									<Typography sx={styles.desc}>{details.description}</Typography>
+									{details.tags.length > 0 &&
+										details.tags.map((tag: string) => (
 											<Chip
 												key={tag}
 												label={tag}
@@ -139,13 +143,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										))}
 									<Divider light sx={styles.divider} />
 									<SampleDropzone
-										projectId={data._id}
-										projectSamples={data.samples}
+										projectId={details._id}
+										projectSamples={details.samples}
 										onSuccess={onUploadSuccess}
 									/>
 									<Divider light sx={styles.divider} />
-									{data.samples.length > 0 ? (
-										data.samples.map((sample, idx) => (
+									{details.samples.length > 0 ? (
+										details.samples.map((sample, idx) => (
 											<Fragment key={idx}>
 												<Sample details={sample} />
 											</Fragment>

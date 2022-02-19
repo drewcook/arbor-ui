@@ -15,8 +15,7 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
 		const { data } = await instance.get(`/api${pathname}`, params)
 		return data
 	} catch (e: any) {
-    console.error(e)
-		return { success: false }
+		return { success: false, error: e }
 	}
 }
 
@@ -31,8 +30,7 @@ export const post = async (pathname: string, data?: any): Promise<any> => {
 		const res = await instance.post(`/api${pathname}`, data)
 		return res.data
 	} catch (e: any) {
-    console.error(e)
-		return { success: false }
+		return { success: false, error: e }
 	}
 }
 
@@ -47,7 +45,6 @@ export const update = async (pathname: string, data?: any): Promise<any> => {
 		const res = await instance.put(`/api${pathname}`, data)
 		return res.data
 	} catch (e: any) {
-    console.error(e)
-		return { success: false }
+		return { success: false, error: e }
 	}
 }

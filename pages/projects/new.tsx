@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { post } from '../../utils/http'
 import { useRouter } from 'next/router'
 import TagsInput from '../../components/TagsInput'
+import { useWeb3 } from '../../components/Web3Provider'
 
 const styles = {
 	centered: {
@@ -27,6 +28,7 @@ const NewProjectPage: NextPage = () => {
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
 	const router = useRouter()
+  const { accounts } = useWeb3()
 
 	// Tags
 	const handleAddTag = (tag: string) => setTags([...tags, tag])
@@ -34,7 +36,13 @@ const NewProjectPage: NextPage = () => {
 
 	const handleSubmit = async () => {
 		try {
-			const payload = { name, description, tags }
+			const payload = {
+        createdBy: accounts[0],
+        name,
+        description,
+        tags,
+        samples: [],
+      }
 			console.log({ payload })
 			const res = await post('/projects', payload)
 			if (res.success) {

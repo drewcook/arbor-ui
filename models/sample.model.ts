@@ -20,13 +20,13 @@ export const sampleSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			trim: true,
-			maxlength: 50,
+			maxlength: 200,
 		},
     filetype: {
 			type: String,
 			required: true,
 			trim: true,
-			maxlength: 20,
+			maxlength: 10,
 		},
     filesize: {
 			type: Number,

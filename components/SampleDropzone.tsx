@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import { useWeb3 } from './Web3Provider'
 import { update } from '../utils/http'
 import { ISample } from '../models/sample.model'
+import { IProjectDoc } from '../models/project.model'
 
 const styles = {
 	uploadTitle: {
@@ -54,7 +55,7 @@ const rejectStyle = {
 type SampleDropzoneProps = {
 	projectId: string,
 	projectSamples: ISample[],
-	onSuccess: () => void,
+	onSuccess: (project: IProjectDoc) => void,
 }
 
 const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
@@ -83,7 +84,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 					}
 					const options = {
 						wrapWithDirectory: false,
-						progress: prog => console.info(`Polling: ${prog}`),
+						progress: (prog: number) => console.info(`Polling: ${prog}`),
 					}
 					const addedFile = await ipfs.add(fileDetails, options)
 					alert('File(s) successfully uploaded to IPFS.')
@@ -102,21 +103,11 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 						createdBy: accounts[0],
 					}
 
-					// TODO: Write / update project
-					// get project samples, append to list, write new list to db
+					// Compile new sample to a
 					const samples = [...projectSamples, sample]
 					const res = await update(`/projects/${projectId}`, { samples })
-
-					if (res.success) {
-						console.log('All good!', { projectId, addedFile, sample })
-						onSuccess()
-					}
-
-					// await contract.methods
-					// 	.add(hash, filename, filetype, timestamp)
-					// 	.send({ from: userAccount, gas: 300000 })
-					// // Get files after upload
-					// getFiles(contract, userAccount)
+					// Success callback
+					if (res.success) onSuccess(res.data)
 				}
 			} catch (err) {
 				console.error(err)

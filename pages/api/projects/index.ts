@@ -1,12 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, Project } from '../../../models/project.model'
+import { ISample } from '../../../models/sample.model'
 import dbConnect from '../../../utils/db'
 
 type CreateProjectPayload = {
+	createdBy: string,
 	name: string,
 	description: string,
 	tags: string[],
-	createdBy: string,
+	samples: ISample[] | [],
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -19,27 +21,28 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				/* find all the data in our database */
 				const projects: IProject[] = await Project.find({})
 				res.status(200).json({ success: true, data: projects })
-			} catch (error) {
-				res.status(400).json({ success: false })
+			} catch (e) {
+				res.status(400).json({ success: false, error: e })
 			}
 			break
 		case 'POST':
 			try {
 				const payload: CreateProjectPayload = {
+					createdBy: req.body.createdBy,
 					name: req.body.name,
 					description: req.body.description,
 					tags: req.body.tags,
-					createdBy: 'myWalletAddress',
+					samples: req.body.samples,
 				}
 				/* create a new model in the database */
 				const project: IProject = await Project.create(payload)
 				res.status(201).json({ success: true, data: project })
-			} catch (error) {
-				res.status(400).json({ success: false })
+			} catch (e) {
+				res.status(400).json({ success: false, error: e })
 			}
 			break
 		default:
-			res.status(400).json({ success: false })
+			res.status(400).json({ success: false, error: `HTTP method '${method}' not supported` })
 			break
 	}
 }

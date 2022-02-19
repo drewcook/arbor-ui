@@ -18,12 +18,14 @@ const projectSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			trim: true,
+      minLength: 3,
 			maxlength: 50,
 		},
 		description: {
       type: String,
       required: true,
       trim: true,
+      minLength: 1,
       maxLength: 300,
     },
     tags: {
