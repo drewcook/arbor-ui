@@ -1,8 +1,7 @@
 import axios from 'axios'
 
 // Create Axios instance
-const host = process.env.CLIENT_HOST
-const instance = axios.create({ baseURL: host });
+const instance = axios.create({ baseURL: process.env.CLIENT_HOST });
 
 /**
  * A generic GET request wrapper to ease use within React
@@ -47,20 +46,4 @@ export const update = async (pathname: string, data?: any): Promise<any> => {
 	} catch (e: any) {
 		return { success: false, error: e }
 	}
-}
-
-
-/**
- * Hits an external Python service to combine and flatten individual samples into a singular sample
- * @param data - An array of IPFS CIDs that represent individual samples
- * @returns {string} - A singular IPFS CID that represents the newly, flattened sample
- */
-export const flattenSamples = async (data: string[]) => {
-  try {
-    const res = await axios.post(`${process.env.PYTHON_HTTP_HOST}`, data)
-    console.log(res)
-    return res.data
-  } catch (e: any) {
-    return { success: false, error: e }
-  }
 }

@@ -50,4 +50,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 	}
 }
+
 export default handler

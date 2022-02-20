@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   padding: 0;
@@ -11,8 +15,9 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
+ol, ul {
+  margin: 0;
+  padding: 0;
 }
 
 #app-main {
@@ -20,7 +25,7 @@ a {
   padding-bottom: 5rem;
 }
 
-ol, ul {
-  margin: 0;
-  padding: 0;
+.dropzone-loading {
+  pointer-events: none;
+  cursor: not-allowed;
 }

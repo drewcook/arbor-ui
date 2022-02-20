@@ -53,7 +53,7 @@ const NewProjectPage: NextPage = () => {
 			const res = await post('/projects', payload)
 			if (res.success) {
 				setSuccessOpen(true)
-				setSuccessMsg('Successfully created project')
+				setSuccessMsg('Successfully created project, redirecting...')
 				resetForm()
 				// Redirect to project page
 				router.push(`/projects/${res.data._id}`)

@@ -17,8 +17,15 @@ import ConnectedAccount from './ConnectedAccount'
 const styles = {
 	wrapper: {
 		marginBottom: 4,
+		backgroundColor: '#111',
 	},
-	logo: { display: { xs: 'flex', alignItems: 'center', md: 'none' }, marginLeft: 1 },
+	logoDesktop: {
+		mr: 2,
+		display: { xs: 'none', md: 'flex' },
+		textShadow: '1px 1px #23F09A',
+		color: '#fff',
+	},
+	logoMobile: { display: { xs: 'flex', alignItems: 'center', md: 'none' }, ml: 1 },
 }
 
 const pages = [
@@ -39,15 +46,10 @@ const AppHeader = (): JSX.Element => {
 	}
 
 	return (
-		<AppBar position="static" sx={styles.wrapper} enableColorOnDark color="secondary">
+		<AppBar position="static" sx={styles.wrapper} enableColorOnDark>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
-					<Typography
-						variant="h6"
-						noWrap
-						component="div"
-						sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
-					>
+					<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
 						PolyEcho
 					</Typography>
 
@@ -86,7 +88,7 @@ const AppHeader = (): JSX.Element => {
 								</MenuItem>
 							))}
 						</Menu>
-						<Typography variant="h6" noWrap component="div" sx={styles.logo}>
+						<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
 							PolyEcho
 						</Typography>
 					</Box>

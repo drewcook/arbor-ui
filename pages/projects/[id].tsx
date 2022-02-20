@@ -3,12 +3,14 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import AppHeader from '../../components/AppHeader'
-import { get, post, flattenSamples } from '../../utils/http'
+import Notification from '../../components/Notification'
+import { get } from '../../utils/http'
 import { Howl } from 'howler'
 import {
 	Box,
   Button,
 	Chip,
+	CircularProgress,
 	Container,
 	Divider,
   Fab,
@@ -65,6 +67,10 @@ const styles = {
   mintAndBuy: {
     mt: 3,
   },
+  mintAndBuyBtn: {
+    width: '9rem',
+    boxShadow: '5px 5px #23F09A',
+  },
   divider: {
 		my: 3,
 		borderColor: '#ccc',
@@ -114,7 +120,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [details, setDetails] = useState(data)
   const [sounds, setSounds] = useState<Howl[]>([])
   const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
-  const { accounts, web3, contract } = useWeb3()
+  const [minting, setMinting] = useState(false)
+  const [successOpen, setSuccessOpen] = useState(false)
+	const [successMsg, setSuccessMsg] = useState('')
+	const [errorOpen, setErrorOpen] = useState(false)
+	const [errorMsg, setErrorMsg] = useState('')
+  const { accounts, contract } = useWeb3()
 
   useEffect(() => {
     console.log(contract)
@@ -166,23 +177,52 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const onUploadSuccess = (projectData: IProjectDoc) => {
 		// Refresh UI
 		setDetails(projectData)
+    setSuccessOpen(true)
+		setSuccessMsg('Successfully uploaded file to NFT.storage!')
 	}
 
   const handleMintAndBuy = async () => {
-    console.log('minting and buying...')
-
-    // Hit Python HTTP server to flatten samples into a singular one
-    const samples = ['', '']
-    // const sampleCID = await flattenSamples(samples)
-    console.log({samples, sampleCID: null})
-
-		// - Get back single CID representing layered samples as one
-		// TODO: Call smart contract and mint an nft out of the original CID
-    // const sampleURI = await contract.methods.buySample(accounts[0]).call({ from: accounts[0] })
-    // console.log(sampleURI)
-    const displayName = await contract.methods.displayName().call({ from: accounts[0] })
-    console.log('contract display name', displayName)
+    try {
+      if (details) {
+        setMinting(true)
+        const samples = details.samples.map(s => s.cid.replace('ipfs://', ''))
+        // Hit Python HTTP server to flatten samples into a singular one
+        const response = await fetch('/api/flatten', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sample_cids: samples })
+        })
+        if (!response.ok) {
+          setErrorOpen(true)
+          setErrorMsg('Uh oh, failed to mint the NFT')
+          setMinting(false)
+        }
+        const data = await response.json()
+        if (data.success) {
+          // Call smart contract and mint an nft out of the original CID
+          const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).call({ from: accounts[0] })
+          console.log(sampleURI)
+          // TODO: Do stuff?
+          setSuccessOpen(true)
+          setSuccessMsg('Successfully minted a new NFT!')
+          setMinting(false)
+        }
+      }
+    } catch (e: any) {
+      setMinting(false)
+      setErrorOpen(true)
+      setErrorMsg('Uh oh, failed to mint the NFT')
+    }
   }
+
+  const onNotificationClose = () => {
+		setSuccessOpen(false)
+		setSuccessMsg('')
+		setErrorOpen(false)
+		setErrorMsg('')
+	}
 
 	return (
 		<>
@@ -234,8 +274,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                     />
                   ))}
                   <Box sx={styles.mintAndBuy}>
-                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary">
-                      Mint & Buy
+                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn}>
+                      {minting ? <CircularProgress size={18} sx={{ my: .5 }} /> : 'Mint & Buy'}
                     </Button>
                   </Box>
               </Grid>
@@ -290,6 +330,17 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			</main>
 
 			<Footer />
+      {successOpen && (
+				<Notification
+					open={successOpen}
+					msg={successMsg}
+					type="success"
+					onClose={onNotificationClose}
+				/>
+			)}
+			{errorOpen && (
+				<Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />
+			)}
 		</>
 	)
 }

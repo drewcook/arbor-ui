@@ -29,22 +29,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// Update samples
 				let project
-				if (body.samples) {
-					// Strip out Mongo metadata prior to update (should just add a new sample?)
-					const samples = body.samples.map((s: ISample) => ({
-						cid: s.cid,
-						audioUrl: s.audioUrl,
-						filename: s.filename,
-						filetype: s.filetype,
-						filesize: s.filesize,
-						createdBy: s.createdBy,
-					}))
+				if (body.newSample) {
 					project = await Project.findByIdAndUpdate(
 						id,
 						{
 							$set: {
-								samples,
 								collaborators: body.collaborators,
+							},
+							$push: {
+								samples: body.newSample,
 							},
 						},
 						{
