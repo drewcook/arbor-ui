@@ -3,7 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import AppHeader from '../../components/AppHeader'
-import { get } from '../../utils/http'
+import { get, post, flattenSamples } from '../../utils/http'
 import { Howl } from 'howler'
 import {
 	Box,
@@ -20,6 +20,7 @@ import { IProjectDoc } from '../../models/project.model'
 import { Download, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import SamplePlayer from '../../components/SamplePlayer'
 import SampleDropzone from '../../components/SampleDropzone'
+import { useWeb3 } from '../../components/Web3Provider'
 
 const styles = {
 	error: {
@@ -113,8 +114,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [details, setDetails] = useState(data)
   const [sounds, setSounds] = useState<Howl[]>([])
   const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
+  const { accounts, web3, contract } = useWeb3()
 
   useEffect(() => {
+    console.log(contract)
+    // Initialize all samples as Howler objects for "play/pause all" functionality
     if (data) {
       const sources = []
       for (let sample of data.samples) {
@@ -164,11 +168,20 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setDetails(projectData)
 	}
 
-  const handleMintAndBuy = () => {
+  const handleMintAndBuy = async () => {
     console.log('minting and buying...')
-    // TODO: Hit Python HTTP server and pass along array of project sample CIDs
+
+    // Hit Python HTTP server to flatten samples into a singular one
+    const samples = ['', '']
+    // const sampleCID = await flattenSamples(samples)
+    console.log({samples, sampleCID: null})
+
 		// - Get back single CID representing layered samples as one
 		// TODO: Call smart contract and mint an nft out of the original CID
+    // const sampleURI = await contract.methods.buySample(accounts[0]).call({ from: accounts[0] })
+    // console.log(sampleURI)
+    const displayName = await contract.methods.displayName().call({ from: accounts[0] })
+    console.log('contract display name', displayName)
   }
 
 	return (
