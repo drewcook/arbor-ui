@@ -60,11 +60,14 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         // Connect to NFT.storage
         await connectNFTStorage()
 
-        // Prompt user to select a wallet
-        await onboardInstance.walletSelect('metamask')
 
-        // Run wallet checks to make sure that user is ready to transact
-        await onboardInstance.walletCheck()
+        // Prompt user to select a wallet
+        const walletSelected = await onboardInstance.walletSelect('MetaMask')
+        if (walletSelected) {
+          // Run wallet checks to make sure that user is ready to transact
+          const readyToTransact = await onboardInstance.walletCheck()
+        }
+
 
         // Get accounts initially
         const connectedAccounts = await web3Instance.eth.getAccounts()
