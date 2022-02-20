@@ -138,13 +138,12 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 		[isFocused, isDragAccept, isDragReject],
 	)
 
+	const loadingClassName = loading ? 'dropzone-loading' : ''
+
 	return (
 		<>
 			{/* @ts-ignore */}
-			<div
-				{...getRootProps({ style: dropzoneStyles })}
-				className={loading ? 'dropzone-loading' : ''}
-			>
+			<div {...getRootProps({ style: dropzoneStyles })} className={loadingClassName}>
 				<CloudUpload sx={styles.uploadIcon} />
 				{loading ? (
 					<>

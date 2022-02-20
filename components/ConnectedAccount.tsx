@@ -30,7 +30,7 @@ const ConnectedAccount = (): JSX.Element => {
 	useEffect(() => {
 		const { address } = onboard.getState()
 		if (address) setAuthenticated(true)
-	}, [])
+	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
 
 	useEffect(() => {
 		setCurrentAccount(accounts[0])
