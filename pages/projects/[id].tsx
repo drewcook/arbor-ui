@@ -202,8 +202,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         const data = await response.json()
         if (data.success) {
           // Call smart contract and mint an nft out of the original CID
-          // const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).call({ from: accounts[0] })
-          // console.log(sampleURI)
+          const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).call({ from: accounts[0] })
+          console.log(sampleURI)
           // TODO: Do stuff?
           setSuccessOpen(true)
           setSuccessMsg('Successfully minted a new NFT!')
