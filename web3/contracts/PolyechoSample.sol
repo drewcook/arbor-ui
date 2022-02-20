@@ -13,8 +13,8 @@ contract PolyechoSample is ERC721, Ownable {
     // Fields
     string public displayName = "Sampled PolyEcho NFT!";
     string public companyName = "PolyEcho";
-    mapping(uint256=> address[]) public contributors;
-    mapping(uint256=> string) tokenURIs;
+    mapping(uint256 => address[]) public contributors;
+    mapping(uint256 => string) tokenURIs;
     uint256 public constant mintPrice = 10000000000000000; // 0.01 ETH
     // Events
     event NameUpdated(string name);
@@ -27,29 +27,49 @@ contract PolyechoSample is ERC721, Ownable {
         emit NameUpdated(_name);
     }
 
-    function getContributors(uint256 tokenId) public view returns (address[] memory){
-        require(_exists(tokenId), "ERC721: Contributor query for nonexistent token");
+    function getContributors(uint256 tokenId)
+        public
+        view
+        returns (address[] memory)
+    {
+        require(
+            _exists(tokenId),
+            "ERC721: Contributor query for nonexistent token"
+        );
 
         return contributors[tokenId];
     }
 
-
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
         return tokenURIs[tokenId];
     }
 
-
-    function mint(address _buyer, string calldata _metadataURI, address payable[] calldata _contributors) public payable returns (string memory) {
-        require(msg.value >= mintPrice, 'Sent ether value is invalid');        
+    function mint(
+        address _buyer,
+        string calldata _metadataURI,
+        address payable[] calldata _contributors
+    ) public payable returns (string memory) {
+        // require(
+        //     msg.value >= mintPrice,
+        //     "Sent ether value is not enough to mint"
+        // );
 
         uint256 tokenId = _tokenIds.current();
-        tokenURIs[tokenId] = _metadataURI;        
+        tokenURIs[tokenId] = _metadataURI;
         contributors[tokenId] = _contributors;
-        
+
         _safeMint(_buyer, tokenId);
 
-        for(uint i = 0; i < _contributors.length; i++){
+        for (uint256 i = 0; i < _contributors.length; i++) {
             address payable contributor = _contributors[i];
             contributor.transfer(msg.value / _contributors.length);
         }

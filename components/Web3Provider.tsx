@@ -8,7 +8,7 @@ import Web3Fallback from './Web3Fallback'
 import wallets from '../utils/web3wallets'
 import type { NFTStorage } from 'nft.storage'
 import NFTStorageClient from '../utils/NFTStorageClient'
-import SampleNFTContract from '../contracts/Sample.json'
+import SampleNFTContract from '../contracts/PolyechoSample.json'
 
 // Context types
 type Web3ContextProps = {

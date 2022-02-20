@@ -128,7 +128,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
   const { accounts, contract } = useWeb3()
 
   useEffect(() => {
-    console.log(contract)
     // Initialize all samples as Howler objects for "play/pause all" functionality
     if (data) {
       const sources = []
@@ -202,8 +201,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         const data = await response.json()
         if (data.success) {
           // Call smart contract and mint an nft out of the original CID
-          const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).call({ from: accounts[0] })
-          console.log(sampleURI)
+          const tokenURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).send({ from: accounts[0], value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+          console.info(tokenURI)
           // TODO: Do stuff?
           setSuccessOpen(true)
           setSuccessMsg('Successfully minted a new NFT!')
@@ -211,6 +210,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         }
       }
     } catch (e: any) {
+      console.error(e)
       setMinting(false)
       setErrorOpen(true)
       setErrorMsg('Uh oh, failed to mint the NFT')
@@ -274,7 +274,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                     />
                   ))}
                   <Box sx={styles.mintAndBuy}>
-                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn}>
+                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn} disabled={minting}>
                       {minting ? <CircularProgress size={18} sx={{ my: .5 }} /> : 'Mint & Buy'}
                     </Button>
                   </Box>
