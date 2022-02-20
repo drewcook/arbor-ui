@@ -201,8 +201,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         const data = await response.json()
         if (data.success) {
           // Call smart contract and mint an nft out of the original CID
-          // const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).send({ from: accounts[0], value: '10000000000000000', gas: 650000 }) // 0.01 ETH
-          const tokenURI: string = await contract.methods.mint(data.cid).send({ from: accounts[0], value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+          const tokenURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).send({ from: accounts[0], value: '10000000000000000', gas: 650000 }) // 0.01 ETH
           console.info(tokenURI)
           // TODO: Do stuff?
           setSuccessOpen(true)
