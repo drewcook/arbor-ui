@@ -94,16 +94,12 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 					const metadata = await NFTStore.store({
 						name: file.name,
 						description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
-						image: new File([], file.name, { type: 'image/*' }),
+						image: new File([], 'PolyEcho NFT', { type: 'image/*' }),
 						properties: {
 							audio: new File([file], file.name, { type: file.type }),
 						},
 					})
-					console.log('result from NFTStorage.store():', metadata)
-					// console.log('IPFS URL for the metadata:', metadata.url)
-					// console.log('metadata.json contents:', metadata.data)
-					// console.log('metadata.json contents with IPFS gateway URLs:', metadata.embed())
-
+					// console.log('result from NFTStorage.store():', metadata)
 					if (metadata) {
 						// Add sample data to overall project
 						const newSample = {
@@ -114,9 +110,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 							filesize: file.size,
 							createdBy: accounts[0],
 						}
-						// console.log({ sample })
-						// // Compile new sample to a
-						// const samples = [...project.samples, sample]
+						// Compile new sample to a
 						let collaborators = project.collaborators
 						if (!project.collaborators.some(s => s === accounts[0])) collaborators.push(accounts[0])
 						const res = await update(`/projects/${project._id}`, { newSample, collaborators })

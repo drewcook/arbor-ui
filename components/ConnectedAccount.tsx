@@ -9,6 +9,10 @@ const styles = {
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 	},
+	button: {
+		color: '#fff',
+		boxShadow: '3px 3px #23F09A',
+	},
 	avatar: {
 		marginRight: 0.5,
 	},
@@ -41,7 +45,6 @@ const ConnectedAccount = (): JSX.Element => {
 	}
 
 	const handleMenuItemClick = () => {
-		// TODO: Link to page
 		// Close for now
 		setAnchorEl(null)
 	}
@@ -69,7 +72,13 @@ const ConnectedAccount = (): JSX.Element => {
 		<>
 			<Box sx={styles.wrapper}>
 				{!authenticated ? (
-					<Button size="small" variant="contained" color="secondary" onClick={handleConnectWallet}>
+					<Button
+						size="small"
+						variant="contained"
+						color="secondary"
+						onClick={handleConnectWallet}
+						sx={styles.button}
+					>
 						Connect Wallet
 					</Button>
 				) : (
