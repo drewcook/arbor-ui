@@ -3,6 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Footer from '../../components/Footer'
 import AppHeader from '../../components/AppHeader'
+import Notification from '../../components/Notification'
 import { get, post, flattenSamples } from '../../utils/http'
 import { Howl } from 'howler'
 import {
@@ -114,6 +115,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [details, setDetails] = useState(data)
   const [sounds, setSounds] = useState<Howl[]>([])
   const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
+  const [successOpen, setSuccessOpen] = useState(false)
+	const [successMsg, setSuccessMsg] = useState('')
+	const [errorOpen, setErrorOpen] = useState(false)
+	const [errorMsg, setErrorMsg] = useState('')
   const { accounts, web3, contract } = useWeb3()
 
   useEffect(() => {
@@ -166,23 +171,30 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const onUploadSuccess = (projectData: IProjectDoc) => {
 		// Refresh UI
 		setDetails(projectData)
+    setSuccessOpen(true)
+		setSuccessMsg('Successfully uploaded file to NFT.storage!')
 	}
 
   const handleMintAndBuy = async () => {
-    console.log('minting and buying...')
-
-    // Hit Python HTTP server to flatten samples into a singular one
-    const samples = ['', '']
-    // const sampleCID = await flattenSamples(samples)
-    console.log({samples, sampleCID: null})
-
-		// - Get back single CID representing layered samples as one
+    if (details) {
+      const samples = details.samples.map(s => s.cid.replace('ipfs://', ''))
+      // Hit Python HTTP server to flatten samples into a singular one
+      const flattenedSampleCID = await flattenSamples(samples)
+      console.log({flattenedSampleCID})
+    }
 		// TODO: Call smart contract and mint an nft out of the original CID
     // const sampleURI = await contract.methods.buySample(accounts[0]).call({ from: accounts[0] })
     // console.log(sampleURI)
-    const displayName = await contract.methods.displayName().call({ from: accounts[0] })
-    console.log('contract display name', displayName)
+    // const displayName = await contract.methods.displayName().call({ from: accounts[0] })
+    // console.log('contract display name', displayName)
   }
+
+  const onNotificationClose = () => {
+		setSuccessOpen(false)
+		setSuccessMsg('')
+		setErrorOpen(false)
+		setErrorMsg('')
+	}
 
 	return (
 		<>
@@ -290,6 +302,17 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			</main>
 
 			<Footer />
+      {successOpen && (
+				<Notification
+					open={successOpen}
+					msg={successMsg}
+					type="success"
+					onClose={onNotificationClose}
+				/>
+			)}
+			{errorOpen && (
+				<Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />
+			)}
 		</>
 	)
 }

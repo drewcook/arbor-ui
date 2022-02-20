@@ -1,13 +1,17 @@
 import { File } from 'nft.storage'
-import { Box, Typography } from '@mui/material'
+import { Box, CircularProgress, Typography } from '@mui/material'
 import { CloudUpload } from '@mui/icons-material'
-import React, { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useWeb3 } from './Web3Provider'
 import { update } from '../utils/http'
 import type { IProjectDoc } from '../models/project.model'
 
 const styles = {
+	spinner: {
+		color: '#555',
+		my: 4,
+	},
 	uploadTitle: {
 		textAlign: 'center',
 	},
@@ -68,6 +72,7 @@ type SampleDropzoneProps = {
 
 const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	const { project, onSuccess } = props
+	const [loading, setLoading] = useState(false)
 	const { NFTStore, accounts } = useWeb3()
 	const {
 		getRootProps,
@@ -79,9 +84,10 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 		fileRejections,
 	} = useDropzone({
 		maxFiles: 1,
-		accept: 'audio/wav,audio/mpeg,audio/webm',
+		accept: 'audio/wav,audio/mpeg,audio/aiff,audio/webm',
 		// Support only one file uploaded at a time
 		onDrop: async ([file]) => {
+			setLoading(true)
 			try {
 				// Add file to NFT.storage
 				if (NFTStore) {
@@ -99,28 +105,29 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 					// console.log('metadata.json contents with IPFS gateway URLs:', metadata.embed())
 
 					if (metadata) {
-						// TODO: add loading state and success notification
-						alert('File uploaded to NFT.storage')
 						// Add sample data to overall project
-						const sample = {
+						const newSample = {
 							audioUrl: metadata.embed().properties.audio.href,
-							cid: metadata.ipnft,
+							cid: metadata.data.properties.audio.href,
 							filename: file.name,
 							filetype: file.type,
 							filesize: file.size,
 							createdBy: accounts[0],
 						}
-						// Compile new sample to a
-						const samples = [...project.samples, sample]
+						// console.log({ sample })
+						// // Compile new sample to a
+						// const samples = [...project.samples, sample]
 						let collaborators = project.collaborators
 						if (!project.collaborators.some(s => s === accounts[0])) collaborators.push(accounts[0])
-						const res = await update(`/projects/${project._id}`, { samples, collaborators })
+						const res = await update(`/projects/${project._id}`, { newSample, collaborators })
 						// Success callback
 						if (res.success) onSuccess(res.data)
 					}
 				}
+				setLoading(false)
 			} catch (err) {
 				console.error(err)
+				setLoading(false)
 			}
 		},
 	})
@@ -140,26 +147,38 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	return (
 		<>
 			{/* @ts-ignore */}
-			<div {...getRootProps({ style: dropzoneStyles })}>
+			<div
+				{...getRootProps({ style: dropzoneStyles })}
+				className={loading ? 'dropzone-loading' : ''}
+			>
 				<CloudUpload sx={styles.uploadIcon} />
-				<Typography variant="h5" sx={styles.uploadTitle}>
-					Collaborate on an NFT!
-				</Typography>
-				<input {...getInputProps()} />
-				<Typography sx={styles.uploadText}>
-					{isDragActive
-						? 'Drop the audio file here ...'
-						: 'Add your own sample and contribute to this project. Drag and drop or click to select a file.'}
-				</Typography>
-				<Typography variant="body2" sx={styles.uploadMeta}>
-					(Only .wav, .mp3, and .aiff files will be accepted)
-				</Typography>
-				{fileRejections.length > 0 && (
-					<aside>
-						<Box sx={styles.errorMsg}>
-							<Typography color="error">File rejected, must be supported filetype</Typography>
-						</Box>
-					</aside>
+				{loading ? (
+					<>
+						<CircularProgress size={30} sx={styles.spinner} />
+						<Typography variant="body2">Uploading to IPFS...</Typography>
+					</>
+				) : (
+					<>
+						<Typography variant="h5" sx={styles.uploadTitle}>
+							Collaborate on an NFT!
+						</Typography>
+						<input {...getInputProps()} />
+						<Typography sx={styles.uploadText}>
+							{isDragActive
+								? 'Drop the audio file here ...'
+								: 'Add your own sample and contribute to this project. Drag and drop or click to select a file.'}
+						</Typography>
+						<Typography variant="body2" sx={styles.uploadMeta}>
+							(Only .wav, .mp3, .aiff, and .webm audio files are accepted)
+						</Typography>
+						{fileRejections.length > 0 && (
+							<aside>
+								<Box sx={styles.errorMsg}>
+									<Typography color="error">File rejected, must be supported filetype</Typography>
+								</Box>
+							</aside>
+						)}
+					</>
 				)}
 			</div>
 		</>

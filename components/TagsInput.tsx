@@ -3,10 +3,12 @@ import { useState } from 'react'
 import { Box, Chip, TextField } from '@mui/material'
 
 const styles = {
-	wrapper: {},
-	input: {},
-	tags: {},
-	tag: {},
+	tags: {
+		mt: 1,
+	},
+	tag: {
+		m: 1,
+	},
 }
 
 type TagsInputProps = {
@@ -51,6 +53,7 @@ const TagsInput = (props: TagsInputProps): JSX.Element => {
 							color="secondary"
 							label={tag}
 							onDelete={() => onDelete(tag)}
+							sx={styles.tag}
 						/>
 					))}
 			</Box>
