@@ -128,7 +128,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
   const { accounts, contract } = useWeb3()
 
   useEffect(() => {
-    console.log(contract)
     // Initialize all samples as Howler objects for "play/pause all" functionality
     if (data) {
       const sources = []
@@ -183,13 +182,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
   const handleMintAndBuy = async () => {
     try {
-      console.log("Entered mint and buy")
       if (details) {
         setMinting(true)
         const samples = details.samples.map(s => s.cid.replace('ipfs://', ''))
         // Hit Python HTTP server to flatten samples into a singular one
-        console.log("Samples:");
-        console.log(samples);
         const response = await fetch('/api/flatten', {
           method: 'POST',
           headers: {
@@ -197,7 +193,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
           },
           body: JSON.stringify({ sample_cids: samples })
         })
-        console.info({response})
         if (!response.ok) {
           setErrorOpen(true)
           setErrorMsg('Uh oh, failed to mint the NFT')
@@ -279,7 +274,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                     />
                   ))}
                   <Box sx={styles.mintAndBuy}>
-                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn}>
+                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn} disabled={minting}>
                       {minting ? <CircularProgress size={18} sx={{ my: .5 }} /> : 'Mint & Buy'}
                     </Button>
                   </Box>

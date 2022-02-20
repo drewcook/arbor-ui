@@ -59,7 +59,7 @@ contract PolyechoSample is ERC721, Ownable {
         address payable[] calldata _contributors
     ) public payable returns (string memory) {
         require(
-            msg.value < mintPrice,
+            msg.value >= mintPrice,
             "Sent ether value is not enough to mint"
         );
 
