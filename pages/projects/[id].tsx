@@ -183,6 +183,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
   const handleMintAndBuy = async () => {
     try {
+      console.log("Entered mint and buy")
       if (details) {
         setMinting(true)
         const samples = details.samples.map(s => s.cid.replace('ipfs://', ''))
