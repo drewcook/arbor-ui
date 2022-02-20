@@ -11,7 +11,7 @@ contract Sample is ERC721, Ownable {
     Counters.Counter private _tokenIds;
 
     // Fields
-    string public displayName = "Sampled PolyEcho NFT";
+    string public displayName = "Sampled PolyEcho NFT!";
     string public companyName = "PolyEcho";
     address[] public contributors;
 
@@ -26,17 +26,22 @@ contract Sample is ERC721, Ownable {
         emit NameUpdated(_name);
     }
 
+    // address, string calldata _sampleMetadataURI, address[] calldata _contributors
     function buySample(address _buyer) public returns (string memory) {
-        // TODO: attach all the contributors to this token prior to mint?
+        // 1.Add contributors to local state
 
+        // 2. Increment to create uniqueness
         // Increament the counter to ensure uniqueness (Chainline VRF?)
         _tokenIds.increment();
         uint256 newSampleId = _tokenIds.current();
 
-        // Mint and transfer to buyer
-        _safeMint(_buyer, newSampleId);
+        // 3. Mint and transfer to buyer
+        _safeMint(_buyer, /* _sampleMetadataURI */);
 
-        // Update the tokenUri and emit event
+        // 4. Transfer proceeds out equally to contributors
+        // Maybe the function is built into the ERC721 standard? safeTransferFrom()? _safeTransfer()?
+
+        // Update the tokenUri and emit event ?? THIS NEEDS SOME IRONING OUT
         string memory newSampleURI = tokenURI(newSampleId);
         emit TokenCreated(newSampleURI);
 
