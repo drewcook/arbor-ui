@@ -43,5 +43,11 @@ module.exports = {
 		mainnet: getInfuraNetworkConfig('mainnet'),
 		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
+		// Polygon
+		polygon: {
+			host: '',
+			port: '',
+			network_id: 29,
+		},
 	},
 }
