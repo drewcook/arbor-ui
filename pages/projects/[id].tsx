@@ -187,6 +187,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         setMinting(true)
         const samples = details.samples.map(s => s.cid.replace('ipfs://', ''))
         // Hit Python HTTP server to flatten samples into a singular one
+        console.log("Samples:");
+        console.log(samples);
         const response = await fetch('/api/flatten', {
           method: 'POST',
           headers: {
