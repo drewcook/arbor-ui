@@ -197,6 +197,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
           },
           body: JSON.stringify({ sample_cids: samples })
         })
+        console.info({response})
         if (!response.ok) {
           setErrorOpen(true)
           setErrorMsg('Uh oh, failed to mint the NFT')
@@ -214,6 +215,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         }
       }
     } catch (e: any) {
+      console.error(e)
       setMinting(false)
       setErrorOpen(true)
       setErrorMsg('Uh oh, failed to mint the NFT')
