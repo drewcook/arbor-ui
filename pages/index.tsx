@@ -21,6 +21,7 @@ const styles = {
 	btn: {
 		mt: 5,
 		color: '#fff',
+		boxShadow: '5px 5px #23F09A',
 	},
 }
 
@@ -52,7 +53,7 @@ const Home: NextPage = () => {
 							Proceeds are distributed to the artists, including future royalties.
 						</Typography>
 						<Link href="/projects" passHref>
-							<Button size="large" variant="contained" color="primary" sx={styles.btn}>
+							<Button size="large" variant="contained" color="secondary" sx={styles.btn}>
 								Get Started!
 							</Button>
 						</Link>
