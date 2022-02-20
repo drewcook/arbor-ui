@@ -93,16 +93,18 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 							audio: new File([file], file.name, { type: file.type }),
 						},
 					})
-					// console.log('result from NFTStorage.store():', metadata)
+					console.log('result from NFTStorage.store():', metadata)
 					// console.log('IPFS URL for the metadata:', metadata.url)
 					// console.log('metadata.json contents:', metadata.data)
 					// console.log('metadata.json contents with IPFS gateway URLs:', metadata.embed())
 
 					if (metadata) {
+						// TODO: add loading state and success notification
 						alert('File uploaded to NFT.storage')
 						// Add sample data to overall project
 						const sample = {
 							audioUrl: metadata.embed().properties.audio.href,
+							cid: metadata.ipnft,
 							filename: file.name,
 							filetype: file.type,
 							filesize: file.size,

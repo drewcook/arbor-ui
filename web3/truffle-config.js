@@ -36,15 +36,12 @@ module.exports = {
 		// Local
 		develop: {
 			host: '127.0.0.1',
-			port: 7545,
-			network_id: 5777,
+			port: 8545,
+			network_id: 1337,
 		},
 		// Mainnet
 		mainnet: getInfuraNetworkConfig('mainnet'),
-		// Testnets
-		ropsten: getInfuraNetworkConfig('ropsten'),
+		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
-		goerli: getInfuraNetworkConfig('goerli'),
-		kovan: getInfuraNetworkConfig('kovan'),
 	},
 }

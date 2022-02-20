@@ -1,6 +1,7 @@
 import mongoose, { Document } from 'mongoose'
 
 export interface ISample {
+  cid: string
   audioUrl: string
 	filename: string
   filetype: string
@@ -12,6 +13,10 @@ export interface ISampleDoc extends Document, ISample {}
 
 export const sampleSchema = new mongoose.Schema(
 	{
+    cid: {
+      type: String,
+      required: true,
+    },
     audioUrl: {
       type: String,
       required: true,

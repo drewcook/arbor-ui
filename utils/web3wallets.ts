@@ -6,6 +6,7 @@ interface IWeb3Wallet {
 	walletName: string;
 	preferred?: boolean;
 	infuraKey?: string;
+	rpcUrl?: string;
 }
 
 const wallets: IWeb3Wallet[] = [

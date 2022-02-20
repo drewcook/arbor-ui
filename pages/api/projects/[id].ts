@@ -32,6 +32,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (body.samples) {
 					// Strip out Mongo metadata prior to update (should just add a new sample?)
 					const samples = body.samples.map((s: ISample) => ({
+						cid: s.cid,
 						audioUrl: s.audioUrl,
 						filename: s.filename,
 						filetype: s.filetype,

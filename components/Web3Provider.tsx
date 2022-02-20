@@ -8,11 +8,13 @@ import Web3Fallback from './Web3Fallback'
 import wallets from '../utils/web3wallets'
 import type { NFTStorage } from 'nft.storage'
 import NFTStorageClient from '../utils/NFTStorageClient'
+import SampleNFTContract from '../contracts/Sample.json'
 
 // Context types
 type Web3ContextProps = {
 	web3: any,
 	accounts: any,
+  contract: any,
   onboard: any,
   NFTStore: NFTStorage,
 }
@@ -28,6 +30,7 @@ const Web3Context = createContext<Partial<Web3ContextProps>>({})
 export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
   const [NFTStore, setNFTStore] = useState<NFTStorage>()
 	const [web3, setWeb3] = useState(null)
+  const [contract, setContract] = useState(null)
 	const [accounts, setAccounts] = useState<string[]|null>(null)
   const [onboard, setOnboard] = useState<unknown|null>(null)
 	const [loading, setLoading] = useState(true)
@@ -36,37 +39,22 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	useEffect(() => {
     const loadWeb3 = async () => {
       try {
-        // Get network provider and web3 instance
-        let web3Instance = await getWeb3()
-        setWeb3(web3Instance)
-
-        // initialize onboard
-        const onboardInstance = Onboard({
-          dappId: process.env.BLOCKNATIVE_KEY,
-          networkId: 4, // Rinkeby
-          darkMode: true,
-          subscriptions: {
-            address: async (address: string) => {
-              setAccounts([address])
-            },
-            wallet: async (wallet: Wallet) => {
-              console.log(`${wallet.name} connected!`)
-            },
-          },
-          walletSelect: { wallets }
-        })
-        setOnboard(onboardInstance)
-
         // Connect to NFT.storage
         await connectNFTStorage()
 
+        // Get network provider and web3 instance
+        const web3Instance = await getWeb3()
+        setWeb3(web3Instance)
 
-        // Prompt user to select a wallet
-        const walletSelected = await onboardInstance.walletSelect('MetaMask')
-        if (walletSelected) {
-          // Run wallet checks to make sure that user is ready to transact
-          const readyToTransact = await onboardInstance.walletCheck()
-        }
+        // Get SampleNFT contract
+        const networkId = await web3Instance.eth.net.getId()
+        /* @ts-ignore */
+        const deployedNetwork = SampleNFTContract.networks[networkId]
+        const sampleContract = new web3Instance.eth.Contract(
+          SampleNFTContract.abi,
+          deployedNetwork && deployedNetwork.address,
+        )
+        setContract(sampleContract)
 
 
         // Get accounts initially
@@ -86,6 +74,30 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
           // Reload the page as simple solution
           window.location.reload()
         })
+
+        // Initialize Onboard.js for production builds (bypass for local dev)
+        const onboardInstance = Onboard({
+          dappId: process.env.BLOCKNATIVE_KEY,
+          networkId: process.env.NODE_ENV === 'production' ? 4 : 1337, // Rinkeby or local
+          darkMode: true,
+          subscriptions: {
+            address: async (address: string) => {
+              setAccounts([address])
+            },
+            wallet: async (wallet: Wallet) => {
+              console.log(`${wallet.name} connected!`)
+            },
+          },
+          walletSelect: { wallets }
+        })
+        setOnboard(onboardInstance)
+
+        // Prompt user to select a wallet
+        const walletSelected = await onboardInstance.walletSelect('MetaMask')
+        if (walletSelected) {
+          // Run wallet checks to make sure that user is ready to transact
+          const readyToTransact = await onboardInstance.walletCheck()
+        }
 
         setLoading(false)
       } catch (error) {
@@ -116,9 +128,8 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 	if (loading) return <FullPageLoading />
 	if (error) return <Web3Fallback />
 
-	return <Web3Context.Provider value={{ web3, accounts, NFTStore, onboard }}>{children}</Web3Context.Provider>
+	return <Web3Context.Provider value={{ web3, accounts, contract, NFTStore, onboard }}>{children}</Web3Context.Provider>
 }
-
 
 // Context hook
 export const useWeb3 = () => {
