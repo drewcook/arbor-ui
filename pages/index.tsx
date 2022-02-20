@@ -1,13 +1,26 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
 // import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Button, Container, Typography } from '@mui/material'
 
 const styles = {
 	centered: {
 		textAlign: 'center',
+		pt: 5,
+	},
+	heading: {
+		mb: 5,
+	},
+	p: {
+		fontWeight: 300,
+		py: 2,
+	},
+	btn: {
+		mt: 5,
+		color: '#fff',
 	},
 }
 
@@ -23,17 +36,26 @@ const Home: NextPage = () => {
 			<AppHeader />
 
 			<main id="app-main">
-				<Container maxWidth="lg">
+				<Container maxWidth="md">
 					<Box sx={styles.centered}>
-						<Typography variant="h3" component="h1">
-							Welcome!
+						<Typography variant="h2" component="h1" sx={styles.heading}>
+							Make music for fun, and profit.
 						</Typography>
-						<Typography variant="h5" component="p">
-							Collaborate with others and mint music NFTs, together!
+						<Typography variant="h5" component="p" sx={styles.p}>
+							<strong>POLYECHO</strong> is a schelling game where the objective is to publicly
+							co-create songs worthy of purchase by NFT collectors.
 						</Typography>
-						<Typography variant="h5" component="p">
-							Split the proceeds when the NFT sales, have ownership forever.
+						<Typography variant="h5" component="p" sx={styles.p}>
+							Collectors can explore, curate, and own a wild world of memetic music.
 						</Typography>
+						<Typography variant="h5" component="p" sx={styles.p}>
+							Proceeds are distributed to the artists, including future royalties.
+						</Typography>
+						<Link href="/projects" passHref>
+							<Button size="large" variant="contained" color="primary" sx={styles.btn}>
+								Get Started!
+							</Button>
+						</Link>
 					</Box>
 				</Container>
 			</main>
