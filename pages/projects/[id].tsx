@@ -23,6 +23,8 @@ import { Download, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import SamplePlayer from '../../components/SamplePlayer'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
+import Image from 'next/image'
+import EthereumIcon from '../../public/ethereum_icon.png'
 
 const styles = {
 	error: {
@@ -66,10 +68,22 @@ const styles = {
 	},
   mintAndBuy: {
     mt: 3,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   mintAndBuyBtn: {
     width: '9rem',
     boxShadow: '5px 5px #23F09A',
+  },
+  price: {
+    display: 'flex',
+    alignItems: 'center',
+    pl: 3,
+  },
+  eth: {
+    color: "#aaa",
+    fontSize: '1rem'
   },
   divider: {
 		my: 3,
@@ -273,11 +287,17 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                       sx={styles.tag}
                     />
                   ))}
-                  <Box sx={styles.mintAndBuy}>
-                    <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn} disabled={minting}>
-                      {minting ? <CircularProgress size={18} sx={{ my: .5 }} /> : 'Mint & Buy'}
-                    </Button>
-                  </Box>
+                  {details.samples.length > 0 && (
+                    <Box sx={styles.mintAndBuy}>
+                      <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn} disabled={minting}>
+                        {minting ? <CircularProgress size={18} sx={{ my: .5 }} /> : 'Mint & Buy'}
+                      </Button>
+                      <Box sx={styles.price}>
+                        <Image src={EthereumIcon} width={50} height={50} />
+                        <Typography variant="h4" component="div">0.01 <Typography sx={styles.eth} component="span">ETH</Typography></Typography>
+                      </Box>
+                    </Box>
+                  )}
               </Grid>
               <Grid item xs={12} md={4}>
                 <SampleDropzone
@@ -318,7 +338,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                     </Fragment>
                   ))
                 ) : (
-                  <Typography sx={styles.noSamplesMsg}>No samples to show, add one!</Typography>
+                  <Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
                 )}
             </>
 					) : (
