@@ -125,7 +125,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState('')
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
-  const { accounts, contract, web3 } = useWeb3()
+  const { accounts, contract } = useWeb3()
 
   useEffect(() => {
     console.log(contract)
@@ -206,7 +206,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
         const data = await response.json()
         if (data.success) {
           // Call smart contract and mint an nft out of the original CID
-          const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).send({ from: accounts[0], value: web3.utils.fromWei('10000000000000000') })
+          const sampleURI: string = await contract.methods.mint(accounts[0], data.cid, details.collaborators).send({ from: accounts[0], value: '10000000000000000' }) // 0.01 ETH
           console.log('token minted, URI:', sampleURI)
           // TODO: Do stuff?
           setSuccessOpen(true)
