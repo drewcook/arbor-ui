@@ -7,7 +7,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 const polyEchoTheme = createTheme({
 	palette: {
 		primary: {
-			main: '#00f0ff',
+			main: '#23F09A',
 		},
 		secondary: {
 			main: '#0500ff',

@@ -44,10 +44,13 @@ module.exports = {
 		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
 		// Polygon
-		polygon: {
-			host: '',
-			port: '',
-			network_id: 29,
+		matic: {
+			provider: () =>
+				new HDWalletProvider(
+					process.env.MNEMONIC,
+					`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+				),
+			network_id: 80001,
 		},
 	},
 }

@@ -36,7 +36,7 @@ contract Sample is ERC721, Ownable {
         uint256 newSampleId = _tokenIds.current();
 
         // 3. Mint and transfer to buyer
-        _safeMint(_buyer, /* _sampleMetadataURI */);
+        _safeMint(_buyer, newSampleId);
 
         // 4. Transfer proceeds out equally to contributors
         // Maybe the function is built into the ERC721 standard? safeTransferFrom()? _safeTransfer()?
