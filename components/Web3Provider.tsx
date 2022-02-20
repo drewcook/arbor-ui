@@ -23,6 +23,11 @@ type ProviderProps = {
   children: ReactNode
 }
 
+// Polygon Mainnet
+// const NETWORK_ID = 137
+// Rinkeby
+const NETWORK_ID = 4
+
 // Create context
 const Web3Context = createContext<Partial<Web3ContextProps>>({})
 
@@ -78,7 +83,7 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         // Initialize Onboard.js for production builds (bypass for local dev)
         const onboardInstance = Onboard({
           dappId: process.env.BLOCKNATIVE_KEY,
-          networkId: process.env.NODE_ENV === 'production' ? 4 : 1337, // Rinkeby or local
+          networkId: process.env.NODE_ENV === 'production' ? NETWORK_ID : 1337,
           darkMode: true,
           subscriptions: {
             address: async (address: string) => {

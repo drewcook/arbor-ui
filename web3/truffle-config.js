@@ -43,14 +43,23 @@ module.exports = {
 		mainnet: getInfuraNetworkConfig('mainnet'),
 		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
-		// Polygon
+		// Polygon testnet
+		// matic: {
+		// 	provider: () =>
+		// 		new HDWalletProvider(
+		// 			process.env.MNEMONIC,
+		// 			`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+		// 		),
+		// 	network_id: 80001,
+		// },
+		// Polygon mainnet
 		matic: {
 			provider: () =>
 				new HDWalletProvider(
 					process.env.MNEMONIC,
-					`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+					`https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
 				),
-			network_id: 80001,
+			network_id: 137,
 		},
 	},
 }

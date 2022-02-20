@@ -32,9 +32,8 @@ const TagsInput = (props: TagsInputProps): JSX.Element => {
 	}
 
 	return (
-		<Box sx={styles.wrapper}>
+		<Box>
 			<TextField
-				sx={styles.input}
 				label="Project Tags"
 				variant="filled"
 				margin="normal"
