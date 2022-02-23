@@ -53,6 +53,9 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 
       // Get network provider and web3 instance
       const web3Instance = await getWeb3()
+
+      if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
+
       setWeb3(web3Instance)
 
       // // Get SampleNFT contract
@@ -102,10 +105,10 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
       setOnboard(onboardInstance)
 
       // Connect wallet
-      const connected = await onboard?.walletSelect()
+      const connected = await onboardInstance.walletSelect()
       if (connected) {
         setConnected(true)
-        const readyToTransact = await onboard?.walletCheck()
+        const readyToTransact = await onboardInstance.walletCheck()
       }
 
       // setLoading(false)
