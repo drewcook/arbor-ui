@@ -1,9 +1,8 @@
 import type { ReactNode} from 'react'
 import type { API, Wallet } from 'bnc-onboard/dist/src/interfaces'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import getWeb3 from '../utils/getWeb3'
 import Onboard from 'bnc-onboard'
-import FullPageLoading from './FullPageLoading'
 import Web3Fallback from './Web3Fallback'
 import wallets from '../utils/web3wallets'
 import type { NFTStorage } from 'nft.storage'
@@ -26,8 +25,6 @@ type ProviderProps = {
   children: ReactNode
 }
 
-// Polygon Mainnet
-// const NETWORK_ID = 137
 // Rinkeby
 const NETWORK_ID = 4
 
@@ -37,7 +34,6 @@ const Web3Context = createContext<Web3ContextProps>({})
 
 // Context provider
 export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
-	// const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string|null>(null)
   const [web3, setWeb3] = useState(null)
   const [contract, setContract] = useState(null)
@@ -110,13 +106,10 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         setConnected(true)
         const readyToTransact = await onboardInstance.walletCheck()
       }
-
-      // setLoading(false)
     } catch (e: any) {
       // Catch any errors for any of the above operations.
       setError('Failed to load Web3 tooling. Check console for details.')
       console.error(e)
-      // setLoading(false)
     }
   }
 
@@ -160,7 +153,6 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
     }
 	}
 
-	// if (loading) return <FullPageLoading />
 	if (error) return <Web3Fallback />
 
 	return (
