@@ -18,14 +18,18 @@ const styles = {
 	wrapper: {
 		marginBottom: 4,
 		backgroundColor: '#111',
+		color: '#fff',
 	},
 	logoDesktop: {
 		mr: 2,
 		display: { xs: 'none', md: 'flex' },
 		textShadow: '1px 1px #23F09A',
-		color: '#fff',
 	},
-	logoMobile: { display: { xs: 'flex', alignItems: 'center', md: 'none' }, ml: 1 },
+	logoMobile: {
+		display: { xs: 'flex', alignItems: 'center', md: 'none' },
+		ml: 1,
+		textShadow: '1px 1px #23F09A',
+	},
 }
 
 const pages = [

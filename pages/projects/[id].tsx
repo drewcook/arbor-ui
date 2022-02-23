@@ -139,7 +139,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState('')
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
-  const { accounts, contract } = useWeb3()
+  const { accounts, contract, connected, handleConnectWallet } = useWeb3()
 
   useEffect(() => {
     // Initialize all samples as Howler objects for "play/pause all" functionality
@@ -289,11 +289,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
                   ))}
                   {details.samples.length > 0 && (
                     <Box sx={styles.mintAndBuy}>
-                      <Button size="large" onClick={handleMintAndBuy} variant="contained" color="secondary" sx={styles.mintAndBuyBtn} disabled={minting}>
+                      <Button size="large" onClick={connected ? handleMintAndBuy : handleConnectWallet} variant="contained" color="secondary" sx={styles.mintAndBuyBtn} disabled={minting}>
                         {minting ? <CircularProgress size={18} sx={{ my: .5 }} /> : 'Mint & Buy'}
                       </Button>
                       <Box sx={styles.price}>
-                        <Image src={EthereumIcon} width={50} height={50} />
+                        <Image src={EthereumIcon} width={50} height={50} alt="Ethereum" />
                         <Typography variant="h4" component="div">0.01 <Typography sx={styles.eth} component="span">ETH</Typography></Typography>
                       </Box>
                     </Box>

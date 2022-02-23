@@ -1,5 +1,5 @@
 import type { ReactNode} from 'react'
-import type { Wallet } from 'bnc-onboard/dist/src/interfaces'
+import type { API, Wallet } from 'bnc-onboard/dist/src/interfaces'
 import { createContext, useContext, useEffect, useState } from 'react'
 import getWeb3 from '../utils/getWeb3'
 import Onboard from 'bnc-onboard'
@@ -12,11 +12,14 @@ import SampleNFTContract from '../contracts/PolyechoSample.json'
 
 // Context types
 type Web3ContextProps = {
-	web3: any,
+  web3: any,
+  NFTStore: any,
+  onboard: any,
 	accounts: any,
   contract: any,
-  onboard: any,
-  NFTStore: NFTStorage,
+  connected: boolean,
+  handleConnectWallet: any,
+  handleDisconnectWallet: any,
 }
 
 type ProviderProps = {
@@ -29,17 +32,19 @@ type ProviderProps = {
 const NETWORK_ID = 4
 
 // Create context
-const Web3Context = createContext<Partial<Web3ContextProps>>({})
+// @ts-ignore
+const Web3Context = createContext<Web3ContextProps>({})
 
 // Context provider
 export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
-  const [NFTStore, setNFTStore] = useState<NFTStorage>()
-	const [web3, setWeb3] = useState(null)
-  const [contract, setContract] = useState(null)
-	const [accounts, setAccounts] = useState<string[]|null>(null)
-  const [onboard, setOnboard] = useState<unknown|null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string|null>(null)
+  const [web3, setWeb3] = useState(null)
+  const [contract, setContract] = useState(null)
+	const [accounts, setAccounts] = useState<string[]>([])
+  const [NFTStore, setNFTStore] = useState<NFTStorage|null>(null)
+  const [onboard, setOnboard] = useState<API|null>(null)
+  const [connected, setConnected] = useState<boolean>(false)
 
 	useEffect(() => {
     const loadWeb3 = async () => {
@@ -51,7 +56,7 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         const web3Instance = await getWeb3()
         setWeb3(web3Instance)
 
-        // Get SampleNFT contract
+        // // Get SampleNFT contract
         const networkId = await web3Instance.eth.net.getId()
         /* @ts-ignore */
         const deployedNetwork = SampleNFTContract.networks[networkId]
@@ -61,10 +66,10 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         )
         setContract(sampleContract)
 
-
-        // Get accounts initially
+        // // Get accounts initially
         const connectedAccounts = await web3Instance.eth.getAccounts()
         setAccounts(connectedAccounts)
+        if (connectedAccounts.length > 0) setConnected(true)
 
         // Listen for account changes
         web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
@@ -97,18 +102,11 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
         })
         setOnboard(onboardInstance)
 
-        // Prompt user to select a wallet
-        const walletSelected = await onboardInstance.walletSelect('MetaMask')
-        if (walletSelected) {
-          // Run wallet checks to make sure that user is ready to transact
-          const readyToTransact = await onboardInstance.walletCheck()
-        }
-
         setLoading(false)
-      } catch (error) {
+      } catch (e: any) {
         // Catch any errors for any of the above operations.
-        setError('Failed to load web3, accounts, or contract. Check console for details.')
-        console.error(error)
+        setError('Failed to load Web3 tooling. Check console for details.')
+        console.error(e)
         setLoading(false)
       }
     }
@@ -130,10 +128,49 @@ export const Web3Provider = ({children}: ProviderProps): JSX.Element => {
 		}
 	}
 
+  /**
+   * Allow for components to update connected status and sign in with Onboard.js
+   */
+  const handleConnectWallet = async () => {
+    try {
+      const connected = await onboard?.walletSelect()
+      if (connected) setConnected(true)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+    /**
+   * Allow for components to update connected status and sign out with Onboard.js
+   */
+  const handleDisconnectWallet = async () => {
+    try {
+      await onboard?.walletReset()
+      setConnected(false)
+    } catch (e) {
+      console.error(e)
+    }
+	}
+
 	if (loading) return <FullPageLoading />
 	if (error) return <Web3Fallback />
 
-	return <Web3Context.Provider value={{ web3, accounts, contract, NFTStore, onboard }}>{children}</Web3Context.Provider>
+	return (
+    <Web3Context.Provider
+      value={{
+        web3,
+        accounts,
+        contract,
+        NFTStore,
+        onboard,
+        connected,
+        handleConnectWallet,
+        handleDisconnectWallet
+      }}
+    >
+      {children}
+    </Web3Context.Provider>
+  )
 }
 
 // Context hook

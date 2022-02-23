@@ -23,55 +23,25 @@ const styles = {
 
 const ConnectedAccount = (): JSX.Element => {
 	const [currentAccount, setCurrentAccount] = useState('')
-	const [authenticated, setAuthenticated] = useState(false)
 	const [anchorEl, setAnchorEl] = useState(null)
-	const { accounts, onboard } = useWeb3()
-
-	useEffect(() => {
-		const { address } = onboard.getState()
-		if (address) setAuthenticated(true)
-	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
+	const { accounts, connected, handleConnectWallet, handleDisconnectWallet } = useWeb3()
 
 	useEffect(() => {
 		setCurrentAccount(accounts[0])
 	}, [accounts])
 
-	const handleOpenMenu = (e: { target: any }) => {
-		if (authenticated) setAnchorEl(e.target)
-	}
-
-	const handleCloseMenu = () => {
-		setAnchorEl(null)
-	}
-
-	const handleMenuItemClick = () => {
-		// Close for now
-		setAnchorEl(null)
-	}
-
-	const handleConnectWallet = async () => {
-		const connected = await onboard.walletSelect()
-		if (connected) {
-			const { address } = onboard.getState()
-			setCurrentAccount(address)
-			setAuthenticated(true)
-		}
-	}
+	const handleOpenMenu = (e: { target: any }) => setAnchorEl(e.target)
+	const handleCloseMenu = () => setAnchorEl(null)
 
 	const handleLogout = async () => {
-		await onboard.walletReset()
-		const { address } = onboard.getState()
-		if (!address) {
-			setCurrentAccount(address)
-			setAuthenticated(false)
-			setAnchorEl(null)
-		}
+		await handleDisconnectWallet()
+		setAnchorEl(null)
 	}
 
 	return (
 		<>
 			<Box sx={styles.wrapper}>
-				{!authenticated ? (
+				{!connected ? (
 					<Button
 						size="small"
 						variant="contained"
@@ -111,9 +81,8 @@ const ConnectedAccount = (): JSX.Element => {
 							open={Boolean(anchorEl)}
 							onClose={handleCloseMenu}
 						>
-							<MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem>
-							<MenuItem onClick={handleMenuItemClick}>Settings</MenuItem>
-							{/* <MenuItem onClick={() => onboard.accountSelect()}>Connect Hardware Wallet</MenuItem> */}
+							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem>
+							<MenuItem onClick={handleMenuItemClick}>Settings</MenuItem> */}
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
 						{currentAccount && (

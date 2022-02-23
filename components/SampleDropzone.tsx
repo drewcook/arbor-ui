@@ -73,7 +73,7 @@ type SampleDropzoneProps = {
 const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	const { project, onSuccess } = props
 	const [loading, setLoading] = useState(false)
-	const { NFTStore, accounts } = useWeb3()
+	const { NFTStore, accounts, connected, handleConnectWallet } = useWeb3()
 	const {
 		getRootProps,
 		getInputProps,
@@ -87,38 +87,43 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 		accept: 'audio/wav,audio/mpeg,audio/aiff,audio/webm',
 		// Support only one file uploaded at a time
 		onDrop: async ([file]) => {
-			setLoading(true)
 			try {
-				// Add file to NFT.storage
-				if (NFTStore) {
-					const metadata = await NFTStore.store({
-						name: file.name,
-						description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
-						image: new File([], 'PolyEcho NFT', { type: 'image/*' }),
-						properties: {
-							audio: new File([file], file.name, { type: file.type }),
-						},
-					})
-					// console.log('result from NFTStorage.store():', metadata)
-					if (metadata) {
-						// Add sample data to overall project
-						const newSample = {
-							audioUrl: metadata.embed().properties.audio.href,
-							cid: metadata.data.properties.audio.href,
-							filename: file.name,
-							filetype: file.type,
-							filesize: file.size,
-							createdBy: accounts[0],
+				if (!connected) {
+					await handleConnectWallet()
+				} else {
+					setLoading(true)
+					// Add file to NFT.storage
+					if (NFTStore) {
+						const metadata = await NFTStore.store({
+							name: file.name,
+							description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
+							image: new File([], 'PolyEcho NFT', { type: 'image/*' }),
+							properties: {
+								audio: new File([file], file.name, { type: file.type }),
+							},
+						})
+						// console.log('result from NFTStorage.store():', metadata)
+						if (metadata) {
+							// Add sample data to overall project
+							const newSample = {
+								audioUrl: metadata.embed().properties.audio.href,
+								cid: metadata.data.properties.audio.href,
+								filename: file.name,
+								filetype: file.type,
+								filesize: file.size,
+								createdBy: accounts[0],
+							}
+							// Compile new sample to a
+							let collaborators = project.collaborators
+							if (!project.collaborators.some(s => s === accounts[0]))
+								collaborators.push(accounts[0])
+							const res = await update(`/projects/${project._id}`, { newSample, collaborators })
+							// Success callback
+							if (res.success) onSuccess(res.data)
 						}
-						// Compile new sample to a
-						let collaborators = project.collaborators
-						if (!project.collaborators.some(s => s === accounts[0])) collaborators.push(accounts[0])
-						const res = await update(`/projects/${project._id}`, { newSample, collaborators })
-						// Success callback
-						if (res.success) onSuccess(res.data)
 					}
+					setLoading(false)
 				}
-				setLoading(false)
 			} catch (err) {
 				console.error(err)
 				setLoading(false)
