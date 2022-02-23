@@ -1,15 +1,19 @@
+import detectEthereumProvider from '@metamask/detect-provider'
 import Web3 from 'web3'
 
 const getWeb3 = async () => {
+	const provider = await detectEthereumProvider()
 	// Modern dapp browsers...
-	if (window.ethereum) {
-		const web3 = new Web3(window.ethereum)
+	if (provider) {
+		// provider === window.ethereum
+		const web3 = new Web3(provider)
 		try {
 			// Request account access if needed
-			await window.ethereum.request({ method: 'eth_requestAccounts' })
+			await provider.request({ method: 'eth_requestAccounts' })
 			// Accounts now exposed
 			return web3
 		} catch (error) {
+			console.error('Please install a Web3 wallet.', error)
 			return false
 		}
 	}
