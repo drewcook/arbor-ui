@@ -8965,10 +8965,10 @@ warning@^4.0.3:
   dependencies:
     loose-envify "^1.0.0"
 
-wavesurfer.js@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-6.0.1.tgz#a511611b2f4d04d098da8166f1fd2a818db20a82"
-  integrity sha512-igFjn9Zuo/vqcKdNKP90GZnKMGgder3Xz1cCR1UBw6ifdXTrfQDHpIte7GuddupQIEGoLajhvIgv1OJRXeU0XQ==
+wavesurfer.js@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-5.2.0.tgz#efae107b5b561e9bfe3fffc50e6158136a17643e"
+  integrity sha512-SkPlTXfvKy+ZnEA7f7g7jn6iQg5/8mAvWpVV5vRbIS/FF9TB2ak9J7VayQfzfshOLW/CqccTiN6DDR/fZA902g==
 
 web-encoding@1.1.5:
   version "1.1.5"

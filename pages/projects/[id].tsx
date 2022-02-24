@@ -20,11 +20,13 @@ import {
 } from '@mui/material'
 import { IProjectDoc } from '../../models/project.model'
 import { Download, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import SamplePlayer from '../../components/SamplePlayer'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import Image from 'next/image'
 import EthereumIcon from '../../public/ethereum_icon.png'
+// Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
+import dynamic from 'next/dynamic'
+const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
 const styles = {
 	error: {
