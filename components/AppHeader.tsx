@@ -21,6 +21,11 @@ const styles = {
 		backgroundColor: '#111',
 		color: '#fff',
 	},
+	alphaChip: {
+		ml: 1,
+		fontSize: '.6rem',
+		height: '1.25rem',
+	},
 	logoDesktop: {
 		mr: 2,
 		display: { xs: 'none', md: 'flex' },
@@ -30,11 +35,6 @@ const styles = {
 		display: { xs: 'flex', alignItems: 'center', md: 'none' },
 		ml: 1,
 		textShadow: '1px 1px #23F09A',
-	},
-	alphaChip: {
-		ml: 1,
-		fontSize: '.6rem',
-		height: '1.25rem',
 	},
 }
 
