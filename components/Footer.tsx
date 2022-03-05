@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { Box, Typography } from '@mui/material'
 
 const styles = {

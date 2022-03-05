@@ -3,6 +3,7 @@ import Link from 'next/link'
 import {
 	AppBar,
 	Box,
+	Chip,
 	Toolbar,
 	IconButton,
 	Typography,
@@ -30,6 +31,11 @@ const styles = {
 		ml: 1,
 		textShadow: '1px 1px #23F09A',
 	},
+	alphaChip: {
+		ml: 1,
+		fontSize: '.6rem',
+		height: '1.25rem',
+	},
 }
 
 const pages = [
@@ -55,6 +61,7 @@ const AppHeader = (): JSX.Element => {
 				<Toolbar disableGutters>
 					<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
 						PolyEcho
+						<Chip label="Alpha" size="small" color="primary" sx={styles.alphaChip} />
 					</Typography>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -94,6 +101,7 @@ const AppHeader = (): JSX.Element => {
 						</Menu>
 						<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
 							PolyEcho
+							<Chip label="Alpha" size="small" color="primary" sx={styles.alphaChip} />
 						</Typography>
 					</Box>
 
