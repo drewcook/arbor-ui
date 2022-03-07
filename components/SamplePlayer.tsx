@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
-import { Box, Fab, Grid, Typography } from '@mui/material'
 import { PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import type { ISampleDoc } from '../models/sample.model'
-import formatAddress from '../utils/formatAddress'
+import { Box, Fab, Grid, Typography } from '@mui/material'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
 // @ts-ignore
 import TimelinePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js'
+import type { ISampleDoc } from '../models/sample.model'
+import formatAddress from '../utils/formatAddress'
 
 const styles = {
 	sample: {
@@ -94,7 +95,9 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 							<Typography sx={styles.metadataTitle} variant="h4">
 								{details.filename}
 							</Typography>
-							<Typography sx={styles.metadataSmall}>Added by {formatAddress(details.createdBy)}</Typography>
+							<Typography sx={styles.metadataSmall}>
+								Added by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
+							</Typography>
 						</Box>
 					</Box>
 				</Grid>

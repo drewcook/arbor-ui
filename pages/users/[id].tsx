@@ -1,13 +1,14 @@
 import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import Notification from '../../components/Notification'
 import { useWeb3 } from '../../components/Web3Provider'
-import { IUser } from '../../models/user.model'
+import type { IUser } from '../../models/user.model'
 import { get } from '../../utils/http'
 
 const styles = {
@@ -39,6 +40,8 @@ const styles = {
 const propTypes = {
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
+		projectIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+		sampleIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 	}),
 }
 
@@ -111,10 +114,26 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
-							{details.samples.length > 0 ? (
-								details.samples.map((sample, idx) => (
+							<Typography variant="h4" gutterBottom>
+								Projects
+							</Typography>
+							{details.projectIds.length > 0 ? (
+								details.projectIds.map((projectId: string, idx: number) => (
 									<Typography key={idx} gutterBottom>
-										Sample: {sample._id}
+										Project: <Link href={`/projects/${projectId}`}>{projectId}</Link>
+									</Typography>
+								))
+							) : (
+								<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
+							)}
+							<Divider light sx={styles.divider} />
+							<Typography variant="h4" gutterBottom>
+								Samples
+							</Typography>
+							{details.sampleIds.length > 0 ? (
+								details.sampleIds.map((sampleId: string, idx: number) => (
+									<Typography key={idx} gutterBottom>
+										Sample: {sampleId}
 									</Typography>
 								))
 							) : (

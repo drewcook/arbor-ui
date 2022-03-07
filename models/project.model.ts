@@ -15,7 +15,7 @@ export interface IProject {
 
 export interface IProjectDoc extends Document, IProject {}
 
-const projectSchema = new mongoose.Schema(
+export const projectSchema = new mongoose.Schema(
 	{
 		createdBy: {
 			type: String,

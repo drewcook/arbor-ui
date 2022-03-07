@@ -1,11 +1,10 @@
 import mongoose from 'mongoose'
-import type { ISampleDoc } from './sample.model'
-import { sampleSchema } from './sample.model'
 
 export interface IUser {
 	_id: string
 	displayName: string
-	samples: ISampleDoc[]
+	projectIds: string[]
+	sampleIds: string[]
 }
 
 // export interface IUserDoc extends Document, IUser {}
@@ -26,8 +25,13 @@ const userSchema = new mongoose.Schema<IUser>(
 			minLength: 3,
 			maxlength: 50,
 		},
-		samples: {
-			type: [sampleSchema],
+		projectIds: {
+			type: [String],
+			required: false,
+			default: [],
+		},
+		sampleIds: {
+			type: [String],
 			required: false,
 			default: [],
 		},
