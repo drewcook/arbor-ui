@@ -55,6 +55,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { currentUser } = useWeb3()
 
 	useEffect(() => {
+		// Update the details when changing the route directly
 		if (data) setDetails(data)
 		if (currentUser?._id === data?._id) {
 			setIsCurrentUserDetails(true)
@@ -65,7 +66,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 
 	useEffect(() => {
 		// Update details when switching accounts and when
-		console.log('current user changing', currentUser)
 		if (currentUser?._id === data?._id) {
 			setIsCurrentUserDetails(true)
 		} else {
@@ -143,7 +143,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	let userId = context.query.id
 	if (typeof userId === 'object') userId = userId[0].toLowerCase()
 	else userId = userId?.toLowerCase()
-	console.log({ userId })
 	const res = await get(`/users/${userId}`)
 	const data: IUser | null = res.success ? res.data : null
 	return {

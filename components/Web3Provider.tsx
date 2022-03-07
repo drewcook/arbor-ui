@@ -155,8 +155,6 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	 */
 	const findOrCreateUser = async (account?: string | null) => {
 		try {
-			console.log('findOrCreate', account)
-
 			if (!account) return
 
 			// If there is not a user created for this connected account, create one
