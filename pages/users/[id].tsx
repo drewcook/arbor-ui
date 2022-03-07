@@ -1,4 +1,4 @@
-import { Box, Container, Divider, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -103,7 +103,11 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										<Typography variant="h5" gutterBottom>
 											User Details
 										</Typography>
-										{isCurrentUserDetails && <Typography>My Profile</Typography>}
+										{isCurrentUserDetails && (
+											<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
+												Edit Profile
+											</Button>
+										)}
 										<Typography variant="h4" component="h2" sx={styles.title}>
 											{details._id}
 										</Typography>
