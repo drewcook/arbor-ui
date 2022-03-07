@@ -1,6 +1,7 @@
 import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
@@ -35,9 +36,13 @@ const styles = {
 	},
 }
 
-type UserDetailsPageProps = {
-	data: IUser | null
+const propTypes = {
+	data: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+	}),
 }
+
+type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
@@ -116,6 +121,8 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 		</>
 	)
 }
+
+UserDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	const userId = context.query.id

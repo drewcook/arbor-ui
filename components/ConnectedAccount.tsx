@@ -1,8 +1,8 @@
+import { Avatar, Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import Link from 'next/link'
-import { Avatar, Button, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useWeb3 } from './Web3Provider'
 import formatAddress from '../utils/formatAddress'
+import { useWeb3 } from './Web3Provider'
 
 const styles = {
 	wrapper: {

@@ -1,12 +1,13 @@
+import { Box, Button, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import { Box, Button, Container, Grid, Typography } from '@mui/material'
-import { get } from '../../utils/http'
-import { IProjectDoc } from '../../models/project.model'
 import ProjectCard from '../../components/ProjectCard'
+import { IProjectDoc } from '../../models/project.model'
+import { get } from '../../utils/http'
 
 const styles = {
 	title: {
@@ -23,9 +24,15 @@ const styles = {
 	},
 }
 
-type ProjectsPageProps = {
-	data: IProjectDoc[] | null
+const propTypes = {
+	data: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+		}),
+	),
 }
+
+type ProjectsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	const { data } = props
@@ -76,6 +83,8 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 		</div>
 	)
 }
+
+ProjectsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	const res = await get(`/projects`)

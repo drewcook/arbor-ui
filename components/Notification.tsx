@@ -1,7 +1,7 @@
-import type { AlertColor } from '@mui/material'
-import type { SyntheticEvent } from 'react'
-import { Alert, IconButton, Snackbar, SnackbarCloseReason } from '@mui/material'
 import { Close } from '@mui/icons-material'
+import type { AlertColor } from '@mui/material'
+import { Alert, IconButton, Snackbar, SnackbarCloseReason } from '@mui/material'
+import type { SyntheticEvent } from 'react'
 import { useState } from 'react'
 
 type NotificationProps = {
@@ -15,7 +15,7 @@ const Notification = (props: NotificationProps): JSX.Element => {
 	const { msg, open, type, onClose } = props
 	const [isOpen, setIsOpen] = useState(open)
 
-	const handleAlertClose: (event: SyntheticEvent<Element, Event>) => void = event => {
+	const handleAlertClose: (event: SyntheticEvent<Element, Event>) => void = () => {
 		setIsOpen(false)
 		onClose()
 	}

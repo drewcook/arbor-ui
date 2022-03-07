@@ -9,7 +9,7 @@ import {
 	Fab,
 	Grid,
 	IconButton,
-	Typography
+	Typography,
 } from '@mui/material'
 import { Howl } from 'howler'
 import type { NextPage } from 'next'
@@ -17,6 +17,7 @@ import type { NextPage } from 'next'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Image from 'next/image'
+import PropTypes from 'prop-types'
 import { Fragment, useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
@@ -126,9 +127,19 @@ const styles = {
 	},
 }
 
-type ProjectPageProps = {
-	data: IProjectDoc | null
+const propTypes = {
+	data: PropTypes.shape({
+		samples: PropTypes.arrayOf(
+			PropTypes.shape({
+				audioUrl: PropTypes.string.isRequired,
+			}),
+		),
+		success: PropTypes.bool.isRequired,
+		cid: PropTypes.string.isRequired,
+	}),
 }
+
+type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data } = props
@@ -370,5 +381,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		</>
 	)
 }
+
+ProjectPage.propTypes = propTypes
 
 export default ProjectPage

@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import {
 	Box,
 	Container,
@@ -10,6 +9,7 @@ import {
 	ListItemText,
 	Typography,
 } from '@mui/material'
+import Image from 'next/image'
 import CoinbaseIcon from '../public/coinbasewallet_icon.png'
 import EthereumIcon from '../public/ethereum_icon.png'
 import MetaMaskIcon from '../public/metamask_icon.png'
