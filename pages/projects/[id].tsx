@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import Footer from '../../components/Footer'
+import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import Notification from '../../components/Notification'
 import { get } from '../../utils/http'
@@ -243,7 +243,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>ETHDenver Hack Web App | Create A New Project</title>
+				<title>PolyEcho | Project Details</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -351,7 +351,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				</Container>
 			</main>
 
-			<Footer />
+			<AppFooter />
       {successOpen && (
 				<Notification
 					open={successOpen}

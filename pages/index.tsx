@@ -2,8 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
-// import Header from '../components/Header'
-import Footer from '../components/Footer'
+import AppFooter from '../components/AppFooter'
 import { Box, Button, Container, Typography } from '@mui/material'
 
 const styles = {
@@ -29,7 +28,7 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>ETHDenver Hack Web App | Welcome</title>
+				<title>PolyEcho | Welcome</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -61,7 +60,7 @@ const Home: NextPage = () => {
 				</Container>
 			</main>
 
-			<Footer />
+			<AppFooter />
 		</>
 	)
 }

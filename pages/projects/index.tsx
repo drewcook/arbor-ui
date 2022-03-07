@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Footer from '../../components/Footer'
+import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import { Box, Button, Container, Grid, Typography } from '@mui/material'
 import { get } from '../../utils/http'
@@ -33,7 +33,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	return (
 		<div>
 			<Head>
-				<title>ETHDenver Hack Web App | Explore Music Projects</title>
+				<title>PolyEcho | Explore Music Projects</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -74,7 +74,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 				</Container>
 			</main>
 
-			<Footer />
+			<AppFooter />
 		</div>
 	)
 }

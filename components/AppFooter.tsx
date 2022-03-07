@@ -16,7 +16,7 @@ const styles = {
 	},
 }
 
-const Footer = (): JSX.Element => {
+const AppFooter = (): JSX.Element => {
 	return (
 		<footer>
 			<Box sx={styles.footer}>
@@ -28,4 +28,4 @@ const Footer = (): JSX.Element => {
 	)
 }
 
-export default Footer
+export default AppFooter

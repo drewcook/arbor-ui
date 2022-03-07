@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, Project } from '../../../models/project.model'
-import { ISample } from '../../../models/sample.model'
 import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -47,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					)
 					// Returns
 					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to add project' })
+						return res.status(400).json({ success: false, error: 'failed to update project' })
 					}
 					res.status(200).json({ success: true, data: project })
 				} else {
@@ -58,7 +57,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					})
 					// Returns
 					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to add project' })
+						return res.status(400).json({ success: false, error: 'failed to update project' })
 					}
 					res.status(200).json({ success: true, data: project })
 				}
@@ -73,7 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!deletedProject) {
 					return res.status(400).json({ success: false, error: 'failed to delete project' })
 				}
-				res.status(200).json({ success: true, data: {} })
+				res.status(200).json({ success: true, data: deletedProject })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}

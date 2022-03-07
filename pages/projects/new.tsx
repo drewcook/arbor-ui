@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Footer from '../../components/Footer'
+import AppFooter from '../../components/AppFooter'
 import Notification from '../../components/Notification'
 import AppHeader from '../../components/AppHeader'
 import { Button, Container, TextField, Typography } from '@mui/material'
@@ -84,7 +84,7 @@ const NewProjectPage: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>ETHDenver Hack Web App | Create A New Project</title>
+				<title>PolyEcho | Create A New Project</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -153,7 +153,7 @@ const NewProjectPage: NextPage = () => {
 				</Container>
 			</main>
 
-			<Footer />
+			<AppFooter />
 			{successOpen && (
 				<Notification
 					open={successOpen}
