@@ -12,7 +12,7 @@ import {
 	Typography,
 } from '@mui/material'
 import { Howl } from 'howler'
-import type { NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
@@ -26,6 +26,8 @@ import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
+import { get } from '../../utils/http'
+
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
 const styles = {
@@ -131,9 +133,16 @@ const propTypes = {
 	data: PropTypes.shape({
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
+				cid: PropTypes.string.isRequired,
 				audioUrl: PropTypes.string.isRequired,
 			}),
-		),
+		).isRequired,
+		name: PropTypes.string.isRequired,
+		description: PropTypes.string.isRequired,
+		bpm: PropTypes.number.isRequired,
+		timeboxMins: PropTypes.number.isRequired,
+		tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		success: PropTypes.bool.isRequired,
 		cid: PropTypes.string.isRequired,
 	}),
@@ -151,16 +160,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState('')
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
-	const { accounts, contract, connected, handleConnectWallet } = useWeb3()
+	const { currentUser, contract, connected, handleConnectWallet } = useWeb3()
 
 	useEffect(() => {
 		// Initialize all samples as Howler objects for "play/pause all" functionality
 		if (data) {
 			const sources = []
-			for (const sample of data.samples) {
+			for (const sample of data?.samples) {
 				sources.push(
 					new Howl({
-						src: sample.audioUrl,
+						src: sample?.audioUrl,
 					}),
 				)
 			}
@@ -172,10 +181,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		// Re-initialize the play all button
 		if (details) {
 			const sources = []
-			for (const sample of details.samples) {
+			for (const sample of details?.samples) {
 				sources.push(
 					new Howl({
-						src: sample.audioUrl,
+						src: sample?.audioUrl,
 					}),
 				)
 			}
@@ -212,9 +221,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 	const handleMintAndBuy = async () => {
 		try {
-			if (details) {
+			if (details && currentUser) {
 				setMinting(true)
-				const samples = details.samples.map(s => s.cid.replace('ipfs://', ''))
+				const samples = details.samples.map(s => s?.cid.replace('ipfs://', ''))
 				// Hit Python HTTP server to flatten samples into a singular one
 				const response = await fetch('/api/flatten', {
 					method: 'POST',
@@ -232,8 +241,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (data.success) {
 					// Call smart contract and mint an nft out of the original CID
 					const tokenURI: string = await contract.methods
-						.mint(accounts[0], data.cid, details.collaborators)
-						.send({ from: accounts[0], value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+						.mint(currentUser._id, data.cid, details.collaborators)
+						// TODO: Should this be non-lowercased?
+						.send({ from: currentUser._id, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 					console.info(tokenURI)
 					// TODO: Do stuff?
 					setSuccessOpen(true)
@@ -383,5 +393,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 }
 
 ProjectPage.propTypes = propTypes
+
+export const getServerSideProps: GetServerSideProps = async context => {
+	const projectId = context.query.id
+	const res = await get(`/projects/${projectId}`)
+	const data: IProjectDoc | null = res.success ? res.data : null
+	return {
+		props: {
+			data,
+		},
+	}
+}
 
 export default ProjectPage

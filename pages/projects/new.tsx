@@ -32,7 +32,7 @@ const NewProjectPage: NextPage = () => {
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const router = useRouter()
-	const { accounts } = useWeb3()
+	const { currentUser } = useWeb3()
 
 	// Tags
 	const handleAddTag = (tag: string) => setTags([...tags, tag])
@@ -40,9 +40,14 @@ const NewProjectPage: NextPage = () => {
 
 	const handleSubmit = async () => {
 		try {
+			if (!currentUser) {
+				setErrorOpen(true)
+				setErrorMsg('You must have a connected Web3 wallet to create a project')
+				return
+			}
 			const payload: CreateProjectPayload = {
-				createdBy: accounts[0],
-				collaborators: [accounts[0]], // start as only collaborator
+				createdBy: currentUser._id,
+				collaborators: [currentUser._id], // start as only collaborator
 				name,
 				description,
 				bpm,
