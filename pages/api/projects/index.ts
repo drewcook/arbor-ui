@@ -1,16 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, Project } from '../../../models/project.model'
-import { ISample } from '../../../models/sample.model'
 import dbConnect from '../../../utils/db'
 
 export type CreateProjectPayload = {
-	createdBy: string,
-	collaborators: string[],
-	name: string,
-	description: string,
-	bpm: number,
-	timeboxMins: number,
-	tags: string[],
+	createdBy: string
+	collaborators: string[]
+	name: string
+	description: string
+	bpm: number
+	timeboxMins: number
+	tags: string[]
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {

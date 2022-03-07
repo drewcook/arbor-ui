@@ -1,6 +1,5 @@
-import { useState } from 'react'
-
 import { Box, Chip, TextField } from '@mui/material'
+import { useState } from 'react'
 
 const styles = {
 	tags: {
@@ -12,9 +11,9 @@ const styles = {
 }
 
 type TagsInputProps = {
-	tags: string[],
-	onAdd: (tag: string) => void,
-	onDelete: (tag: string) => void,
+	tags: string[]
+	onAdd: (tag: string) => void
+	onDelete: (tag: string) => void
 }
 
 const TagsInput = (props: TagsInputProps): JSX.Element => {

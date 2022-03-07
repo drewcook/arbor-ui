@@ -1,17 +1,6 @@
 import { Fragment, useState } from 'react'
 import Link from 'next/link'
-import {
-	AppBar,
-	Box,
-	Chip,
-	Toolbar,
-	IconButton,
-	Typography,
-	Menu,
-	Container,
-	Button,
-	MenuItem,
-} from '@mui/material'
+import { AppBar, Box, Chip, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ConnectedAccount from './ConnectedAccount'
 

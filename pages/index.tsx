@@ -42,8 +42,8 @@ const Home: NextPage = () => {
 							Make music for fun, and profit.
 						</Typography>
 						<Typography variant="h5" component="p" sx={styles.p}>
-							<strong>POLYECHO</strong> is a schelling game where the objective is to publicly
-							co-create songs worthy of purchase by NFT collectors.
+							<strong>POLYECHO</strong> is a schelling game where the objective is to publicly co-create songs worthy of
+							purchase by NFT collectors.
 						</Typography>
 						<Typography variant="h5" component="p" sx={styles.p}>
 							Collectors can explore, curate, and own a wild world of memetic music.

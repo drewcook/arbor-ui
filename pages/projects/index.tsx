@@ -24,7 +24,7 @@ const styles = {
 }
 
 type ProjectsPageProps = {
-	data: IProjectDoc[] | null,
+	data: IProjectDoc[] | null
 }
 
 const ProjectsPage: NextPage<ProjectsPageProps> = props => {
@@ -57,9 +57,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 								</Grid>
 							) : (
 								<Box sx={styles.noProjects}>
-									<Typography sx={styles.noProjectsMsg}>
-										No projects to show. Create one!
-									</Typography>
+									<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
 									<Link href="/projects/new" passHref>
 										<Button variant="contained" color="secondary">
 											Create Project
@@ -81,7 +79,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	const res = await get(`/projects`)
-	let data: IProjectDoc[] | null = res.success ? res.data : null
+	const data: IProjectDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,

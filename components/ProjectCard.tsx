@@ -26,7 +26,7 @@ const styles = {
 }
 
 type ProjectCardProps = {
-	details: IProjectDoc,
+	details: IProjectDoc
 }
 
 const ProjectCard = (props: ProjectCardProps): JSX.Element => {
@@ -49,14 +49,7 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 				{details.tags &&
 					details.tags?.length > 0 &&
 					details.tags?.map((tag: string) => (
-						<Chip
-							key={tag}
-							label={tag}
-							variant="filled"
-							color="secondary"
-							size="small"
-							sx={styles.tag}
-						/>
+						<Chip key={tag} label={tag} variant="filled" color="secondary" size="small" sx={styles.tag} />
 					))}
 			</CardContent>
 			<CardActions sx={styles.actions}>

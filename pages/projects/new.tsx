@@ -1,14 +1,14 @@
+import { Button, Container, TextField, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import AppFooter from '../../components/AppFooter'
-import Notification from '../../components/Notification'
-import AppHeader from '../../components/AppHeader'
-import { Button, Container, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
-import { post } from '../../utils/http'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
+import AppFooter from '../../components/AppFooter'
+import AppHeader from '../../components/AppHeader'
+import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
+import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
 const styles = {
@@ -17,23 +17,22 @@ const styles = {
 	},
 	submitBtn: {
 		marginTop: 2,
-    color: '#fff'
+		color: '#fff',
 	},
 }
 
-
 const NewProjectPage: NextPage = () => {
-	const [name, setName] = useState('')
-	const [description, setDescription] = useState('')
-  const [bpm, setBpm] = useState(120)
-  const [timeboxMins, setTimeboxMins] = useState(2)
+	const [name, setName] = useState<string>('')
+	const [description, setDescription] = useState<string>('')
+	const [bpm, setBpm] = useState<number>(120)
+	const [timeboxMins, setTimeboxMins] = useState<number>(2)
 	const [tags, setTags] = useState<string[]>([])
-	const [successOpen, setSuccessOpen] = useState(false)
-	const [successMsg, setSuccessMsg] = useState('')
-	const [errorOpen, setErrorOpen] = useState(false)
-	const [errorMsg, setErrorMsg] = useState('')
+	const [successOpen, setSuccessOpen] = useState<boolean>(false)
+	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [errorOpen, setErrorOpen] = useState<boolean>(false)
+	const [errorMsg, setErrorMsg] = useState<string>('')
 	const router = useRouter()
-  const { accounts } = useWeb3()
+	const { accounts } = useWeb3()
 
 	// Tags
 	const handleAddTag = (tag: string) => setTags([...tags, tag])
@@ -42,14 +41,14 @@ const NewProjectPage: NextPage = () => {
 	const handleSubmit = async () => {
 		try {
 			const payload: CreateProjectPayload = {
-        createdBy: accounts[0],
-        collaborators: [accounts[0]], // start as only collaborator
-        name,
-        description,
-        bpm,
-        timeboxMins,
-        tags,
-      }
+				createdBy: accounts[0],
+				collaborators: [accounts[0]], // start as only collaborator
+				name,
+				description,
+				bpm,
+				timeboxMins,
+				tags,
+			}
 			const res = await post('/projects', payload)
 			if (res.success) {
 				setSuccessOpen(true)
@@ -69,9 +68,9 @@ const NewProjectPage: NextPage = () => {
 	const resetForm = () => {
 		setName('')
 		setDescription('')
-    setBpm(120)
-    setTimeboxMins(2)
-    setTags([])
+		setBpm(120)
+		setTimeboxMins(2)
+		setTags([])
 	}
 
 	const onNotificationClose = () => {
@@ -115,31 +114,27 @@ const NewProjectPage: NextPage = () => {
 						placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
 						fullWidth
 					/>
-          <TextField
+					<TextField
 						label="Project BPM"
 						variant="filled"
 						margin="normal"
-            type="number"
+						type="number"
 						value={bpm}
 						onChange={e => setBpm(parseInt(e.target.value))}
 						placeholder="What BPM is this project targetting?"
 						fullWidth
 					/>
-          <TextField
+					<TextField
 						label="Project Timebox (mins)"
 						variant="filled"
 						margin="normal"
-            type="number"
+						type="number"
 						value={timeboxMins}
 						onChange={e => setTimeboxMins(parseInt(e.target.value))}
 						placeholder="Set a maximum limit on how long samples should be."
 						fullWidth
 					/>
-					<TagsInput
-						tags={tags}
-						onAdd={tag => handleAddTag(tag)}
-						onDelete={(tag: string) => handleRemoveTag(tag)}
-					/>
+					<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />
 					<Button
 						variant="contained"
 						color="secondary"
@@ -154,17 +149,8 @@ const NewProjectPage: NextPage = () => {
 			</main>
 
 			<AppFooter />
-			{successOpen && (
-				<Notification
-					open={successOpen}
-					msg={successMsg}
-					type="success"
-					onClose={onNotificationClose}
-				/>
-			)}
-			{errorOpen && (
-				<Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />
-			)}
+			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
+			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
 	)
 }

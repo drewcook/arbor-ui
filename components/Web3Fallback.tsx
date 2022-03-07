@@ -64,10 +64,7 @@ const Web3Fallback = (): JSX.Element => (
 									<Image src={TallyIcon} alt="Tally" title="Tally" />
 								</ListItemIcon>
 								<ListItemText primary="Tally" />
-								<ListItemText
-									secondary="Recommended"
-									secondaryTypographyProps={{ align: 'right' }}
-								/>
+								<ListItemText secondary="Recommended" secondaryTypographyProps={{ align: 'right' }} />
 							</ListItemButton>
 						</ListItem>
 					</Link>

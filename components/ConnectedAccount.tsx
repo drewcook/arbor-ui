@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Avatar, Button, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useWeb3 } from './Web3Provider'
@@ -42,13 +43,7 @@ const ConnectedAccount = (): JSX.Element => {
 		<>
 			<Box sx={styles.wrapper}>
 				{!connected ? (
-					<Button
-						size="small"
-						variant="contained"
-						color="secondary"
-						onClick={handleConnectWallet}
-						sx={styles.button}
-					>
+					<Button size="small" variant="contained" color="secondary" onClick={handleConnectWallet} sx={styles.button}>
 						Connect Wallet
 					</Button>
 				) : (
@@ -81,8 +76,10 @@ const ConnectedAccount = (): JSX.Element => {
 							open={Boolean(anchorEl)}
 							onClose={handleCloseMenu}
 						>
-							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem>
-							<MenuItem onClick={handleMenuItemClick}>Settings</MenuItem> */}
+							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem> */}
+							<MenuItem>
+								<Link href={`/users/${currentAccount}`}>Profile</Link>
+							</MenuItem>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
 						{currentAccount && (

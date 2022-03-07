@@ -5,10 +5,10 @@ import { Close } from '@mui/icons-material'
 import { useState } from 'react'
 
 type NotificationProps = {
-	msg: string,
-	open: boolean,
-	type: AlertColor | undefined,
-	onClose: () => void,
+	msg: string
+	open: boolean
+	type: AlertColor | undefined
+	onClose: () => void
 }
 
 const Notification = (props: NotificationProps): JSX.Element => {

@@ -9,18 +9,18 @@ const pythonServer = axios.create({ baseURL: process.env.PYTHON_HTTP_HOST })
  * @returns res.data - A singular IPFS CID that represents the newly, flattened sample
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
+	const { method } = req
 
-  if (method === "POST") {
-    const { body } = req;
+	if (method === 'POST') {
+		const { body } = req
 
-    try {
-      const response = await pythonServer.post('/merge', body)
-      return res.status(200).json(response.data) // { success: true, cid: '...' }
-    } catch (e: any) {
-      return { success: false, error: e }
-    }
-  }
+		try {
+			const response = await pythonServer.post('/merge', body)
+			return res.status(200).json(response.data) // { success: true, cid: '...' }
+		} catch (e: any) {
+			return { success: false, error: e }
+		}
+	}
 }
 
 export default handler
