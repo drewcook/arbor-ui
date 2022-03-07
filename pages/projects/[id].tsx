@@ -178,7 +178,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	}
 
 	const handleDownloadAll = () => {
-		console.log('download all samples')
 		// if (details) {
 		//   details.samples.forEach(s => {
 		//     const a = document.createElement('a');
@@ -190,6 +189,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		// document.body.removeChild(a)
 		// })
 		// }
+		console.log('download all samples')
 	}
 
 	const onUploadSuccess = (projectData: IProjectDoc) => {
