@@ -46,17 +46,32 @@ type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
-	const [details, setDetails] = useState<IUser | null>(data)
+	const [details, setDetails] = useState<IUser | null>(null)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-	const { accounts, contract, connected, handleConnectWallet } = useWeb3()
+	const { currentUser } = useWeb3()
 
 	useEffect(() => {
-		if (accounts[0] === data?._id) setIsCurrentUserDetails(true)
-	}, [accounts, data?._id])
+		if (data) setDetails(data)
+		if (currentUser?._id === data?._id) {
+			setIsCurrentUserDetails(true)
+		} else {
+			setIsCurrentUserDetails(false)
+		}
+	}, [data])
+
+	useEffect(() => {
+		// Update details when switching accounts and when
+		console.log('current user changing', currentUser)
+		if (currentUser?._id === data?._id) {
+			setIsCurrentUserDetails(true)
+		} else {
+			setIsCurrentUserDetails(false)
+		}
+	}, [currentUser])
 
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
@@ -87,7 +102,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										</Typography>
 										{isCurrentUserDetails && <Typography>My Profile</Typography>}
 										<Typography variant="h4" component="h2" sx={styles.title}>
-											{details.displayName}
+											{details._id}
 										</Typography>
 									</Box>
 								</Grid>
@@ -125,7 +140,10 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 UserDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	const userId = context.query.id
+	let userId = context.query.id
+	if (typeof userId === 'object') userId = userId[0].toLowerCase()
+	else userId = userId?.toLowerCase()
+	console.log({ userId })
 	const res = await get(`/users/${userId}`)
 	const data: IUser | null = res.success ? res.data : null
 	return {

@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				const payload: CreateUserPayload = {
-					_id: req.body.address,
+					_id: req.body.address.toLowerCase(),
 				}
 				/* create a new model in the database */
 				const user: IUser = await User.create(payload)

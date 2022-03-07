@@ -4,6 +4,7 @@ import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
 import SampleNFTContract from '../contracts/PolyechoSample.json'
+import { IUser } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
 import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
@@ -20,6 +21,7 @@ type Web3ContextProps = {
 	connected: boolean
 	handleConnectWallet: any
 	handleDisconnectWallet: any
+	currentUser: IUser | null
 }
 
 type ProviderProps = {
@@ -42,6 +44,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
 	const [onboard, setOnboard] = useState<API | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
+	const [currentUser, setCurrentUser] = useState<IUser | null>(null)
 
 	const loadWeb3 = async (): Promise<any> => {
 		try {
@@ -74,6 +77,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
 				console.info('Switching wallet accounts')
 				setAccounts(newAccounts)
+				await findOrCreateUser(newAccounts[0])
 			})
 
 			// Listen for chain changes
@@ -110,9 +114,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 				const readyToTransact = await onboardInstance.walletCheck()
 			}
 
-			return {
-				connectedAccounts,
-			}
+			return { connectedAccount: connectedAccounts[0] }
 		} catch (e: any) {
 			// Catch any errors for any of the above operations.
 			setError('Failed to load Web3 tooling. Check console for details.')
@@ -140,25 +142,33 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	 */
 	const handleConnectWallet = async () => {
 		try {
-			const { connectedAccounts } = await loadWeb3()
+			const { connectedAccount } = await loadWeb3()
+			await findOrCreateUser(connectedAccount)
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
+	/**
+	 * This is responsible for finding or creating a user based off of a given wallet address.
+	 * This is called when connecting a wallet or switching wallet accounts.
+	 */
+	const findOrCreateUser = async (account?: string | null) => {
+		try {
+			console.log('findOrCreate', account)
+
+			if (!account) return
+
 			// If there is not a user created for this connected account, create one
-			const res = await get(`/users/${connectedAccounts[0]}`)
+			const res = await get(`/users/${account.toLowerCase()}`)
 			let data: IDBRequestReadyState | null = res.success ? res.data : null
-			console.log('existing', {
-				data,
-				accounts,
-				connectedAccounts,
-			})
+			setCurrentUser(data)
 			if (!data) {
 				const res = await post('/users', {
-					address: connectedAccounts[0],
+					address: account.toLowerCase(),
 				})
 				data = res.success ? res.data : null
-				console.log('created', {
-					data,
-					accounts,
-					connectedAccounts,
-				})
+				setCurrentUser(data)
 			}
 			// If there is a user, great
 		} catch (e) {
@@ -173,6 +183,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 		try {
 			await onboard?.walletReset()
 			setConnected(false)
+			setCurrentUser(null)
 		} catch (e) {
 			console.error(e)
 		}
@@ -191,6 +202,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 				connected,
 				handleConnectWallet,
 				handleDisconnectWallet,
+				currentUser,
 			}}
 		>
 			{children}

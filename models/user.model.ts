@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema<IUser>(
 			trim: true,
 			minLength: 3,
 			maxlength: 50,
-			default: this._id,
 		},
 		samples: {
 			type: [sampleSchema],

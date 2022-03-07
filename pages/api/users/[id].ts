@@ -15,6 +15,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET' /* Get a model by its ID */:
 			try {
 				const user: IUser | null = await User.findById(id)
+				console.log({ user, id })
 				if (!user) {
 					return res.status(404).json({ success: false })
 				}
