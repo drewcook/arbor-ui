@@ -40,7 +40,10 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 		<div>
 			<Head>
 				<title>PolyEcho | Explore The StemPool</title>
-				<meta name="description" content="A hackathon music app" />
+				<meta
+					name="description"
+					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
+				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
