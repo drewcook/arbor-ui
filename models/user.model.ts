@@ -43,19 +43,16 @@ const userSchema = new mongoose.Schema<IUser>(
 		projectIds: {
 			type: [String],
 			required: false,
-			unique: true,
 			default: [],
 		},
 		sampleIds: {
 			type: [String],
 			required: false,
-			unique: true,
 			default: [],
 		},
 		mintedNFTs: {
 			type: [Object], // TODO: create NFT schema
 			required: false,
-			unique: true,
 			default: [],
 		},
 	},

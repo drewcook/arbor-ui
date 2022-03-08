@@ -38,10 +38,6 @@ const styles = {
 	editProfileWrap: {
 		my: 2,
 	},
-	avatarWrap: {
-		display: 'flex',
-		justifyContent: 'flex-end',
-	},
 	avatar: {
 		height: 200,
 		width: 200,
@@ -188,7 +184,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 									</Box>
 								</Grid>
 								<Grid item xs={12} md={4}>
-									<Box sx={styles.avatarWrap}>
+									<Box className="avatar-wrap">
 										<Avatar sx={styles.avatar} alt="User Avatar" src={details._doc.avatarUrl} />
 									</Box>
 								</Grid>
