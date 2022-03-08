@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 // Create Axios instance
-// const instance = axios.create({ baseURL: process.env.CLIENT_HOST })
-const instance = axios.create()
+const instance = axios.create({ baseURL: process.env.CLIENT_HOST })
+// const instance = axios.create()
 
 /**
  * A generic GET request wrapper to ease use within React
