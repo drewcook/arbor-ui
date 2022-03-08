@@ -73,7 +73,10 @@ const styles = {
 
 const propTypes = {
 	data: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
+		_doc: PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			createdAt: PropTypes.string.isRequired,
+		}).isRequired,
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
@@ -94,19 +97,19 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	useEffect(() => {
 		// Update the details when changing the route directly
 		if (data) setDetails(data)
-		if (currentUser?._id === data?._id) {
-			setIsCurrentUserDetails(false)
-		} else {
+		if (currentUser?._id === data?._doc._id) {
 			setIsCurrentUserDetails(true)
+		} else {
+			setIsCurrentUserDetails(false)
 		}
 	}, [data])
 
 	useEffect(() => {
 		// Update details when switching accounts and when
-		if (currentUser?._id === data?._id) {
-			setIsCurrentUserDetails(false)
-		} else {
+		if (currentUser?._id === data?._doc._id) {
 			setIsCurrentUserDetails(true)
+		} else {
+			setIsCurrentUserDetails(false)
 		}
 	}, [currentUser])
 
@@ -142,13 +145,13 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 												<Typography component="span" sx={styles.metadataKey}>
 													User ID:
 												</Typography>
-												{details._id}
+												{details._doc._id}
 											</Typography>
 											<Typography sx={styles.metadata}>
 												<Typography component="span" sx={styles.metadataKey}>
 													Joined On:
 												</Typography>
-												{formatDate(details.createdAt)}
+												{formatDate(details._doc.createdAt)}
 											</Typography>
 										</Box>
 									</Box>
