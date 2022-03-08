@@ -173,7 +173,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 								: 'Add your own sample and contribute to this project. Drag and drop or click to select a file.'}
 						</Typography>
 						<Typography variant="body2" sx={styles.uploadMeta}>
-							(Only .wav, .mp3, .aiff, and .webm audio files are accepted)
+							(Only .wav files are support at the moment)
 						</Typography>
 						{fileRejections.length > 0 && (
 							<aside>
