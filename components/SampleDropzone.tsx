@@ -113,7 +113,6 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 									return res.status(400).json({ success: false, error: 'Failed to create the new sample' })
 								}
 								const sampleCreated = res.data
-								console.log({ sampleCreated })
 
 								// Add the current user as a collaborator if they aren't one already
 								const collaborators = project.collaborators

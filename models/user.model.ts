@@ -6,6 +6,8 @@ export interface IUser {
 	displayName: string
 	projectIds: string[]
 	sampleIds: string[]
+	createdAt: string
+	updatedAt: string
 }
 
 export interface IUserFull extends IUser {

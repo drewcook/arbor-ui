@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import { ISampleDoc } from '../../models/sample.model'
+import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
@@ -88,7 +89,7 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 									<Typography component="span" sx={styles.metadataKey}>
 										Created On:
 									</Typography>
-									{data.createdAt}
+									{formatDate(data.createdAt)}
 								</Typography>
 								<Typography sx={styles.metadata}>
 									<Typography component="span" sx={styles.metadataKey}>

@@ -23,9 +23,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!user) {
 					return res.status(404).json({ success: false })
 				}
+
+				// Check to get full details or not
 				if (fullDetails) {
 					const fullUser: IUserFull = {
-						...user,
+						...user._doc,
 						projects: [],
 						samples: [],
 					}
@@ -46,7 +48,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 					res.status(200).json({ success: true, data: fullUser })
 				} else {
-					console.log('dont get full details')
 					res.status(200).json({ success: true, data: user })
 				}
 			} catch (error) {

@@ -11,6 +11,7 @@ import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
+import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
 
 const styles = {
@@ -26,14 +27,53 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 	},
+	title: {
+		textTransform: 'uppercase',
+		fontStyle: 'italic',
+		fontWeight: 900,
+		mb: 2,
+		display: 'flex',
+		alignItems: 'center',
+	},
+	desc: {
+		color: '#777',
+		fontSize: '18px',
+		mb: 2,
+		fontWeight: 300,
+	},
+	metadataWrap: {
+		mb: 3,
+	},
+	metadata: {
+		display: 'inline-block',
+		mr: 5,
+	},
+	metadataKey: {
+		mr: 1,
+		display: 'inline-block',
+		color: '#a8a8a8',
+	},
 	divider: {
 		my: 3,
 		borderColor: '#ccc',
 	},
+	stemHistoryMeta: {
+		fontStyle: 'italic',
+		fontWeight: 300,
+		textTransform: 'uppercase',
+		color: '#777',
+	},
+	sectionMeta: {
+		fontStyle: 'italic',
+		fontWeight: 300,
+		textTransform: 'uppercase',
+		color: '#777',
+		mb: 2,
+	},
 	stemMetadata: {
 		mb: 4,
 	},
-	noSamplesMsg: {
+	noItemsMsg: {
 		textAlign: 'center',
 		marginY: 4,
 	},
@@ -64,18 +104,18 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 		// Update the details when changing the route directly
 		if (data) setDetails(data)
 		if (currentUser?._id === data?._id) {
-			setIsCurrentUserDetails(true)
-		} else {
 			setIsCurrentUserDetails(false)
+		} else {
+			setIsCurrentUserDetails(true)
 		}
 	}, [data])
 
 	useEffect(() => {
 		// Update details when switching accounts and when
 		if (currentUser?._id === data?._id) {
-			setIsCurrentUserDetails(true)
-		} else {
 			setIsCurrentUserDetails(false)
+		} else {
+			setIsCurrentUserDetails(true)
 		}
 	}, [currentUser])
 
@@ -106,23 +146,38 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										<Typography variant="h5" gutterBottom>
 											User Details
 										</Typography>
-										{isCurrentUserDetails && (
-											<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-												Edit Profile
-											</Button>
-										)}
-										<Typography variant="h4" component="h2" sx={styles.title}>
-											{details._id}
-										</Typography>
+										<Box sx={styles.metadataWrap}>
+											<Typography sx={styles.metadata}>
+												<Typography component="span" sx={styles.metadataKey}>
+													User ID:
+												</Typography>
+												{details._id}
+											</Typography>
+											<Typography sx={styles.metadata}>
+												<Typography component="span" sx={styles.metadataKey}>
+													Joined On:
+												</Typography>
+												{formatDate(details.createdAt)}
+											</Typography>
+										</Box>
 									</Box>
 								</Grid>
 								<Grid item xs={12} md={4}>
-									Avatar goes here
+									{isCurrentUserDetails && (
+										<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
+											Edit Profile
+										</Button>
+									)}
+									<Typography>TODO: Avatar goes here</Typography>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
 								Projects
+							</Typography>
+							<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
+							<Typography sx={styles.sectionMeta}>
+								<strong>TODO:</strong> Show projects that a user has collaborated on as well
 							</Typography>
 							<Grid container spacing={4}>
 								{details.projects.length > 0 ? (
@@ -132,13 +187,16 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										</Grid>
 									))
 								) : (
-									<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
+									<Grid item xs={12}>
+										<Typography sx={styles.noItemsMsg}>No projects to show, upload one!</Typography>
+									</Grid>
 								)}
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
 								Samples
 							</Typography>
+							<Typography sx={styles.sectionMeta}>Samples this user has uploaded</Typography>
 							<Grid container spacing={4}>
 								{details.samples.length > 0 ? (
 									details.samples.map((sample: any) => (
@@ -147,7 +205,9 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										</Grid>
 									))
 								) : (
-									<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
+									<Grid item xs={12}>
+										<Typography sx={styles.noItemsMsg}>No samples to show, upload one!</Typography>
+									</Grid>
 								)}
 							</Grid>
 						</>

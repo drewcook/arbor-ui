@@ -142,8 +142,7 @@ const propTypes = {
 		timeboxMins: PropTypes.number.isRequired,
 		tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-		success: PropTypes.bool.isRequired,
-		cid: PropTypes.string.isRequired,
+		cid: PropTypes.string,
 	}),
 }
 
@@ -196,17 +195,18 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setIsPlayingAll(!isPlayingAll)
 	}
 
+	// TODO: Fix downloading files
 	const handleDownloadAll = () => {
 		// if (details) {
-		//   details.samples.forEach(s => {
-		//     const a = document.createElement('a');
-		//     document.body.appendChild(a);
-		//     a.download = s.audioUrl
-		//     a.href = s.audioUrl
-		//     a.text = 'Click'
-		// a.click()
-		// document.body.removeChild(a)
-		// })
+		// 	details.samples.forEach(s => {
+		// 		const a = document.createElement('a')
+		// 		document.body.appendChild(a)
+		// 		a.download = s.audioUrl
+		// 		a.href = s.audioUrl
+		// 		a.text = 'Click'
+		// 		a.click()
+		// 		document.body.removeChild(a)
+		// 	})
 		// }
 		console.log('download all samples')
 	}
@@ -236,20 +236,21 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					setErrorMsg('Uh oh, failed to mint the NFT')
 					setMinting(false)
 				}
-				const data = await response.json()
-				if (data.success) {
+				const flattenedData = await response.json()
+				if (flattenedData.success) {
 					// Call smart contract and mint an nft out of the original CID
 					const tokenURI: string = await contract.methods
-						.mint(currentUser._id, data.cid, details.collaborators)
+						.mint(currentUser._id, flattenedData.cid, details.collaborators)
 						// TODO: Should this be non-lowercased?
 						.send({ from: currentUser._id, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
-					console.info(tokenURI)
-					// TODO: Do stuff?
+
+					// Notify success
 					setSuccessOpen(true)
 					setSuccessMsg('Successfully minted a new NFT!')
 					setMinting(false)
 
 					// TODO: add new NFT to user details
+					console.info(tokenURI)
 				}
 			}
 		} catch (e: any) {
@@ -361,7 +362,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											<Typography sx={styles.downloadAllText} variant="body2">
 												Download All Stems
 											</Typography>
-											<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll} color="primary">
+											<IconButton
+												sx={styles.downloadAllBtn}
+												onClick={handleDownloadAll}
+												color="primary"
+												disabled={true}
+											>
 												<Download />
 											</IconButton>
 										</Box>

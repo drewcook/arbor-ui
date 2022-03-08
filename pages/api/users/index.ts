@@ -25,11 +25,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				const payload: CreateUserPayload = {
 					_id: req.body.address.toLowerCase(),
 				}
-				console.log({ payload })
 				/* create a new model in the database */
-				// TODO: this is failing
 				const user: IUser = await User.create(payload)
-				console.log({ user })
 				res.status(201).json({ success: true, data: user })
 			} catch (e) {
 				console.log({ e })
