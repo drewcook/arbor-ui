@@ -26,7 +26,7 @@ const styles = {
 const propTypes = {
 	data: PropTypes.arrayOf(
 		PropTypes.shape({
-			_id: PropTypes.string.isRequired,
+			// _id: PropTypes.string.isRequired,
 		}),
 	),
 }
@@ -55,8 +55,8 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 							</Typography>
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
-									{data.map(sample => (
-										<Grid item sm={6} md={4} key={sample?._id}>
+									{data.map((sample: any) => (
+										<Grid item sm={6} md={4} key={sample._id}>
 											<SampleCard details={sample} />
 										</Grid>
 									))}
