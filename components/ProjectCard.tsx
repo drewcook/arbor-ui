@@ -1,10 +1,20 @@
-import { Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
+import QueueMusicIcon from '@mui/icons-material/QueueMusic'
+import { Box, Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
 import Link from 'next/link'
 import type { IProjectDoc } from '../models/project.model'
 
 const styles = {
 	card: {
 		minWidth: '200px',
+	},
+	cardMedia: {
+		backgroundColor: '#0500ff',
+		py: 3,
+		px: 1.5,
+	},
+	cardMediaIcon: {
+		color: '#fff',
+		fontSize: '3rem',
 	},
 	title: {},
 	collaborators: {
@@ -34,6 +44,9 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 
 	return (
 		<Card sx={styles.card} elevation={2}>
+			<Box sx={styles.cardMedia}>
+				<QueueMusicIcon sx={styles.cardMediaIcon} />
+			</Box>
 			<CardContent>
 				<Typography variant="h5" gutterBottom sx={styles.title}>
 					{details.name}
@@ -54,7 +67,7 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 			</CardContent>
 			<CardActions sx={styles.actions}>
 				<Link href={`/projects/${details._id}`} passHref>
-					<Button color="secondary">View More</Button>
+					<Button color="secondary">View Details</Button>
 				</Link>
 			</CardActions>
 		</Card>

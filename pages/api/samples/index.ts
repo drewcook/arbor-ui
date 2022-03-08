@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				/* create a new model in the database */
 				const sample: ISampleDoc = await Sample.create(body)
 
-				// Add new project to creator's user details
+				// Add new sample to user's samples' details
 				const userUpdated = await update(`/users/${body.createdBy}`, { newSample: sample._id })
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's samples" })

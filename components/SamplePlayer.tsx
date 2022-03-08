@@ -7,6 +7,7 @@ import WaveSurfer from 'wavesurfer.js'
 import TimelinePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js'
 import type { ISampleDoc } from '../models/sample.model'
 import formatAddress from '../utils/formatAddress'
+import formatSampleName from '../utils/formatSampleName'
 
 const styles = {
 	sample: {
@@ -98,7 +99,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 								</Typography>
 							)}
 							<Typography sx={styles.metadataTitle} variant="h4">
-								{details.filename}
+								{formatSampleName(details.filename)}
 							</Typography>
 							<Typography sx={styles.metadataSmall}>
 								Added by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>

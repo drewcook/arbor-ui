@@ -111,7 +111,12 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			const connected = await onboardInstance.walletSelect()
 			if (connected) {
 				setConnected(true)
+				// Get ready to transact
 				const readyToTransact = await onboardInstance.walletCheck()
+				if (!readyToTransact)
+					console.warn(
+						'Wallet connected but not ready to transact. Please try disconnecting and reconnecting your wallet.',
+					)
 			}
 
 			return { connectedAccount: connectedAccounts[0] }

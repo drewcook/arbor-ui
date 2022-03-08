@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -51,12 +50,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						return res.status(400).json({ success: false, error: 'failed to add samples or collaborators to project' })
 					}
 
-					// Update user's project
-					const userUpdated = await update(`/users/${project.createdBy}`, { newProject: project._id })
-					if (!userUpdated) {
-						return res.status(400).json({ success: false, error: "Failed to update user's projects" })
-					}
-
 					res.status(200).json({ success: true, data: project })
 				} else {
 					// Update anything else,
@@ -68,12 +61,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					// Catch error
 					if (!project) {
 						return res.status(400).json({ success: false, error: 'failed to update project' })
-					}
-
-					// Update user's project
-					const userUpdated = await update(`/users/${project.createdBy}`, { newProject: project._id })
-					if (!userUpdated) {
-						return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 					}
 
 					res.status(200).json({ success: true, data: project })

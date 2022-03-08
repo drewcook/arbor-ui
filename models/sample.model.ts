@@ -37,6 +37,7 @@ export const sampleSchema = new mongoose.Schema(
 			type: Number,
 			required: true,
 		},
+		// TODO: Add sample tags
 		createdBy: {
 			type: String,
 			required: true,

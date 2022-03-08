@@ -9,6 +9,7 @@ import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import { ISampleDoc } from '../../models/sample.model'
 import formatDate from '../../utils/formatDate'
+import formatSampleName from '../../utils/formatSampleName'
 import { get } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
@@ -25,6 +26,12 @@ const styles = {
 		mb: 2,
 		display: 'flex',
 		alignItems: 'center',
+	},
+	eyebrow: {
+		fontStyle: 'italic',
+		fontWeight: 300,
+		textTransform: 'uppercase',
+		color: '#777',
 	},
 	desc: {
 		color: '#777',
@@ -54,6 +61,8 @@ const propTypes = {
 	data: PropTypes.shape({
 		createdAt: PropTypes.string.isRequired,
 		audioUrl: PropTypes.string.isRequired,
+		filename: PropTypes.string.isRequired,
+		filetype: PropTypes.string.isRequired,
 	}),
 }
 
@@ -61,8 +70,6 @@ type SampleDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 	const { data } = props
-
-	console.log({ data })
 
 	return (
 		<>
@@ -76,8 +83,11 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 
 			<main id="app-main">
 				<Container maxWidth="xl">
-					<Typography variant="h4" component="h2" sx={styles.title}>
+					<Typography variant="body1" component="h3" sx={styles.eyebrow}>
 						Sample Details
+					</Typography>
+					<Typography variant="h4" component="h2" sx={styles.title}>
+						{data ? formatSampleName(data.filename) : 'PolyEcho Sample'}
 					</Typography>
 					{data ? (
 						<>
@@ -87,15 +97,21 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 							<Box sx={styles.metadataWrap}>
 								<Typography sx={styles.metadata}>
 									<Typography component="span" sx={styles.metadataKey}>
-										Created On:
+										File Type:
 									</Typography>
-									{formatDate(data.createdAt)}
+									{data.filetype}
 								</Typography>
 								<Typography sx={styles.metadata}>
 									<Typography component="span" sx={styles.metadataKey}>
 										Stored At:
 									</Typography>
 									<Link href={data.audioUrl}>View on IPFS</Link>
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Created On:
+									</Typography>
+									{formatDate(data.createdAt)}
 								</Typography>
 							</Box>
 							<Divider light sx={styles.divider} />
