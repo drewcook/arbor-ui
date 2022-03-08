@@ -42,10 +42,11 @@ const styles = {
 type SamplePlayerProps = {
 	idx: number
 	details: ISampleDoc
+	showEyebrow: boolean
 }
 
 const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
-	const { idx, details } = props
+	const { idx, details, showEyebrow } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isPlaying, setIsPlaying] = useState<boolean>(false)
 
@@ -91,7 +92,11 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 							{isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
 						</Fab>
 						<Box>
-							<Typography sx={styles.metadataSmall}>Stem {idx}</Typography>
+							{showEyebrow && (
+								<Typography sx={styles.metadataSmall}>
+									<a href={`/samples/${details._id}`}>Stem {idx}</a>
+								</Typography>
+							)}
 							<Typography sx={styles.metadataTitle} variant="h4">
 								{details.filename}
 							</Typography>

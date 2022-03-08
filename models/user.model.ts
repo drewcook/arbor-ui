@@ -1,10 +1,16 @@
 import mongoose from 'mongoose'
+import type { IProjectDoc } from './project.model'
 
 export interface IUser {
 	_id: string
 	displayName: string
 	projectIds: string[]
 	sampleIds: string[]
+}
+
+export interface IUserFull extends IUser {
+	projects: IProjectDoc[]
+	samples: any[]
 }
 
 // export interface IUserDoc extends Document, IUser {}

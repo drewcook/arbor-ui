@@ -4,7 +4,7 @@ import { File } from 'nft.storage'
 import { useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import type { IProjectDoc } from '../models/project.model'
-import { update } from '../utils/http'
+import { post, update } from '../utils/http'
 import { useWeb3 } from './Web3Provider'
 
 const styles = {
@@ -73,7 +73,7 @@ type SampleDropzoneProps = {
 const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	const { project, onSuccess } = props
 	const [loading, setLoading] = useState(false)
-	const { NFTStore, accounts, connected, handleConnectWallet } = useWeb3()
+	const { NFTStore, currentUser, connected, handleConnectWallet } = useWeb3()
 	const { getRootProps, getInputProps, isFocused, isDragActive, isDragAccept, isDragReject, fileRejections } =
 		useDropzone({
 			maxFiles: 1,
@@ -81,7 +81,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 			// Support only one file uploaded at a time
 			onDrop: async ([file]) => {
 				try {
-					if (!connected) {
+					if (!connected || !currentUser) {
 						await handleConnectWallet()
 					} else {
 						setLoading(true)
@@ -104,12 +104,28 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 									filename: file.name,
 									filetype: file.type,
 									filesize: file.size,
-									createdBy: accounts[0],
+									createdBy: currentUser._id,
 								}
-								// Compile new sample to a
+
+								// Create the new sample (and adds to user's samples)
+								let res = await post('/samples', newSample)
+								if (!res) {
+									return res.status(400).json({ success: false, error: 'Failed to create the new sample' })
+								}
+								const sampleCreated = res.data
+								console.log({ sampleCreated })
+
+								// Add the current user as a collaborator if they aren't one already
 								const collaborators = project.collaborators
-								if (!project.collaborators.some(s => s === accounts[0])) collaborators.push(accounts[0])
-								const res = await update(`/projects/${project._id}`, { newSample, collaborators })
+								if (!project.collaborators.some(s => s === currentUser._id)) collaborators.push(currentUser._id)
+								// Add the new sample to the project and new collaborators list
+								res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })
+								if (!res) {
+									return res.status(400).json({ success: false, error: 'Failed to add sample to the project' })
+								}
+
+								// TODO: if added as a new collaborator, add this projectID to user's list of projects
+
 								// Success callback
 								if (res.success) onSuccess(res.data)
 							}

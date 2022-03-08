@@ -27,7 +27,6 @@ import { useWeb3 } from '../../components/Web3Provider'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import { get } from '../../utils/http'
-
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
 const styles = {
@@ -249,6 +248,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					setSuccessOpen(true)
 					setSuccessMsg('Successfully minted a new NFT!')
 					setMinting(false)
+
+					// TODO: add new NFT to user details
 				}
 			}
 		} catch (e: any) {
@@ -370,7 +371,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							{details.samples.length > 0 ? (
 								details.samples.map((sample, idx) => (
 									<Fragment key={idx}>
-										<SamplePlayer idx={idx + 1} details={sample} />
+										<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} />
 									</Fragment>
 								))
 							) : (

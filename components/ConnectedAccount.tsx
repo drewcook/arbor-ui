@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import formatAddress from '../utils/formatAddress'
 import { useWeb3 } from './Web3Provider'
 
@@ -23,13 +23,8 @@ const styles = {
 }
 
 const ConnectedAccount = (): JSX.Element => {
-	const [currentAccount, setCurrentAccount] = useState('')
 	const [anchorEl, setAnchorEl] = useState(null)
-	const { accounts, connected, handleConnectWallet, handleDisconnectWallet } = useWeb3()
-
-	useEffect(() => {
-		setCurrentAccount(accounts[0])
-	}, [accounts])
+	const { currentUser, connected, handleConnectWallet, handleDisconnectWallet } = useWeb3()
 
 	const handleOpenMenu = (e: { target: any }) => setAnchorEl(e.target)
 	const handleCloseMenu = () => setAnchorEl(null)
@@ -77,14 +72,16 @@ const ConnectedAccount = (): JSX.Element => {
 							onClose={handleCloseMenu}
 						>
 							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem> */}
-							<MenuItem>
-								<Link href={`/users/${currentAccount}`}>Profile</Link>
-							</MenuItem>
+							{currentUser && (
+								<MenuItem>
+									<Link href={`/users/${currentUser._id}`}>Profile</Link>
+								</MenuItem>
+							)}
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
-						{currentAccount && (
+						{currentUser && (
 							<Typography sx={styles.address} variant="body2">
-								{formatAddress(currentAccount)}
+								{formatAddress(currentUser._id)}
 							</Typography>
 						)}
 					</>

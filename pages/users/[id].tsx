@@ -1,14 +1,16 @@
 import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import Notification from '../../components/Notification'
+import ProjectCard from '../../components/ProjectCard'
+import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import type { IUser } from '../../models/user.model'
+import type { IProjectDoc } from '../../models/project.model'
+import type { IUserFull } from '../../models/user.model'
 import { get } from '../../utils/http'
 
 const styles = {
@@ -40,8 +42,9 @@ const styles = {
 const propTypes = {
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
-		projectIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-		sampleIds: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+		sampleIds: PropTypes.arrayOf(PropTypes.string.isRequired),
+		// samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
 }
 
@@ -49,7 +52,7 @@ type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
-	const [details, setDetails] = useState<IUser | null>(null)
+	const [details, setDetails] = useState<IUserFull | null>(null)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -121,28 +124,32 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							<Typography variant="h4" gutterBottom>
 								Projects
 							</Typography>
-							{details.projectIds.length > 0 ? (
-								details.projectIds.map((projectId: string, idx: number) => (
-									<Typography key={idx} gutterBottom>
-										Project: <Link href={`/projects/${projectId}`}>{projectId}</Link>
-									</Typography>
-								))
-							) : (
-								<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
-							)}
+							<Grid container spacing={4}>
+								{details.projects.length > 0 ? (
+									details.projects.map((project: IProjectDoc) => (
+										<Grid item sm={6} md={4} key={project._id}>
+											<ProjectCard details={project} />
+										</Grid>
+									))
+								) : (
+									<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
+								)}
+							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
 								Samples
 							</Typography>
-							{details.sampleIds.length > 0 ? (
-								details.sampleIds.map((sampleId: string, idx: number) => (
-									<Typography key={idx} gutterBottom>
-										Sample: {sampleId}
-									</Typography>
-								))
-							) : (
-								<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
-							)}
+							<Grid container spacing={4}>
+								{details.samples.length > 0 ? (
+									details.samples.map((sample: any) => (
+										<Grid item sm={6} md={4} key={sample._id}>
+											<SampleCard details={sample} />
+										</Grid>
+									))
+								) : (
+									<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
+								)}
+							</Grid>
 						</>
 					) : (
 						<Typography sx={styles.error} color="error">
@@ -166,8 +173,9 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	let userId = context.query.id
 	if (typeof userId === 'object') userId = userId[0].toLowerCase()
 	else userId = userId?.toLowerCase()
-	const res = await get(`/users/${userId}`)
-	const data: IUser | null = res.success ? res.data : null
+	// Get full details
+	const res = await get(`/users/${userId}`, { params: { fullDetails: true } })
+	const data: IUserFull | null = res.success ? res.data : null
 	return {
 		props: {
 			data,
