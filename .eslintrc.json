@@ -19,6 +19,7 @@
   },
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
+		"@typescript-eslint/no-explicit-any": "off",
     "react/react-in-jsx-scope": "off" // Next.js includes it by default
   },
   "settings": {
