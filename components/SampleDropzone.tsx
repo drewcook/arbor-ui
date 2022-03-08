@@ -66,7 +66,7 @@ const rejectStyle = {
 }
 
 type SampleDropzoneProps = {
-	project: IProjectDoc
+	project: IProjectDoc | any
 	onSuccess: (project: IProjectDoc) => void
 }
 
@@ -116,7 +116,8 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 
 								// Add the current user as a collaborator if they aren't one already
 								const collaborators = project.collaborators
-								if (!project.collaborators.some(s => s === currentUser._id)) collaborators.push(currentUser._id)
+								if (!project.collaborators.some((c: string) => c === currentUser._id))
+									collaborators.push(currentUser._id)
 								// Add the new sample to the project and new collaborators list
 								res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })
 								if (!res) {

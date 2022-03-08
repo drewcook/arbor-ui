@@ -41,7 +41,7 @@ const styles = {
 
 type SamplePlayerProps = {
 	idx: number
-	details: ISampleDoc
+	details: ISampleDoc | any
 	showEyebrow: boolean
 }
 

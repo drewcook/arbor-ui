@@ -27,14 +27,6 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 	},
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 900,
-		mb: 2,
-		display: 'flex',
-		alignItems: 'center',
-	},
 	desc: {
 		color: '#777',
 		fontSize: '18px',
@@ -83,8 +75,7 @@ const propTypes = {
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
-		sampleIds: PropTypes.arrayOf(PropTypes.string.isRequired),
-		// samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
 }
 
@@ -92,7 +83,7 @@ type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
-	const [details, setDetails] = useState<IUserFull | null>(null)
+	const [details, setDetails] = useState<any | null>(null)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')

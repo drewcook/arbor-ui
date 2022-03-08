@@ -159,7 +159,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// If there is not a user created for this connected account, create one
 			const res = await get(`/users/${account.toLowerCase()}`)
-			let data: IDBRequestReadyState | null = res.success ? res.data : null
+			let data = res.success ? res.data : null
 			setCurrentUser(data)
 			if (!data) {
 				const res = await post('/users', {

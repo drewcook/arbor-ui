@@ -57,7 +57,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map(project => (
-										<Grid item sm={6} md={4} key={project._id}>
+										<Grid item sm={6} md={4} key={project?._id}>
 											<ProjectCard details={project} />
 										</Grid>
 									))}

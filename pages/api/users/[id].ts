@@ -27,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// Check to get full details or not
 				if (fullDetails) {
 					const fullUser: IUserFull = {
-						...user._doc,
+						...user,
 						projects: [],
 						samples: [],
 					}

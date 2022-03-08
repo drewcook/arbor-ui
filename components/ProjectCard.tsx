@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
+import Link from 'next/link'
 import type { IProjectDoc } from '../models/project.model'
 
 const styles = {
@@ -26,7 +26,7 @@ const styles = {
 }
 
 type ProjectCardProps = {
-	details: IProjectDoc
+	details: IProjectDoc | any
 }
 
 const ProjectCard = (props: ProjectCardProps): JSX.Element => {
