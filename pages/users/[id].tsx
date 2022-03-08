@@ -12,6 +12,7 @@ import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
+import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
 
@@ -166,9 +167,9 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										<Box sx={styles.metadataWrap}>
 											<Typography sx={styles.metadata}>
 												<Typography component="span" sx={styles.metadataKey}>
-													User Display Name:
+													Display Name:
 												</Typography>
-												{details._doc.displayName}
+												{formatAddress(details._doc.displayName)}
 											</Typography>
 											<Typography sx={styles.metadata}>
 												<Typography component="span" sx={styles.metadataKey}>

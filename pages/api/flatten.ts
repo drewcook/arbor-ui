@@ -1,5 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 const pythonServer = axios.create({ baseURL: process.env.PYTHON_HTTP_HOST })
 
@@ -16,8 +16,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		try {
 			const response = await pythonServer.post('/merge', body)
+			console.log({ flattenResData: response.data })
 			return res.status(200).json(response.data) // { success: true, cid: '...' }
 		} catch (e: any) {
+			console.error(e)
 			return { success: false, error: e }
 		}
 	}
