@@ -4,6 +4,8 @@ import dbConnect from '../../../utils/db'
 
 export type CreateUserPayload = {
 	_id: string
+	displayName: string
+	avatarUrl: string
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -22,8 +24,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
+				const accountAddress = req.body.address.toLowerCase()
+				// Genearate a Robohash.org avatar - https://robohash.org
+				const baseURL = 'https://robohash.org/'
+				let avatarUrl = baseURL
+				avatarUrl += accountAddress // Use unique hash based off address
+				avatarUrl += '?set=set1' // Use Robots type
+				avatarUrl += '&bgset=bg1' // Add random background
+				avatarUrl += '&size=300x300' // Make 300x300 size
+				console.log({ avatarUrl })
 				const payload: CreateUserPayload = {
-					_id: req.body.address.toLowerCase(),
+					_id: accountAddress,
+					displayName: accountAddress,
+					avatarUrl,
 				}
 				/* create a new model in the database */
 				const user: IUser = await User.create(payload)

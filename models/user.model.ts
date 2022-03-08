@@ -4,8 +4,10 @@ import type { IProjectDoc } from './project.model'
 export interface IUser {
 	_id: string
 	displayName: string
+	avatarUrl: string
 	projectIds: string[]
 	sampleIds: string[]
+	mintedNFTs: any[]
 	createdAt: string
 	updatedAt: string
 }
@@ -33,6 +35,11 @@ const userSchema = new mongoose.Schema<IUser>(
 			minLength: 3,
 			maxlength: 50,
 		},
+		avatarUrl: {
+			type: String,
+			required: false,
+			default: '',
+		},
 		projectIds: {
 			type: [String],
 			required: false,
@@ -41,6 +48,12 @@ const userSchema = new mongoose.Schema<IUser>(
 		},
 		sampleIds: {
 			type: [String],
+			required: false,
+			unique: true,
+			default: [],
+		},
+		mintedNFTs: {
+			type: [Object], // TODO: create NFT schema
 			required: false,
 			unique: true,
 			default: [],

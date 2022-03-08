@@ -84,9 +84,11 @@ const AppHeader = (): JSX.Element => {
 							}}
 						>
 							{pages.map(page => (
-								<MenuItem onClick={handleCloseNavMenu} key={page.href}>
-									<Typography textAlign="center">{page.title}</Typography>
-								</MenuItem>
+								<Link key={page.href} href={page.href} passHref>
+									<MenuItem onClick={handleCloseNavMenu}>
+										<Typography textAlign="center">{page.title}</Typography>
+									</MenuItem>
+								</Link>
 							))}
 						</Menu>
 						<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>

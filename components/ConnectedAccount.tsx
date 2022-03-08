@@ -37,7 +37,7 @@ const ConnectedAccount = (): JSX.Element => {
 	return (
 		<>
 			<Box sx={styles.wrapper}>
-				{!connected ? (
+				{!connected || !currentUser ? (
 					<Button size="small" variant="contained" color="secondary" onClick={handleConnectWallet} sx={styles.button}>
 						Connect Wallet
 					</Button>
@@ -52,8 +52,11 @@ const ConnectedAccount = (): JSX.Element => {
 							color="inherit"
 						>
 							<Avatar
-								alt="Avatar"
-								src="https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG"
+								alt="User Avatar"
+								src={
+									currentUser.avatarUrl ??
+									'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
+								}
 							/>
 						</IconButton>
 						<Menu

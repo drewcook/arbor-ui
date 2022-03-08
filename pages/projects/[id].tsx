@@ -26,7 +26,7 @@ import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
-import { get } from '../../utils/http'
+import { get, update } from '../../utils/http'
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
 const styles = {
@@ -129,6 +129,7 @@ const styles = {
 }
 
 const propTypes = {
+	projectId: PropTypes.string.isRequired,
 	data: PropTypes.shape({
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
@@ -149,7 +150,7 @@ const propTypes = {
 type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 
 const ProjectPage: NextPage<ProjectPageProps> = props => {
-	const { data } = props
+	const { data, projectId } = props
 	const [details, setDetails] = useState(data)
 	const [sounds, setSounds] = useState<Howl[]>([])
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
@@ -231,30 +232,40 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					},
 					body: JSON.stringify({ sample_cids: samples }),
 				})
+				// Catch flatten audio error
 				if (!response.ok) {
 					setErrorOpen(true)
 					setErrorMsg('Uh oh, failed to mint the NFT')
 					setMinting(false)
 				}
+				// If we've flattened the file, now mint the NFT and write on-chain
 				const flattenedData = await response.json()
-				if (flattenedData.success) {
-					// Call smart contract and mint an nft out of the original CID
-					const tokenURI: string = await contract.methods
-						.mint(currentUser._id, flattenedData.cid, details.collaborators)
-						// TODO: Should this be non-lowercased?
-						.send({ from: currentUser._id, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+				console.log({ flattenedData })
+				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
-					// Notify success
-					setSuccessOpen(true)
-					setSuccessMsg('Successfully minted a new NFT!')
-					setMinting(false)
+				// Call smart contract and mint an nft out of the original CID
+				const tokenURI: any = await contract.methods
+					.mint(currentUser._id, flattenedData.cid, details.collaborators)
+					// TODO: Should this be non-lowercased?
+					.send({ from: currentUser._id, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
-					// TODO: add new NFT to user details
-					console.info(tokenURI)
-				}
+				// Add new NFT to user details
+				const userUpdated = await update(`/users/${tokenURI.from}`, {
+					newNFT: { token: tokenURI, cid: flattenedData.cid, projectId: projectId, projectName: details.name },
+				})
+				if (!userUpdated.success) throw new Error(userUpdated.error)
+
+				// TODO: create new sample from flattened audio
+				// TODO: add new sample created to user's info
+
+				// Notify success
+				setSuccessOpen(true)
+				setSuccessMsg('Successfully minted a new NFT!')
+				setMinting(false)
 			}
 		} catch (e: any) {
 			console.error(e)
+			// Notify error
 			setMinting(false)
 			setErrorOpen(true)
 			setErrorMsg('Uh oh, failed to mint the NFT')
@@ -408,6 +419,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	return {
 		props: {
 			data,
+			projectId,
 		},
 	}
 }
