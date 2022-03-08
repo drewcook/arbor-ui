@@ -77,7 +77,8 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	const { getRootProps, getInputProps, isFocused, isDragActive, isDragAccept, isDragReject, fileRejections } =
 		useDropzone({
 			maxFiles: 1,
-			accept: 'audio/wav,audio/mpeg,audio/aiff,audio/webm',
+			// TODO: support multiple - audio/mpeg,audio/aiff,audio/webm' - blocked until flattening service supports multiple
+			accept: 'audio/wav',
 			// Support only one file uploaded at a time
 			onDrop: async ([file]) => {
 				try {

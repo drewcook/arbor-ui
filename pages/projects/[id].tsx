@@ -17,6 +17,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { Fragment, useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
@@ -26,6 +27,7 @@ import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
+import formatAddress from '../../utils/formatAddress'
 import { get, update } from '../../utils/http'
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
@@ -34,17 +36,31 @@ const styles = {
 		textAlign: 'center',
 		marginY: 4,
 	},
+	titleWrap: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		mb: 2,
+	},
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
 		fontWeight: 900,
-		mb: 2,
 		display: 'flex',
 		alignItems: 'center',
 	},
 	playAllBtn: {
 		mr: 2,
+		width: '80px',
+		height: '80px',
 		color: '#fff',
+		fontSize: '2rem',
+	},
+	createdBy: {
+		color: '#a8a8a8',
+		fontStyle: 'italic',
+		fontWeight: 900,
+		textTransform: 'uppercase',
 	},
 	desc: {
 		color: '#777',
@@ -137,6 +153,7 @@ const propTypes = {
 				audioUrl: PropTypes.string.isRequired,
 			}),
 		).isRequired,
+		createdBy: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string.isRequired,
 		bpm: PropTypes.number.isRequired,
@@ -224,6 +241,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			if (details && currentUser) {
 				setMinting(true)
 				const samples = details.samples.map(s => s?.cid.replace('ipfs://', ''))
+
 				// Hit Python HTTP server to flatten samples into a singular one
 				const response = await fetch('/api/flatten', {
 					method: 'POST',
@@ -238,9 +256,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					setErrorMsg('Uh oh, failed to mint the NFT')
 					setMinting(false)
 				}
+
 				// If we've flattened the file, now mint the NFT and write on-chain
 				const flattenedData = await response.json()
-				console.log({ flattenedData })
 				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
 				// Call smart contract and mint an nft out of the original CID
@@ -299,12 +317,20 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							<Grid container spacing={4}>
 								<Grid item xs={12} md={8}>
 									<Box>
-										<Typography variant="h4" component="h2" sx={styles.title}>
+										<Box sx={styles.titleWrap}>
 											<Fab size="large" onClick={handlePlayPauseAllSamples} sx={styles.playAllBtn} color="primary">
-												{isPlayingAll ? <PauseRounded /> : <PlayArrowRounded />}
+												{isPlayingAll ? <PauseRounded fontSize="large" /> : <PlayArrowRounded fontSize="large" />}
 											</Fab>
-											{details.name}
-										</Typography>
+											<Box>
+												<Typography variant="h4" component="h2" sx={styles.title}>
+													{details.name}
+												</Typography>
+												<Typography sx={styles.createdBy}>
+													Created by{' '}
+													<Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
+												</Typography>
+											</Box>
+										</Box>
 										<Typography sx={styles.desc}>{details.description}</Typography>
 										<Box sx={styles.metadataWrap}>
 											<Typography sx={styles.metadata}>
@@ -339,7 +365,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												variant="contained"
 												color="secondary"
 												sx={styles.mintAndBuyBtn}
-												disabled={minting}
+												disabled={minting || details.samples.length < 2}
 											>
 												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
 											</Button>
