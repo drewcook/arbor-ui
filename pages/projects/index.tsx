@@ -1,12 +1,13 @@
+import { Box, Button, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Footer from '../../components/Footer'
+import PropTypes from 'prop-types'
+import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import { Box, Button, Container, Grid, Typography } from '@mui/material'
-import { get } from '../../utils/http'
-import { IProjectDoc } from '../../models/project.model'
 import ProjectCard from '../../components/ProjectCard'
+import { IProjectDoc } from '../../models/project.model'
+import { get } from '../../utils/http'
 
 const styles = {
 	title: {
@@ -23,9 +24,15 @@ const styles = {
 	},
 }
 
-type ProjectsPageProps = {
-	data: IProjectDoc[] | null,
+const propTypes = {
+	data: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+		}),
+	),
 }
+
+type ProjectsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	const { data } = props
@@ -33,7 +40,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	return (
 		<div>
 			<Head>
-				<title>ETHDenver Hack Web App | Explore Music Projects</title>
+				<title>PolyEcho | Explore Music Projects</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -50,16 +57,14 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map(project => (
-										<Grid item sm={6} md={4} key={project._id}>
+										<Grid item sm={6} md={4} key={project?._id}>
 											<ProjectCard details={project} />
 										</Grid>
 									))}
 								</Grid>
 							) : (
 								<Box sx={styles.noProjects}>
-									<Typography sx={styles.noProjectsMsg}>
-										No projects to show. Create one!
-									</Typography>
+									<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
 									<Link href="/projects/new" passHref>
 										<Button variant="contained" color="secondary">
 											Create Project
@@ -74,14 +79,16 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 				</Container>
 			</main>
 
-			<Footer />
+			<AppFooter />
 		</div>
 	)
 }
 
-export const getServerSideProps: GetServerSideProps = async context => {
+ProjectsPage.propTypes = propTypes
+
+export const getServerSideProps: GetServerSideProps = async () => {
 	const res = await get(`/projects`)
-	let data: IProjectDoc[] | null = res.success ? res.data : null
+	const data: IProjectDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,

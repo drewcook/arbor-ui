@@ -1,18 +1,7 @@
-import { Fragment, useState } from 'react'
-import Link from 'next/link'
-import {
-	AppBar,
-	Box,
-	Chip,
-	Toolbar,
-	IconButton,
-	Typography,
-	Menu,
-	Container,
-	Button,
-	MenuItem,
-} from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
+import { AppBar, Box, Button, Chip, Container, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
+import Link from 'next/link'
+import { useState } from 'react'
 import ConnectedAccount from './ConnectedAccount'
 
 const styles = {

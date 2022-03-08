@@ -1,7 +1,8 @@
-import { Avatar, Button, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { useWeb3 } from './Web3Provider'
+import { Avatar, Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material'
+import Link from 'next/link'
+import { useState } from 'react'
 import formatAddress from '../utils/formatAddress'
+import { useWeb3 } from './Web3Provider'
 
 const styles = {
 	wrapper: {
@@ -22,13 +23,8 @@ const styles = {
 }
 
 const ConnectedAccount = (): JSX.Element => {
-	const [currentAccount, setCurrentAccount] = useState('')
 	const [anchorEl, setAnchorEl] = useState(null)
-	const { accounts, connected, handleConnectWallet, handleDisconnectWallet } = useWeb3()
-
-	useEffect(() => {
-		setCurrentAccount(accounts[0])
-	}, [accounts])
+	const { currentUser, connected, handleConnectWallet, handleDisconnectWallet } = useWeb3()
 
 	const handleOpenMenu = (e: { target: any }) => setAnchorEl(e.target)
 	const handleCloseMenu = () => setAnchorEl(null)
@@ -42,13 +38,7 @@ const ConnectedAccount = (): JSX.Element => {
 		<>
 			<Box sx={styles.wrapper}>
 				{!connected ? (
-					<Button
-						size="small"
-						variant="contained"
-						color="secondary"
-						onClick={handleConnectWallet}
-						sx={styles.button}
-					>
+					<Button size="small" variant="contained" color="secondary" onClick={handleConnectWallet} sx={styles.button}>
 						Connect Wallet
 					</Button>
 				) : (
@@ -81,13 +71,17 @@ const ConnectedAccount = (): JSX.Element => {
 							open={Boolean(anchorEl)}
 							onClose={handleCloseMenu}
 						>
-							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem>
-							<MenuItem onClick={handleMenuItemClick}>Settings</MenuItem> */}
+							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem> */}
+							{currentUser && (
+								<MenuItem>
+									<Link href={`/users/${currentUser._id}`}>Profile</Link>
+								</MenuItem>
+							)}
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
-						{currentAccount && (
+						{currentUser && (
 							<Typography sx={styles.address} variant="body2">
-								{formatAddress(currentAccount)}
+								{formatAddress(currentUser._id)}
 							</Typography>
 						)}
 					</>

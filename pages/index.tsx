@@ -2,8 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
-// import Header from '../components/Header'
-import Footer from '../components/Footer'
+import AppFooter from '../components/AppFooter'
 import { Box, Button, Container, Typography } from '@mui/material'
 
 const styles = {
@@ -29,7 +28,7 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>ETHDenver Hack Web App | Welcome</title>
+				<title>PolyEcho | Welcome</title>
 				<meta name="description" content="A hackathon music app" />
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
@@ -43,8 +42,8 @@ const Home: NextPage = () => {
 							Make music for fun, and profit.
 						</Typography>
 						<Typography variant="h5" component="p" sx={styles.p}>
-							<strong>POLYECHO</strong> is a schelling game where the objective is to publicly
-							co-create songs worthy of purchase by NFT collectors.
+							<strong>POLYECHO</strong> is a schelling game where the objective is to publicly co-create songs worthy of
+							purchase by NFT collectors.
 						</Typography>
 						<Typography variant="h5" component="p" sx={styles.p}>
 							Collectors can explore, curate, and own a wild world of memetic music.
@@ -61,7 +60,7 @@ const Home: NextPage = () => {
 				</Container>
 			</main>
 
-			<Footer />
+			<AppFooter />
 		</>
 	)
 }

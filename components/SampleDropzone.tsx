@@ -1,11 +1,11 @@
-import { File } from 'nft.storage'
-import { Box, CircularProgress, Typography } from '@mui/material'
 import { CloudUpload } from '@mui/icons-material'
-import { useState, useMemo } from 'react'
+import { Box, CircularProgress, Typography } from '@mui/material'
+import { File } from 'nft.storage'
+import { useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useWeb3 } from './Web3Provider'
-import { update } from '../utils/http'
 import type { IProjectDoc } from '../models/project.model'
+import { post, update } from '../utils/http'
+import { useWeb3 } from './Web3Provider'
 
 const styles = {
 	spinner: {
@@ -66,70 +66,78 @@ const rejectStyle = {
 }
 
 type SampleDropzoneProps = {
-	project: IProjectDoc,
-	onSuccess: (project: IProjectDoc) => void,
+	project: IProjectDoc | any
+	onSuccess: (project: IProjectDoc) => void
 }
 
 const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	const { project, onSuccess } = props
 	const [loading, setLoading] = useState(false)
-	const { NFTStore, accounts, connected, handleConnectWallet } = useWeb3()
-	const {
-		getRootProps,
-		getInputProps,
-		isFocused,
-		isDragActive,
-		isDragAccept,
-		isDragReject,
-		fileRejections,
-	} = useDropzone({
-		maxFiles: 1,
-		accept: 'audio/wav,audio/mpeg,audio/aiff,audio/webm',
-		// Support only one file uploaded at a time
-		onDrop: async ([file]) => {
-			try {
-				if (!connected) {
-					await handleConnectWallet()
-				} else {
-					setLoading(true)
-					// Add file to NFT.storage
-					if (NFTStore) {
-						const metadata = await NFTStore.store({
-							name: file.name,
-							description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
-							image: new File([], 'PolyEcho NFT', { type: 'image/*' }),
-							properties: {
-								audio: new File([file], file.name, { type: file.type }),
-							},
-						})
-						// console.log('result from NFTStorage.store():', metadata)
-						if (metadata) {
-							// Add sample data to overall project
-							const newSample = {
-								audioUrl: metadata.embed().properties.audio.href,
-								cid: metadata.data.properties.audio.href,
-								filename: file.name,
-								filetype: file.type,
-								filesize: file.size,
-								createdBy: accounts[0],
+	const { NFTStore, currentUser, connected, handleConnectWallet } = useWeb3()
+	const { getRootProps, getInputProps, isFocused, isDragActive, isDragAccept, isDragReject, fileRejections } =
+		useDropzone({
+			maxFiles: 1,
+			accept: 'audio/wav,audio/mpeg,audio/aiff,audio/webm',
+			// Support only one file uploaded at a time
+			onDrop: async ([file]) => {
+				try {
+					if (!connected || !currentUser) {
+						await handleConnectWallet()
+					} else {
+						setLoading(true)
+						// Add file to NFT.storage
+						if (NFTStore) {
+							const metadata = await NFTStore.store({
+								name: file.name,
+								description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
+								image: new File([], 'PolyEcho NFT', { type: 'image/*' }),
+								properties: {
+									audio: new File([file], file.name, { type: file.type }),
+								},
+							})
+							// console.log('result from NFTStorage.store():', metadata)
+							if (metadata) {
+								// Add sample data to overall project
+								const newSample = {
+									audioUrl: metadata.embed().properties.audio.href,
+									cid: metadata.data.properties.audio.href,
+									filename: file.name,
+									filetype: file.type,
+									filesize: file.size,
+									createdBy: currentUser._id,
+								}
+
+								// Create the new sample (and adds to user's samples)
+								let res = await post('/samples', newSample)
+								if (!res) {
+									return res.status(400).json({ success: false, error: 'Failed to create the new sample' })
+								}
+								const sampleCreated = res.data
+
+								// Add the current user as a collaborator if they aren't one already
+								const collaborators = project.collaborators
+								if (!project.collaborators.some((c: string) => c === currentUser._id))
+									collaborators.push(currentUser._id)
+								// Add the new sample to the project and new collaborators list
+								res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })
+								if (!res) {
+									return res.status(400).json({ success: false, error: 'Failed to add sample to the project' })
+								}
+
+								// TODO: if added as a new collaborator, add this projectID to user's list of projects
+
+								// Success callback
+								if (res.success) onSuccess(res.data)
 							}
-							// Compile new sample to a
-							let collaborators = project.collaborators
-							if (!project.collaborators.some(s => s === accounts[0]))
-								collaborators.push(accounts[0])
-							const res = await update(`/projects/${project._id}`, { newSample, collaborators })
-							// Success callback
-							if (res.success) onSuccess(res.data)
 						}
+						setLoading(false)
 					}
+				} catch (err) {
+					console.error(err)
 					setLoading(false)
 				}
-			} catch (err) {
-				console.error(err)
-				setLoading(false)
-			}
-		},
-	})
+			},
+		})
 
 	// Styles
 	const dropzoneStyles = useMemo(

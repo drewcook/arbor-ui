@@ -8,7 +8,6 @@ contract('NFTContract', accounts => {
 	it('has been deployed', async () => {
 		const contract = await NFTContract.deployed()
 		assert(contract, 'NFT contract was not deployed')
-		console.log({ contract })
 		assert.notEqual(contract, undefined)
 	})
 
