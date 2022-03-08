@@ -230,6 +230,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// Get full details
 	const res = await get(`/users/${userId}`, { params: { fullDetails: true } })
 	const data: IUserFull | null = res.success ? res.data : null
+	console.log({ data })
 	return {
 		props: {
 			data,
