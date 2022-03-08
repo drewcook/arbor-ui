@@ -1,10 +1,11 @@
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import { Avatar, Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
+import NFTCard from '../../components/NFTCard'
 import Notification from '../../components/Notification'
 import ProjectCard from '../../components/ProjectCard'
 import SampleCard from '../../components/SampleCard'
@@ -32,6 +33,18 @@ const styles = {
 		fontSize: '18px',
 		mb: 2,
 		fontWeight: 300,
+	},
+	editProfileWrap: {
+		my: 2,
+	},
+	avatarWrap: {
+		display: 'flex',
+		justifyContent: 'flex-end',
+	},
+	avatar: {
+		height: 200,
+		width: 200,
+		m: 0,
 	},
 	metadataWrap: {
 		mb: 3,
@@ -62,6 +75,12 @@ const styles = {
 		color: '#777',
 		mb: 2,
 	},
+	sectionCount: {
+		fontWeight: 300,
+		color: '#777',
+		ml: 1,
+		fontSize: '1.5rem',
+	},
 	stemMetadata: {
 		mb: 4,
 	},
@@ -76,6 +95,7 @@ const propTypes = {
 		_doc: PropTypes.shape({
 			_id: PropTypes.string.isRequired,
 			createdAt: PropTypes.string.isRequired,
+			mintedNFTs: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		}).isRequired,
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
@@ -153,21 +173,49 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 												</Typography>
 												{formatDate(details._doc.createdAt)}
 											</Typography>
+											{isCurrentUserDetails && (
+												<Box sx={styles.editProfileWrap}>
+													<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
+														Edit Profile
+													</Button>
+												</Box>
+											)}
 										</Box>
 									</Box>
 								</Grid>
 								<Grid item xs={12} md={4}>
-									{isCurrentUserDetails && (
-										<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-											Edit Profile
-										</Button>
-									)}
-									<Typography>TODO: Avatar goes here</Typography>
+									<Box sx={styles.avatarWrap}>
+										<Avatar sx={styles.avatar} alt="User Avatar" src={details._doc.avatarUrl} />
+									</Box>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
+								Minted NFTs
+								<Typography component="span" sx={styles.sectionCount}>
+									({details._doc.mintedNFTs.length})
+								</Typography>
+							</Typography>
+							<Typography sx={styles.sectionMeta}>NFTs this user has minted</Typography>
+							<Grid container spacing={4}>
+								{details._doc.mintedNFTs.length > 0 ? (
+									details._doc.mintedNFTs.map((mintedNFT: any, idx: number) => (
+										<Grid item sm={6} md={4} key={`${mintedNFT.cid}-${idx}`}>
+											<NFTCard details={mintedNFT} />
+										</Grid>
+									))
+								) : (
+									<Grid item xs={12}>
+										<Typography sx={styles.noItemsMsg}>No NFTs to show, mint one!</Typography>
+									</Grid>
+								)}
+							</Grid>
+							<Divider light sx={styles.divider} />
+							<Typography variant="h4" gutterBottom>
 								Projects
+								<Typography component="span" sx={styles.sectionCount}>
+									({details.projects.length})
+								</Typography>
 							</Typography>
 							<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
 							<Typography sx={styles.sectionMeta}>
@@ -189,6 +237,9 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
 								Samples
+								<Typography component="span" sx={styles.sectionCount}>
+									({details.samples.length})
+								</Typography>
 							</Typography>
 							<Typography sx={styles.sectionMeta}>Samples this user has uploaded</Typography>
 							<Grid container spacing={4}>

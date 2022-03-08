@@ -109,24 +109,21 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 
 								// Create the new sample (and adds to user's samples)
 								let res = await post('/samples', newSample)
-								if (!res) {
-									return res.status(400).json({ success: false, error: 'Failed to create the new sample' })
-								}
+								if (!res.success) throw new Error(res.error)
 								const sampleCreated = res.data
 
 								// Add the current user as a collaborator if they aren't one already
 								const collaborators = project.collaborators
 								if (!project.collaborators.some((c: string) => c === currentUser._id))
 									collaborators.push(currentUser._id)
+
 								// Add the new sample to the project and new collaborators list
 								res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })
-								if (!res) {
-									return res.status(400).json({ success: false, error: 'Failed to add sample to the project' })
-								}
+								if (!res.success) throw new Error(res.error)
 
 								// TODO: if added as a new collaborator, add this projectID to user's list of projects
 
-								// Success callback
+								// Success callback with new project data
 								if (res.success) onSuccess(res.data)
 							}
 						}

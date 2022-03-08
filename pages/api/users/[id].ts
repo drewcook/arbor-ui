@@ -94,6 +94,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						return res.status(400).json({ success: false, error: 'failed to add sample to user' })
 					}
 					res.status(200).json({ success: true, data: user })
+				} else if (body.newNFT) {
+					user = await User.findByIdAndUpdate(
+						id,
+						{
+							$push: {
+								mintedNFTs: body.newNFT,
+							},
+						},
+						{
+							new: true,
+							runValidators: true,
+						},
+					)
+					// Returns
+					if (!user) {
+						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
+					}
+					res.status(200).json({ success: true, data: user })
 				} else {
 					user = await User.findByIdAndUpdate(id, body, {
 						new: true,

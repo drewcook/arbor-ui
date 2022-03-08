@@ -1,9 +1,9 @@
+import { Box, Button, Container, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import AppHeader from '../components/AppHeader'
 import AppFooter from '../components/AppFooter'
-import { Box, Button, Container, Typography } from '@mui/material'
+import AppHeader from '../components/AppHeader'
 
 const styles = {
 	centered: {
