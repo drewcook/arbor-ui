@@ -163,9 +163,9 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										<Box sx={styles.metadataWrap}>
 											<Typography sx={styles.metadata}>
 												<Typography component="span" sx={styles.metadataKey}>
-													User ID:
+													User Display Name:
 												</Typography>
-												{details._doc._id}
+												{details._doc.displayName}
 											</Typography>
 											<Typography sx={styles.metadata}>
 												<Typography component="span" sx={styles.metadataKey}>
