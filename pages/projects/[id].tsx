@@ -176,7 +176,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState('')
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
-	const { currentUser, contract, connected, handleConnectWallet } = useWeb3()
+	const { NFTStore, currentUser, contract, connected, handleConnectWallet } = useWeb3()
 
 	useEffect(() => {
 		// Initialize all samples as Howler objects for "play/pause all" functionality
@@ -261,20 +261,18 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				const flattenedData = await response.json()
 				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
+				// Use NFT storage metadata response and send along to PES contract
 				// Call smart contract and mint an nft out of the original CID
 				const tokenURI: any = await contract.methods
-					.mint(currentUser._id, flattenedData.cid, details.collaborators)
+					.mint(currentUser.address, flattenedData.cid, details.collaborators)
 					// TODO: Should this be non-lowercased?
-					.send({ from: currentUser._id, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
 				// Add new NFT to user details
 				const userUpdated = await update(`/users/${tokenURI.from}`, {
 					newNFT: { token: tokenURI, cid: flattenedData.cid, projectId: projectId, projectName: details.name },
 				})
 				if (!userUpdated.success) throw new Error(userUpdated.error)
-
-				// TODO: create new sample from flattened audio
-				// TODO: add new sample created to user's info
 
 				// Notify success
 				setSuccessOpen(true)

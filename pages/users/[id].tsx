@@ -90,7 +90,7 @@ const styles = {
 const propTypes = {
 	data: PropTypes.shape({
 		_doc: PropTypes.shape({
-			_id: PropTypes.string.isRequired,
+			address: PropTypes.string.isRequired,
 			createdAt: PropTypes.string.isRequired,
 			mintedNFTs: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		}).isRequired,
@@ -114,7 +114,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	useEffect(() => {
 		// Update the details when changing the route directly
 		if (data) setDetails(data)
-		if (currentUser?._id === data?._doc._id) {
+		if (currentUser?.address === data?._doc.address) {
 			setIsCurrentUserDetails(true)
 		} else {
 			setIsCurrentUserDetails(false)
@@ -123,7 +123,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 
 	useEffect(() => {
 		// Update details when switching accounts and when
-		if (currentUser?._id === data?._doc._id) {
+		if (currentUser?.address === data?._doc.address) {
 			setIsCurrentUserDetails(true)
 		} else {
 			setIsCurrentUserDetails(false)

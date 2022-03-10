@@ -74,19 +74,14 @@ const ConnectedAccount = (): JSX.Element => {
 							open={Boolean(anchorEl)}
 							onClose={handleCloseMenu}
 						>
-							{/* <MenuItem onClick={handleMenuItemClick}>My Samples</MenuItem> */}
-							{currentUser && (
-								<MenuItem>
-									<Link href={`/users/${currentUser._id}`}>Profile</Link>
-								</MenuItem>
-							)}
+							<MenuItem>
+								<Link href={`/users/${currentUser.address}`}>Profile</Link>
+							</MenuItem>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
-						{currentUser && (
-							<Typography sx={styles.address} variant="body2">
-								{formatAddress(currentUser._id)}
-							</Typography>
-						)}
+						<Typography sx={styles.address} variant="body2">
+							{formatAddress(currentUser.address)}
+						</Typography>
 					</>
 				)}
 			</Box>

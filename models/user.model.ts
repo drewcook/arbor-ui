@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import type { IProjectDoc } from './project.model'
 
 export interface IUser {
-	_id: string
+	address: string
 	displayName: string
 	avatarUrl: string
 	projectIds: string[]
@@ -17,16 +17,17 @@ export interface IUserFull extends IUser {
 	samples: any[]
 }
 
+export interface IUserDoc extends Document, IUser {}
+
 // export interface IUserDoc extends Document, IUser {}
 
-const userSchema = new mongoose.Schema<IUser>(
+const userSchema = new mongoose.Schema<IUserDoc>(
 	{
-		// Custom override of default _id - map to wallet/connected account address
-		_id: {
+		address: {
 			type: String,
 			required: true,
+			// validate it is an ethereum-like address (Joi?)
 			unique: true,
-			// validate it is an ethereum-like address
 		},
 		displayName: {
 			type: String,
@@ -59,4 +60,4 @@ const userSchema = new mongoose.Schema<IUser>(
 	{ timestamps: true },
 )
 
-export const User = mongoose.models.user || mongoose.model<IUser>('user', userSchema)
+export const User = mongoose.models.user || mongoose.model<IUserDoc>('user', userSchema)
