@@ -60,8 +60,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				let user
 				if (body.newProject) {
-					user = await User.findByIdAndUpdate(
-						id,
+					user = await User.findOneAndUpdate(
+						{ address: id },
 						{
 							$push: {
 								projectIds: body.newProject,
@@ -78,8 +78,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				} else if (body.newSample) {
-					user = await User.findByIdAndUpdate(
-						id,
+					user = await User.findOneAndUpdate(
+						{ address: id },
 						{
 							$push: {
 								sampleIds: body.newSample,
@@ -96,8 +96,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				} else if (body.newNFT) {
-					user = await User.findByIdAndUpdate(
-						id,
+					user = await User.findOneAndUpdate(
+						{ address: id },
 						{
 							$push: {
 								mintedNFTs: body.newNFT,
@@ -114,7 +114,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				} else {
-					user = await User.findByIdAndUpdate(id, body, {
+					user = await User.findOneAndUpdate({ address: id }, body, {
 						new: true,
 						runValidators: true,
 					})
