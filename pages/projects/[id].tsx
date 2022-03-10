@@ -28,7 +28,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
-import { get } from '../../utils/http'
+import { get, update } from '../../utils/http'
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
 const styles = {
@@ -260,37 +260,19 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// If we've flattened the file, now mint the NFT and write on-chain
 				const flattenedData = await response.json()
 				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
-				// TODO: create new sample from flattened audio
-				// TODO: add new sample created to user's info
-
-				// Construct JSON obj representing metadata around this NFT and store on NFT.storage
-				const metadata = await NFTStore.store({
-					name: details.name, // TODO: plus a version number?
-					description:
-						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
-					image: 'https://ipfs.io/ipfs/bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u', //new File([], 'PolyEcho NFT', { type: 'image/*' }),
-					properties: {
-						audio: new File([`https://ipfs.io/ipfs/${flattenedData.cid}`], details.name, { type: 'audio/wav' }),
-						ipfsCid: flattenedData.cid,
-						collaborators: details.collaborators,
-						projectId,
-						samples: details.samples,
-					},
-				})
-				console.log({ nftStorage: metadata })
 
 				// Use NFT storage metadata response and send along to PES contract
 				// Call smart contract and mint an nft out of the original CID
-				// const tokenURI: any = await contract.methods
-				// 	.mint(currentUser.address, flattenedData.cid, details.collaborators)
-				// 	// TODO: Should this be non-lowercased?
-				// 	.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+				const tokenURI: any = await contract.methods
+					.mint(currentUser.address, flattenedData.cid, details.collaborators)
+					// TODO: Should this be non-lowercased?
+					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
-				// // Add new NFT to user details
-				// const userUpdated = await update(`/users/${tokenURI.from}`, {
-				// 	newNFT: { token: tokenURI, cid: flattenedData.cid, projectId: projectId, projectName: details.name },
-				// })
-				// if (!userUpdated.success) throw new Error(userUpdated.error)
+				// Add new NFT to user details
+				const userUpdated = await update(`/users/${tokenURI.from}`, {
+					newNFT: { token: tokenURI, cid: flattenedData.cid, projectId: projectId, projectName: details.name },
+				})
+				if (!userUpdated.success) throw new Error(userUpdated.error)
 
 				// Notify success
 				setSuccessOpen(true)
