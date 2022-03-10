@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				const user: IUser = await User.create(payload)
 
 				res.status(201).json({ success: true, data: user })
-			} catch (e) {
+			} catch (e: any) {
 				res.status(400).json({ success: false, error: e.message })
 			}
 			break
