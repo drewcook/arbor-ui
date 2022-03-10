@@ -99,6 +99,8 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 					},
 					wallet: async (wallet: Wallet) => {
 						console.log(`${wallet.name} connected!`)
+						// store the selected wallet name to be retrieved next time the app loads
+						window.localStorage.setItem('selectedWallet', wallet.name || '')
 					},
 				},
 				walletSelect: {
@@ -107,8 +109,21 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			})
 			setOnboard(onboardInstance)
 
-			// Connect wallet
-			const connected = await onboardInstance.walletSelect()
+			/*
+			 *	Auto-select wallet by checking local storage
+			 */
+			// Get the selectedWallet value from local storage
+			const previouslySelectedWallet = window.localStorage.getItem('selectedWallet')
+
+			// Call wallet select with that value if it exists
+			let connected
+			if (previouslySelectedWallet !== null && previouslySelectedWallet !== '') {
+				connected = await onboardInstance.walletSelect(previouslySelectedWallet)
+			} else {
+				// Otherwise, connect wallet
+				connected = await onboardInstance.walletSelect()
+			}
+
 			if (connected) {
 				setConnected(true)
 				// Get ready to transact
@@ -171,6 +186,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 					address: account.toLowerCase(),
 				})
 				data = res.success ? res.data : null
+
 				setCurrentUser(data)
 			}
 			// If there is a user, great

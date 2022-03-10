@@ -19,7 +19,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:
 			try {
-				const user: IUser | null = await User.findById(id)
+				// We will always be getting users by their address, not their MongoDB _id.
+				const user: IUser | null = await User.findOne({ address: id })
 				if (!user) {
 					return res.status(404).json({ success: false })
 				}

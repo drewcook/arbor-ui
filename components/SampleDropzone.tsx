@@ -91,7 +91,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 							const metadata = await NFTStore.store({
 								name: file.name,
 								description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
-								image: new File([], 'PolyEcho NFT', { type: 'image/*' }),
+								image: new File([], 'PolyEcho Sample', { type: 'image/*' }),
 								properties: {
 									audio: new File([file], file.name, { type: file.type }),
 								},
@@ -105,7 +105,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 									filename: file.name,
 									filetype: file.type,
 									filesize: file.size,
-									createdBy: currentUser._id,
+									createdBy: currentUser.address, // Use address rather than MongoDB ID
 								}
 
 								// Create the new sample (and adds to user's samples)
@@ -115,8 +115,8 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 
 								// Add the current user as a collaborator if they aren't one already
 								const collaborators = project.collaborators
-								if (!project.collaborators.some((c: string) => c === currentUser._id))
-									collaborators.push(currentUser._id)
+								if (!project.collaborators.some((c: string) => c === currentUser.address))
+									collaborators.push(currentUser.address)
 
 								// Add the new sample to the project and new collaborators list
 								res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })

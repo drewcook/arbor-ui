@@ -1,9 +1,8 @@
-import '../styles/globals.css'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 import type { AppProps } from 'next/app'
-import { Web3Provider } from '../components/Web3Provider'
 import NextNProgress from 'nextjs-progressbar'
-
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { Web3Provider } from '../components/Web3Provider'
+import '../styles/globals.css'
 
 const polyEchoTheme = createTheme({
 	palette: {

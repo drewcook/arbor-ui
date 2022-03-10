@@ -3,9 +3,12 @@ import { IUser, User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
 
 export type CreateUserPayload = {
-	_id: string
+	address: string
 	displayName: string
 	avatarUrl: string
+	projectIds: string[]
+	sampleIds: string[]
+	mintedNFTs: any[]
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -32,18 +35,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				avatarUrl += '?set=set1' // Use Robots type
 				avatarUrl += '&bgset=bg1' // Add random background
 				avatarUrl += '&size=300x300' // Make 300x300 size
-				console.log({ avatarUrl })
 				const payload: CreateUserPayload = {
-					_id: accountAddress,
+					address: accountAddress,
 					displayName: accountAddress,
 					avatarUrl,
+					projectIds: [],
+					sampleIds: [],
+					mintedNFTs: [],
 				}
+
 				/* create a new model in the database */
 				const user: IUser = await User.create(payload)
+
 				res.status(201).json({ success: true, data: user })
 			} catch (e) {
-				console.log({ e })
-				res.status(400).json({ success: false, error: e })
+				res.status(400).json({ success: false, error: e.message })
 			}
 			break
 		default:
