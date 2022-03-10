@@ -46,8 +46,8 @@ const NewProjectPage: NextPage = () => {
 				return
 			}
 			const payload: CreateProjectPayload = {
-				createdBy: currentUser._id,
-				collaborators: [currentUser._id], // start as only collaborator
+				createdBy: currentUser.address, // Use address rather than MongoDB ID
+				collaborators: [currentUser.address], // start as only collaborator
 				name,
 				description,
 				bpm,
