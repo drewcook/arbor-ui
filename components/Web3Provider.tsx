@@ -100,7 +100,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 					wallet: async (wallet: Wallet) => {
 						console.log(`${wallet.name} connected!`)
 						// store the selected wallet name to be retrieved next time the app loads
-						window.localStorage.setItem('selectedWallet', wallet.name || '')
+						window.localStorage.setItem('polyechoSelectedWallet', wallet.name || '')
 					},
 				},
 				walletSelect: {
@@ -113,7 +113,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			 *	Auto-select wallet by checking local storage
 			 */
 			// Get the selectedWallet value from local storage
-			const previouslySelectedWallet = window.localStorage.getItem('selectedWallet')
+			const previouslySelectedWallet = window.localStorage.getItem('polyechoSelectedWallet')
 
 			// Call wallet select with that value if it exists
 			let connected
