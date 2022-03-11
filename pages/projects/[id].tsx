@@ -218,35 +218,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	}
 
 	// TODO: Fix downloading files
-	function load(url: string, callback: any) {
-		const xhr = new XMLHttpRequest()
-		xhr.onreadystatechange = function () {
-			if (xhr.readyState === 4 && xhr.status === 200) callback(xhr.responseText)
-		}
-		xhr.open('GET', url, true)
-	}
 	const handleDownloadAll = () => {
-		if (details) {
-			details.samples.forEach(async s => {
-				if (s) {
-					console.log(s)
-					const res = await fetch(s.audioUrl)
-					console.log(res)
-
-					load(s.audioUrl, function (contents: any) {
-						console.log({ contents })
-					})
-				}
-				// const a = document.createElement('a')
-				// document.body.appendChild(a)
-				// a.download = s?.audioUrl || ''
-				// a.href = s?.audioUrl || ''
-				// a.title = 'https://dweb.link/ipfs/bafybeibx62qpwae5ieukkp7pw6ax2iymm54tqeblq72b236dy4gqfzersq/KICK_AND_BASS.wav'
-				// a.text = 'Click'
-				// a.click()
-				// document.body.removeChild(a)
-			})
-		}
 		console.log('download all samples')
 	}
 
