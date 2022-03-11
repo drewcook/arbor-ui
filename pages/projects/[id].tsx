@@ -217,18 +217,35 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	}
 
 	// TODO: Fix downloading files
+	function load(url: string, callback: any) {
+		const xhr = new XMLHttpRequest()
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) callback(xhr.responseText)
+		}
+		xhr.open('GET', url, true)
+	}
 	const handleDownloadAll = () => {
-		// if (details) {
-		// 	details.samples.forEach(s => {
-		// 		const a = document.createElement('a')
-		// 		document.body.appendChild(a)
-		// 		a.download = s.audioUrl
-		// 		a.href = s.audioUrl
-		// 		a.text = 'Click'
-		// 		a.click()
-		// 		document.body.removeChild(a)
-		// 	})
-		// }
+		if (details) {
+			details.samples.forEach(async s => {
+				if (s) {
+					console.log(s)
+					const res = await fetch(s.audioUrl)
+					console.log(res)
+
+					load(s.audioUrl, function (contents: any) {
+						console.log({ contents })
+					})
+				}
+				// const a = document.createElement('a')
+				// document.body.appendChild(a)
+				// a.download = s?.audioUrl || ''
+				// a.href = s?.audioUrl || ''
+				// a.title = 'https://dweb.link/ipfs/bafybeibx62qpwae5ieukkp7pw6ax2iymm54tqeblq72b236dy4gqfzersq/KICK_AND_BASS.wav'
+				// a.text = 'Click'
+				// a.click()
+				// document.body.removeChild(a)
+			})
+		}
 		console.log('download all samples')
 	}
 
@@ -269,6 +286,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Uploading to NFT.storage...')
 
 				// Construct NFT.storage data and store
+				// Look into storing a CAR file instead - https://nftstorage.github.io/nft.storage/client/classes/lib.NFTStorage.html#encodeNFT
+
 				const metadata = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
@@ -279,12 +298,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					}),
 					properties: {
 						createdOn: new Date().toISOString(),
+						createdBy: currentUser.address,
 						audio: `ipfs://${flattenedData.cid}`,
-						audioBlob: new Blob([`ipfs://${flattenedData.cid}`], { type: 'audio/wav' }),
-						audioCid: flattenedData.cid,
-						projectId,
 						collaborators: details.collaborators,
-						samples: details.samples,
+						samples: details.samples.map(s => {
+							// TODO: Figure out this storage schema
+							s.cid, s.audioUrl
+						}),
 					},
 				})
 
@@ -439,12 +459,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											<Typography sx={styles.downloadAllText} variant="body2">
 												Download All Stems
 											</Typography>
-											<IconButton
-												sx={styles.downloadAllBtn}
-												onClick={handleDownloadAll}
-												color="primary"
-												disabled={true}
-											>
+											<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll} color="primary">
 												<Download />
 											</IconButton>
 										</Box>
