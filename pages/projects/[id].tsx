@@ -272,7 +272,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							createdBy: currentUser.address,
 							audio: `ipfs://${flattenedData.cid}`,
 							collaborators: details.collaborators,
-							samples: details.samples.map(s => ({
+							samples: details.samples.map((s: any) => ({
 								cid: s.cid,
 								audio: s.audioUrl,
 							})),
@@ -309,7 +309,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						name: details.name,
 						projectId,
 						collaborators: details.collaborators,
-						samples: details.samples.map(s => ({
+						samples: details.samples.map((s: any) => ({
 							sampleId: s._id,
 							cid: s.cid,
 							audio: s.audioUrl,
