@@ -9,13 +9,13 @@ import {
 	ListItemText,
 	Typography,
 } from '@mui/material'
-import Image from 'next/image'
 import CoinbaseIcon from '../public/coinbasewallet_icon.png'
 import EthereumIcon from '../public/ethereum_icon.png'
 import MetaMaskIcon from '../public/metamask_icon.png'
 import PortisIcon from '../public/portis_icon.png'
 import TallyIcon from '../public/tally_icon.svg'
 import TorusIcon from '../public/torus_icon.svg'
+import ImageOptimized from './ImageOptimized'
 
 const styles = {
 	wrapper: {
@@ -61,7 +61,7 @@ const Web3Fallback = (): JSX.Element => (
 						<ListItem disablePadding divider>
 							<ListItemButton>
 								<ListItemIcon sx={styles.icon}>
-									<Image src={TallyIcon} alt="Tally" title="Tally" />
+									<ImageOptimized src={TallyIcon} alt="Tally" title="Tally" />
 								</ListItemIcon>
 								<ListItemText primary="Tally" />
 								<ListItemText secondary="Recommended" secondaryTypographyProps={{ align: 'right' }} />
@@ -72,7 +72,7 @@ const Web3Fallback = (): JSX.Element => (
 						<ListItem disablePadding divider>
 							<ListItemButton>
 								<ListItemIcon sx={styles.icon}>
-									<Image src={MetaMaskIcon} alt="MetaMask" title="MetaMask" />
+									<ImageOptimized src={MetaMaskIcon} alt="MetaMask" title="MetaMask" />
 								</ListItemIcon>
 								<ListItemText primary="MetaMask" />
 								<ListItemText secondaryTypographyProps={{ align: 'right' }} />
@@ -83,7 +83,7 @@ const Web3Fallback = (): JSX.Element => (
 						<ListItem disablePadding divider>
 							<ListItemButton>
 								<ListItemIcon sx={styles.icon}>
-									<Image src={CoinbaseIcon} alt="Coinbase Wallet" title="Coinbase Wallet" />
+									<ImageOptimized src={CoinbaseIcon} alt="Coinbase Wallet" title="Coinbase Wallet" />
 								</ListItemIcon>
 								<ListItemText primary="Coinbase Wallet" />
 							</ListItemButton>
@@ -93,7 +93,7 @@ const Web3Fallback = (): JSX.Element => (
 						<ListItem disablePadding divider>
 							<ListItemButton>
 								<ListItemIcon sx={styles.icon}>
-									<Image src={PortisIcon} alt="Portis" title="Portis" />
+									<ImageOptimized src={PortisIcon} alt="Portis" title="Portis" />
 								</ListItemIcon>
 								<ListItemText primary="Portis" />
 							</ListItemButton>
@@ -103,7 +103,7 @@ const Web3Fallback = (): JSX.Element => (
 						<ListItem disablePadding divider>
 							<ListItemButton>
 								<ListItemIcon sx={styles.icon}>
-									<Image src={TorusIcon} alt="Torus Labs" title="Torus Labs" />
+									<ImageOptimized src={TorusIcon} alt="Torus Labs" title="Torus Labs" />
 								</ListItemIcon>
 								<ListItemText primary="Torus" />
 							</ListItemButton>
@@ -113,7 +113,7 @@ const Web3Fallback = (): JSX.Element => (
 						<ListItem disablePadding>
 							<ListItemButton>
 								<ListItemIcon sx={styles.icon}>
-									<Image src={EthereumIcon} alt="Ethereum Wallets" title="Ethereum Wallets" />
+									<ImageOptimized src={EthereumIcon} alt="Ethereum Wallets" title="Ethereum Wallets" />
 								</ListItemIcon>
 								<ListItemText primary="Find an Ethereum Wallets" />
 							</ListItemButton>

@@ -8,11 +8,12 @@ type NotificationProps = {
 	msg: string
 	open: boolean
 	type: AlertColor | undefined
+	duration?: number
 	onClose: () => void
 }
 
 const Notification = (props: NotificationProps): JSX.Element => {
-	const { msg, open, type, onClose } = props
+	const { msg, open, type, duration, onClose } = props
 	const [isOpen, setIsOpen] = useState(open)
 
 	const handleAlertClose: (event: SyntheticEvent<Element, Event>) => void = () => {
@@ -37,7 +38,7 @@ const Notification = (props: NotificationProps): JSX.Element => {
 	return (
 		<Snackbar
 			open={isOpen}
-			autoHideDuration={5000}
+			autoHideDuration={duration || 5000}
 			onClose={handleSnackbarClose}
 			action={action}
 			anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

@@ -2,6 +2,7 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic'
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
+import ImageOptimized from './ImageOptimized'
 
 const styles = {
 	card: {
@@ -43,13 +44,27 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				<LibraryMusicIcon sx={styles.cardMediaIcon} />
 			</Box>
 			<CardContent>
+				<Box className="nft-card-media">
+					<ImageOptimized
+						src="https://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link/"
+						alt="PolyEcho NFT"
+						width={400}
+						height={400}
+					/>
+				</Box>
 				<Typography variant="h5" gutterBottom>
-					{details.projectName ?? 'Project Name'}
+					{details.name ?? 'Project Name'}
 					<IconButton sx={styles.projectIconLink} color="secondary">
-						<Link href={`/projects/${details.projectId}`} passHref>
+						<Link href={`/projects/${details.properties.projectId}`} passHref>
 							<QueueMusicIcon />
 						</Link>
 					</IconButton>
+				</Typography>
+				<Typography variant="body2" sx={styles.detailItem}>
+					Collaborators: {details.properties.collaborators.length}
+				</Typography>
+				<Typography variant="body2" sx={styles.detailItem}>
+					Samples: {details.properties.samples.length}
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
 					Block #:{' '}
@@ -62,7 +77,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				<Typography variant="body2" sx={styles.detailItem}></Typography>
 			</CardContent>
 			<CardActions sx={styles.actions}>
-				<Link href={`https://${details.cid}.ipfs.dweb.link/`} passHref>
+				<Link href={details.ipfsUrl} passHref>
 					<Button color="primary">View on IPFS</Button>
 				</Link>
 			</CardActions>

@@ -16,12 +16,12 @@ import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
-import Image from 'next/image'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { Fragment, useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
+import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
@@ -29,6 +29,7 @@ import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, update } from '../../utils/http'
+
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
 const styles = {
@@ -171,12 +172,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [details, setDetails] = useState(data)
 	const [sounds, setSounds] = useState<Howl[]>([])
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
-	const [minting, setMinting] = useState(false)
-	const [successOpen, setSuccessOpen] = useState(false)
-	const [successMsg, setSuccessMsg] = useState('')
-	const [errorOpen, setErrorOpen] = useState(false)
-	const [errorMsg, setErrorMsg] = useState('')
-	const { NFTStore, currentUser, contract, connected, handleConnectWallet } = useWeb3()
+	const [minting, setMinting] = useState<boolean>(false)
+	const [successOpen, setSuccessOpen] = useState<boolean>(false)
+	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [errorOpen, setErrorOpen] = useState<boolean>(false)
+	const [errorMsg, setErrorMsg] = useState<string>('')
+	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
+	const [mintingMsg, setMintingMsg] = useState<string>('')
+	const { connected, contract, currentUser, handleConnectWallet, NFTStore } = useWeb3()
 
 	useEffect(() => {
 		// Initialize all samples as Howler objects for "play/pause all" functionality
@@ -236,13 +239,17 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setSuccessMsg('Successfully uploaded file to NFT.storage!')
 	}
 
+	// TODO: Keep track of minted versions and how many mints a project has undergone
 	const handleMintAndBuy = async () => {
 		try {
 			if (details && currentUser) {
 				setMinting(true)
-				const samples = details.samples.map(s => s?.cid.replace('ipfs://', ''))
+
+				if (!mintingOpen) setMintingOpen(true)
+				setMintingMsg('Combining stems into a single song...')
 
 				// Hit Python HTTP server to flatten samples into a singular one
+				const samples = details.samples.map(s => s?.cid.replace('ipfs://', ''))
 				const response = await fetch('/api/flatten', {
 					method: 'POST',
 					headers: {
@@ -251,46 +258,78 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					body: JSON.stringify({ sample_cids: samples }),
 				})
 				// Catch flatten audio error
-				if (!response.ok) {
-					setErrorOpen(true)
-					setErrorMsg('Uh oh, failed to mint the NFT')
-					setMinting(false)
-				}
-
-				// If we've flattened the file, now mint the NFT and write on-chain
-				const flattenedData = await response.json()
+				if (!response.ok) throw new Error('Failed to flatten the audio files')
+				const flattenedData = await response.json() // Catch fro .json()
 				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
-				// Use NFT storage metadata response and send along to PES contract
+				// TODO: create new sample from flattened audio
+				// TODO: add new sample created to user's info
+
+				if (!mintingOpen) setMintingOpen(true)
+				setMintingMsg('Uploading to NFT.storage...')
+
+				// Construct NFT.storage data and store
+				const metadata = await NFTStore.store({
+					name: details.name, // TODO: plus a version number?
+					description:
+						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
+					// Our square logo CID
+					image: new Blob(['ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u'], {
+						type: 'image/*',
+					}),
+					properties: {
+						createdOn: new Date().toISOString(),
+						audio: `ipfs://${flattenedData.cid}`,
+						audioBlob: new Blob([`ipfs://${flattenedData.cid}`], { type: 'audio/wav' }),
+						audioCid: flattenedData.cid,
+						projectId,
+						collaborators: details.collaborators,
+						samples: details.samples,
+					},
+				})
+
+				if (!metadata) throw new Error('Failed to store on NFT.storage')
+				console.info('Uploaded to NFT.storage:', metadata.url)
+
 				// Call smart contract and mint an nft out of the original CID
+				if (!mintingOpen) setMintingOpen(true)
+				setMintingMsg('Minting the NFT. This could take a moment...')
 				const tokenURI: any = await contract.methods
-					.mint(currentUser.address, flattenedData.cid, details.collaborators)
+					.mint(currentUser.address, metadata.url, details.collaborators)
 					// TODO: Should this be non-lowercased?
 					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
 				// Add new NFT to user details
+				// TODO: call POST /nft with data and move updating a user into that function
+				if (!mintingOpen) setMintingOpen(true)
+				setMintingMsg('Updating user details...')
 				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: { token: tokenURI, cid: flattenedData.cid, projectId: projectId, projectName: details.name },
+					newNFT: { ...metadata.data, cid: metadata.ipnft, ipfsUrl: metadata.url, token: tokenURI },
 				})
 				if (!userUpdated.success) throw new Error(userUpdated.error)
 
 				// Notify success
-				setSuccessOpen(true)
-				setSuccessMsg('Successfully minted a new NFT!')
+				if (!successOpen) setSuccessOpen(true)
+				setSuccessMsg('Success! You now own this music NFT!')
 				setMinting(false)
 			}
 		} catch (e: any) {
 			console.error(e)
+
 			// Notify error
-			setMinting(false)
+			setMintingOpen(false)
+			setMintingMsg('')
 			setErrorOpen(true)
 			setErrorMsg('Uh oh, failed to mint the NFT')
+			setMinting(false)
 		}
 	}
 
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
 		setSuccessMsg('')
+		setMintingOpen(false)
+		setMintingMsg('')
 		setErrorOpen(false)
 		setErrorMsg('')
 	}
@@ -368,7 +407,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
 											</Button>
 											<Box sx={styles.price}>
-												<Image src={EthereumIcon} width={50} height={50} alt="Ethereum" />
+												<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
 												<Typography variant="h4" component="div">
 													0.01{' '}
 													<Typography sx={styles.eth} component="span">
@@ -431,6 +470,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			</main>
 
 			<AppFooter />
+			{mintingOpen && (
+				<Notification open={mintingOpen} msg={mintingMsg} type="info" onClose={onNotificationClose} duration={10000} />
+			)}
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
 			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
