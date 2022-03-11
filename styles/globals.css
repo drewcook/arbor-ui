@@ -46,3 +46,9 @@ ol, ul {
 		justify-content: flex-end;
 	}
 }
+
+.nft-card-media img,
+.nft-card-media span {
+	width: 100% !important;
+	height: auto !important;
+}

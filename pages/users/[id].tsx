@@ -1,10 +1,11 @@
-import { Avatar, Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
+import ImageOptimized from '../../components/ImageOptimized'
 import NFTCard from '../../components/NFTCard'
 import Notification from '../../components/Notification'
 import ProjectCard from '../../components/ProjectCard'
@@ -39,9 +40,12 @@ const styles = {
 		my: 2,
 	},
 	avatar: {
+		border: '3px solid #a0b3a0',
+		borderRadius: '50%',
 		height: 200,
 		width: 200,
 		m: 0,
+		overflow: 'hidden',
 	},
 	metadataWrap: {
 		mb: 3,
@@ -185,7 +189,9 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 								</Grid>
 								<Grid item xs={12} md={4}>
 									<Box className="avatar-wrap">
-										<Avatar sx={styles.avatar} alt="User Avatar" src={details._doc.avatarUrl} />
+										<Box sx={styles.avatar}>
+											<ImageOptimized src={details._doc.avatarUrl} alt="User Avatar" width={200} height={200} />
+										</Box>
 									</Box>
 								</Grid>
 							</Grid>

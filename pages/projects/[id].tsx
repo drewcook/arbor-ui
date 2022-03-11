@@ -16,12 +16,12 @@ import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
-import Image from 'next/image'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { Fragment, useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
+import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
@@ -176,7 +176,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState('')
 	const [errorOpen, setErrorOpen] = useState(false)
 	const [errorMsg, setErrorMsg] = useState('')
-	const { connected, currentUser, handleConnectWallet, NFTStore } = useWeb3()
+	const { connected, contract, currentUser, handleConnectWallet, NFTStore } = useWeb3()
 
 	useEffect(() => {
 		// Initialize all samples as Howler objects for "play/pause all" functionality
@@ -265,30 +265,47 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// TODO: add new sample created to user's info
 
 				// Construct JSON obj representing metadata around this NFT and store on NFT.storage
+				// const request = new XMLHttpRequest()
+				// request.open('GET', MY_URL, true)
+				// request.responseType = 'blob'
+				// request.onload = function () {
+				// 	const reader = new FileReader()
+				// 	reader.readAsDataURL(`ipfs://${flattenedData.cid}`)
+				// 	reader.onload = function (e: any) {
+				// 		console.log('DataURL:', e.target.result)
+				// 	}
+				// }
+				const res = await fetch(`ipfs://${flattenedData.cid}`)
+				const blob = await res.blob()
+				const file = new Blob([blob], { type: 'audio/wav' })
+				console.log(file)
 				const metadata = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
 						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
-					image: 'https://ipfs.io/ipfs/bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u', //new File([], 'PolyEcho NFT', { type: 'image/*' }),
+					image: new Blob(['ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u'], { type: 'image/*' }),
 					properties: {
-						audio: new File([`https://ipfs.io/ipfs/${flattenedData.cid}`], details.name, { type: 'audio/wav' }),
+						audio: file, //new Blob([`ipfs://${flattenedData.cid}`], { type: 'audio/wav' }),
 						ipfsCid: flattenedData.cid,
 						collaborators: details.collaborators,
 						projectId,
 						samples: details.samples,
 					},
 				})
-				console.log({ nftStorage: metadata })
+				console.log(metadata.url)
+
+				if (!metadata) throw new Error('Failed to store on NFT.storage')
 
 				// Call smart contract and mint an nft out of the original CID
 				// const tokenURI: any = await contract.methods
-				// 	.mint(currentUser._id, flattenedData.cid, details.collaborators)
+				// 	.mint(currentUser.address, metadata.url, details.collaborators)
 				// 	// TODO: Should this be non-lowercased?
-				// 	.send({ from: currentUser._id, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+				// 	.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
-				// // Add new NFT to user details
+				// // // Add new NFT to user details
+				// // TODO: call POST /nft with data and move updating a user into that function
 				// const userUpdated = await update(`/users/${tokenURI.from}`, {
-				// 	newNFT: { token: tokenURI, cid: flattenedData.cid, projectId: projectId, projectName: details.name },
+				// 	newNFT: { ...metadata.data, cid: metadata.ipnft, ipfsUrl: metadata.url, token: tokenURI },
 				// })
 				// if (!userUpdated.success) throw new Error(userUpdated.error)
 
@@ -386,7 +403,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
 											</Button>
 											<Box sx={styles.price}>
-												<Image src={EthereumIcon} width={50} height={50} alt="Ethereum" />
+												<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
 												<Typography variant="h4" component="div">
 													0.01{' '}
 													<Typography sx={styles.eth} component="span">
