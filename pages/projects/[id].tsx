@@ -180,7 +180,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
-	const { connected, contract, currentUser, handleConnectWallet, NFTStore } = useWeb3()
+	const { connected, contract, currentUser, handleConnectWallet } = useWeb3()
 
 	useEffect(() => {
 		// Initialize all samples as Howler objects for "play/pause all" functionality
