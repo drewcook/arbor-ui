@@ -1,4 +1,3 @@
-import { Box } from '@mui/material'
 import Image from 'next/image'
 import { Blob } from 'nft.storage'
 import PropTypes from 'prop-types'
@@ -15,23 +14,21 @@ const ImageOptimized = (props: ImageOptimizedProps): JSX.Element => {
 	const { src, alt, title, width, height } = props
 
 	return (
-		<Box sx={{ backgroundColor: '#555' }}>
-			<Image
-				src={src}
-				alt={alt}
-				title={title}
-				width={width}
-				height={height}
-				quality={100}
-				loading="eager"
-				objectFit="cover"
-				objectPosition="center"
-				placeholder="blur"
-				blurDataURL={new Blob([src.toString()], {
-					type: 'image/*',
-				}).toString()}
-			/>
-		</Box>
+		<Image
+			src={src}
+			alt={alt}
+			title={title}
+			width={width}
+			height={height}
+			quality={100}
+			loading="eager"
+			objectFit="cover"
+			objectPosition="center"
+			placeholder="blur"
+			blurDataURL={new Blob([src.toString()], {
+				type: 'image/*',
+			}).toString()}
+		/>
 	)
 }
 
