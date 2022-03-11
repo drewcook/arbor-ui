@@ -11,6 +11,7 @@ import {
 	IconButton,
 	Typography,
 } from '@mui/material'
+import axios from 'axios'
 import { Howl } from 'howler'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -286,36 +287,42 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Uploading to NFT.storage...')
 
 				// Construct NFT.storage data and store
-				// Look into storing a CAR file instead - https://nftstorage.github.io/nft.storage/client/classes/lib.NFTStorage.html#encodeNFT
-
-				const metadata = await NFTStore.store({
-					name: details.name, // TODO: plus a version number?
-					description:
-						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
-					// Our square logo CID
-					image: new Blob(['ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u'], {
-						type: 'image/*',
-					}),
-					properties: {
-						createdOn: new Date().toISOString(),
-						createdBy: currentUser.address,
-						audio: `ipfs://${flattenedData.cid}`,
-						collaborators: details.collaborators,
-						samples: details.samples.map(s => {
-							// TODO: Figure out this storage schema
-							s.cid, s.audioUrl
-						}),
+				const res = await axios.post(
+					'https://api.nft.storage/upload/',
+					{
+						name: details.name, // TODO: plus a version number?
+						description:
+							'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
+						// Our square logo CID
+						image: 'ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u',
+						properties: {
+							createdOn: new Date().toISOString(),
+							createdBy: currentUser.address,
+							audio: `ipfs://${flattenedData.cid}`,
+							collaborators: details.collaborators,
+							samples: details.samples.map(s => ({
+								cid: s.cid,
+								audio: s.audioUrl,
+							})),
+						},
 					},
-				})
+					{
+						headers: {
+							authorization: `Bearer ${process.env.NFT_STORAGE_KEY}`,
+						},
+					},
+				)
 
-				if (!metadata) throw new Error('Failed to store on NFT.storage')
-				console.info('Uploaded to NFT.storage:', metadata.url)
+				// Check for data
+				const nftStorageData: any = res.data ? res.data : { ok: false }
+				if (!nftStorageData.ok) throw new Error('Failed to store on NFT.storage')
 
 				// Call smart contract and mint an nft out of the original CID
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
+
 				const tokenURI: any = await contract.methods
-					.mint(currentUser.address, metadata.url, details.collaborators)
+					.mint(currentUser.address, `ipfs://${nftStorageData.value.cid}`, details.collaborators)
 					// TODO: Should this be non-lowercased?
 					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
@@ -324,7 +331,18 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Updating user details...')
 				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: { ...metadata.data, cid: metadata.ipnft, ipfsUrl: metadata.url, token: tokenURI },
+					newNFT: {
+						token: tokenURI,
+						metadataURL: `ipfs://${nftStorageData.value.cid}`,
+						name: details.name,
+						projectId,
+						collaborators: details.collaborators,
+						samples: details.samples.map(s => ({
+							sampleId: s._id,
+							cid: s.cid,
+							audio: s.audioUrl,
+						})),
+					},
 				})
 				if (!userUpdated.success) throw new Error(userUpdated.error)
 
