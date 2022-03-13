@@ -250,11 +250,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					},
 				})
 
-				console.groupCollapsed('NFT.storage response')
-				console.info('res', nftsRes)
-				console.info('data', nftsRes.data)
-				console.info('embed', nftsRes.embed())
-				console.groupEnd()
+				// console.groupCollapsed('NFT.storage response')
+				// console.info('res', nftsRes)
+				// console.info('data', nftsRes.data)
+				// console.info('embed', nftsRes.embed())
+				// console.groupEnd()
 
 				// Check for data
 				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
