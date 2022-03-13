@@ -19,8 +19,6 @@ export interface IUserFull extends IUser {
 
 export interface IUserDoc extends Document, IUser {}
 
-// export interface IUserDoc extends Document, IUser {}
-
 const userSchema = new mongoose.Schema<IUserDoc>(
 	{
 		address: {

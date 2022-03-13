@@ -9,7 +9,7 @@ import {
 	Fab,
 	Grid,
 	IconButton,
-	Typography,
+	Typography
 } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -25,10 +25,11 @@ import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
+import { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, update } from '../../utils/http'
+import { get, post, update } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
@@ -150,6 +151,9 @@ const propTypes = {
 	data: PropTypes.shape({
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
+				_id: PropTypes.string.isRequired,
+				metadataUrl: PropTypes.string.isRequired,
+				audioUrl: PropTypes.string.isRequired,
 				audioHref: PropTypes.string.isRequired,
 			}),
 		).isRequired,
@@ -268,24 +272,27 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					// TODO: Should this be non-lowercased?
 					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
-				// Add new NFT to user details
-				// TODO: call POST /nft with data and move updating a user into that function
+				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
+				// TODO: call POST /nft with data and move updating a user into that function
 				setMintingMsg('Updating user details...')
+				const newNftPayload: INft = {
+					token: tokenURI,
+					name: details.name,
+					metadataUrl: nftsRes.url,
+					projectId,
+					collaborators: details.collaborators,
+					samples: details.samples.map((s: any) => ({
+						sampleId: s._id,
+						metadataUrl: s.metadataUrl,
+						audioUrl: s.audioUrl,
+						audioHref: s.audioHref,
+					})),
+				}
+				const nftCreated = await post('/nfts', newNftPayload)
+
 				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: {
-						token: tokenURI,
-						name: details.name,
-						metadataUrl: nftsRes.url,
-						projectId,
-						collaborators: details.collaborators,
-						samples: details.samples.map((s: any) => ({
-							sampleId: s._id,
-							metadataUrl: s.metadataUrl,
-							audioUrl: s.audioUrl,
-							audioHref: s.audioHref,
-						})),
-					},
+					newNFT: nftCreated,
 				})
 				if (!userUpdated.success) throw new Error(userUpdated.error)
 
@@ -458,6 +465,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 ProjectPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
+	// Get project details from ID
 	const projectId = context.query.id
 	const res = await get(`/projects/${projectId}`)
 	const data: IProjectDoc | null = res.success ? res.data : null
