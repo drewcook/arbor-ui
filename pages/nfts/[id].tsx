@@ -26,6 +26,11 @@ const styles = {
 		display: 'inline-block',
 		color: '#a8a8a8',
 	},
+	btn: {
+		m: 1,
+		display: 'block',
+		textAlign: 'center',
+	},
 	divider: {
 		my: 3,
 		borderColor: '#ccc',
@@ -66,6 +71,7 @@ const propTypes = {
 		createdAt: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
+		audioHref: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		projectId: PropTypes.string.isRequired,
 		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
@@ -116,9 +122,9 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
-												Minted On:
+												Minted By:
 											</Typography>
-											{formatDate(data.createdAt)}
+											{formatAddress(data.createdBy)}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
@@ -126,12 +132,23 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											</Typography>
 											{formatDate(data.createdAt)}
 										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Project ID:
+											</Typography>
+											<Link href={`/projects/${data.projectId}`}>{data.projectId}</Link>
+										</Typography>
 									</Box>
 								</Grid>
 								<Grid item xs={12} md={4}>
 									<Link href={data.metadataUrl} passHref>
-										<Button color="secondary" variant="contained">
+										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
 											View on IPFS
+										</Button>
+									</Link>
+									<Link href={data.audioHref} passHref>
+										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
+											Listen on IPFS
 										</Button>
 									</Link>
 								</Grid>

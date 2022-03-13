@@ -241,7 +241,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						// audio: `ipfs://${flattenedData.cid}`,
+						audio: `ipfs//[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
 						collaborators: details.collaborators,
 						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
@@ -273,13 +273,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					token: tokenURI,
 					name: details.name,
 					metadataUrl: nftsRes.url,
+					audioHref: nftsRes.data.properties.audio,
 					projectId,
 					collaborators: details.collaborators,
 					samples: details.samples, // Direct 1:1 map
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)
-				console.log({ nftCreated })
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)

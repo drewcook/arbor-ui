@@ -9,6 +9,7 @@ export interface INft {
 	createdBy: string
 	token: Token
 	metadataUrl: string
+	audioHref: string
 	name: string
 	projectId: string
 	collaborators: string[]
@@ -24,6 +25,10 @@ const nftSchema = new mongoose.Schema<INftDoc>(
 			required: true,
 		},
 		metadataUrl: {
+			type: String,
+			required: true,
+		},
+		audioHref: {
 			type: String,
 			required: true,
 		},

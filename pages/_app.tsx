@@ -8,9 +8,11 @@ const polyEchoTheme = createTheme({
 	palette: {
 		primary: {
 			main: '#23F09A',
+			contrastText: '#000',
 		},
 		secondary: {
 			main: '#0500ff',
+			contrastText: '#fff',
 		},
 		divider: '#ccc',
 	},
