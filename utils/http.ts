@@ -1,8 +1,8 @@
 import axios from 'axios'
+import _cloneDeep from 'lodash/cloneDeep'
 
 // Create Axios instance
 const instance = axios.create({ baseURL: process.env.CLIENT_HOST })
-// const instance = axios.create()
 
 /**
  * A generic GET request wrapper to ease use within React
@@ -27,7 +27,7 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
  */
 export const post = async (pathname: string, data?: any): Promise<any> => {
 	try {
-		const res = await instance.post(`/api${pathname}`, data)
+		const res = await instance.post(`/api${pathname}`, _cloneDeep(data))
 		return res.data
 	} catch (e: any) {
 		return { success: false, error: e }

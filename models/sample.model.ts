@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose'
 
 export interface ISample {
-	cid: string
+	metadataUrl: string
 	audioUrl: string
 	filename: string
 	filetype: string
@@ -13,7 +13,7 @@ export interface ISampleDoc extends Document, ISample {}
 
 export const sampleSchema = new mongoose.Schema(
 	{
-		cid: {
+		metadataUrl: {
 			type: String,
 			required: true,
 		},
@@ -37,11 +37,11 @@ export const sampleSchema = new mongoose.Schema(
 			type: Number,
 			required: true,
 		},
-		// TODO: Add sample tags
 		createdBy: {
 			type: String,
 			required: true,
 		},
+		// TODO: Add tags field to help describe the sample
 	},
 	{ timestamps: true },
 )

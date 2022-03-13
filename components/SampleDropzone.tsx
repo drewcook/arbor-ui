@@ -1,8 +1,9 @@
 import { CloudUpload } from '@mui/icons-material'
 import { Box, CircularProgress, Typography } from '@mui/material'
-import { File } from 'nft.storage'
+import { Blob } from 'nft.storage'
 import { useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import logoBinary from '../lib/logoBinary'
 import type { IProjectDoc } from '../models/project.model'
 import { post, update } from '../utils/http'
 import { useWeb3 } from './Web3Provider'
@@ -86,50 +87,53 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 						await handleConnectWallet()
 					} else {
 						setLoading(true)
-						// Add file to NFT.storage
-						if (NFTStore) {
-							const metadata = await NFTStore.store({
-								name: file.name,
-								description: 'An audio file uploaded via the PolyEcho drag-n-drop UI',
-								image: new File([], 'PolyEcho Sample', { type: 'image/*' }),
-								properties: {
-									audio: new File([file], file.name, { type: file.type }),
-								},
-							})
-							// console.log('result from NFTStorage.store():', metadata)
-							if (metadata) {
-								// Add sample data to overall project
-								const newSample = {
-									audioUrl: metadata.embed().properties.audio.href,
-									cid: metadata.data.properties.audio.href,
-									filename: file.name,
-									filetype: file.type,
-									filesize: file.size,
-									createdBy: currentUser.address, // Use address rather than MongoDB ID
-								}
 
-								// Create the new sample (and adds to user's samples)
-								let res = await post('/samples', newSample)
-								if (!res.success) throw new Error(res.error)
-								const sampleCreated = res.data
+						// Upload to NFT.storage
+						const nftsRes = await NFTStore.store({
+							name: file.name,
+							description: 'An audio file uploaded through the PolyEcho platform',
+							image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
+							properties: {
+								createdOn: new Date().toISOString(),
+								createdBy: currentUser.address,
+								audio: new Blob([file], { type: file.type }),
+							},
+						})
+						if (!nftsRes) throw new Error('Failed to upload to NFT.storage')
 
-								// Add the current user as a collaborator if they aren't one already
-								const collaborators = project.collaborators
-								if (!project.collaborators.some((c: string) => c === currentUser.address))
-									collaborators.push(currentUser.address)
+						// console.groupCollapsed('NFT.storage response')
+						// console.info('res', nftsRes)
+						// console.info('data', nftsRes.data)
+						// console.info('embed', nftsRes.embed())
+						// console.groupEnd()
 
-								// Add the new sample to the project and new collaborators list
-								res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })
-								if (!res.success) throw new Error(res.error)
+						// Create the new sample (and adds to user's samples)
+						let res = await post('/samples', {
+							metadataUrl: nftsRes.url,
+							audioUrl: nftsRes.data.properties.audio.href,
+							filename: file.name,
+							filetype: file.type,
+							filesize: file.size,
+							createdBy: currentUser.address, // Use address rather than MongoDB ID
+						})
+						if (!res.success) throw new Error(res.error)
+						const sampleCreated = res.data
 
-								// TODO: if added as a new collaborator, add this projectID to user's list of projects
+						// Add the current user as a collaborator if they aren't one already
+						const collaborators = project.collaborators
+						if (!project.collaborators.some((c: string) => c === currentUser.address))
+							collaborators.push(currentUser.address)
 
-								// Success callback with new project data
-								if (res.success) onSuccess(res.data)
-							}
-						}
-						setLoading(false)
+						// Add the new sample to the project and new collaborators list
+						res = await update(`/projects/${project._id}`, { newSample: sampleCreated, collaborators })
+						if (!res.success) throw new Error(res.error)
+
+						// TODO: if added as a new collaborator, add this projectID to user's list of projects
+
+						// Success callback with new project data
+						if (res.success) onSuccess(res.data)
 					}
+					setLoading(false)
 				} catch (err) {
 					console.error(err)
 					setLoading(false)

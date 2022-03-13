@@ -11,7 +11,6 @@ import {
 	IconButton,
 	Typography,
 } from '@mui/material'
-import axios from 'axios'
 import { Howl } from 'howler'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -29,7 +28,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, update } from '../../utils/http'
+import { get } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
@@ -180,7 +179,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
-	const { connected, contract, currentUser, handleConnectWallet } = useWeb3()
+	const { NFTStore, connected, contract, currentUser, handleConnectWallet } = useWeb3()
 
 	useEffect(() => {
 		// Initialize all samples as Howler objects for "play/pause all" functionality
@@ -220,6 +219,18 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	// TODO: Fix downloading files
 	const handleDownloadAll = () => {
 		console.log('download all samples')
+		try {
+			const downloads: any[] = []
+			details?.samples.forEach(async (s: any) => {
+				const cid = s.cid.replace('ipfs://', '').split('/')[0]
+				const res = await get(`/samples/download/${cid}`)
+				if (!res.success) throw new Error(res.error)
+				console.log(res.data)
+			})
+			console.log({ downloads })
+		} catch (e: any) {
+			console.error(e.message)
+		}
 	}
 
 	const onUploadSuccess = (projectData: IProjectDoc) => {
@@ -259,69 +270,64 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Uploading to NFT.storage...')
 
 				// Construct NFT.storage data and store
-				const res = await axios.post(
-					'https://api.nft.storage/upload/',
-					{
-						name: details.name, // TODO: plus a version number?
-						description:
-							'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
-						// Our square logo CID
-						image: 'ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u',
-						properties: {
-							createdOn: new Date().toISOString(),
-							createdBy: currentUser.address,
-							audio: `ipfs://${flattenedData.cid}`,
-							collaborators: details.collaborators,
-							samples: details.samples.map((s: any) => ({
-								cid: s.cid,
-								audio: s.audioUrl,
-							})),
-						},
-					},
-					{
-						headers: {
-							authorization: `Bearer ${process.env.NFT_STORAGE_KEY}`,
-						},
-					},
-				)
-
-				// Check for data
-				const nftStorageData: any = res.data ? res.data : { ok: false }
-				if (!nftStorageData.ok) throw new Error('Failed to store on NFT.storage')
-
-				// Call smart contract and mint an nft out of the original CID
-				if (!mintingOpen) setMintingOpen(true)
-				setMintingMsg('Minting the NFT. This could take a moment...')
-
-				const tokenURI: any = await contract.methods
-					.mint(currentUser.address, `ipfs://${nftStorageData.value.cid}`, details.collaborators)
-					// TODO: Should this be non-lowercased?
-					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
-
-				// Add new NFT to user details
-				// TODO: call POST /nft with data and move updating a user into that function
-				if (!mintingOpen) setMintingOpen(true)
-				setMintingMsg('Updating user details...')
-				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: {
-						token: tokenURI,
-						metadataURL: `ipfs://${nftStorageData.value.cid}`,
-						name: details.name,
-						projectId,
+				const res = await NFTStore.store({
+					name: details.name, // TODO: plus a version number?
+					description:
+						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
+					image: 'ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u', // Our square logo CID
+					properties: {
+						createdOn: new Date().toISOString(),
+						createdBy: currentUser.address,
+						audio: `ipfs://${flattenedData.cid}`,
 						collaborators: details.collaborators,
 						samples: details.samples.map((s: any) => ({
-							sampleId: s._id,
 							cid: s.cid,
 							audio: s.audioUrl,
 						})),
 					},
 				})
-				if (!userUpdated.success) throw new Error(userUpdated.error)
 
-				// Notify success
-				if (!successOpen) setSuccessOpen(true)
-				setSuccessMsg('Success! You now own this music NFT!')
-				setMinting(false)
+				console.log('res', res)
+				console.log('data', res.data)
+				console.log('embed', res.embed())
+
+				// Check for data
+				// 	const nftStorageData: any = res.data ? res.data : { ok: false }
+				// 	if (!nftStorageData.ok) throw new Error('Failed to store on NFT.storage')
+
+				// 	// Call smart contract and mint an nft out of the original CID
+				// 	if (!mintingOpen) setMintingOpen(true)
+				// 	setMintingMsg('Minting the NFT. This could take a moment...')
+
+				// 	const tokenURI: any = await contract.methods
+				// 		.mint(currentUser.address, `ipfs://${nftStorageData.value.cid}`, details.collaborators)
+				// 		// TODO: Should this be non-lowercased?
+				// 		.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+
+				// 	// Add new NFT to user details
+				// 	// TODO: call POST /nft with data and move updating a user into that function
+				// 	if (!mintingOpen) setMintingOpen(true)
+				// 	setMintingMsg('Updating user details...')
+				// 	const userUpdated = await update(`/users/${tokenURI.from}`, {
+				// 		newNFT: {
+				// 			token: tokenURI,
+				// 			metadataURL: `ipfs://${nftStorageData.value.cid}`,
+				// 			name: details.name,
+				// 			projectId,
+				// 			collaborators: details.collaborators,
+				// 			samples: details.samples.map((s: any) => ({
+				// 				sampleId: s._id,
+				// 				cid: s.cid,
+				// 				audio: s.audioUrl,
+				// 			})),
+				// 		},
+				// 	})
+				// 	if (!userUpdated.success) throw new Error(userUpdated.error)
+
+				// 	// Notify success
+				// 	if (!successOpen) setSuccessOpen(true)
+				// 	setSuccessMsg('Success! You now own this music NFT!')
+				// 	setMinting(false)
 			}
 		} catch (e: any) {
 			console.error(e)

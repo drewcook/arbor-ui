@@ -3,7 +3,7 @@ import { Blob } from 'nft.storage'
 import PropTypes from 'prop-types'
 
 type ImageOptimizedProps = {
-	src: string | StaticImageData
+	src: any
 	alt?: string
 	title?: string
 	width?: number
