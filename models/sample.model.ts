@@ -3,6 +3,7 @@ import mongoose, { Document } from 'mongoose'
 export interface ISample {
 	metadataUrl: string
 	audioUrl: string
+	audioHref: string
 	filename: string
 	filetype: string
 	filesize: number
@@ -18,6 +19,10 @@ export const sampleSchema = new mongoose.Schema(
 			required: true,
 		},
 		audioUrl: {
+			type: String,
+			required: true,
+		},
+		audioHref: {
 			type: String,
 			required: true,
 		},

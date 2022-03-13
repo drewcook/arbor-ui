@@ -25,6 +25,7 @@ import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
+import logoBinary from '../../lib/logoBinary'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
@@ -150,7 +151,6 @@ const propTypes = {
 	data: PropTypes.shape({
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
-				cid: PropTypes.string.isRequired,
 				audioUrl: PropTypes.string.isRequired,
 			}),
 		).isRequired,
@@ -219,18 +219,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	// TODO: Fix downloading files
 	const handleDownloadAll = () => {
 		console.log('download all samples')
-		try {
-			const downloads: any[] = []
-			details?.samples.forEach(async (s: any) => {
-				const cid = s.cid.replace('ipfs://', '').split('/')[0]
-				const res = await get(`/samples/download/${cid}`)
-				if (!res.success) throw new Error(res.error)
-				console.log(res.data)
-			})
-			console.log({ downloads })
-		} catch (e: any) {
-			console.error(e.message)
-		}
 	}
 
 	const onUploadSuccess = (projectData: IProjectDoc) => {
@@ -250,7 +238,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Combining stems into a single song...')
 
 				// Hit Python HTTP server to flatten samples into a singular one
-				const samples = details.samples.map(s => s?.cid.replace('ipfs://', ''))
+				const samples = details.samples.map(s => s?.audioUrl.replace('ipfs://', ''))
+				console.log(samples)
+				// TODO: Move uploading to NFT.storage out from the flattening service
+				// Have it return a file, or base64 of the audio and add to payload as;
+				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
 				const response = await fetch('/api/flatten', {
 					method: 'POST',
 					headers: {
@@ -270,26 +262,25 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Uploading to NFT.storage...')
 
 				// Construct NFT.storage data and store
-				const res = await NFTStore.store({
+				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
 						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
-					image: 'ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u', // Our square logo CID
+					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
 						audio: `ipfs://${flattenedData.cid}`,
 						collaborators: details.collaborators,
-						samples: details.samples.map((s: any) => ({
-							cid: s.cid,
-							audio: s.audioUrl,
-						})),
+						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
 				})
 
-				console.log('res', res)
-				console.log('data', res.data)
-				console.log('embed', res.embed())
+				console.groupCollapsed('NFT.storage response')
+				console.info('res', nftsRes)
+				console.info('data', nftsRes.data)
+				console.info('embed', nftsRes.embed())
+				console.groupEnd()
 
 				// Check for data
 				// 	const nftStorageData: any = res.data ? res.data : { ok: false }

@@ -111,6 +111,7 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 						let res = await post('/samples', {
 							metadataUrl: nftsRes.url,
 							audioUrl: nftsRes.data.properties.audio.href,
+							audioHref: nftsRes.embed().properties.audio.href,
 							filename: file.name,
 							filetype: file.type,
 							filesize: file.size,
