@@ -1,11 +1,12 @@
-import { Box, Container, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import SampleCard from '../../components/SampleCard'
-import type { ISampleDoc } from '../../models/sample.model'
+import NFTCard from '../../components/NFTCard'
+import type { INftDoc } from '../../models/nft.model'
 import { get } from '../../utils/http'
 
 const styles = {
@@ -42,15 +43,15 @@ const propTypes = {
 	),
 }
 
-type SamplesPageProps = PropTypes.InferProps<typeof propTypes>
+type NftsPageProps = PropTypes.InferProps<typeof propTypes>
 
-const SamplesPage: NextPage<SamplesPageProps> = props => {
+const NftsPage: NextPage<NftsPageProps> = props => {
 	const { data } = props
 
 	return (
 		<div>
 			<Head>
-				<title>PolyEcho | Explore The StemPool</title>
+				<title>PolyEcho | Explore Music and Audio NFTs</title>
 				<meta
 					name="description"
 					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
@@ -65,23 +66,28 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 					{data ? (
 						<>
 							<Typography variant="h4" component="h1" sx={styles.title}>
-								Plunge Into The StemPool
+								PolyEcho Audio NFTs
 							</Typography>
 							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the marketplace for unique music stems and samples, upload your own, or grab a few and start a
-								new project with them.
+								Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right
+								here on PolyEcho.
 							</Typography>
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
-									{data.map((sample: any) => (
-										<Grid item sm={6} md={4} key={sample._id}>
-											<SampleCard details={sample} />
+									{data.map(nft => (
+										<Grid item sm={6} md={4} key={nft?._id}>
+											<NFTCard details={nft} />
 										</Grid>
 									))}
 								</Grid>
 							) : (
 								<Box sx={styles.noProjects}>
-									<Typography sx={styles.noProjectsMsg}>No samples to show. Upload one!</Typography>
+									<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
+									<Link href="/projects/new" passHref>
+										<Button variant="contained" color="secondary">
+											Create Project
+										</Button>
+									</Link>
 								</Box>
 							)}
 						</>
@@ -96,11 +102,11 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 	)
 }
 
-SamplesPage.propTypes = propTypes
+NftsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
-	const res = await get(`/samples`)
-	const data: ISampleDoc[] | null = res.success ? res.data : null
+	const res = await get(`/nfts`)
+	const data: INftDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,
@@ -108,4 +114,4 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	}
 }
 
-export default SamplesPage
+export default NftsPage

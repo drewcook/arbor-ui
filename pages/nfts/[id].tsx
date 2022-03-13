@@ -77,7 +77,7 @@ const propTypes = {
 		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
-				sampleId: PropTypes.string.isRequired,
+				_id: PropTypes.string.isRequired,
 				metadataUrl: PropTypes.string.isRequired,
 				audioUrl: PropTypes.string.isRequired,
 				audioHref: PropTypes.string.isRequired,

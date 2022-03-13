@@ -11,6 +11,17 @@ import { get } from '../../utils/http'
 
 const styles = {
 	title: {
+		textTransform: 'uppercase',
+		fontStyle: 'italic',
+		fontWeight: 900,
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		mb: 2,
+	},
+	subtitle: {
+		fontStyle: 'italic',
+		fontWeight: 300,
 		textAlign: 'center',
 		mb: 4,
 	},
@@ -55,7 +66,11 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 					{data ? (
 						<>
 							<Typography variant="h4" component="h1" sx={styles.title}>
-								Explore Projects
+								PolyEcho Music Projects
+							</Typography>
+							<Typography variant="h5" sx={styles.subtitle}>
+								Explore the ecosystem for unique music, collaborate and build with others, create something one of a
+								kind.
 							</Typography>
 							{data.length > 0 ? (
 								<Grid container spacing={4}>

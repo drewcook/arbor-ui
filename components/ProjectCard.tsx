@@ -16,7 +16,6 @@ const styles = {
 		color: '#fff',
 		fontSize: '3rem',
 	},
-	title: {},
 	collaborators: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
@@ -48,7 +47,7 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 				<QueueMusicIcon sx={styles.cardMediaIcon} />
 			</Box>
 			<CardContent>
-				<Typography variant="h5" gutterBottom sx={styles.title}>
+				<Typography variant="h5" gutterBottom>
 					{details.name}
 				</Typography>
 				<Typography variant="body2" sx={styles.collaborators}>
