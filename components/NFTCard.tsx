@@ -77,8 +77,8 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				<Typography variant="body2" sx={styles.detailItem}></Typography>
 			</CardContent>
 			<CardActions sx={styles.actions}>
-				<Link href={details.metadataUrl} passHref>
-					<Button color="primary">View on IPFS</Button>
+				<Link href={`/nfts/${details._id}`} passHref>
+					<Button color="secondary">View Details</Button>
 				</Link>
 			</CardActions>
 		</Card>

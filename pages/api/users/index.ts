@@ -8,7 +8,7 @@ export type CreateUserPayload = {
 	avatarUrl: string
 	projectIds: string[]
 	sampleIds: string[]
-	mintedNFTs: any[]
+	nftIds: string[]
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -41,7 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					avatarUrl,
 					projectIds: [],
 					sampleIds: [],
-					mintedNFTs: [],
+					nftIds: [],
 				}
 
 				/* create a new model in the database */

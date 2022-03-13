@@ -1,28 +1,23 @@
 import mongoose from 'mongoose'
-
-// Some interplay with ISample
-export interface INftSample {
-	sampleId: string // ObjectId
-	metadataUrl: string
-	audioUrl: string
-	audioHref: string
-}
+import type { ISampleDoc } from './sample.model'
+import { sampleSchema } from './sample.model'
 
 // TODO: create token model
 type Token = any
 
 export interface INft {
+	createdBy: string
 	token: Token
 	metadataUrl: string
 	name: string
 	projectId: string
 	collaborators: string[]
-	samples: INftSample[]
+	samples: ISampleDoc[]
 }
 
 export interface INftDoc extends Document, INft {}
 
-const nftSchema = new mongoose.Schema<INft>(
+const nftSchema = new mongoose.Schema<INftDoc>(
 	{
 		token: {
 			type: Object,
@@ -45,7 +40,11 @@ const nftSchema = new mongoose.Schema<INft>(
 			required: true,
 		},
 		samples: {
-			type: [Object], // set schema?
+			type: [sampleSchema],
+			required: true,
+		},
+		createdBy: {
+			type: String,
 			required: true,
 		},
 	},

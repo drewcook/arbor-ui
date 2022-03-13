@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
 import dbConnect from '../../../utils/db'
+import { update } from '../../../utils/http'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
@@ -19,8 +20,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				// Construct payload
-				const { token, metadataUrl, name, projectId, collaborators, samples } = body
+				const { createdBy, token, metadataUrl, name, projectId, collaborators, samples } = body
 				const payload: INft = {
+					createdBy,
 					token,
 					metadataUrl,
 					name,
@@ -30,25 +32,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				/* create a new model in the database */
-				const nftCreated: INftDoc = await Nft.create(payload)
-				console.log({ nftCreated })
+				const nftCreated: any = await Nft.create(payload)
 
-				// TODO: Add the new NFT reference to list of User NFTs field
-				// const userUpdated = await update(`/users/${token.from}`, {
-				// 	newNFT: {
-				// 		token: tokenURI,
-				// 		name: details.name,
-				// 		metadataUrl: nftsRes.url,
-				// 		projectId,
-				// 		collaborators: details.collaborators,
-				// 		samples: details.samples.map((s: any) => ({
-				// 			sampleId: s._id,
-				// 			metadataUrl: s.metadataUrl,
-				// 			audioUrl: s.audioUrl,
-				// 			audioHref: s.audioHref,
-				// 		})),
-				// 	},
-				// })
+				// Add the new NFT reference to list of User NFTs field
+				const userUpdated = await update(`/users/${token.from}`, { newNFT: nftCreated._id })
+				if (!userUpdated) return res.status(400).json({ success: false, error: "Failed to update user's NFTs" })
 
 				res.status(201).json({ success: true, data: nftCreated })
 			} catch (e: any) {

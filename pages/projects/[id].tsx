@@ -9,7 +9,7 @@ import {
 	Fab,
 	Grid,
 	IconButton,
-	Typography
+	Typography,
 } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -29,7 +29,7 @@ import { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, post, update } from '../../utils/http'
+import { get, post } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
@@ -149,14 +149,7 @@ const styles = {
 const propTypes = {
 	projectId: PropTypes.string.isRequired,
 	data: PropTypes.shape({
-		samples: PropTypes.arrayOf(
-			PropTypes.shape({
-				_id: PropTypes.string.isRequired,
-				metadataUrl: PropTypes.string.isRequired,
-				audioUrl: PropTypes.string.isRequired,
-				audioHref: PropTypes.string.isRequired,
-			}),
-		).isRequired,
+		samples: PropTypes.array.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string.isRequired,
@@ -274,27 +267,19 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
-				// TODO: call POST /nft with data and move updating a user into that function
 				setMintingMsg('Updating user details...')
 				const newNftPayload: INft = {
+					createdBy: currentUser.address,
 					token: tokenURI,
 					name: details.name,
 					metadataUrl: nftsRes.url,
 					projectId,
 					collaborators: details.collaborators,
-					samples: details.samples.map((s: any) => ({
-						sampleId: s._id,
-						metadataUrl: s.metadataUrl,
-						audioUrl: s.audioUrl,
-						audioHref: s.audioHref,
-					})),
+					samples: details.samples, // Direct 1:1 map
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
-
-				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: nftCreated,
-				})
-				if (!userUpdated.success) throw new Error(userUpdated.error)
+				if (!nftCreated.success) throw new Error(nftCreated.error)
+				console.log({ nftCreated })
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)

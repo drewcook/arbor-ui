@@ -1,57 +1,25 @@
 import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import PropTypes from 'prop-types'
-import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import ImageOptimized from '../../components/ImageOptimized'
-import NFTCard from '../../components/NFTCard'
-import Notification from '../../components/Notification'
-import ProjectCard from '../../components/ProjectCard'
 import SampleCard from '../../components/SampleCard'
-import { useWeb3 } from '../../components/Web3Provider'
-import type { IProjectDoc } from '../../models/project.model'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
 
 const styles = {
-	error: {
-		textAlign: 'center',
-		marginY: 4,
-	},
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
 		fontWeight: 900,
-		mb: 2,
 		display: 'flex',
 		alignItems: 'center',
 	},
-	desc: {
-		color: '#777',
-		fontSize: '18px',
-		mb: 2,
-		fontWeight: 300,
-	},
-	editProfileWrap: {
-		my: 2,
-	},
-	avatar: {
-		border: '3px solid #a0b3a0',
-		borderRadius: '50%',
-		height: 200,
-		width: 200,
-		m: 0,
-		overflow: 'hidden',
-	},
-	metadataWrap: {
-		mb: 3,
-	},
 	metadata: {
-		display: 'inline-block',
-		mr: 5,
+		my: 2,
 	},
 	metadataKey: {
 		mr: 1,
@@ -61,12 +29,6 @@ const styles = {
 	divider: {
 		my: 3,
 		borderColor: '#ccc',
-	},
-	stemHistoryMeta: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textTransform: 'uppercase',
-		color: '#777',
 	},
 	sectionMeta: {
 		fontStyle: 'italic',
@@ -81,10 +43,19 @@ const styles = {
 		ml: 1,
 		fontSize: '1.5rem',
 	},
-	stemMetadata: {
-		mb: 4,
+	collaborator: {
+		my: 3,
+		display: 'flex',
+	},
+	collaboratorMeta: {
+		color: '#a8a8a8',
+		mr: 2,
 	},
 	noItemsMsg: {
+		textAlign: 'center',
+		marginY: 4,
+	},
+	error: {
 		textAlign: 'center',
 		marginY: 4,
 	},
@@ -92,58 +63,32 @@ const styles = {
 
 const propTypes = {
 	data: PropTypes.shape({
-		_doc: PropTypes.shape({
-			address: PropTypes.string.isRequired,
-			createdAt: PropTypes.string.isRequired,
-			mintedNFTs: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
-		}).isRequired,
-		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
-		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
-	}),
+		createdAt: PropTypes.string.isRequired,
+		createdBy: PropTypes.string.isRequired,
+		metadataUrl: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+		projectId: PropTypes.string.isRequired,
+		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+		samples: PropTypes.arrayOf(
+			PropTypes.shape({
+				sampleId: PropTypes.string.isRequired,
+				metadataUrl: PropTypes.string.isRequired,
+				audioUrl: PropTypes.string.isRequired,
+				audioHref: PropTypes.string.isRequired,
+			}).isRequired,
+		).isRequired,
+	}).isRequired,
 }
 
-type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
+type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
-const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
+const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { data } = props
-	const [details, setDetails] = useState<any | null>(null)
-	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
-	const [successOpen, setSuccessOpen] = useState<boolean>(false)
-	const [successMsg, setSuccessMsg] = useState<string>('')
-	const [errorOpen, setErrorOpen] = useState<boolean>(false)
-	const [errorMsg, setErrorMsg] = useState<string>('')
-	const { currentUser } = useWeb3()
-
-	useEffect(() => {
-		// Update the details when changing the route directly
-		if (data) setDetails(data)
-		if (currentUser?.address === data?._doc.address) {
-			setIsCurrentUserDetails(true)
-		} else {
-			setIsCurrentUserDetails(false)
-		}
-	}, [data]) /* eslint-disable-line react-hooks/exhaustive-deps */
-
-	useEffect(() => {
-		// Update details when switching accounts and when
-		if (currentUser?.address === data?._doc.address) {
-			setIsCurrentUserDetails(true)
-		} else {
-			setIsCurrentUserDetails(false)
-		}
-	}, [currentUser]) /* eslint-disable-line react-hooks/exhaustive-deps */
-
-	const onNotificationClose = () => {
-		setSuccessOpen(false)
-		setSuccessMsg('')
-		setErrorOpen(false)
-		setErrorMsg('')
-	}
 
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | User Details</title>
+				<title>PolyEcho | NFT Details</title>
 				<meta
 					name="description"
 					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
@@ -155,132 +100,100 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 
 			<main id="app-main">
 				<Container maxWidth="xl">
-					{details ? (
+					{data ? (
 						<>
 							<Grid container spacing={4}>
 								<Grid item xs={12} md={8}>
 									<Box>
-										<Typography variant="h5" gutterBottom>
-											User Details
+										<Typography variant="h4" component="h2" sx={styles.title}>
+											NFT Details
 										</Typography>
-										<Box sx={styles.metadataWrap}>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Display Name:
-												</Typography>
-												{formatAddress(details._doc.displayName)}
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Name:
 											</Typography>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Joined On:
-												</Typography>
-												{formatDate(details._doc.createdAt)}
+											<Link href={`/users/${data.createdBy}`}>{data.name}</Link>
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Minted On:
 											</Typography>
-											{isCurrentUserDetails && (
-												<Box sx={styles.editProfileWrap}>
-													<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-														Edit Profile
-													</Button>
-												</Box>
-											)}
-										</Box>
+											{formatDate(data.createdAt)}
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Minted On:
+											</Typography>
+											{formatDate(data.createdAt)}
+										</Typography>
 									</Box>
 								</Grid>
 								<Grid item xs={12} md={4}>
-									<Box className="avatar-wrap">
-										<Box sx={styles.avatar}>
-											<ImageOptimized src={details._doc.avatarUrl} alt="User Avatar" width={200} height={200} />
-										</Box>
-									</Box>
+									<Link href={data.metadataUrl} passHref>
+										<Button color="secondary" variant="contained">
+											View on IPFS
+										</Button>
+									</Link>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
-								Minted NFTs
+								Collaborators
 								<Typography component="span" sx={styles.sectionCount}>
-									({details._doc.mintedNFTs.length})
+									({data.collaborators.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>NFTs this user has minted</Typography>
-							<Grid container spacing={4}>
-								{details._doc.mintedNFTs.length > 0 ? (
-									details._doc.mintedNFTs.map((mintedNFT: any, idx: number) => (
-										<Grid item sm={6} md={4} key={`${mintedNFT.cid}-${idx}`}>
-											<NFTCard details={mintedNFT} />
-										</Grid>
-									))
-								) : (
-									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No NFTs to show, mint one!</Typography>
-									</Grid>
-								)}
-							</Grid>
-							<Divider light sx={styles.divider} />
-							<Typography variant="h4" gutterBottom>
-								Projects
-								<Typography component="span" sx={styles.sectionCount}>
-									({details.projects.length})
-								</Typography>
-							</Typography>
-							<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
-							<Typography sx={styles.sectionMeta}>
-								<strong>TODO:</strong> Show projects that a user has collaborated on as well
-							</Typography>
-							<Grid container spacing={4}>
-								{details.projects.length > 0 ? (
-									details.projects.map((project: IProjectDoc) => (
-										<Grid item sm={6} md={4} key={project._id}>
-											<ProjectCard details={project} />
-										</Grid>
-									))
-								) : (
-									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No projects to show, upload one!</Typography>
-									</Grid>
-								)}
-							</Grid>
+							{data.collaborators.length > 0 ? (
+								data.collaborators.map((collaborator: string, idx: number) => (
+									<Box sx={styles.collaborator} key={collaborator}>
+										<Typography sx={styles.collaboratorMeta}>#{idx + 1}:</Typography>
+										<Typography>
+											<Link href={`/users/${collaborator}`}>{formatAddress(collaborator)}</Link>
+										</Typography>
+									</Box>
+								))
+							) : (
+								<Typography sx={styles.noItemsMsg}>This NFT contains no collaborators.</Typography>
+							)}
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
 								Samples
 								<Typography component="span" sx={styles.sectionCount}>
-									({details.samples.length})
+									({data.samples.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>Samples this user has uploaded</Typography>
+							<Typography sx={styles.sectionMeta}>This NFT contains the following samples.</Typography>
 							<Grid container spacing={4}>
-								{details.samples.length > 0 ? (
-									details.samples.map((sample: any) => (
+								{data.samples.length > 0 ? (
+									data.samples.map((sample: any) => (
 										<Grid item sm={6} md={4} key={sample._id}>
 											<SampleCard details={sample} />
 										</Grid>
 									))
 								) : (
 									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No samples to show, upload one!</Typography>
+										<Typography sx={styles.noItemsMsg}>This NFT contains no samples.</Typography>
 									</Grid>
 								)}
 							</Grid>
 						</>
 					) : (
 						<Typography sx={styles.error} color="error">
-							Sorry, no details were found for this user.
+							Sorry, no details were found for this NFT.
 						</Typography>
 					)}
 				</Container>
 			</main>
 
 			<AppFooter />
-
-			{successOpen && <Notification type="success" open={successOpen} msg={successMsg} onClose={onNotificationClose} />}
-			{errorOpen && <Notification type="error" open={errorOpen} msg={errorMsg} onClose={onNotificationClose} />}
 		</>
 	)
 }
 
-UserDetailsPage.propTypes = propTypes
+NftDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	// Get NFT details
+	// Get NFT details based off ID
 	let nftId = context.query.id
 	if (typeof nftId === 'object') nftId = nftId[0].toLowerCase()
 	else nftId = nftId?.toLowerCase()
@@ -293,4 +206,4 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	}
 }
 
-export default UserDetailsPage
+export default NftDetailsPage
