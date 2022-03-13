@@ -33,7 +33,7 @@ const ImageOptimized = (props: ImageOptimizedProps): JSX.Element => {
 }
 
 ImageOptimized.propTypes = {
-	src: PropTypes.string.isRequired,
+	src: PropTypes.any.isRequired,
 	alt: PropTypes.string,
 	width: PropTypes.number,
 	height: PropTypes.number,

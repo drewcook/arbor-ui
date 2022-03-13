@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
@@ -178,21 +178,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
 	const { NFTStore, connected, contract, currentUser, handleConnectWallet } = useWeb3()
-
-	useEffect(() => {
-		// Re-initialize the play all button
-		if (details) {
-			const sources = []
-			for (const sample of details?.samples) {
-				sources.push(
-					new Howl({
-						src: sample?.audioHref,
-					}),
-				)
-			}
-			setSounds(sources)
-		}
-	}, [details])
 
 	const handlePlayPauseAllSamples = () => {
 		// TODO: check if each sample is playing or not to prevent toggling each
