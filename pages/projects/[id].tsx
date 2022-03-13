@@ -11,7 +11,6 @@ import {
 	IconButton,
 	Typography,
 } from '@mui/material'
-import { Howl } from 'howler'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -170,7 +169,6 @@ type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	const [details, setDetails] = useState(data)
-	const [sounds, setSounds] = useState<Howl[]>([])
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	const [minting, setMinting] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -180,21 +178,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
 	const { NFTStore, connected, contract, currentUser, handleConnectWallet } = useWeb3()
-
-	useEffect(() => {
-		// Initialize all samples as Howler objects for "play/pause all" functionality
-		if (data) {
-			const sources = []
-			for (const sample of data?.samples) {
-				sources.push(
-					new Howl({
-						src: sample?.audioHref,
-					}),
-				)
-			}
-			setSounds(sources)
-		}
-	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
 
 	useEffect(() => {
 		// Re-initialize the play all button
@@ -212,7 +195,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	}, [details])
 
 	const handlePlayPauseAllSamples = () => {
-		for (const sound of sounds) isPlayingAll ? sound.pause() : sound.play()
+		// TODO: check if each sample is playing or not to prevent toggling each
+		document.querySelectorAll('button.samplePlayPauseBtn').forEach(el => {
+			const btn = el as HTMLElement
+			btn.click()
+		})
+		// Toggle state
 		setIsPlayingAll(!isPlayingAll)
 	}
 
