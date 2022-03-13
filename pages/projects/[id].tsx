@@ -11,20 +11,20 @@ import {
 	IconButton,
 	Typography,
 } from '@mui/material'
-import { Howl } from 'howler'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
+import logoBinary from '../../lib/logoBinary'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
@@ -150,8 +150,7 @@ const propTypes = {
 	data: PropTypes.shape({
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
-				cid: PropTypes.string.isRequired,
-				audioUrl: PropTypes.string.isRequired,
+				audioHref: PropTypes.string.isRequired,
 			}),
 		).isRequired,
 		createdBy: PropTypes.string.isRequired,
@@ -170,7 +169,6 @@ type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	const [details, setDetails] = useState(data)
-	const [sounds, setSounds] = useState<Howl[]>([])
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	const [minting, setMinting] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -179,56 +177,20 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
-	const { connected, contract, currentUser, handleConnectWallet, NFTStore } = useWeb3()
-
-	useEffect(() => {
-		// Initialize all samples as Howler objects for "play/pause all" functionality
-		if (data) {
-			const sources = []
-			for (const sample of data?.samples) {
-				sources.push(
-					new Howl({
-						src: sample?.audioUrl,
-					}),
-				)
-			}
-			setSounds(sources)
-		}
-	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
-
-	useEffect(() => {
-		// Re-initialize the play all button
-		if (details) {
-			const sources = []
-			for (const sample of details?.samples) {
-				sources.push(
-					new Howl({
-						src: sample?.audioUrl,
-					}),
-				)
-			}
-			setSounds(sources)
-		}
-	}, [details])
+	const { NFTStore, connected, contract, currentUser, handleConnectWallet } = useWeb3()
 
 	const handlePlayPauseAllSamples = () => {
-		for (const sound of sounds) isPlayingAll ? sound.pause() : sound.play()
+		// TODO: check if each sample is playing or not to prevent toggling each
+		document.querySelectorAll('button.samplePlayPauseBtn').forEach(el => {
+			const btn = el as HTMLElement
+			btn.click()
+		})
+		// Toggle state
 		setIsPlayingAll(!isPlayingAll)
 	}
 
 	// TODO: Fix downloading files
 	const handleDownloadAll = () => {
-		// if (details) {
-		// 	details.samples.forEach(s => {
-		// 		const a = document.createElement('a')
-		// 		document.body.appendChild(a)
-		// 		a.download = s.audioUrl
-		// 		a.href = s.audioUrl
-		// 		a.text = 'Click'
-		// 		a.click()
-		// 		document.body.removeChild(a)
-		// 	})
-		// }
 		console.log('download all samples')
 	}
 
@@ -249,18 +211,23 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Combining stems into a single song...')
 
 				// Hit Python HTTP server to flatten samples into a singular one
-				const samples = details.samples.map(s => s?.cid.replace('ipfs://', ''))
-				const response = await fetch('/api/flatten', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ sample_cids: samples }),
-				})
-				// Catch flatten audio error
-				if (!response.ok) throw new Error('Failed to flatten the audio files')
-				const flattenedData = await response.json() // Catch fro .json()
-				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
+				// TODO: Move uploading to NFT.storage out from the flattening service
+				// Have it return a file, or base64 of the audio and add to payload as;
+				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+
+				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
+
+				// const response = await fetch('/api/flatten', {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		'Content-Type': 'application/json',
+				// 	},
+				// 	body: JSON.stringify({ sample_cids: details.samples.map(s => s?.audioUrl.replace('ipfs://', '')) }),
+				// })
+				// // Catch flatten audio error
+				// if (!response.ok) throw new Error('Failed to flatten the audio files')
+				// const flattenedData = await response.json() // Catch fro .json()
+				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
 				// TODO: create new sample from flattened audio
 				// TODO: add new sample created to user's info
@@ -269,33 +236,35 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Uploading to NFT.storage...')
 
 				// Construct NFT.storage data and store
-				const metadata = await NFTStore.store({
+				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
 						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
-					// Our square logo CID
-					image: new Blob(['ipfs://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u'], {
-						type: 'image/*',
-					}),
+					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),
-						audio: `ipfs://${flattenedData.cid}`,
-						audioBlob: new Blob([`ipfs://${flattenedData.cid}`], { type: 'audio/wav' }),
-						audioCid: flattenedData.cid,
-						projectId,
+						createdBy: currentUser.address,
+						// audio: `ipfs://${flattenedData.cid}`,
 						collaborators: details.collaborators,
-						samples: details.samples,
+						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
 				})
 
-				if (!metadata) throw new Error('Failed to store on NFT.storage')
-				console.info('Uploaded to NFT.storage:', metadata.url)
+				// console.groupCollapsed('NFT.storage response')
+				// console.info('res', nftsRes)
+				// console.info('data', nftsRes.data)
+				// console.info('embed', nftsRes.embed())
+				// console.groupEnd()
+
+				// Check for data
+				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
 
 				// Call smart contract and mint an nft out of the original CID
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
+
 				const tokenURI: any = await contract.methods
-					.mint(currentUser.address, metadata.url, details.collaborators)
+					.mint(currentUser.address, nftsRes.url, details.collaborators)
 					// TODO: Should this be non-lowercased?
 					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
@@ -304,7 +273,19 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Updating user details...')
 				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: { ...metadata.data, cid: metadata.ipnft, ipfsUrl: metadata.url, token: tokenURI },
+					newNFT: {
+						token: tokenURI,
+						name: details.name,
+						metadataUrl: nftsRes.url,
+						projectId,
+						collaborators: details.collaborators,
+						samples: details.samples.map((s: any) => ({
+							sampleId: s._id,
+							metadataUrl: s.metadataUrl,
+							audioUrl: s.audioUrl,
+							audioHref: s.audioHref,
+						})),
+					},
 				})
 				if (!userUpdated.success) throw new Error(userUpdated.error)
 
@@ -439,12 +420,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											<Typography sx={styles.downloadAllText} variant="body2">
 												Download All Stems
 											</Typography>
-											<IconButton
-												sx={styles.downloadAllBtn}
-												onClick={handleDownloadAll}
-												color="primary"
-												disabled={true}
-											>
+											<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll} color="primary">
 												<Download />
 											</IconButton>
 										</Box>

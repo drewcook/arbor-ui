@@ -68,7 +68,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 				}),
 			],
 		})
-		ws.load(details.audioUrl)
+		ws.load(details.audioHref)
 		setWavesurfer(ws)
 		return () => ws.destroy()
 	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */

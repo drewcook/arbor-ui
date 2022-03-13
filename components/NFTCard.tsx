@@ -55,16 +55,16 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				<Typography variant="h5" gutterBottom>
 					{details.name ?? 'Project Name'}
 					<IconButton sx={styles.projectIconLink} color="secondary">
-						<Link href={`/projects/${details.properties.projectId}`} passHref>
+						<Link href={`/projects/${details.projectId}`} passHref>
 							<QueueMusicIcon />
 						</Link>
 					</IconButton>
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
-					Collaborators: {details.properties.collaborators.length}
+					Collaborators: {details.collaborators.length}
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
-					Samples: {details.properties.samples.length}
+					Samples: {details.samples.length}
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
 					Block #:{' '}
@@ -77,7 +77,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				<Typography variant="body2" sx={styles.detailItem}></Typography>
 			</CardContent>
 			<CardActions sx={styles.actions}>
-				<Link href={details.ipfsUrl} passHref>
+				<Link href={details.metadataUrl} passHref>
 					<Button color="primary">View on IPFS</Button>
 				</Link>
 			</CardActions>

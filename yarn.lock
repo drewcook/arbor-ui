@@ -1512,6 +1512,11 @@
   resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/lodash@^4.14.179":
+  version "4.14.179"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.179.tgz#490ec3288088c91295780237d2497a3aa9dfb5c5"
+  integrity sha512-uwc1x90yCKqGcIOAT6DwOSuxnrAbpkdPsUOZtwrXb4D/6wZs+6qG7QnIawDuZWg0sWpxl+ltIKCaLoMlna678w==
+
 "@types/long@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@types/long/-/long-4.0.1.tgz"
@@ -5317,11 +5322,6 @@ hosted-git-info@^4.0.1:
   dependencies:
     lru-cache "^6.0.0"
 
-howler@^2.2.3:
-  version "2.2.3"
-  resolved "https://registry.npmjs.org/howler/-/howler-2.2.3.tgz"
-  integrity sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==
-
 http-cache-semantics@^4.0.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz"
@@ -6876,7 +6876,7 @@ multicodec@^1.0.0:
     buffer "^5.6.0"
     varint "^5.0.0"
 
-multiformats@^9.0.4, multiformats@^9.4.13, multiformats@^9.4.2, multiformats@^9.4.5, multiformats@^9.4.7, multiformats@^9.5.4, multiformats@^9.6.3:
+multiformats@^9.0.4, multiformats@^9.4.13, multiformats@^9.4.2, multiformats@^9.4.5, multiformats@^9.4.7, multiformats@^9.5.4, multiformats@^9.6.3, multiformats@^9.6.4:
   version "9.6.4"
   resolved "https://registry.npmjs.org/multiformats/-/multiformats-9.6.4.tgz"
   integrity sha512-fCCB6XMrr6CqJiHNjfFNGT0v//dxOBMrOMqUIzpPc/mmITweLEyhvMpY9bF+jZ9z3vaMAau5E8B68DW77QMXkg==
@@ -6986,10 +6986,10 @@ nextjs-progressbar@^0.0.14:
     nprogress "^0.2.0"
     prop-types "^15.7.2"
 
-nft.storage@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/nft.storage/-/nft.storage-6.0.0.tgz"
-  integrity sha512-d4XfIE2QsWh4bBuk2YsPYxyzG9NYAnOwnKzgQCiCyCKUg9pSJZoxU5AlqZMbQXTtbol9qb3b2Ow1SqvK5JpQKw==
+nft.storage@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/nft.storage/-/nft.storage-6.0.2.tgz#84991846842ece78d322bd9f5afa2f9358494b13"
+  integrity sha512-TaycdqD2DabEZ0mSNdcTeO2D3FKMlbIukXpihncMb8BL805sieOWt2tZBZmlUgHMxtDZIeWpiQOIr7YjhuMI0Q==
   dependencies:
     "@ipld/car" "^3.2.3"
     "@ipld/dag-cbor" "^6.0.13"
@@ -6999,7 +6999,7 @@ nft.storage@^6.0.0:
     "@web-std/form-data" "^3.0.0"
     carbites "^1.0.6"
     ipfs-car "^0.6.2"
-    multiformats "^9.6.3"
+    multiformats "^9.6.4"
     p-retry "^4.6.1"
     streaming-iterables "^6.0.0"
 
@@ -9413,9 +9413,9 @@ warning@^4.0.3:
   dependencies:
     loose-envify "^1.0.0"
 
-wavesurfer.js@^5.2.0:
+wavesurfer.js@5.2.0:
   version "5.2.0"
-  resolved "https://registry.npmjs.org/wavesurfer.js/-/wavesurfer.js-5.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-5.2.0.tgz#efae107b5b561e9bfe3fffc50e6158136a17643e"
   integrity sha512-SkPlTXfvKy+ZnEA7f7g7jn6iQg5/8mAvWpVV5vRbIS/FF9TB2ak9J7VayQfzfshOLW/CqccTiN6DDR/fZA902g==
 
 web-encoding@1.1.5:
