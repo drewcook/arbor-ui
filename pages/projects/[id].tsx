@@ -29,7 +29,7 @@ import logoBinary from '../../lib/logoBinary'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
-import { get } from '../../utils/http'
+import { get, update } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
@@ -151,7 +151,7 @@ const propTypes = {
 	data: PropTypes.shape({
 		samples: PropTypes.arrayOf(
 			PropTypes.shape({
-				audioUrl: PropTypes.string.isRequired,
+				audioHref: PropTypes.string.isRequired,
 			}),
 		).isRequired,
 		createdBy: PropTypes.string.isRequired,
@@ -188,7 +188,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			for (const sample of data?.samples) {
 				sources.push(
 					new Howl({
-						src: sample?.audioUrl,
+						src: sample?.audioHref,
 					}),
 				)
 			}
@@ -203,7 +203,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			for (const sample of details?.samples) {
 				sources.push(
 					new Howl({
-						src: sample?.audioUrl,
+						src: sample?.audioHref,
 					}),
 				)
 			}
@@ -238,22 +238,23 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Combining stems into a single song...')
 
 				// Hit Python HTTP server to flatten samples into a singular one
-				const samples = details.samples.map(s => s?.audioUrl.replace('ipfs://', ''))
-				console.log(samples)
 				// TODO: Move uploading to NFT.storage out from the flattening service
 				// Have it return a file, or base64 of the audio and add to payload as;
 				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
-				const response = await fetch('/api/flatten', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ sample_cids: samples }),
-				})
-				// Catch flatten audio error
-				if (!response.ok) throw new Error('Failed to flatten the audio files')
-				const flattenedData = await response.json() // Catch fro .json()
-				if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
+
+				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
+
+				// const response = await fetch('/api/flatten', {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		'Content-Type': 'application/json',
+				// 	},
+				// 	body: JSON.stringify({ sample_cids: details.samples.map(s => s?.audioUrl.replace('ipfs://', '')) }),
+				// })
+				// // Catch flatten audio error
+				// if (!response.ok) throw new Error('Failed to flatten the audio files')
+				// const flattenedData = await response.json() // Catch fro .json()
+				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
 				// TODO: create new sample from flattened audio
 				// TODO: add new sample created to user's info
@@ -270,7 +271,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						audio: `ipfs://${flattenedData.cid}`,
+						// audio: `ipfs://${flattenedData.cid}`,
 						collaborators: details.collaborators,
 						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
@@ -283,42 +284,42 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				console.groupEnd()
 
 				// Check for data
-				// 	const nftStorageData: any = res.data ? res.data : { ok: false }
-				// 	if (!nftStorageData.ok) throw new Error('Failed to store on NFT.storage')
+				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
 
-				// 	// Call smart contract and mint an nft out of the original CID
-				// 	if (!mintingOpen) setMintingOpen(true)
-				// 	setMintingMsg('Minting the NFT. This could take a moment...')
+				// Call smart contract and mint an nft out of the original CID
+				if (!mintingOpen) setMintingOpen(true)
+				setMintingMsg('Minting the NFT. This could take a moment...')
 
-				// 	const tokenURI: any = await contract.methods
-				// 		.mint(currentUser.address, `ipfs://${nftStorageData.value.cid}`, details.collaborators)
-				// 		// TODO: Should this be non-lowercased?
-				// 		.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+				const tokenURI: any = await contract.methods
+					.mint(currentUser.address, nftsRes.url, details.collaborators)
+					// TODO: Should this be non-lowercased?
+					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
-				// 	// Add new NFT to user details
-				// 	// TODO: call POST /nft with data and move updating a user into that function
-				// 	if (!mintingOpen) setMintingOpen(true)
-				// 	setMintingMsg('Updating user details...')
-				// 	const userUpdated = await update(`/users/${tokenURI.from}`, {
-				// 		newNFT: {
-				// 			token: tokenURI,
-				// 			metadataURL: `ipfs://${nftStorageData.value.cid}`,
-				// 			name: details.name,
-				// 			projectId,
-				// 			collaborators: details.collaborators,
-				// 			samples: details.samples.map((s: any) => ({
-				// 				sampleId: s._id,
-				// 				cid: s.cid,
-				// 				audio: s.audioUrl,
-				// 			})),
-				// 		},
-				// 	})
-				// 	if (!userUpdated.success) throw new Error(userUpdated.error)
+				// Add new NFT to user details
+				// TODO: call POST /nft with data and move updating a user into that function
+				if (!mintingOpen) setMintingOpen(true)
+				setMintingMsg('Updating user details...')
+				const userUpdated = await update(`/users/${tokenURI.from}`, {
+					newNFT: {
+						token: tokenURI,
+						name: details.name,
+						metadataUrl: nftsRes.url,
+						projectId,
+						collaborators: details.collaborators,
+						samples: details.samples.map((s: any) => ({
+							sampleId: s._id,
+							metadataUrl: s.metadataUrl,
+							audioUrl: s.audioUrl,
+							audioHref: s.audioHref,
+						})),
+					},
+				})
+				if (!userUpdated.success) throw new Error(userUpdated.error)
 
-				// 	// Notify success
-				// 	if (!successOpen) setSuccessOpen(true)
-				// 	setSuccessMsg('Success! You now own this music NFT!')
-				// 	setMinting(false)
+				// Notify success
+				if (!successOpen) setSuccessOpen(true)
+				setSuccessMsg('Success! You now own this music NFT!')
+				setMinting(false)
 			}
 		} catch (e: any) {
 			console.error(e)
