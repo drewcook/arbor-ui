@@ -105,6 +105,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 ProjectsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
+	// Get all Projects
 	const res = await get(`/projects`)
 	const data: IProjectDoc[] | null = res.success ? res.data : null
 	return {

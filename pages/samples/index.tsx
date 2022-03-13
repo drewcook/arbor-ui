@@ -99,6 +99,7 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 SamplesPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
+	// Get all Samples
 	const res = await get(`/samples`)
 	const data: ISampleDoc[] | null = res.success ? res.data : null
 	return {

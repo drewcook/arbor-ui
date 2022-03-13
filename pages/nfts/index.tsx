@@ -105,6 +105,7 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 NftsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
+	// Get all NFTs
 	const res = await get(`/nfts`)
 	const data: INftDoc[] | null = res.success ? res.data : null
 	return {
