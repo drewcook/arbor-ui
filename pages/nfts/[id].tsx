@@ -234,8 +234,20 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	let nftId = context.query.id
 	if (typeof nftId === 'object') nftId = nftId[0].toLowerCase()
 	else nftId = nftId?.toLowerCase()
+
+	// Get NFT data from database
 	const res = await get(`/nfts/${nftId}`)
 	const data: any | null = res.success ? res.data : null
+
+	// Get data via Covalent API
+	const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e' // ERC-721 PolyEchoSample contract
+	const chainId = 4 // Rinkeby
+	const tokenId = 1 // Get latest from smart contract using web3.js
+	const url = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	const covalentRes = await fetch(url)
+	console.log({ covalentRes })
+	const covalentData = covalentRes.ok ? covalentRes.json() : null
+	console.log({ covalentData })
 	return {
 		props: {
 			data,
