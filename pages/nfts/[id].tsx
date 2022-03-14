@@ -303,7 +303,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
 	return {
 		props: {
-			covalentData: covalentData.data,
+			covalentData: covalentData ? covalentData.data : null,
 			data,
 		},
 	}
