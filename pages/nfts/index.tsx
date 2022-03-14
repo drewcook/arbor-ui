@@ -5,8 +5,8 @@ import Link from 'next/link'
 import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import ProjectCard from '../../components/ProjectCard'
-import { IProjectDoc } from '../../models/project.model'
+import NFTCard from '../../components/NFTCard'
+import type { INftDoc } from '../../models/nft.model'
 import { get } from '../../utils/http'
 
 const styles = {
@@ -43,15 +43,15 @@ const propTypes = {
 	),
 }
 
-type ProjectsPageProps = PropTypes.InferProps<typeof propTypes>
+type NftsPageProps = PropTypes.InferProps<typeof propTypes>
 
-const ProjectsPage: NextPage<ProjectsPageProps> = props => {
+const NftsPage: NextPage<NftsPageProps> = props => {
 	const { data } = props
 
 	return (
 		<div>
 			<Head>
-				<title>PolyEcho | Explore Music Projects</title>
+				<title>PolyEcho | Explore Music and Audio NFTs</title>
 				<meta
 					name="description"
 					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
@@ -66,17 +66,17 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 					{data ? (
 						<>
 							<Typography variant="h4" component="h1" sx={styles.title}>
-								PolyEcho Music Projects
+								PolyEcho Audio NFTs
 							</Typography>
 							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the ecosystem for unique music, collaborate and build with others, create something one of a
-								kind.
+								Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right
+								here on PolyEcho.
 							</Typography>
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
-									{data.map(project => (
-										<Grid item sm={6} md={4} key={project?._id}>
-											<ProjectCard details={project} />
+									{data.map(nft => (
+										<Grid item sm={6} md={4} key={nft?._id}>
+											<NFTCard details={nft} />
 										</Grid>
 									))}
 								</Grid>
@@ -102,12 +102,12 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	)
 }
 
-ProjectsPage.propTypes = propTypes
+NftsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
-	// Get all Projects
-	const res = await get(`/projects`)
-	const data: IProjectDoc[] | null = res.success ? res.data : null
+	// Get all NFTs
+	const res = await get(`/nfts`)
+	const data: INftDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,
@@ -115,4 +115,4 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	}
 }
 
-export default ProjectsPage
+export default NftsPage

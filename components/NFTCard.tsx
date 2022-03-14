@@ -74,11 +74,10 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					Tx Hash:{' '}
 					<Link href={`https://rinkeby.etherscan.io/tx/${details.token.transactionHash}`}>View on Etherscan</Link>
 				</Typography>
-				<Typography variant="body2" sx={styles.detailItem}></Typography>
 			</CardContent>
 			<CardActions sx={styles.actions}>
-				<Link href={details.metadataURL} passHref>
-					<Button color="primary">View on IPFS</Button>
+				<Link href={`/nfts/${details._id}`} passHref>
+					<Button color="secondary">View Details</Button>
 				</Link>
 			</CardActions>
 		</Card>

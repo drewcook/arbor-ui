@@ -60,9 +60,9 @@ const styles = {
 const propTypes = {
 	data: PropTypes.shape({
 		createdAt: PropTypes.string.isRequired,
-		audioUrl: PropTypes.string.isRequired,
 		filename: PropTypes.string.isRequired,
 		filetype: PropTypes.string.isRequired,
+		metadataUrl: PropTypes.string.isRequired,
 	}),
 }
 
@@ -108,7 +108,7 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 									<Typography component="span" sx={styles.metadataKey}>
 										Stored At:
 									</Typography>
-									<Link href={data.audioUrl}>View on IPFS</Link>
+									<Link href={data.metadataUrl}>View on IPFS</Link>
 								</Typography>
 								<Typography sx={styles.metadata}>
 									<Typography component="span" sx={styles.metadataKey}>
