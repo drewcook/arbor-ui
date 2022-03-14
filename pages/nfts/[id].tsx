@@ -118,7 +118,7 @@ type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { covalentData, data } = props
-	const contractData = covalentData.items[0]
+	const contractData = covalentData ? covalentData.items[0] : null
 
 	return (
 		<>
