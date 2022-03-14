@@ -82,7 +82,7 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 								</Grid>
 							) : (
 								<Box sx={styles.noProjects}>
-									<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
+									<Typography sx={styles.noProjectsMsg}>No NFTs to show.</Typography>
 									<Link href="/projects/new" passHref>
 										<Button variant="contained" color="secondary">
 											Create Project
