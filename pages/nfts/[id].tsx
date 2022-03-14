@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Grid, Paper, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -27,9 +27,23 @@ const styles = {
 		color: '#a8a8a8',
 	},
 	btn: {
-		m: 1,
+		mb: 2,
 		display: 'block',
 		textAlign: 'center',
+	},
+	covalentWrap: {
+		p: 2,
+		mb: 2,
+		background: '#fafafa',
+		border: '1px solid #ccc',
+		textAlign: 'center',
+	},
+	covalentBtn: {
+		my: 2,
+	},
+	covalentMeta: {
+		display: 'block',
+		mb: 0.5,
 	},
 	divider: {
 		my: 3,
@@ -67,6 +81,16 @@ const styles = {
 }
 
 const propTypes = {
+	covalentData: PropTypes.shape({
+		items: PropTypes.arrayOf(
+			PropTypes.shape({
+				contract_address: PropTypes.string.isRequired,
+				nft_transactions: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+				type: PropTypes.string.isRequired,
+			}),
+		).isRequired,
+		updated_at: PropTypes.string.isRequired,
+	}).isRequired,
 	data: PropTypes.shape({
 		token: PropTypes.shape({
 			blockNumber: PropTypes.number.isRequired,
@@ -93,7 +117,8 @@ const propTypes = {
 type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
-	const { data } = props
+	const { covalentData, data } = props
+	const contractData = covalentData.items[0]
 
 	return (
 		<>
@@ -113,7 +138,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					{data ? (
 						<>
 							<Grid container spacing={4}>
-								<Grid item xs={12} md={8}>
+								<Grid item xs={12} md={5}>
 									<Box>
 										<Typography variant="h4" component="h2" sx={styles.title}>
 											NFT Details
@@ -159,18 +184,44 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											</Link>
 										</Typography>
 									</Box>
-								</Grid>
-								<Grid item xs={12} md={4}>
 									<Link href={data.metadataUrl} passHref>
 										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
-											View on IPFS
+											View NFT Metadata on IPFS
 										</Button>
 									</Link>
-									<Link href={data.audioHref} passHref>
+									<Link href="ipfs://[cid]/blob" passHref>
 										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
-											Listen on IPFS
+											Listen to the Music NFT
 										</Button>
 									</Link>
+								</Grid>
+								<Grid item xs={12} md={7}>
+									{contractData && (
+										<Paper elevation={2} sx={styles.covalentWrap}>
+											<Typography variant="h5" gutterBottom>
+												ERC-721 Smart Contract Details
+											</Typography>
+											<Typography gutterBottom variant="body1">
+												<Link href={`https://kovan.etherscan.io/address/${contractData.contract_address}`} passHref>
+													<Button color="secondary" size="small" variant="outlined" sx={styles.covalentBtn}>
+														View Kovan Contract
+													</Button>
+												</Link>
+											</Typography>
+											<Typography variant="overline" sx={styles.covalentMeta}>
+												<strong>Contract Type:</strong> {contractData.type.toUpperCase()}
+											</Typography>
+											<Typography variant="overline" sx={styles.covalentMeta}>
+												<strong>Total Transactions:</strong> {contractData.nft_transactions.length}
+											</Typography>
+											<Typography variant="overline" sx={styles.covalentMeta}>
+												Last Updated: {formatDate(covalentData.updated_at)}
+											</Typography>
+											<Typography variant="overline" sx={styles.covalentMeta}>
+												Powered by <Link href="https://www.covalenthq.com/">Covalent</Link>
+											</Typography>
+										</Paper>
+									)}
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
@@ -234,10 +285,25 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	let nftId = context.query.id
 	if (typeof nftId === 'object') nftId = nftId[0].toLowerCase()
 	else nftId = nftId?.toLowerCase()
+
+	// Get NFT data from database
 	const res = await get(`/nfts/${nftId}`)
 	const data: any | null = res.success ? res.data : null
+
+	// Get data via Covalent API
+	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e' // ERC-721 PolyEchoSample contract (Rinkeby)
+	const contractAddress = '0x02c4018D3A1966813a56bEbe1D89A7B8ec34b01E' // ERC-721 PolyEchoSample contract (Kovan)
+	const chainId = 42 // Kovan
+	const tokenId = 0 // Get latest from smart contract using web3.js
+	// const tokenIdsUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
+	// const metadataUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	const transactionsUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${tokenId}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	const covalentRes = await fetch(transactionsUrl)
+	const covalentData = covalentRes.ok ? await covalentRes.json() : null
+
 	return {
 		props: {
+			covalentData: covalentData.data,
 			data,
 		},
 	}
