@@ -22,20 +22,6 @@ const styles = {
 		textAlign: 'center',
 		marginY: 4,
 	},
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 900,
-		mb: 2,
-		display: 'flex',
-		alignItems: 'center',
-	},
-	desc: {
-		color: '#777',
-		fontSize: '18px',
-		mb: 2,
-		fontWeight: 300,
-	},
 	editProfileWrap: {
 		my: 2,
 	},
@@ -63,12 +49,6 @@ const styles = {
 		my: 3,
 		borderColor: '#ccc',
 	},
-	stemHistoryMeta: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textTransform: 'uppercase',
-		color: '#777',
-	},
 	sectionMeta: {
 		fontStyle: 'italic',
 		fontWeight: 300,
@@ -82,9 +62,6 @@ const styles = {
 		ml: 1,
 		fontSize: '1.5rem',
 	},
-	stemMetadata: {
-		mb: 4,
-	},
 	noItemsMsg: {
 		textAlign: 'center',
 		marginY: 4,
@@ -96,8 +73,8 @@ const propTypes = {
 		_doc: PropTypes.shape({
 			address: PropTypes.string.isRequired,
 			createdAt: PropTypes.string.isRequired,
-			mintedNFTs: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		}).isRequired,
+		nfts: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
@@ -199,13 +176,13 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							<Typography variant="h4" gutterBottom>
 								Minted NFTs
 								<Typography component="span" sx={styles.sectionCount}>
-									({details._doc.mintedNFTs.length})
+									({details.nfts.length})
 								</Typography>
 							</Typography>
 							<Typography sx={styles.sectionMeta}>NFTs this user has minted</Typography>
 							<Grid container spacing={4}>
-								{details._doc.mintedNFTs.length > 0 ? (
-									details._doc.mintedNFTs.map((mintedNFT: any, idx: number) => (
+								{details.nfts.length > 0 ? (
+									details.nfts.map((mintedNFT: any, idx: number) => (
 										<Grid item sm={6} md={4} key={`${mintedNFT.cid}-${idx}`}>
 											<NFTCard details={mintedNFT} />
 										</Grid>

@@ -29,8 +29,9 @@ const styles = {
 
 const pages = [
 	{ href: '/', title: 'Home' },
-	{ href: '/samples', title: 'StemPool' },
+	{ href: '/nfts', title: 'Marketplace' },
 	{ href: '/projects', title: 'Explore' },
+	{ href: '/samples', title: 'StemPool' },
 	{ href: '/projects/new', title: 'Create' },
 ]
 

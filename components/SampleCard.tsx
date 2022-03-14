@@ -1,7 +1,7 @@
 import AudioFileIcon from '@mui/icons-material/AudioFile'
 import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material'
 import Link from 'next/link'
-import type { ISampleDoc } from '../models/sample.model'
+import PropTypes from 'prop-types'
 import formatAddress from '../utils/formatAddress'
 import formatSampleName from '../utils/formatSampleName'
 
@@ -18,7 +18,6 @@ const styles = {
 		color: '#000',
 		fontSize: '3rem',
 	},
-	title: {},
 	detailItem: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
@@ -30,9 +29,18 @@ const styles = {
 	},
 }
 
-type SampleCardProps = {
-	details: ISampleDoc
+const propTypes = {
+	details: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		createdBy: PropTypes.string.isRequired,
+		filename: PropTypes.string.isRequired,
+		filetype: PropTypes.string.isRequired,
+		filesize: PropTypes.number.isRequired,
+		metadataUrl: PropTypes.string.isRequired,
+	}).isRequired,
 }
+
+type SampleCardProps = PropTypes.InferProps<typeof propTypes>
 
 const SampleCard = (props: SampleCardProps): JSX.Element => {
 	const { details } = props
@@ -43,7 +51,7 @@ const SampleCard = (props: SampleCardProps): JSX.Element => {
 				<AudioFileIcon sx={styles.cardMediaIcon} />
 			</Box>
 			<CardContent>
-				<Typography variant="h5" gutterBottom sx={styles.title}>
+				<Typography variant="h5" gutterBottom>
 					{formatSampleName(details.filename)}
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
@@ -64,5 +72,7 @@ const SampleCard = (props: SampleCardProps): JSX.Element => {
 		</Card>
 	)
 }
+
+SampleCard.propTypes = propTypes
 
 export default SampleCard

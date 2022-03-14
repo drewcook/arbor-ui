@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { INftDoc, Nft } from '../../../models/nft.model'
 import type { IProjectDoc } from '../../../models/project.model'
 import { Project } from '../../../models/project.model'
 import type { ISampleDoc } from '../../../models/sample.model'
@@ -31,6 +32,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						...user,
 						projects: [],
 						samples: [],
+						nfts: [],
+					}
+
+					// Get user's NFT details
+					for (const nftId of user.nftIds) {
+						const nft: INftDoc | null = await Nft.findById(nftId)
+						if (nft) fullUser.nfts.push(nft)
+						else console.error(`Failed to find user NFT of ID - ${nftId}`)
 					}
 
 					// Get user's projects' details
@@ -60,6 +69,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				let user
 				if (body.newProject) {
+					// Update the Projects list
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
@@ -78,6 +88,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				} else if (body.newSample) {
+					// Update the Samples list
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
@@ -96,11 +107,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				} else if (body.newNFT) {
+					// Update the NFTs list
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
 							$push: {
-								mintedNFTs: body.newNFT,
+								nftIds: body.newNFT,
 							},
 						},
 						{

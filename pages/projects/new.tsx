@@ -12,8 +12,27 @@ import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
 const styles = {
-	centered: {
+	title: {
+		textTransform: 'uppercase',
+		fontStyle: 'italic',
+		fontWeight: 900,
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		mb: 2,
+	},
+	subtitle: {
+		fontStyle: 'italic',
+		fontWeight: 300,
 		textAlign: 'center',
+		mb: 4,
+	},
+	text: {
+		textAlign: 'center',
+		mb: 2,
+		fontWeight: 300,
+		color: '#000',
+		fontSize: '1.1rem',
 	},
 	submitBtn: {
 		marginTop: 2,
@@ -99,11 +118,18 @@ const NewProjectPage: NextPage = () => {
 			<AppHeader />
 
 			<main id="app-main">
-				<Container maxWidth="md" sx={styles.centered}>
-					<Typography variant="h3" component="h1">
+				<Container maxWidth="md">
+					<Typography variant="h4" component="h1" sx={styles.title}>
 						Create A New Project
 					</Typography>
-					<Typography>Create a new project by filling out the details below.</Typography>
+					<Typography variant="h5" sx={styles.subtitle}>
+						Start a new project of your own so you can start uploading music stems and creating music.
+					</Typography>
+					<Typography sx={styles.text}>
+						You can decide to be specific on what your project&apos;s direction and constraints are, if any, or choose
+						to be completely open without guardrails. It&apos;s all your choice.
+					</Typography>
+					<Typography sx={styles.text}>Just start by filling out the details below.</Typography>
 					<TextField
 						label="Project Name"
 						variant="filled"

@@ -59,10 +59,10 @@ const styles = {
 
 const propTypes = {
 	data: PropTypes.shape({
-		metadataUrl: PropTypes.string.isRequired,
+		createdAt: PropTypes.string.isRequired,
 		filename: PropTypes.string.isRequired,
 		filetype: PropTypes.string.isRequired,
-		createdAt: PropTypes.string.isRequired,
+		metadataUrl: PropTypes.string.isRequired,
 	}),
 }
 

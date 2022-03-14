@@ -12,7 +12,7 @@ export interface ISample {
 
 export interface ISampleDoc extends Document, ISample {}
 
-export const sampleSchema = new mongoose.Schema(
+export const sampleSchema = new mongoose.Schema<ISampleDoc>(
 	{
 		metadataUrl: {
 			type: String,

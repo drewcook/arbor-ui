@@ -10,6 +10,17 @@ import { get } from '../../utils/http'
 
 const styles = {
 	title: {
+		textTransform: 'uppercase',
+		fontStyle: 'italic',
+		fontWeight: 900,
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		mb: 2,
+	},
+	subtitle: {
+		fontStyle: 'italic',
+		fontWeight: 300,
 		textAlign: 'center',
 		mb: 4,
 	},
@@ -26,7 +37,7 @@ const styles = {
 const propTypes = {
 	data: PropTypes.arrayOf(
 		PropTypes.shape({
-			// _id: PropTypes.string.isRequired,
+			_id: PropTypes.string.isRequired,
 		}),
 	),
 }
@@ -56,6 +67,10 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 							<Typography variant="h4" component="h1" sx={styles.title}>
 								Plunge Into The StemPool
 							</Typography>
+							<Typography variant="h5" sx={styles.subtitle}>
+								Explore the marketplace for unique music stems and samples, upload your own, or grab a few and start a
+								new project with them.
+							</Typography>
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map((sample: any) => (
@@ -84,6 +99,7 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 SamplesPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
+	// Get all Samples
 	const res = await get(`/samples`)
 	const data: ISampleDoc[] | null = res.success ? res.data : null
 	return {

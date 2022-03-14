@@ -25,10 +25,11 @@ import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
+import { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, update } from '../../utils/http'
+import { get, post } from '../../utils/http'
 
 const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
 
@@ -148,11 +149,7 @@ const styles = {
 const propTypes = {
 	projectId: PropTypes.string.isRequired,
 	data: PropTypes.shape({
-		samples: PropTypes.arrayOf(
-			PropTypes.shape({
-				audioHref: PropTypes.string.isRequired,
-			}),
-		).isRequired,
+		samples: PropTypes.array.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string.isRequired,
@@ -244,7 +241,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						// audio: `ipfs://${flattenedData.cid}`,
+						audio: `ipfs//[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
 						collaborators: details.collaborators,
 						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
@@ -268,26 +265,21 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					// TODO: Should this be non-lowercased?
 					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
 
-				// Add new NFT to user details
-				// TODO: call POST /nft with data and move updating a user into that function
+				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Updating user details...')
-				const userUpdated = await update(`/users/${tokenURI.from}`, {
-					newNFT: {
-						token: tokenURI,
-						name: details.name,
-						metadataUrl: nftsRes.url,
-						projectId,
-						collaborators: details.collaborators,
-						samples: details.samples.map((s: any) => ({
-							sampleId: s._id,
-							metadataUrl: s.metadataUrl,
-							audioUrl: s.audioUrl,
-							audioHref: s.audioHref,
-						})),
-					},
-				})
-				if (!userUpdated.success) throw new Error(userUpdated.error)
+				const newNftPayload: INft = {
+					createdBy: currentUser.address,
+					token: tokenURI,
+					name: details.name,
+					metadataUrl: nftsRes.url,
+					audioHref: nftsRes.data.properties.audio,
+					projectId,
+					collaborators: details.collaborators,
+					samples: details.samples, // Direct 1:1 map
+				}
+				const nftCreated = await post('/nfts', newNftPayload)
+				if (!nftCreated.success) throw new Error(nftCreated.error)
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)
@@ -458,6 +450,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 ProjectPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
+	// Get project details from ID
 	const projectId = context.query.id
 	const res = await get(`/projects/${projectId}`)
 	const data: IProjectDoc | null = res.success ? res.data : null
