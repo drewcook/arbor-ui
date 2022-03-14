@@ -2180,10 +2180,16 @@
       "links": {},
       "address": "0xaF7fC2F4D456712bA3170Ad31D7E4389e76facf7",
       "transactionHash": "0xcc7293ad6403c38ecad104f45a2d9bbcd9d6a04ecd6cf13c5fa96ad5d796a032"
+    },
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0x2B99203DA4E02aFCbc8b0e4AC21C0505Aaa36fe8",
+      "transactionHash": "0x46bfd84b9aa96b1f83ae3ef59e2bad3c8ada28e7dc445c20730b102f9daf1899"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-02-20T15:20:48.181Z",
+  "updatedAt": "2022-03-14T03:53:20.653Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
