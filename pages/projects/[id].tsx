@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
@@ -25,8 +25,8 @@ import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
-import { INft } from '../../models/nft.model'
-import { IProjectDoc } from '../../models/project.model'
+import type { INft } from '../../models/nft.model'
+import type { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
@@ -174,21 +174,60 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
+	const [playPauseBtns, setPlayPauseBtns] = useState<HTMLElement[]>([])
 	const { NFTStore, connected, contract, currentUser, handleConnectWallet } = useWeb3()
 
+	useEffect(() => {
+		setAllPlayPauseBtns()
+	}, [])
+
+	useEffect(() => {
+		// Update all sample targets for Play/Pause All feature
+		setAllPlayPauseBtns()
+	}, [details])
+
 	const handlePlayPauseAllSamples = () => {
-		// TODO: check if each sample is playing or not to prevent toggling each
-		document.querySelectorAll('button.samplePlayPauseBtn').forEach(el => {
-			const btn = el as HTMLElement
-			btn.click()
-		})
+		// Loop through play pause btns and click each one
+		playPauseBtns.forEach(btn => btn.click())
 		// Toggle state
 		setIsPlayingAll(!isPlayingAll)
 	}
 
-	// TODO: Fix downloading files
+	const setAllPlayPauseBtns = () => {
+		const btns: HTMLElement[] = []
+		document.querySelectorAll('button.samplePlayPauseBtn').forEach(el => {
+			const btn = el as HTMLElement
+			btns.push(btn)
+		})
+		setPlayPauseBtns(btns)
+	}
+
 	const handleDownloadAll = () => {
-		console.log('download all samples')
+		// const saveBlob = (function () {
+		// 	const a: HTMLAnchorElement = document.createElement('a')
+		// 	document.body.appendChild(a)
+		// 	a.style.display = 'none'
+		// 	return function (blob: string, fileName: string) {
+		// 		const url = window.URL.createObjectURL(blob)
+		// 		a.href = url
+		// 		a.download = fileName
+		// 		a.click()
+		// 		// window.URL.revokeObjectURL(url)
+		// 		document.removeChild(a)
+		// 	}
+		// })()
+		// try {
+		// 	data?.samples.forEach(async (sample: ISampleDoc) => {
+		// 		saveBlob(sample.audioHref, `PolyEcho_Sample_${projectId}_${sample.filename}`)
+		// 		// const res = await get(`/samples/download/${sample.metadataUrl}`)
+		// 		// if (!res.success) throw new Error('Failed to download sample', res.error)
+		// 		// console.log({ res })
+		// 	})
+		// } catch (e: any) {
+		// 	console.error(e.message)
+		// 	setErrorOpen(true)
+		// 	setErrorMsg('Failed to download all samples')
+		// }
 	}
 
 	const onUploadSuccess = (projectData: IProjectDoc) => {
@@ -241,7 +280,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						audio: `ipfs//[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+						audio: `ipfs://[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
 						collaborators: details.collaborators,
 						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
