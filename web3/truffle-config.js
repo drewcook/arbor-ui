@@ -1,8 +1,10 @@
 // Truffle config <http://truffleframework.com/docs/advanced/configuration>
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 require('dotenv').config()
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 const networkIds = {
 	mainnet: 1,
@@ -43,6 +45,7 @@ module.exports = {
 		mainnet: getInfuraNetworkConfig('mainnet'),
 		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
+		kovan: getInfuraNetworkConfig('kovan'),
 		// Polygon testnet
 		// matic: {
 		// 	provider: () =>

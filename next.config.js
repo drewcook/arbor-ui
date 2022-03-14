@@ -6,6 +6,7 @@ const nextConfig = {
 		CLIENT_HOST: process.env.CLIENT_HOST,
 		BLOCKNATIVE_KEY: process.env.BLOCKNATIVE_KEY,
 		NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY,
+		COVALENT_API_KEY: process.env.COVALENT_API_KEY,
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
 	},
 	images: {
