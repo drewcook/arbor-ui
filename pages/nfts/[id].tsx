@@ -68,6 +68,10 @@ const styles = {
 
 const propTypes = {
 	data: PropTypes.shape({
+		token: PropTypes.shape({
+			blockNumber: PropTypes.number.isRequired,
+			transactionHash: PropTypes.string.isRequired,
+		}).isRequired,
 		createdAt: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
@@ -137,6 +141,22 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 												Project ID:
 											</Typography>
 											<Link href={`/projects/${data.projectId}`}>{data.projectId}</Link>
+										</Typography>
+										<Typography variant="body2" sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Block #:{' '}
+											</Typography>
+											<Link href={`https://rinkeby.etherscan.io/block/${data.token.blockNumber}`}>
+												View on Etherscan
+											</Link>
+										</Typography>
+										<Typography variant="body2" sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Tx Hash:{' '}
+											</Typography>
+											<Link href={`https://rinkeby.etherscan.io/tx/${data.token.transactionHash}`}>
+												View on Etherscan
+											</Link>
 										</Typography>
 									</Box>
 								</Grid>
