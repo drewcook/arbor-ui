@@ -9,7 +9,7 @@ import {
 	Fab,
 	Grid,
 	IconButton,
-	Typography
+	Typography,
 } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
