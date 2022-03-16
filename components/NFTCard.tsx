@@ -5,7 +5,6 @@ import Link from 'next/link'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
-import { useWeb3 } from './Web3Provider'
 
 const styles = {
 	buyableChip: {
@@ -58,11 +57,11 @@ type NFTCardProps = {
 
 const NFTCard = (props: NFTCardProps): JSX.Element => {
 	const { details } = props
-	const { connected, handleConnectWallet, currentUser } = useWeb3()
+	// const { connected, handleConnectWallet, currentUser } = useWeb3()
 
-	const handleBuyNft = () => {
-		console.log('buy this nft', details._id)
-	}
+	// const handleBuyNft = () => {
+	// 	console.log('buy this nft', details._id)
+	// }
 
 	return (
 		<>
@@ -111,7 +110,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					<Link href={`/nfts/${details._id}`} passHref>
 						<Button color="secondary">View Details</Button>
 					</Link>
-					{details.isListed && currentUser?.address !== details.owner && (
+					{/* {details.isListed && currentUser?.address !== details.owner && (
 						<Button
 							variant="contained"
 							color="primary"
@@ -120,7 +119,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 						>
 							Buy Now
 						</Button>
-					)}
+					)} */}
 				</CardActions>
 			</Card>
 		</>
