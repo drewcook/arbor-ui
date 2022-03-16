@@ -76,7 +76,7 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 								<Grid container spacing={4}>
 									{data.map(nft => (
 										<Grid item sm={6} md={4} key={nft?._id}>
-											<NFTCard details={nft} isMarketplace={true} />
+											<NFTCard details={nft} />
 										</Grid>
 									))}
 								</Grid>

@@ -2,6 +2,8 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic'
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
+import formatAddress from '../utils/formatAddress'
+import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
 import { useWeb3 } from './Web3Provider'
 
@@ -31,6 +33,11 @@ const styles = {
 	projectIconLink: {
 		ml: 1,
 	},
+	createdAt: {
+		fontWeight: 300,
+		fontStyle: 'italic',
+		my: 1,
+	},
 	detailItem: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
@@ -47,11 +54,10 @@ const styles = {
 
 type NFTCardProps = {
 	details: any // cid and token
-	isMarketplace: boolean
 }
 
 const NFTCard = (props: NFTCardProps): JSX.Element => {
-	const { details, isMarketplace } = props
+	const { details } = props
 	const { connected, handleConnectWallet, currentUser } = useWeb3()
 
 	const handleBuyNft = () => {
@@ -82,6 +88,10 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 							</Link>
 						</IconButton>
 					</Typography>
+					<Typography sx={styles.createdAt}>Created {formatDate(details.createdAt)}</Typography>
+					<Typography variant="body2" sx={styles.detailItem}>
+						Owner: {formatAddress(details.owner)}
+					</Typography>
 					<Typography variant="body2" sx={styles.detailItem}>
 						Collaborators: {details.collaborators.length}
 					</Typography>
@@ -101,7 +111,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					<Link href={`/nfts/${details._id}`} passHref>
 						<Button color="secondary">View Details</Button>
 					</Link>
-					{isMarketplace && details.isListed && currentUser?.address !== details.owner && (
+					{details.isListed && currentUser?.address !== details.owner && (
 						<Button
 							variant="contained"
 							color="primary"

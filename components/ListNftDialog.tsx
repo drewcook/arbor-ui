@@ -1,9 +1,9 @@
 import {
 	Button,
+	CircularProgress,
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogContentText,
 	DialogTitle,
 	FormControl,
 	InputAdornment,
@@ -13,6 +13,8 @@ import {
 } from '@mui/material'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { update } from '../utils/http'
+import Notification from './Notification'
 
 const propTypes = {
 	onClose: PropTypes.func,
@@ -30,7 +32,12 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 	const [isOpen, setIsOpen] = useState<boolean>(open ?? false)
 	const [isOpenUnlist, setIsOpenUnlist] = useState<boolean>(open ?? false)
 	// 0.1 ETH
-	const [listPrice, setListPrice] = useState(10000000000000000)
+	const [listPrice, setListPrice] = useState<number>(10000000000000000)
+	const [loading, setLoading] = useState<boolean>(false)
+	const [successOpen, setSuccessOpen] = useState<boolean>(false)
+	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [errorOpen, setErrorOpen] = useState<boolean>(false)
+	const [errorMsg, setErrorMsg] = useState<string>('')
 
 	const handleClose = () => {
 		if (onClose) onClose()
@@ -38,16 +45,59 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		setIsOpenUnlist(false)
 	}
 
-	const handleList = () => {
-		console.log('listing...', nft._id, listPrice)
-		// PUT to nfts/id
-		handleClose()
+	const handleList = async () => {
+		setLoading(true)
+		try {
+			// Make PUT request
+			const res = await update(`/nfts/${nft._id}`, {
+				isListed: true,
+				listPrice,
+			})
+			if (!res.success) throw new Error('Failed to list user NFT', res.error)
+			// Close dialog
+			handleClose()
+			// Notify success
+			if (!successOpen) setSuccessOpen(true)
+			setSuccessMsg('Success! You have listed this NFT!')
+			setLoading(false)
+		} catch (e: any) {
+			console.error(e.message)
+			// Notify error
+			setErrorOpen(true)
+			setErrorMsg('Uh oh, failed to list the NFT')
+			setLoading(false)
+		}
 	}
 
-	const handleUnlist = () => {
-		console.log('unlisting...', nft._id)
-		// PUT to nfts/{id}
-		handleClose()
+	const handleUnlist = async () => {
+		setLoading(true)
+		try {
+			// Make PUT request
+			const res = await update(`/nfts/${nft._id}`, {
+				isListed: false,
+				listPrice: 0,
+			})
+			if (!res.success) throw new Error('Failed to remove the listing for this user NFT', res.error)
+			// Close dialog
+			handleClose()
+			// Notify success
+			if (!successOpen) setSuccessOpen(true)
+			setSuccessMsg('Success! You have removed the NFT listing!')
+			setLoading(false)
+		} catch (e: any) {
+			console.error(e.message)
+			// Notify error
+			setErrorOpen(true)
+			setErrorMsg('Uh oh, failed to remove the NFT listing')
+			setLoading(false)
+		}
+	}
+
+	const onNotificationClose = () => {
+		setSuccessOpen(false)
+		setSuccessMsg('')
+		setErrorOpen(false)
+		setErrorMsg('')
 	}
 
 	return (
@@ -65,31 +115,31 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			<Dialog onClose={handleClose} open={isOpen}>
 				<DialogTitle>List This NFT</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-						<Typography gutterBottom>You are about to list this NFT on the open market.</Typography>
-						<Typography variant="overline">
-							Note: 10% of the proceeds will go to original collaborators as royalties.
-						</Typography>
-						<FormControl variant="filled" fullWidth margin="normal">
-							<InputLabel htmlFor="list-price-input">List Price</InputLabel>
-							<OutlinedInput
-								id="list-price-input"
-								value={listPrice}
-								type="number"
-								placeholder="0.1"
-								onChange={e => setListPrice(e.target.value)}
-								endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
-								fullWidth
-							/>
-						</FormControl>
-					</DialogContentText>
+					{/* <DialogContentText> */}
+					<Typography gutterBottom>You are about to list this NFT on the open market.</Typography>
+					<Typography variant="overline">
+						Note: 10% of the proceeds will go to original collaborators as royalties.
+					</Typography>
+					<FormControl variant="filled" fullWidth margin="normal">
+						<InputLabel htmlFor="list-price-input">List Price</InputLabel>
+						<OutlinedInput
+							id="list-price-input"
+							value={listPrice}
+							type="number"
+							placeholder="0.1"
+							onChange={e => setListPrice(parseInt(e.target.value, 10))}
+							endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
+							fullWidth
+						/>
+					</FormControl>
+					{/* </DialogContentText> */}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} color="info">
 						Cancel
 					</Button>
-					<Button onClick={handleList} variant="contained" color="info">
-						Yes, List It
+					<Button onClick={handleList} variant="contained" color="info" disabled={loading}>
+						{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Yes, List It'}
 					</Button>
 				</DialogActions>
 			</Dialog>
@@ -97,26 +147,24 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			<Dialog onClose={handleClose} open={isOpenUnlist}>
 				<DialogTitle>Unlist This NFT</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-						<Typography gutterBottom>
-							You are about to remove your listing off of the marketplace for this NFT.
-						</Typography>
-					</DialogContentText>
-					<DialogActions>
-						<Button onClick={handleClose} color="info">
-							Cancel
-						</Button>
-						<Button onClick={handleUnlist} variant="contained" color="info">
-							Yes, Unlist
-						</Button>
-					</DialogActions>
+					<Typography gutterBottom>
+						You are about to remove your listing off of the marketplace for this NFT.
+					</Typography>
 				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleClose} color="info">
+						Cancel
+					</Button>
+					<Button onClick={handleUnlist} variant="contained" color="info" disabled={loading}>
+						{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Yes, Unlist'}
+					</Button>
+				</DialogActions>
 			</Dialog>
+			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
+			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
 	)
 }
-
-ListNftDialog.propTypes = propTypes
 
 ListNftDialog.defaultProps = {
 	unlist: false,

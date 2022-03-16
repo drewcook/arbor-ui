@@ -1,12 +1,14 @@
 import { Box, Button, Chip, Container, Divider, Grid, Paper, Typography } from '@mui/material'
-import type { GetServerSideProps, NextPage } from 'next'
+import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
+import ImageOptimized from '../../components/ImageOptimized'
 import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
+import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
@@ -25,9 +27,6 @@ const styles = {
 		fontWeight: 900,
 		fontSize: '1rem',
 	},
-	buyNowBtn: {
-		my: 2,
-	},
 	metadata: {
 		my: 2,
 	},
@@ -35,6 +34,25 @@ const styles = {
 		mr: 1,
 		display: 'inline-block',
 		color: '#a8a8a8',
+	},
+	buyNow: {
+		mt: 3,
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	buyNowBtn: {
+		width: '9rem',
+		boxShadow: '5px 5px #23F09A',
+	},
+	price: {
+		display: 'flex',
+		alignItems: 'center',
+		pl: 3,
+	},
+	eth: {
+		color: '#aaa',
+		fontSize: '1rem',
 	},
 	btn: {
 		mb: 2,
@@ -109,7 +127,7 @@ const propTypes = {
 		}).isRequired,
 		createdAt: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
-		owner: PropTypes.bool.isRequired,
+		owner: PropTypes.string.isRequired,
 		isListed: PropTypes.bool.isRequired,
 		listPrice: PropTypes.bool.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
@@ -166,20 +184,39 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											)}
 										</Typography>
 										{data.isListed && currentUser?.address !== data.owner && (
-											<Button
-												variant="contained"
-												color="primary"
-												onClick={connected ? handleBuyNft : handleConnectWallet}
-												sx={styles.buyNowBtn}
-											>
-												Buy Now
-											</Button>
+											<Box sx={styles.buyNow}>
+												<Button
+													size="large"
+													onClick={connected ? handleBuyNft : handleConnectWallet}
+													variant="contained"
+													color="secondary"
+													sx={styles.buyNowBtn}
+													disabled={false}
+												>
+													Buy Now
+												</Button>
+												<Box sx={styles.price}>
+													<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
+													<Typography variant="h4" component="div">
+														{data.listPrice}{' '}
+														<Typography sx={styles.eth} component="span">
+															ETH
+														</Typography>
+													</Typography>
+												</Box>
+											</Box>
 										)}
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Name:
 											</Typography>
 											<Link href={`/users/${data.createdBy}`}>{data.name}</Link>
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Owner:
+											</Typography>
+											{formatAddress(data.owner)}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>

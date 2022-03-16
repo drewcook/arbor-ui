@@ -8,7 +8,6 @@ import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
-import Notification from '../../components/Notification'
 import ProjectCard from '../../components/ProjectCard'
 import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
@@ -90,10 +89,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
 	const [details, setDetails] = useState<any | null>(null)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
-	const [successOpen, setSuccessOpen] = useState<boolean>(false)
-	const [successMsg, setSuccessMsg] = useState<string>('')
-	const [errorOpen, setErrorOpen] = useState<boolean>(false)
-	const [errorMsg, setErrorMsg] = useState<string>('')
 	const { currentUser } = useWeb3()
 
 	useEffect(() => {
@@ -114,13 +109,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 			setIsCurrentUserDetails(false)
 		}
 	}, [currentUser]) /* eslint-disable-line react-hooks/exhaustive-deps */
-
-	const onNotificationClose = () => {
-		setSuccessOpen(false)
-		setSuccessMsg('')
-		setErrorOpen(false)
-		setErrorMsg('')
-	}
 
 	return (
 		<>
@@ -188,7 +176,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 								{details.nfts.length > 0 ? (
 									details.nfts.map((nft: any, idx: number) => (
 										<Grid item sm={6} md={4} key={`${nft.cid}-${idx}`}>
-											<NFTCard details={nft} isMarketplace={false} />
+											<NFTCard details={nft} />
 											{nft.owner === currentUser?.address &&
 												(nft.isListed ? (
 													<Box sx={{ my: 2 }}>
@@ -262,9 +250,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 			</main>
 
 			<AppFooter />
-
-			{successOpen && <Notification type="success" open={successOpen} msg={successMsg} onClose={onNotificationClose} />}
-			{errorOpen && <Notification type="error" open={errorOpen} msg={errorMsg} onClose={onNotificationClose} />}
 		</>
 	)
 }
