@@ -73,7 +73,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$push: {
+							$addToSet: {
 								projectIds: body.newProject,
 							},
 						},
@@ -92,7 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$push: {
+							$addToSet: {
 								sampleIds: body.newSample,
 							},
 						},
@@ -106,13 +106,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						return res.status(400).json({ success: false, error: 'failed to add sample to user' })
 					}
 					res.status(200).json({ success: true, data: user })
-				} else if (body.newNFT) {
+				} else if (body.addNFT) {
 					// Update the NFTs list
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$push: {
-								nftIds: body.newNFT,
+							$addToSet: {
+								nftIds: body.addNFT,
+							},
+						},
+						{
+							new: true,
+							runValidators: true,
+						},
+					)
+					// Returns
+					if (!user) {
+						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
+					}
+					res.status(200).json({ success: true, data: user })
+				} else if (body.removeNFT) {
+					// Update the NFTs list
+					user = await User.findOneAndUpdate(
+						{ address: id },
+						{
+							$pull: {
+								nftIds: body.removeNFT,
 							},
 						},
 						{

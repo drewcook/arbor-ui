@@ -1,11 +1,17 @@
-import { Box, Button, Container, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useEffect } from 'react'
 import AppFooter from '../components/AppFooter'
 import AppHeader from '../components/AppHeader'
+import { useWeb3 } from '../components/Web3Provider'
 
 const styles = {
+	divider: {
+		my: 3,
+		borderColor: '#ccc',
+	},
 	centered: {
 		textAlign: 'center',
 		pt: 5,
@@ -25,6 +31,21 @@ const styles = {
 }
 
 const Home: NextPage = () => {
+	const { contract, currentUser } = useWeb3()
+
+	useEffect(() => {
+		getCollectionDetails()
+	}, [])
+
+	const getCollectionDetails = async () => {
+		try {
+			console.log(contract)
+			const totalSupply = await contract.methods.totalSupply().call({ from: currentUser?.address })
+			console.log({ totalSupply })
+		} catch (e: any) {
+			console.error(e.message)
+		}
+	}
 	return (
 		<>
 			<Head>
@@ -60,6 +81,13 @@ const Home: NextPage = () => {
 							</Button>
 						</Link>
 					</Box>
+					<Divider light sx={styles.divider} />
+					<Typography variant="h2">NFTs</Typography>
+					<List>
+						<ListItem>
+							<ListItemText>Total Supply: {}</ListItemText>
+						</ListItem>
+					</List>
 				</Container>
 			</main>
 

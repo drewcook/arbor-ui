@@ -74,6 +74,7 @@ const styles = {
 const propTypes = {
 	data: PropTypes.shape({
 		_doc: PropTypes.shape({
+			_id: PropTypes.string.isRequired,
 			address: PropTypes.string.isRequired,
 			createdAt: PropTypes.string.isRequired,
 		}).isRequired,
@@ -109,6 +110,17 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 			setIsCurrentUserDetails(false)
 		}
 	}, [currentUser]) /* eslint-disable-line react-hooks/exhaustive-deps */
+
+	// Refetch user details after successfully listing a card
+	const handleListSuccess = async () => {
+		try {
+			const res = await get(`/users/${data?._doc.address}`, { params: { fullDetails: true } })
+			const newDetails: IUserFull | null = res.success ? res.data : null
+			setDetails(newDetails)
+		} catch (e: any) {
+			console.error(e.message)
+		}
+	}
 
 	return (
 		<>
@@ -166,12 +178,12 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
-								Minted NFTs
+								My NFT Collection
 								<Typography component="span" sx={styles.sectionCount}>
 									({details.nfts.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>NFTs this user has minted</Typography>
+							<Typography sx={styles.sectionMeta}>NFTs this user has minted or collected</Typography>
 							<Grid container spacing={4}>
 								{details.nfts.length > 0 ? (
 									details.nfts.map((nft: any, idx: number) => (
@@ -180,11 +192,11 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											{nft.owner === currentUser?.address &&
 												(nft.isListed ? (
 													<Box sx={{ my: 2 }}>
-														<ListNftDialog unlist={true} nft={nft} />
+														<ListNftDialog unlist={true} nft={nft} onListSuccess={handleListSuccess} />
 													</Box>
 												) : (
 													<Box sx={{ my: 2 }}>
-														<ListNftDialog nft={nft} />
+														<ListNftDialog nft={nft} onListSuccess={handleListSuccess} />
 													</Box>
 												))}
 										</Grid>

@@ -23,16 +23,17 @@ const propTypes = {
 	nft: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 	}).isRequired,
+	onListSuccess: PropTypes.func.isRequired,
 }
 
 type ListNftDialogProps = PropTypes.InferProps<typeof propTypes>
 
 const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
-	const { onClose, open, unlist, nft } = props
+	const { onClose, open, unlist, nft, onListSuccess } = props
 	const [isOpen, setIsOpen] = useState<boolean>(open ?? false)
 	const [isOpenUnlist, setIsOpenUnlist] = useState<boolean>(open ?? false)
 	// 0.1 ETH
-	const [listPrice, setListPrice] = useState<number>(10000000000000000)
+	const [listPrice, setListPrice] = useState<number>(0.5)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -43,6 +44,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		if (onClose) onClose()
 		setIsOpen(false)
 		setIsOpenUnlist(false)
+		setListPrice(0.5)
 	}
 
 	const handleList = async () => {
@@ -60,6 +62,9 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			if (!successOpen) setSuccessOpen(true)
 			setSuccessMsg('Success! You have listed this NFT!')
 			setLoading(false)
+			// Emit callback
+			onListSuccess()
+			setListPrice(0.5)
 		} catch (e: any) {
 			console.error(e.message)
 			// Notify error
@@ -84,6 +89,9 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			if (!successOpen) setSuccessOpen(true)
 			setSuccessMsg('Success! You have removed the NFT listing!')
 			setLoading(false)
+			// Emit callback
+			onListSuccess()
+			setListPrice(0.5)
 		} catch (e: any) {
 			console.error(e.message)
 			// Notify error
@@ -127,7 +135,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 							value={listPrice}
 							type="number"
 							placeholder="0.1"
-							onChange={e => setListPrice(parseInt(e.target.value, 10))}
+							onChange={e => setListPrice(e.target.value)}
 							endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
 							fullWidth
 						/>

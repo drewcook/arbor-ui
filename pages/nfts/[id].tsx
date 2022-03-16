@@ -1,17 +1,21 @@
-import { Box, Button, Chip, Container, Divider, Grid, Paper, Typography } from '@mui/material'
-import type { GetServerSideProps } from 'next'
+import { Box, Button, Chip, CircularProgress, Container, Divider, Grid, Paper, Typography } from '@mui/material'
+import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
+import ListNftDialog from '../../components/ListNftDialog'
+import Notification from '../../components/Notification'
 import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
-import { get } from '../../utils/http'
+import { get, update } from '../../utils/http'
 
 const styles = {
 	title: {
@@ -26,6 +30,8 @@ const styles = {
 		textTransform: 'uppercase',
 		fontWeight: 900,
 		fontSize: '1rem',
+		backgroundColor: '#ff5200',
+		color: '#fff',
 	},
 	metadata: {
 		my: 2,
@@ -35,10 +41,9 @@ const styles = {
 		display: 'inline-block',
 		color: '#a8a8a8',
 	},
-	buyNow: {
+	buyNowListing: {
 		mt: 3,
 		display: 'flex',
-		flexDirection: 'row',
 		alignItems: 'center',
 	},
 	buyNowBtn: {
@@ -129,7 +134,7 @@ const propTypes = {
 		createdBy: PropTypes.string.isRequired,
 		owner: PropTypes.string.isRequired,
 		isListed: PropTypes.bool.isRequired,
-		listPrice: PropTypes.bool.isRequired,
+		listPrice: PropTypes.number.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
 		audioHref: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
@@ -150,11 +155,70 @@ type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { covalentData, data } = props
+	const [details, setDetails] = useState(data)
+	const [loading, setLoading] = useState<boolean>(false)
+	const [successOpen, setSuccessOpen] = useState<boolean>(false)
+	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [errorOpen, setErrorOpen] = useState<boolean>(false)
+	const [errorMsg, setErrorMsg] = useState<string>('')
 	const contractData = covalentData ? covalentData.items[0] : null
-	const { connected, handleConnectWallet, currentUser } = useWeb3()
+	const { connected, handleConnectWallet, currentUser, contract } = useWeb3()
+	const router = useRouter()
 
-	const handleBuyNft = () => {
-		console.log('buy this nft', data._id)
+	const handleBuyNft = async () => {
+		setLoading(true)
+		try {
+			if (currentUser) {
+				// Make PUT request to change ownership
+				const res = await update(`/nfts/${details._id}`, {
+					isListed: false,
+					listPrice: 0,
+					owner: currentUser.address,
+					buyer: currentUser.address,
+					seller: details.owner,
+				})
+				if (!res.success) throw new Error('Failed to update the NFT ownership details', res.error)
+
+				// Call smart contract to make transfer
+				// const contractRes: any = await contract.methods.safeTransferFrom(currentUser)
+				// .mint(currentUser.address, nftsRes.url, details.collaborators)
+				// .send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+
+				// if (!contractRes) throw new Error('Failed to transfer the NFT on-chain')
+				// console.log(contractRes)
+
+				// Notify success
+				if (!successOpen) setSuccessOpen(true)
+				setLoading(false)
+				setSuccessMsg('Success! You have bought this NFT, redirecting...')
+				// Redirect to user's profile page
+				router.push(`/users/${currentUser.address}`)
+			}
+		} catch (e: any) {
+			// Log and notify error
+			console.error(e.message)
+			setErrorOpen(true)
+			setErrorMsg('Uh oh, failed to buy the NFT')
+			setLoading(false)
+		}
+	}
+
+	const onNotificationClose = () => {
+		setSuccessOpen(false)
+		setSuccessMsg('')
+		setErrorOpen(false)
+		setErrorMsg('')
+	}
+
+	// Refetch user details after successfully listing a card
+	const handleListSuccess = async () => {
+		try {
+			const res = await get(`/nfts/${details._id}`)
+			const data: any | null = res.success ? res.data : null
+			setDetails(data)
+		} catch (e: any) {
+			console.error(e.message)
+		}
 	}
 
 	return (
@@ -179,26 +243,26 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Box>
 										<Typography variant="h4" component="h2" sx={styles.title}>
 											NFT Details
-											{data.isListed && (
+											{details.isListed && (
 												<Chip label="Listed For Sale!" size="medium" color="primary" sx={styles.buyableChip} />
 											)}
 										</Typography>
-										{data.isListed && currentUser?.address !== data.owner && (
-											<Box sx={styles.buyNow}>
+										{details.isListed && currentUser?.address !== details.owner && (
+											<Box sx={styles.buyNowListing}>
 												<Button
 													size="large"
 													onClick={connected ? handleBuyNft : handleConnectWallet}
 													variant="contained"
 													color="secondary"
 													sx={styles.buyNowBtn}
-													disabled={false}
+													disabled={loading}
 												>
-													Buy Now
+													{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 												</Button>
 												<Box sx={styles.price}>
 													<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
 													<Typography variant="h4" component="div">
-														{data.listPrice}{' '}
+														{details.listPrice}{' '}
 														<Typography sx={styles.eth} component="span">
 															ETH
 														</Typography>
@@ -206,41 +270,60 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 												</Box>
 											</Box>
 										)}
+										{currentUser?.address === details.owner &&
+											(details.isListed ? (
+												<Box sx={styles.buyNowListing}>
+													<ListNftDialog unlist={true} nft={data} onListSuccess={handleListSuccess} />
+													<Box sx={styles.price}>
+														<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
+														<Typography variant="h4" component="div">
+															{details.listPrice}{' '}
+															<Typography sx={styles.eth} component="span">
+																ETH
+															</Typography>
+														</Typography>
+													</Box>
+												</Box>
+											) : (
+												<Box sx={{ my: 2 }}>
+													<ListNftDialog nft={data} onListSuccess={handleListSuccess} />
+												</Box>
+											))}
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Name:
 											</Typography>
-											<Link href={`/users/${data.createdBy}`}>{data.name}</Link>
+											<Link href={`/users/${details.createdBy}`}>{details.name}</Link>
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Owner:
 											</Typography>
-											{formatAddress(data.owner)}
+											{formatAddress(details.owner)}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Minted By:
 											</Typography>
-											{formatAddress(data.createdBy)}
+											{formatAddress(details.createdBy)}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Minted On:
 											</Typography>
-											{formatDate(data.createdAt)}
+											{formatDate(details.createdAt)}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Project ID:
 											</Typography>
-											<Link href={`/projects/${data.projectId}`}>{data.projectId}</Link>
+											<Link href={`/projects/${details.projectId}`}>{details.projectId}</Link>
 										</Typography>
 										<Typography variant="body2" sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Block #:{' '}
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/block/${data.token.blockNumber}`}>
+											<Link href={`https://rinkeby.etherscan.io/block/${details.token.blockNumber}`}>
 												View on Etherscan
 											</Link>
 										</Typography>
@@ -248,12 +331,12 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												Tx Hash:{' '}
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/tx/${data.token.transactionHash}`}>
+											<Link href={`https://rinkeby.etherscan.io/tx/${details.token.transactionHash}`}>
 												View on Etherscan
 											</Link>
 										</Typography>
 									</Box>
-									<Link href={data.metadataUrl} passHref>
+									<Link href={details.metadataUrl} passHref>
 										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
 											View NFT Metadata on IPFS
 										</Button>
@@ -297,11 +380,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 							<Typography variant="h4" gutterBottom>
 								Collaborators
 								<Typography component="span" sx={styles.sectionCount}>
-									({data.collaborators.length})
+									({details.collaborators.length})
 								</Typography>
 							</Typography>
-							{data.collaborators.length > 0 ? (
-								data.collaborators.map((collaborator: string, idx: number) => (
+							{details.collaborators.length > 0 ? (
+								details.collaborators.map((collaborator: string, idx: number) => (
 									<Box sx={styles.collaborator} key={collaborator}>
 										<Typography sx={styles.collaboratorMeta}>#{idx + 1}:</Typography>
 										<Typography>
@@ -316,13 +399,13 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 							<Typography variant="h4" gutterBottom>
 								Samples
 								<Typography component="span" sx={styles.sectionCount}>
-									({data.samples.length})
+									({details.samples.length})
 								</Typography>
 							</Typography>
 							<Typography sx={styles.sectionMeta}>This NFT contains the following samples.</Typography>
 							<Grid container spacing={4}>
-								{data.samples.length > 0 ? (
-									data.samples.map((sample: any) => (
+								{details.samples.length > 0 ? (
+									details.samples.map((sample: any) => (
 										<Grid item sm={6} md={4} key={sample._id}>
 											<SampleCard details={sample} />
 										</Grid>
@@ -343,11 +426,12 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			</main>
 
 			<AppFooter />
+
+			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
+			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
 	)
 }
-
-NftDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	// Get NFT details based off ID
@@ -377,5 +461,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 		},
 	}
 }
+
+NftDetailsPage.propTypes = propTypes
 
 export default NftDetailsPage
