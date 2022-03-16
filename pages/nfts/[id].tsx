@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Grid, Paper, Typography } from '@mui/material'
+import { Box, Button, Chip, Container, Divider, Grid, Paper, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import SampleCard from '../../components/SampleCard'
+import { useWeb3 } from '../../components/Web3Provider'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
@@ -17,6 +18,15 @@ const styles = {
 		fontWeight: 900,
 		display: 'flex',
 		alignItems: 'center',
+	},
+	buyableChip: {
+		ml: 1,
+		textTransform: 'uppercase',
+		fontWeight: 900,
+		fontSize: '1rem',
+	},
+	buyNowBtn: {
+		my: 2,
 	},
 	metadata: {
 		my: 2,
@@ -92,12 +102,16 @@ const propTypes = {
 		updated_at: PropTypes.string.isRequired,
 	}).isRequired,
 	data: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
 		token: PropTypes.shape({
 			blockNumber: PropTypes.number.isRequired,
 			transactionHash: PropTypes.string.isRequired,
 		}).isRequired,
 		createdAt: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
+		owner: PropTypes.bool.isRequired,
+		isListed: PropTypes.bool.isRequired,
+		listPrice: PropTypes.bool.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
 		audioHref: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
@@ -119,6 +133,11 @@ type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { covalentData, data } = props
 	const contractData = covalentData ? covalentData.items[0] : null
+	const { connected, handleConnectWallet, currentUser } = useWeb3()
+
+	const handleBuyNft = () => {
+		console.log('buy this nft', data._id)
+	}
 
 	return (
 		<>
@@ -142,7 +161,20 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Box>
 										<Typography variant="h4" component="h2" sx={styles.title}>
 											NFT Details
+											{data.isListed && (
+												<Chip label="Listed For Sale!" size="medium" color="primary" sx={styles.buyableChip} />
+											)}
 										</Typography>
+										{data.isListed && currentUser?.address !== data.owner && (
+											<Button
+												variant="contained"
+												color="primary"
+												onClick={connected ? handleBuyNft : handleConnectWallet}
+												sx={styles.buyNowBtn}
+											>
+												Buy Now
+											</Button>
+										)}
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Name:

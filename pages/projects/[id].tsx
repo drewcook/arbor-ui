@@ -9,7 +9,7 @@ import {
 	Fab,
 	Grid,
 	IconButton,
-	Typography,
+	Typography
 } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -270,6 +270,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setMintingMsg('Updating user details...')
 				const newNftPayload: INft = {
 					createdBy: currentUser.address,
+					owner: currentUser.address,
+					isListed: false,
+					listPrice: 0,
 					token: tokenURI,
 					name: details.name,
 					metadataUrl: nftsRes.url,

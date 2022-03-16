@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
+import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
 import Notification from '../../components/Notification'
 import ProjectCard from '../../components/ProjectCard'
@@ -61,6 +62,9 @@ const styles = {
 		color: '#777',
 		ml: 1,
 		fontSize: '1.5rem',
+	},
+	nftActionBtn: {
+		m: 1,
 	},
 	noItemsMsg: {
 		textAlign: 'center',
@@ -182,9 +186,19 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							<Typography sx={styles.sectionMeta}>NFTs this user has minted</Typography>
 							<Grid container spacing={4}>
 								{details.nfts.length > 0 ? (
-									details.nfts.map((mintedNFT: any, idx: number) => (
-										<Grid item sm={6} md={4} key={`${mintedNFT.cid}-${idx}`}>
-											<NFTCard details={mintedNFT} />
+									details.nfts.map((nft: any, idx: number) => (
+										<Grid item sm={6} md={4} key={`${nft.cid}-${idx}`}>
+											<NFTCard details={nft} isMarketplace={false} />
+											{nft.owner === currentUser?.address &&
+												(nft.isListed ? (
+													<Box sx={{ my: 2 }}>
+														<ListNftDialog unlist={true} nft={nft} />
+													</Box>
+												) : (
+													<Box sx={{ my: 2 }}>
+														<ListNftDialog nft={nft} />
+													</Box>
+												))}
 										</Grid>
 									))
 								) : (

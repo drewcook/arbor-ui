@@ -20,9 +20,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				// Construct payload
-				const { createdBy, token, metadataUrl, audioHref, name, projectId, collaborators, samples } = body
+				const {
+					createdBy,
+					owner,
+					isListed,
+					listPrice,
+					token,
+					metadataUrl,
+					audioHref,
+					name,
+					projectId,
+					collaborators,
+					samples,
+				} = body
 				const payload: INft = {
 					createdBy,
+					owner,
+					isListed,
+					listPrice,
 					token,
 					metadataUrl,
 					audioHref,

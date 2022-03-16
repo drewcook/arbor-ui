@@ -7,6 +7,9 @@ type Token = any
 
 export interface INft {
 	createdBy: string
+	owner: string
+	isListed: boolean
+	listPrice: number // In gwei
 	token: Token
 	metadataUrl: string
 	audioHref: string
@@ -51,6 +54,20 @@ const nftSchema = new mongoose.Schema<INftDoc>(
 		createdBy: {
 			type: String,
 			required: true,
+		},
+		owner: {
+			type: String,
+			required: true,
+		},
+		isListed: {
+			type: Boolean,
+			required: true,
+			default: false,
+		},
+		listPrice: {
+			type: Number,
+			required: true,
+			default: 0,
 		},
 	},
 	{ timestamps: true },
