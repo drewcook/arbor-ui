@@ -3,7 +3,7 @@ import type { API, Wallet } from 'bnc-onboard/dist/src/interfaces'
 import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-import SampleNFTContract from '../contracts/PolyechoSample.json'
+import NFTContract from '../contracts/PolyEchoNFT.json'
 import { IUser } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
 import { get, post } from '../utils/http'
@@ -61,12 +61,9 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			// // Get SampleNFT contract
 			const networkId = await web3Instance.eth.net.getId()
 			/* @ts-ignore */
-			const deployedNetwork = SampleNFTContract.networks[networkId]
-			const sampleContract = new web3Instance.eth.Contract(
-				SampleNFTContract.abi,
-				deployedNetwork && deployedNetwork.address,
-			)
-			setContract(sampleContract)
+			const deployedNetwork = NFTContract.networks[networkId]
+			const nftContract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
+			setContract(nftContract)
 
 			// // Get accounts initially
 			const connectedAccounts = await web3Instance.eth.getAccounts()

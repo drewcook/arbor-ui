@@ -15,6 +15,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { update } from '../utils/http'
 import Notification from './Notification'
+import { useWeb3 } from './Web3Provider'
 
 const propTypes = {
 	onClose: PropTypes.func,
@@ -22,6 +23,10 @@ const propTypes = {
 	unlist: PropTypes.bool,
 	nft: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
+		listPrice: PropTypes.string,
+		token: PropTypes.shape({
+			id: PropTypes.number.isRequired,
+		}).isRequired,
 	}).isRequired,
 	onListSuccess: PropTypes.func.isRequired,
 }
@@ -32,39 +37,50 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 	const { onClose, open, unlist, nft, onListSuccess } = props
 	const [isOpen, setIsOpen] = useState<boolean>(open ?? false)
 	const [isOpenUnlist, setIsOpenUnlist] = useState<boolean>(open ?? false)
-	// 0.1 ETH
 	const [listPrice, setListPrice] = useState<number>(0.5)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
+	const { contract, currentUser, web3 } = useWeb3()
 
 	const handleClose = () => {
 		if (onClose) onClose()
 		setIsOpen(false)
 		setIsOpenUnlist(false)
 		setListPrice(0.5)
+		setLoading(false)
 	}
 
 	const handleList = async () => {
 		setLoading(true)
 		try {
-			// Make PUT request
-			const res = await update(`/nfts/${nft._id}`, {
-				isListed: true,
-				listPrice,
-			})
-			if (!res.success) throw new Error('Failed to list user NFT', res.error)
-			// Close dialog
-			handleClose()
-			// Notify success
-			if (!successOpen) setSuccessOpen(true)
-			setSuccessMsg('Success! You have listed this NFT!')
-			setLoading(false)
-			// Emit callback
-			onListSuccess()
-			setListPrice(0.5)
+			if (currentUser) {
+				// Allow it to be bought on chain
+				const amount = web3.utils.toWei(listPrice?.toString(), 'ether')
+				const scRes: any = await contract.methods
+					.allowBuy(nft.token.id, amount)
+					.send({ from: currentUser.address, gas: 65000 })
+				if (!scRes) throw new Error('Failed to list the NFT for sale')
+
+				// Make PUT request
+				const res = await update(`/nfts/${nft._id}`, {
+					isListed: true,
+					listPrice,
+				})
+				if (!res.success) throw new Error('Failed to list user NFT', res.error)
+				// Close dialog
+				handleClose()
+				// Notify success
+				if (!successOpen) setSuccessOpen(true)
+				setSuccessMsg('Success! You have listed this NFT!')
+				setLoading(false)
+				// Emit callback
+				onListSuccess()
+				// Reset price
+				setListPrice(0.5)
+			}
 		} catch (e: any) {
 			console.error(e.message)
 			// Notify error
@@ -77,21 +93,30 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 	const handleUnlist = async () => {
 		setLoading(true)
 		try {
-			// Make PUT request
-			const res = await update(`/nfts/${nft._id}`, {
-				isListed: false,
-				listPrice: 0,
-			})
-			if (!res.success) throw new Error('Failed to remove the listing for this user NFT', res.error)
-			// Close dialog
-			handleClose()
-			// Notify success
-			if (!successOpen) setSuccessOpen(true)
-			setSuccessMsg('Success! You have removed the NFT listing!')
-			setLoading(false)
-			// Emit callback
-			onListSuccess()
-			setListPrice(0.5)
+			if (currentUser) {
+				// Disallow it to be bought on chain
+				const scRes: any = await contract.methods
+					.disallowBuy(nft.token.id)
+					.send({ from: currentUser.address, gas: 65000 })
+				if (!scRes) throw new Error('Failed to remove the listing for the NFT on-chain')
+
+				// Make PUT request
+				const res = await update(`/nfts/${nft._id}`, {
+					isListed: false,
+					listPrice: 0,
+				})
+				if (!res.success) throw new Error('Failed to remove the listing for this user NFT', res.error)
+				// Close dialog
+				handleClose()
+				// Notify success
+				if (!successOpen) setSuccessOpen(true)
+				setSuccessMsg('Success! You have removed the NFT listing!')
+				setLoading(false)
+				// Emit callback
+				onListSuccess()
+				// Reset price
+				setListPrice(0.5)
+			}
 		} catch (e: any) {
 			console.error(e.message)
 			// Notify error
@@ -134,7 +159,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 							id="list-price-input"
 							value={listPrice}
 							type="number"
-							placeholder="0.1"
+							placeholder="0.01"
 							onChange={e => setListPrice(e.target.value)}
 							endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
 							fullWidth

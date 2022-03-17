@@ -118,11 +118,13 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					</Typography>
 					<Typography variant="body2" sx={styles.detailItem}>
 						Block #:{' '}
-						<Link href={`https://rinkeby.etherscan.io/block/${details.token.blockNumber}`}>View on Etherscan</Link>
+						<Link href={`https://rinkeby.etherscan.io/block/${details.token.data.blockNumber}`}>View on Etherscan</Link>
 					</Typography>
 					<Typography variant="body2" sx={styles.detailItem}>
 						Tx Hash:{' '}
-						<Link href={`https://rinkeby.etherscan.io/tx/${details.token.transactionHash}`}>View on Etherscan</Link>
+						<Link href={`https://rinkeby.etherscan.io/tx/${details.token.data.transactionHash}`}>
+							View on Etherscan
+						</Link>
 					</Typography>
 				</CardContent>
 				<CardActions sx={styles.actions}>

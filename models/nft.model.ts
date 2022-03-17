@@ -3,7 +3,11 @@ import type { ISampleDoc } from './sample.model'
 import { sampleSchema } from './sample.model'
 
 // TODO: create token model
-type Token = any
+type Token = {
+	id: number
+	tokenURI: string
+	data: any
+}
 
 export interface INft {
 	createdBy: string

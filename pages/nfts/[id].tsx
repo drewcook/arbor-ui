@@ -127,8 +127,12 @@ const propTypes = {
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		token: PropTypes.shape({
-			blockNumber: PropTypes.number.isRequired,
-			transactionHash: PropTypes.string.isRequired,
+			id: PropTypes.number.isRequired,
+			tokenURI: PropTypes.string.isRequired,
+			data: PropTypes.shape({
+				blockNumber: PropTypes.number.isRequired,
+				transactionHash: PropTypes.string.isRequired,
+			}),
 		}).isRequired,
 		createdAt: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
@@ -162,13 +166,23 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const contractData = covalentData ? covalentData.items[0] : null
-	const { connected, handleConnectWallet, currentUser, contract } = useWeb3()
+	const { connected, handleConnectWallet, currentUser, contract, web3 } = useWeb3()
 	const router = useRouter()
 
 	const handleBuyNft = async () => {
 		setLoading(true)
 		try {
 			if (currentUser) {
+				// Call smart contract to make transfer
+				const amount = web3.utils.toWei(details.listPrice.toString(), 'ether')
+				const scRes: any = await contract.methods
+					.buy(details.token.id)
+					.send({ from: currentUser.address, value: amount, gas: 650000 })
+
+				console.log({ scRes })
+
+				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
+
 				// Make PUT request to change ownership
 				const res = await update(`/nfts/${details._id}`, {
 					isListed: false,
@@ -179,18 +193,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 				})
 				if (!res.success) throw new Error('Failed to update the NFT ownership details', res.error)
 
-				// Call smart contract to make transfer
-				// const contractRes: any = await contract.methods.safeTransferFrom(currentUser)
-				// .mint(currentUser.address, nftsRes.url, details.collaborators)
-				// .send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
-
-				// if (!contractRes) throw new Error('Failed to transfer the NFT on-chain')
-				// console.log(contractRes)
-
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)
 				setLoading(false)
 				setSuccessMsg('Success! You have bought this NFT, redirecting...')
+
 				// Redirect to user's profile page
 				router.push(`/users/${currentUser.address}`)
 			}
@@ -291,6 +298,14 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											))}
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
+												ID:
+											</Typography>
+											<Link href={`https://rinkeby.etherscan.io/token/${details.token.id}`}>
+												{details.token.id.toString()}
+											</Link>
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
 												Name:
 											</Typography>
 											<Link href={`/users/${details.createdBy}`}>{details.name}</Link>
@@ -323,7 +338,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												Block #:{' '}
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/block/${details.token.blockNumber}`}>
+											<Link href={`https://rinkeby.etherscan.io/block/${details.token.data.blockNumber}`}>
 												View on Etherscan
 											</Link>
 										</Typography>
@@ -331,7 +346,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												Tx Hash:{' '}
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/tx/${details.token.transactionHash}`}>
+											<Link href={`https://rinkeby.etherscan.io/tx/${details.token.data.transactionHash}`}>
 												View on Etherscan
 											</Link>
 										</Typography>
@@ -445,7 +460,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
 	// Get data via Covalent API
 	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e' // ERC-721 PolyEchoSample contract (Rinkeby)
-	const contractAddress = '0x02c4018D3A1966813a56bEbe1D89A7B8ec34b01E' // ERC-721 PolyEchoSample contract (Kovan)
+	const contractAddress = '0x02c4018D3A1966813a56bEbe1D89A7B8ec34b01E' // ERC-721 PolyEcho (ECHO) contract (Kovan)
 	const chainId = 42 // Kovan
 	const tokenId = 0 // Get latest from smart contract using web3.js
 	// const tokenIdsUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`

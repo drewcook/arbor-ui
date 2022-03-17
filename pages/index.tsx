@@ -31,21 +31,16 @@ const styles = {
 }
 
 const Home: NextPage = () => {
-	const { contract, currentUser } = useWeb3()
+	const { contract } = useWeb3()
 
 	useEffect(() => {
-		getCollectionDetails()
-	}, [])
-
-	const getCollectionDetails = async () => {
 		try {
-			console.log(contract)
-			const totalSupply = await contract.methods.totalSupply().call({ from: currentUser?.address })
-			console.log({ totalSupply })
+			console.log('Get contract details', contract)
 		} catch (e: any) {
 			console.error(e.message)
 		}
-	}
+	}, [])
+
 	return (
 		<>
 			<Head>

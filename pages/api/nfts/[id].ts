@@ -27,7 +27,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		/* Update a model by its ID */
 		case 'PUT':
 			try {
-				console.log({ body })
 				const nft: INftDoc | null = await Nft.findByIdAndUpdate(
 					id,
 					{
