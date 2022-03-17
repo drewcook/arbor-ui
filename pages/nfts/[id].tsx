@@ -159,7 +159,7 @@ type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { covalentData, data } = props
-	const [details, setDetails] = useState(data)
+	const [details, setDetails] = useState<any>(data)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -191,7 +191,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					buyer: currentUser.address,
 					seller: details.owner,
 				})
-				if (!res.success) throw new Error('Failed to update the NFT ownership details', res.error)
+				if (!res.success) throw new Error(`Failed to update the NFT ownership details - ${res.error}`)
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)
@@ -243,7 +243,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 
 			<main id="app-main">
 				<Container maxWidth="xl">
-					{data ? (
+					{details ? (
 						<>
 							<Grid container spacing={4}>
 								<Grid item xs={12} md={5}>

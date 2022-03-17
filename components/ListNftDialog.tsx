@@ -23,7 +23,7 @@ const propTypes = {
 	unlist: PropTypes.bool,
 	nft: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
-		listPrice: PropTypes.string,
+		listPrice: PropTypes.number,
 		token: PropTypes.shape({
 			id: PropTypes.number.isRequired,
 		}).isRequired,
@@ -69,7 +69,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 					isListed: true,
 					listPrice,
 				})
-				if (!res.success) throw new Error('Failed to list user NFT', res.error)
+				if (!res.success) throw new Error(`Failed to list user NFT- ${res.error}`)
 				// Close dialog
 				handleClose()
 				// Notify success
@@ -105,7 +105,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 					isListed: false,
 					listPrice: 0,
 				})
-				if (!res.success) throw new Error('Failed to remove the listing for this user NFT', res.error)
+				if (!res.success) throw new Error(`Failed to remove the listing for this user NFT - ${res.error}`)
 				// Close dialog
 				handleClose()
 				// Notify success
@@ -160,7 +160,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 							value={listPrice}
 							type="number"
 							placeholder="0.01"
-							onChange={e => setListPrice(e.target.value)}
+							onChange={e => setListPrice(parseInt(e.target.value))}
 							endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
 							fullWidth
 						/>
