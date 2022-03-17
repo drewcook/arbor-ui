@@ -32742,11 +32742,111 @@
           ],
           "name": "Transfer",
           "type": "event"
+        },
+        "0x5837dc3eeed2d2b1d75de7e85c87404936759686b473d2cbc06bc59f96060cff": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "NftBought",
+          "type": "event"
+        },
+        "0xad6f7101d3f53815713d2dd1e65366de1f3db3cf8f9a2d9a9a8119a1bd2b6407": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_price",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "_contributors",
+              "type": "address[]"
+            }
+          ],
+          "name": "RoyaltiesPaid",
+          "type": "event"
+        },
+        "0xc90e2b5bf9e462d07d9c1fc5201c35bb5dc9dd94df8124b2a19a8f98d64ccdb1": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "SellerPaid",
+          "type": "event"
+        },
+        "0x5d3ac5872118b949a1f8db596134a0e1587ecf18f2203bb1e3ea420c3c3f8fa9": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "_tokenURI",
+              "type": "string"
+            }
+          ],
+          "name": "TokenCreated",
+          "type": "event"
         }
       },
       "links": {},
-      "address": "0xCacd07793e9Cf8Ab2E274f7F86EF6897166063f8",
-      "transactionHash": "0x3d66808d2de80f832ae29348ee0ebcbdcfb19fcd63a852f967ed0c1b94e27380"
+      "address": "0x508ee99E7Cb2E62EA230aA19CDcBF0CBad87C0C3",
+      "transactionHash": "0x56e3a398b4c83202a25191b41e696165ddbaaee6993161373370c804e354ed14"
+    },
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0xa9ADDccB22754f8669f7BB62A7ec80389503F451",
+      "transactionHash": "0x5755301667f62ee0d375eac46fab97f472771c44b420c3cbd9886d7fe90afef6"
     },
     "1337": {
       "events": {
@@ -32983,7 +33083,7 @@
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2022-03-17T05:59:44.599Z",
+  "updatedAt": "2022-03-17T15:44:09.836Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
