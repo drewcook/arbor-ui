@@ -179,7 +179,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					.buy(details.token.id)
 					.send({ from: currentUser.address, value: amount, gas: 650000 })
 
-				console.log({ scRes })
+				console.log({ debugging: true, scRes })
 
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 
@@ -300,7 +300,9 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												ID:
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/token/${details.token.id}`}>
+											<Link
+												href={`https://rinkeby.etherscan.io/token/0xdcb6de6eab99b5ba99ecd11d9426492b73dd4b97?a=${details.token.id}#inventory`}
+											>
 												{details.token.id.toString()}
 											</Link>
 										</Typography>

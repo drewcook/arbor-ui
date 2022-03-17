@@ -75,12 +75,18 @@ contract PolyEchoNFT is ERC721, Ownable {
         );
 
 				// Update local state
-        uint256 tokenId = _tokenIds.current();
-        tokenIdToUri[tokenId] = _metadataURI;
-        tokenIdToContributors[tokenId] = _contributors;
+				// Auto-increment, also we can start minting from 1 instead of 0
+				_tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
+        tokenIdToUri[newTokenId] = _metadataURI;
+        tokenIdToContributors[newTokenId] = _contributors;
 
 				// Mint the new token for the buyer
-        _safeMint(_buyer, tokenId);
+				// Buyer becomes owner
+        _safeMint(_buyer, newTokenId);
+				// Pre-approve buyer as operator for token
+				_approve(_buyer, newTokenId);
+
 
 				// Payout out value sent from buyer equally to contributors
         for (uint256 i = 0; i < _contributors.length; i++) {
@@ -89,39 +95,50 @@ contract PolyEchoNFT is ERC721, Ownable {
         }
 
 				// Emit event with new metadata url
-        string memory newURI = tokenURI(tokenId);
-        emit TokenCreated(tokenId, newURI);
-
-				// Auto-increment for next mint
-        _tokenIds.increment();
+        string memory newTokenURI = tokenURI(newTokenId);
+        emit TokenCreated(newTokenId, newTokenURI);
 
 				// Return back a tuple with new metadataURL and tokenId
-        return (tokenId, newURI);
+        return (newTokenId, newTokenURI);
     }
 
 		// This is called when an owner wants to list the NFT for sale and sets a price.
     function allowBuy(uint256 _tokenId, uint256 _price) external {
+				// Only an owner can list it
         require(msg.sender == ownerOf(_tokenId), 'Not owner of this token');
+				// Required a sale price
         require(_price > 0, 'Price zero');
+
+				// Set the sale price
         tokenIdToPrice[_tokenId] = _price;
     }
 
 		// This is called when an owner wants to remove the NFT from being for sale.
     function disallowBuy(uint256 _tokenId) external {
+				// Only an owner can unlist it
         require(msg.sender == ownerOf(_tokenId), 'Not owner of this token');
+
+				// Unlist the tokenId, null price
         tokenIdToPrice[_tokenId] = 0;
     }
 
+		// This is called when a caller wants to buy a token at its sale price
+		// The msg.sender is already pre-approved to buy the token, as set in allowBuy()
     function buy(uint256 _tokenId) external payable {
+				// Get the current sale price
         uint256 price = tokenIdToPrice[_tokenId];
+
 				// Check if for sale, based off of zero value
         require(price > 0, 'This token is not for sale');
+
 				// Check for right sale price
         require(msg.value == price, 'Incorrect value');
 
 				// Make the transfer of ownership
+				// Approve any buyer, rather than seller manually approving a buyer/offer
         address seller = ownerOf(_tokenId);
-        safeTransferFrom(seller, msg.sender, _tokenId);
+				_approve(msg.sender, _tokenId);
+				safeTransferFrom(seller, msg.sender, _tokenId);
 
 				// Make the transfer of funds from sale price
 				// 10% - Royalties to all contributors, evenly split

@@ -49,11 +49,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				// If changing ownership...
 				if (body.buyer && body.seller) {
-					// Add the new NFT reference to list of User NFTs field
+					// Add the NFT reference to list of buyer's NFT IDs
 					let userUpdated = await update(`/users/${body.buyer}`, { addNFT: id })
 					if (!userUpdated) return res.status(400).json({ success: false, error: "Failed to add to user's NFTs" })
 
-					// TODO: remove NFT ID from seller's list of nfts
+					// Remove the NFT reference from list of seller's NFT IDs
 					userUpdated = await update(`/users/${body.seller}`, { removeNFT: id })
 					if (!userUpdated) return res.status(400).json({ success: false, error: "Failed to remove from user's NFTs" })
 				}

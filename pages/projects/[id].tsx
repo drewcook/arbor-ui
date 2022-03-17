@@ -271,10 +271,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					listPrice: 0,
 					token: {
 						id: parseInt(
-							mintRes.events.TokenCreated.returnValues.tokenId || mintRes.events.TokenCreated.returnValues._tokenId,
+							mintRes.events.TokenCreated.returnValues.newTokenId ||
+								mintRes.events.TokenCreated.returnValues.tokenId ||
+								mintRes.events.TokenCreated.returnValues._tokenId,
 						),
 						tokenURI:
-							mintRes.events.TokenCreated.returnValues.tokenURI || mintRes.events.TokenCreated.returnValues._tokenURI,
+							mintRes.events.TokenCreated.returnValues.newTokenURI ||
+							mintRes.events.TokenCreated.returnValues.tokenURI ||
+							mintRes.events.TokenCreated.returnValues._tokenURI,
 						data: mintRes,
 					},
 					name: details.name,
