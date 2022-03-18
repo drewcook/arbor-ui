@@ -8,6 +8,12 @@ PolyEcho is a schelling game where the objective is to publicly co-create songs 
 
 ## Getting Started
 
+First, clone this repository to your local machine:
+
+```bash
+git clone https://github.com/polyecho/polyecho.git
+```
+
 There is some local setup that needs to happen to fully run this client application locally.
 
 Dependencies:
@@ -18,7 +24,7 @@ Dependencies:
 
 ### 1. Install dependencies
 
-First install the dependencides needed. You can download the latest version of Node.js [here](https://nodejs.org/en/download/).  You can check that you are running NPM and Node with the following commands:
+You can download the latest version of Node.js [here](https://nodejs.org/en/download/).  You can check that you are running NPM and Node with the following commands:
 
 ```bash
 node -v
@@ -82,7 +88,9 @@ There are many ways to interact with a MongoDB host. My recommendation is to use
 
 Once MongoDB Compass is installed and you have a MongoDB host running in the background, you can now connect the client to the host and set up this new connection. Open up Compass and click "New Connection" in the top left of the GUI, or in the menubar. Paste in the local connection string; it should look similar to this on Mac:
 
-`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`
+```txt
+mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false
+```
 
 ### 4. Create a Database and Link It
 
@@ -90,7 +98,9 @@ Create a new database for polyecho. Title it `polyecho` or whatever suits your f
 
 The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
 
-`MONGODB_URI=mongodb://localhost/polyecho`
+```txt
+MONGODB_URI=mongodb://localhost/polyecho
+```
 
 This may look different for windows users, but this will now allow the client app to work with a local database.
 
