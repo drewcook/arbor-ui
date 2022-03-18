@@ -23,7 +23,7 @@ import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
-import SampleDropzone from '../../components/SampleDropzone'
+import SampleUploadDialog from '../../components/SampleUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
@@ -166,15 +166,22 @@ type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
+	// Project details
 	const [details, setDetails] = useState(data)
-	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
-	const [minting, setMinting] = useState<boolean>(false)
+	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
+	// Minting
+	const [minting, setMinting] = useState<boolean>(false)
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
+	// Play/Pause
+	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
+	// Stem Upload
+	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
+	// Other
 	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
 	const router = useRouter()
 
@@ -193,7 +200,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		console.log('download all samples')
 	}
 
-	const onUploadSuccess = (projectData: IProjectDoc) => {
+	const handleUploadStemOpen = () => {
+		setUploadStemOpen(true)
+	}
+
+	const handleUploadStemClose = () => {
+		setUploadStemOpen(false)
+	}
+
+	const onStemUploadSuccess = (projectData: IProjectDoc) => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
@@ -404,7 +419,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									)}
 								</Grid>
 								<Grid item xs={12} md={4}>
-									<SampleDropzone project={details} onSuccess={onUploadSuccess} />
+									<ImageOptimized
+										src="https://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link/"
+										alt="PolyEcho NFT"
+										width={400}
+										height={400}
+									/>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
@@ -446,6 +466,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							Sorry, no details were found for this project.
 						</Typography>
 					)}
+					<Button variant="outlined" size="large" color="info" onClick={handleUploadStemOpen}>
+						Add Stem
+					</Button>
+					<SampleUploadDialog
+						open={uploadStemOpen}
+						onClose={handleUploadStemClose}
+						onSuccess={onStemUploadSuccess}
+						projectDetails={details}
+					/>
 				</Container>
 			</main>
 
