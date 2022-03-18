@@ -16,6 +16,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { Fragment, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
@@ -25,7 +26,7 @@ import Notification from '../../components/Notification'
 import SampleDropzone from '../../components/SampleDropzone'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
-import { INft } from '../../models/nft.model'
+import type { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
@@ -174,7 +175,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
-	const { NFTStore, connected, contract, currentUser, handleConnectWallet } = useWeb3()
+	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
+	const router = useRouter()
 
 	const handlePlayPauseAllSamples = () => {
 		// TODO: check if each sample is playing or not to prevent toggling each
@@ -247,30 +249,38 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					},
 				})
 
-				// console.groupCollapsed('NFT.storage response')
-				// console.info('res', nftsRes)
-				// console.info('data', nftsRes.data)
-				// console.info('embed', nftsRes.embed())
-				// console.groupEnd()
-
 				// Check for data
 				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
 
 				// Call smart contract and mint an nft out of the original CID
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
-
-				const tokenURI: any = await contract.methods
-					.mint(currentUser.address, nftsRes.url, details.collaborators)
-					// TODO: Should this be non-lowercased?
-					.send({ from: currentUser.address, value: '10000000000000000', gas: 650000 }) // 0.01 ETH
+				const amount = web3.utils.toWei('0.01', 'ether')
+				const mintRes: any = await contract.methods
+					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators)
+					.send({ from: currentUser.address, value: amount, gas: 650000 })
+				console.log(mintRes.events.TokenCreated.returnValues, mintRes)
 
 				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Updating user details...')
 				const newNftPayload: INft = {
 					createdBy: currentUser.address,
-					token: tokenURI,
+					owner: currentUser.address,
+					isListed: false,
+					listPrice: 0,
+					token: {
+						id: parseInt(
+							mintRes.events.TokenCreated.returnValues.newTokenId ||
+								mintRes.events.TokenCreated.returnValues.tokenId ||
+								mintRes.events.TokenCreated.returnValues._tokenId,
+						),
+						tokenURI:
+							mintRes.events.TokenCreated.returnValues.newTokenURI ||
+							mintRes.events.TokenCreated.returnValues.tokenURI ||
+							mintRes.events.TokenCreated.returnValues._tokenURI,
+						data: mintRes,
+					},
 					name: details.name,
 					metadataUrl: nftsRes.url,
 					audioHref: nftsRes.data.properties.audio,
@@ -283,8 +293,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)
-				setSuccessMsg('Success! You now own this music NFT!')
+				setSuccessMsg('Success! You now own this music NFT, redirecting...')
 				setMinting(false)
+
+				// Route to user's profile page
+				router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
 			console.error(e)
