@@ -12,12 +12,21 @@ There is some local setup that needs to happen to fully run this client applicat
 
 Dependencies:
 
+- npm or yarn
 - Node.js
 - MongoDB
 
 ### 1. Install dependencies
 
-First install the dependencides needed. You can download the latest version of Node.js [here](https://nodejs.org/en/download/).
+First install the dependencides needed. You can download the latest version of Node.js [here](https://nodejs.org/en/download/).  You can check that you are running NPM and Node with the following commands:
+
+```bash
+node -v
+# v16.14.0
+
+npm -v
+# 8.3.1
+```
 
 Install the client dependencies with the following command:
 
