@@ -259,7 +259,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				const mintRes: any = await contract.methods
 					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators)
 					.send({ from: currentUser.address, value: amount, gas: 650000 })
-				console.log(mintRes.events.TokenCreated.returnValues, mintRes)
 
 				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)

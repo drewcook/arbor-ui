@@ -178,9 +178,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 				const scRes: any = await contract.methods
 					.buy(details.token.id)
 					.send({ from: currentUser.address, value: amount, gas: 650000 })
-
-				console.log({ debugging: true, scRes })
-
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 
 				// Make PUT request to change ownership
