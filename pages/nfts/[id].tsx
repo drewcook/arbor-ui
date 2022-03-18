@@ -298,10 +298,18 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											))}
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
+												Collection:{' '}
+											</Typography>
+											<Link href="https://rinkeby.etherscan.io/token/0x3d90BA73E946aD6332c90C4D1851a96e77f7a5BD">
+												View On Etherscan
+											</Link>
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
 												ID:
 											</Typography>
 											<Link
-												href={`https://rinkeby.etherscan.io/token/0xdcb6de6eab99b5ba99ecd11d9426492b73dd4b97?a=${details.token.id}#inventory`}
+												href={`https://rinkeby.etherscan.io/token/0x3d90BA73E946aD6332c90C4D1851a96e77f7a5BD?a=${details.token.id}#inventory`}
 											>
 												{details.token.id.toString()}
 											</Link>
