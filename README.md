@@ -1,34 +1,67 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
+
+**LIVE DEMO**: <https://polyecho.xyz>
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
 
 ```bash
-npm run dev
+yarn install
 # or
+npm install
+```
+
+Next, set up local environment variables by copying over the sample env. Run the following:
+
+```bash
+# unix
+cp sample.env .env.local
+# windows
+xcopy samaple.env .env.local
+```
+
+**NOTE:** Please reach out to the core team for a set of values to fill in your local env file.
+
+Next, run the development server:
+
+```bash
 yarn dev
+# or
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Setting Up A Local Database (MongoDB)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+This client application is using the built-in Next.js API routes that read and write to a local Mongo database. Here are our recommended steps for getting up and running with a local MongoDB environemnt:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### 1. Install a MongoDB Host
 
-## Learn More
+This will set up a host to run in the background on the machine. You can then connect to it via a number of methods when it is up.
 
-To learn more about Next.js, take a look at the following resources:
+- For Mac users, you can follow the steps listed [here](https://medium.com/macoclock/setup-mongodb-on-macos-94e0c687c649).
+- For Windows users, you can follow the steps listed [here](https://medium.com/stackfame/run-mongodb-as-a-service-in-windows-b0acd3a4b712).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Install a MongoDB Client
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+There are many ways to interact with a MongoDB host. My recommendation is to use a GUI, as it makes for viewing the data easily, and MongoDB Compass is free and easy to use. Install it using the documentation [here](https://docs.mongodb.com/compass/current/install/).
 
-## Deploy on Vercel
+### 3. Create a Connection
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Once MongoDB Compass is installed and you have a MongoDB host running in the background, you can now connect the client to the host and set up this new connection. Open up Compass and click "New Connection" in the top left of the GUI, or in the menubar. Paste in the local connection string; it should look similar to this on Mac:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`
+
+### Create a Database
+
+Create a new collection for polyecho. Title it `polyecho` or whatever suits your fancy. The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
+
+`MONGODB_URI=mongodb://localhost/polyecho`
+
+This may look different for windows users, but this will now allow the client app to work with a local database.
+
+## Issues
+
+We encourage the open-source atmosphere. If you find any bugs or issues with this repository, don't hesitate to [file an issue](https://github.com/polyecho/polyecho/issues/new) for it. We will work to continually engage with these issues and encourage you to contribute.
