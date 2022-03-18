@@ -214,7 +214,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						filename: `PolyEcho_Sample_${projectId}_${sample.filename}`,
 					})
 
-					if (!res.success) throw new Error('Failed to download sample', res.error)
+					if (!res.success) throw new Error(`Failed to download sample - ${res.error}`)
 					console.log('downloaded sample', { res })
 				})
 			}
