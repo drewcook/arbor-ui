@@ -104,7 +104,9 @@ The important bit is to **update your local environment variables** in the clien
 MONGODB_URI=mongodb://localhost/polyecho
 ```
 
-This may look different for Windows users, but this will now allow the client app to work with a local database.
+This will now allow the client app to work with the local MongoDB instance, and you can now interact with it through Compass as a GUI.
+
+**NOTE:** You can always shut down the background `mongo` daemon that's running after using it. For Mac and Homebrew users, you can check that it's running with `brew services list`, and then you can shut it down with `brew services stop mongodb-community`. For Windows users, it would be `net stop MongoDB`, which is the default service name from the installer.
 
 ---
 
