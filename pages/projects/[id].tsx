@@ -28,6 +28,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
+import type { ISampleDoc } from '../../models/sample.model'
 import EthereumIcon from '../../public/ethereum_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
@@ -204,32 +205,24 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setPlayPauseBtns(btns)
 	}
 
-	const handleDownloadAll = () => {
-		// const saveBlob = (function () {
-		// 	const a: HTMLAnchorElement = document.createElement('a')
-		// 	document.body.appendChild(a)
-		// 	a.style.display = 'none'
-		// 	return function (blob: string, fileName: string) {
-		// 		const url = window.URL.createObjectURL(blob)
-		// 		a.href = url
-		// 		a.download = fileName
-		// 		a.click()
-		// 		// window.URL.revokeObjectURL(url)
-		// 		document.removeChild(a)
-		// 	}
-		// })()
-		// try {
-		// 	data?.samples.forEach(async (sample: ISampleDoc) => {
-		// 		saveBlob(sample.audioHref, `PolyEcho_Sample_${projectId}_${sample.filename}`)
-		// 		// const res = await get(`/samples/download/${sample.metadataUrl}`)
-		// 		// if (!res.success) throw new Error('Failed to download sample', res.error)
-		// 		// console.log({ res })
-		// 	})
-		// } catch (e: any) {
-		// 	console.error(e.message)
-		// 	setErrorOpen(true)
-		// 	setErrorMsg('Failed to download all samples')
-		// }
+	const handleDownloadAll = async () => {
+		try {
+			if (details) {
+				data?.samples.forEach(async (sample: ISampleDoc) => {
+					const res = await get(`/samples/download`, {
+						url: sample.audioUrl,
+						filename: `PolyEcho_Sample_${projectId}_${sample.filename}`,
+					})
+
+					if (!res.success) throw new Error('Failed to download sample', res.error)
+					console.log('downloaded sample', { res })
+				})
+			}
+		} catch (e: any) {
+			console.error(e.message)
+			setErrorOpen(true)
+			setErrorMsg('Failed to download all samples')
+		}
 	}
 
 	const onUploadSuccess = (projectData: IProjectDoc) => {
