@@ -20,7 +20,7 @@ Next, set up local environment variables by copying over the sample env. Run the
 # unix
 cp sample.env .env.local
 # windows
-xcopy samaple.env .env.local
+xcopy sample.env .env.local
 ```
 
 **NOTE:** Please reach out to the core team for a set of values to fill in your local env file.
