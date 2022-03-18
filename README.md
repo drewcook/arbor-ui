@@ -4,9 +4,22 @@ PolyEcho is a schelling game where the objective is to publicly co-create songs 
 
 **LIVE DEMO**: <https://polyecho.xyz>
 
+---
+
 ## Getting Started
 
-First, install dependencies:
+There is some local setup that needs to happen to fully run this client application locally.
+
+Dependencies:
+
+- Node.js
+- MongoDB
+
+### 1. Install dependencies
+
+First install the dependencides needed. You can download the latest version of Node.js [here](https://nodejs.org/en/download/).
+
+Install the client dependencies with the following command:
 
 ```bash
 yarn install
@@ -14,7 +27,9 @@ yarn install
 npm install
 ```
 
-Next, set up local environment variables by copying over the sample env. Run the following:
+### 2. Environment Variables
+
+Next, set up local environment variables by copying over the sample env. Run the following command:
 
 ```bash
 # unix
@@ -25,7 +40,9 @@ xcopy sample.env .env.local
 
 **NOTE:** Please reach out to the core team for a set of values to fill in your local env file.
 
-Next, run the development server:
+### 3. Run the Application
+
+Finally, you can run the development server using the following command:
 
 ```bash
 yarn dev
@@ -34,6 +51,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+---
 
 ## Setting Up A Local Database (MongoDB)
 
@@ -56,13 +75,17 @@ Once MongoDB Compass is installed and you have a MongoDB host running in the bac
 
 `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`
 
-### Create a Database
+### 4. Create a Database and Link It
 
-Create a new collection for polyecho. Title it `polyecho` or whatever suits your fancy. The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
+Create a new database for polyecho. Title it `polyecho` or whatever suits your fancy. It may prompt you to add a collection to it as well.  Please add a `users` collection.
+
+The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
 
 `MONGODB_URI=mongodb://localhost/polyecho`
 
 This may look different for windows users, but this will now allow the client app to work with a local database.
+
+---
 
 ## Issues
 
