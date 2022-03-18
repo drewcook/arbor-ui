@@ -1,13 +1,13 @@
-const NFTContract = artifacts.require('EternalNFT')
+const NFTContract = artifacts.require('PolyEchoNFT')
 
-contract('NFTContract', accounts => {
+contract('PolyEchoNFT', accounts => {
 	let nft
 	let tokenId
 
 	// Tests it can be deployed
 	it('has been deployed', async () => {
 		const contract = await NFTContract.deployed()
-		assert(contract, 'NFT contract was not deployed')
+		assert(contract, 'PolyEchoNFT contract was not deployed')
 		assert.notEqual(contract, undefined)
 	})
 

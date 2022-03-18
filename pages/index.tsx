@@ -6,6 +6,10 @@ import AppFooter from '../components/AppFooter'
 import AppHeader from '../components/AppHeader'
 
 const styles = {
+	divider: {
+		my: 3,
+		borderColor: '#ccc',
+	},
 	centered: {
 		textAlign: 'center',
 		pt: 5,
@@ -25,6 +29,16 @@ const styles = {
 }
 
 const Home: NextPage = () => {
+	// const { contract } = useWeb3()
+
+	// useEffect(() => {
+	// 	try {
+	// 		console.log('Get contract details', contract)
+	// 	} catch (e: any) {
+	// 		console.error(e.message)
+	// 	}
+	// }, [contract])
+
 	return (
 		<>
 			<Head>
@@ -60,6 +74,13 @@ const Home: NextPage = () => {
 							</Button>
 						</Link>
 					</Box>
+					{/* <Divider light sx={styles.divider} />
+					<Typography variant="h2">NFTs</Typography>
+					<List>
+						<ListItem>
+							<ListItemText>Total Supply: {}</ListItemText>
+						</ListItem>
+					</List> */}
 				</Container>
 			</main>
 

@@ -42,7 +42,7 @@ module.exports = {
 			network_id: 1337,
 		},
 		// Mainnet
-		mainnet: getInfuraNetworkConfig('mainnet'),
+		// mainnet: getInfuraNetworkConfig('mainnet'),
 		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
 		kovan: getInfuraNetworkConfig('kovan'),
