@@ -28,7 +28,7 @@ type ProviderProps = {
 	children: ReactNode
 }
 
-// Rinkeby
+// Polygon Mumbai
 const NETWORK_ID = 80001
 
 // Create context
