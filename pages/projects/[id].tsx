@@ -312,6 +312,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		stems.forEach(ws => {
 			if (ws !== null) ws?.playPause()
 		})
+		// Toggle state
 		setIsPlayingAll(!isPlayingAll)
 	}
 
