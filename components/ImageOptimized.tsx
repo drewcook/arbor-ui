@@ -37,6 +37,7 @@ ImageOptimized.propTypes = {
 	alt: PropTypes.string,
 	width: PropTypes.number,
 	height: PropTypes.number,
+	sx: PropTypes.shape({}),
 }
 
 ImageOptimized.defaultProps = {

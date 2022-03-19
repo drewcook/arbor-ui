@@ -12,7 +12,7 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import EthereumIcon from '../../public/ethereum_icon.png'
+import EthereumIcon from '../../public/eth_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get, update } from '../../utils/http'
@@ -21,14 +21,14 @@ const styles = {
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		display: 'flex',
 		alignItems: 'center',
 	},
 	buyableChip: {
 		ml: 1,
 		textTransform: 'uppercase',
-		fontWeight: 900,
+		fontWeight: 800,
 		fontSize: '1rem',
 		backgroundColor: '#ff5200',
 		color: '#fff',
@@ -47,8 +47,11 @@ const styles = {
 		alignItems: 'center',
 	},
 	buyNowBtn: {
-		width: '9rem',
-		boxShadow: '5px 5px #23F09A',
+		fontWeight: 800,
+		fontStyle: 'italic',
+		fontSize: '1rem',
+		letterSpacing: '.5px',
+		color: '#111',
 	},
 	price: {
 		display: 'flex',
@@ -264,8 +267,8 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 													{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 												</Button>
 												<Box sx={styles.price}>
-													<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
-													<Typography variant="h4" component="div">
+													<ImageOptimized src={EthereumIcon} width={32} height={50} alt="Ethereum" />
+													<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 														{details.listPrice}{' '}
 														<Typography sx={styles.eth} component="span">
 															ETH
@@ -358,16 +361,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											</Link>
 										</Typography>
 									</Box>
-									<Link href={details.metadataUrl} passHref>
-										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
-											View NFT Metadata on IPFS
-										</Button>
-									</Link>
-									<Link href="ipfs://[cid]/blob" passHref>
-										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
-											Listen to the Music NFT
-										</Button>
-									</Link>
 								</Grid>
 								<Grid item xs={12} md={7}>
 									{contractData && (
@@ -396,6 +389,16 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											</Typography>
 										</Paper>
 									)}
+									<Link href={details.metadataUrl} passHref>
+										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
+											View NFT Metadata on IPFS
+										</Button>
+									</Link>
+									<Link href="ipfs://[cid]/blob" passHref>
+										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
+											Listen to the Music NFT
+										</Button>
+									</Link>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
@@ -405,6 +408,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									({details.collaborators.length})
 								</Typography>
 							</Typography>
+							<Typography sx={styles.sectionMeta}>This NFT was created by the following contributors</Typography>
 							{details.collaborators.length > 0 ? (
 								details.collaborators.map((collaborator: string, idx: number) => (
 									<Box sx={styles.collaborator} key={collaborator}>
@@ -415,7 +419,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									</Box>
 								))
 							) : (
-								<Typography sx={styles.noItemsMsg}>This NFT contains no collaborators.</Typography>
+								<Typography sx={styles.noItemsMsg}>This NFT contains no collaborators</Typography>
 							)}
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
@@ -424,7 +428,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									({details.samples.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>This NFT contains the following samples.</Typography>
+							<Typography sx={styles.sectionMeta}>This NFT contains the following samples</Typography>
 							<Grid container spacing={4}>
 								{details.samples.length > 0 ? (
 									details.samples.map((sample: any) => (
@@ -434,7 +438,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									))
 								) : (
 									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>This NFT contains no samples.</Typography>
+										<Typography sx={styles.noItemsMsg}>This NFT contains no samples</Typography>
 									</Grid>
 								)}
 							</Grid>
