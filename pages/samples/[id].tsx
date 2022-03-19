@@ -52,8 +52,9 @@ const styles = {
 		color: '#a8a8a8',
 	},
 	divider: {
-		my: 3,
-		borderColor: '#ccc',
+		mt: 3,
+		borderColor: '#000',
+		borderWidth: '2px',
 	},
 }
 
@@ -70,6 +71,10 @@ type SampleDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 	const { data } = props
+
+	const onWavesInit = (idx: number, ws: any) => {
+		console.log('onWavesInit()', { idx, ws })
+	}
 
 	return (
 		<>
@@ -118,7 +123,7 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 								</Typography>
 							</Box>
 							<Divider light sx={styles.divider} />
-							<SamplePlayer idx={1} details={data} showEyebrow={false} />
+							<SamplePlayer idx={1} details={data} onWavesInit={onWavesInit} onSolo={() => null} />
 						</>
 					) : (
 						// <SamplePlayer idx={1} details={data} />

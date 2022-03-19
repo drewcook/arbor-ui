@@ -10,14 +10,13 @@ const styles = {
 		minWidth: '200px',
 	},
 	cardMedia: {
-		backgroundColor: '#111',
-		borderBottom: '10px solid #4CE79D',
-		py: 3,
+		borderBottom: '3px solid #000',
+		py: 1,
 		px: 1.5,
 	},
 	cardMediaIcon: {
-		color: '#fff',
-		fontSize: '3rem',
+		color: '#000',
+		fontSize: '2rem',
 	},
 	detailItem: {
 		textTransform: 'uppercase',
@@ -33,6 +32,7 @@ const styles = {
 const propTypes = {
 	details: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		filename: PropTypes.string.isRequired,
 		filetype: PropTypes.string.isRequired,
@@ -43,12 +43,22 @@ const propTypes = {
 
 type SampleCardProps = PropTypes.InferProps<typeof propTypes>
 
+const stemTypesToColor: Record<string, string> = {
+	drums: '#FFA1A1',
+	bass: '#D6A1FF',
+	chords: '#FDFFA1',
+	melody: '#A1EEFF',
+	vocals: '#A1FFBB',
+	combo: '#FFA1F0',
+	other: '##FFC467',
+}
+
 const SampleCard = (props: SampleCardProps): JSX.Element => {
 	const { details } = props
 
 	return (
 		<Card sx={styles.card} elevation={2}>
-			<Box sx={styles.cardMedia}>
+			<Box sx={{ ...styles.cardMedia, backgroundColor: stemTypesToColor[details.type] || '#dadada' }}>
 				<AudioFileIcon sx={styles.cardMediaIcon} />
 			</Box>
 			<CardContent>

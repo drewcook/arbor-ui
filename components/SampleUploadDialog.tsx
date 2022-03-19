@@ -316,6 +316,7 @@ const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
 									{stemTypes.map(type => (
 										<MenuItem key={type.key} value={type.key} sx={styles.listItem}>
 											<ListItemIcon>
+												{/* @ts-ignore */}
 												<Box sx={{ ...styles.swatch, ...styles[type.styles] }} />
 											</ListItemIcon>
 											<ListItemText primary={type.displayName} />

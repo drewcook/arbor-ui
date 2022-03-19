@@ -57,6 +57,7 @@ const AppHeader = (): JSX.Element => {
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Link href="/" passHref>
+						{/* @ts-ignore */}
 						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
 							PolyEcho
 							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
@@ -101,6 +102,7 @@ const AppHeader = (): JSX.Element => {
 							))}
 						</Menu>
 						<Link href="/" passHref>
+							{/* @ts-ignore */}
 							<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
 								PolyEcho
 								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />

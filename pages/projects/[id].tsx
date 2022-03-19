@@ -1,5 +1,25 @@
-import { AddCircleOutline, Download, PauseRounded, PlayArrowRounded, Square } from '@mui/icons-material'
-import { Box, Button, Chip, CircularProgress, Container, Divider, Fab, IconButton, Typography } from '@mui/material'
+import {
+	AddCircleOutline,
+	Download,
+	PauseRounded,
+	Person,
+	PlayArrowRounded,
+	SkipPrevious,
+	Square,
+} from '@mui/icons-material'
+import {
+	Avatar,
+	AvatarGroup,
+	Box,
+	Button,
+	Chip,
+	CircularProgress,
+	Container,
+	Divider,
+	Fab,
+	IconButton,
+	Typography,
+} from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -68,8 +88,13 @@ const styles = {
 		backgroundColor: '#000',
 		color: '#fff',
 		boxShadow: 'none',
-		'&:hover': {
+		'&:hover, &.Mui-disabled': {
 			backgroundColor: '#444',
+			color: '#fff',
+		},
+		'&.Mui-disabled': {
+			cursor: 'not-allowed',
+			pointerEvents: 'none',
 		},
 	},
 	playAllIcon: {
@@ -142,7 +167,7 @@ const styles = {
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		px: 2,
+		px: 3,
 		py: 5,
 		mt: '60px',
 		position: 'relative',
@@ -156,6 +181,12 @@ const styles = {
 			top: '-60px',
 			left: '43px',
 		},
+		'.MuiAvatar-root': {
+			cursor: 'pointer',
+			'&:hover': {
+				backgroundColor: '#aaa',
+			},
+		},
 	},
 	stemsTitle: {
 		display: 'inline-block',
@@ -164,23 +195,23 @@ const styles = {
 		fontWeight: 400,
 		textTransform: 'uppercase',
 	},
-	stemsHistory: {
-		display: 'inline-block',
+	stemsMeta: {
+		display: 'flex',
+		alignItems: 'center',
 		fontStyle: 'italic',
-		fontWeight: 300,
 		textTransform: 'uppercase',
 	},
-	downloadAllWrap: {
-		flexGrow: 0,
+	avatarGroup: {
+		ml: 2,
 	},
-	downloadAllText: {
-		display: 'inline-block',
+	exportStemsBtn: {
 		fontStyle: 'italic',
 		fontWeight: 900,
 		textTransform: 'uppercase',
-	},
-	downloadAllBtn: {
 		color: '#fff',
+		'&:hover': {
+			color: '#4CE79D',
+		},
 	},
 	playSection: {
 		p: 2,
@@ -202,7 +233,11 @@ const styles = {
 	},
 	noSamplesMsg: {
 		textAlign: 'center',
-		marginY: 4,
+		py: 3,
+		px: 2,
+		border: '3px solid #000',
+		borderBottomLeftRadius: '10px',
+		borderBottomRightRadius: '10px',
 	},
 	addStemBtn: {
 		borderWidth: '3px',
@@ -257,6 +292,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
 	// Play/Pause
+	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	// Stem Upload
 	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
@@ -264,27 +300,47 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
 	const router = useRouter()
 
-	const handlePlayPauseAllSamples = () => {
-		// TODO: check if each sample is playing or not to prevent toggling each
-		document.querySelectorAll('button.samplePlayPauseBtn').forEach(el => {
-			const btn = el as HTMLElement
-			btn.click()
+	const onWavesInit = (idx: number, ws: any) => {
+		const tmp = new Map(stems.entries())
+		tmp.set(idx, ws)
+		setStems(tmp)
+	}
+
+	const handlePlayPauseStems = () => {
+		// Play or pause each stem audio from wavesurfer
+		stems.forEach(ws => {
+			if (ws !== null) ws?.playPause()
 		})
 		// Toggle state
 		setIsPlayingAll(!isPlayingAll)
 	}
 
+	const handleStop = () => {
+		// Stop playing all tracks
+		stems.forEach(ws => {
+			if (ws !== null) ws?.stop()
+		})
+		setIsPlayingAll(false)
+	}
+
+	const handleSkipBeginning = () => {
+		// Bring all tracks back to beginning
+		stems.forEach(ws => {
+			if (ws !== null) ws?.seekTo(0)
+		})
+	}
+
+	const handleSoloStem = (idx: number) => {
+		stems.forEach((ws, i) => {
+			if (ws !== null && i !== idx) {
+				ws?.setMute(!ws?.getMute())
+			}
+		})
+	}
+
 	// TODO: Fix downloading files
 	const handleDownloadAll = () => {
 		console.log('download all samples')
-	}
-
-	const handlePlay = () => {
-		console.log('play')
-	}
-
-	const handleStop = () => {
-		console.log('stop')
 	}
 
 	const handleUploadStemOpen = () => {
@@ -441,7 +497,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						<>
 							<Box sx={styles.headingWrap}>
 								<Box sx={styles.playAllWrap}>
-									<Fab size="large" onClick={handlePlayPauseAllSamples} sx={styles.playAllBtn}>
+									<Fab
+										size="large"
+										onClick={handlePlayPauseStems}
+										/* @ts-ignore */
+										sx={styles.playAllBtn}
+										disabled={details.samples.length === 0}
+									>
 										{isPlayingAll ? (
 											<PauseRounded sx={styles.playAllIcon} />
 										) : (
@@ -509,37 +571,60 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									)}
 								</Box>
 							</Box>
+							{/* @ts-ignore */}
 							<Box sx={styles.stemsHeader}>
 								<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
 									Song Stems
 								</Typography>
-								<Typography sx={styles.stemsHistory}>
-									{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
-									{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
-								</Typography>
-								<Box sx={styles.downloadAllWrap}>
-									<Typography sx={styles.downloadAllText} variant="body2">
-										Export Stems
+								<Box sx={styles.stemsMeta}>
+									<Typography>
+										{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
+										{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
 									</Typography>
-									<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll}>
-										<Download />
-									</IconButton>
+									<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
+										{details.collaborators.map(c => (
+											<Link key={c} href={`/users/${c}`} passHref>
+												<Avatar>
+													<Person />
+												</Avatar>
+											</Link>
+										))}
+									</AvatarGroup>
+								</Box>
+								<Box>
+									{/* @ts-ignore */}
+									<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
+										Export Stems
+									</Button>
 								</Box>
 							</Box>
 							{details.samples.length > 0 ? (
 								<>
 									<Box sx={styles.playSection}>
-										<IconButton sx={styles.playStopBtn} onClick={handlePlay} disableRipple disableFocusRipple>
-											<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+										<IconButton sx={styles.playStopBtn} onClick={handlePlayPauseStems} disableRipple disableFocusRipple>
+											{isPlayingAll ? (
+												<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+											) : (
+												<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+											)}
 										</IconButton>
 										<IconButton sx={styles.playStopBtn} onClick={handleStop} disableRipple disableFocusRipple>
 											<Square />
+										</IconButton>
+										<IconButton sx={styles.playStopBtn} onClick={handleSkipBeginning} disableRipple disableFocusRipple>
+											<SkipPrevious />
 										</IconButton>
 										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
 									</Box>
 									{details.samples.map((sample, idx) => (
 										<Fragment key={idx}>
-											<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} />
+											<SamplePlayer
+												idx={idx + 1}
+												details={sample}
+												onWavesInit={onWavesInit}
+												onSolo={handleSoloStem}
+												onFinish={() => setIsPlayingAll(false)}
+											/>
 										</Fragment>
 									))}
 								</>
@@ -556,6 +641,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						variant="outlined"
 						size="large"
 						onClick={handleUploadStemOpen}
+						/* @ts-ignore */
 						sx={styles.addStemBtn}
 						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
 					>
@@ -565,6 +651,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						open={uploadStemOpen}
 						onClose={handleUploadStemClose}
 						onSuccess={onStemUploadSuccess}
+						/* @ts-ignore */
 						projectDetails={details}
 					/>
 				</Container>

@@ -53,6 +53,9 @@ const styles = {
 		backgroundColor: '#fff',
 		textTransform: 'uppercase',
 		fontWeight: 900,
+		'&:hover': {
+			backgroundColor: '#f5f5f5',
+		},
 	},
 	playback: {
 		backgroundColor: '#f4f4f4',
@@ -64,16 +67,20 @@ const styles = {
 	},
 }
 
+// We have to pass back up callbacks because we use global controls outside of this player's track
 type SamplePlayerProps = {
 	idx: number
 	details: ISampleDoc | any
-	showEyebrow: boolean
+	onWavesInit: (idx: number, ws: any) => any
+	onSolo: (idx: number) => any
+	onFinish?: (idx: number) => any
 }
 
 const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
-	const { idx, details, showEyebrow } = props
+	const { idx, details, onWavesInit, onSolo, onFinish } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
+	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 
 	useEffect(() => {
 		const ws = WaveSurfer.create({
@@ -86,14 +93,18 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 			cursorWidth: 1,
 			height: 80,
 			barGap: 2,
-			plugins: [
-				// TimelinePlugin.create({
-				// 	container: `#timeline-${details._id}-${idx}`,
-				// }),
-			],
 		})
+		// Load audio from an XHR request
 		ws.load(details.audioHref)
+		// Skip back to zero when finished playing
+		ws.on('finish', () => {
+			ws.seekTo(0)
+			if (onFinish) onFinish(idx)
+		})
+
 		setWavesurfer(ws)
+		// Callback to the parent
+		onWavesInit(idx, ws)
 		return () => ws.destroy()
 	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
 
@@ -102,8 +113,9 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 		wavesurfer?.setMute(!wavesurfer?.getMute())
 	}
 
-	const handleSolo = () => {
-		console.log('solo this track')
+	const toggleSolo = () => {
+		setIsSoloed(!isSoloed)
+		onSolo(idx)
 	}
 
 	const stemTypesToColor: Record<string, string> = {
@@ -121,11 +133,6 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 			<Box sx={{ ...styles.header, backgroundColor: stemTypesToColor[details.type] || '#dadada' }}>
 				<Grid container spacing={2} sx={{ alignItems: 'center' }}>
 					<Grid item xs={10}>
-						{/* {showEyebrow && (
-							<Typography sx={styles.metadataSmall}>
-								<a href={`/samples/${details._id}`}>Stem {idx}</a>
-							</Typography>
-						)} */}
 						<Typography sx={styles.title} variant="h4">
 							{formatSampleName(details.name || details.filename)}
 						</Typography>
@@ -137,6 +144,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 						</Typography>
 					</Grid>
 					<Grid item xs={2} sx={{ textAlign: 'right' }}>
+						{/* @ts-ignore */}
 						<Button variant="outlined" size="small" sx={styles.forkBtn}>
 							Fork
 						</Button>
@@ -150,7 +158,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 							<Button variant={isMuted ? 'contained' : 'outlined'} size="small" onClick={toggleMute}>
 								M
 							</Button>
-							<Button variant="outlined" size="small" onClick={handleSolo}>
+							<Button variant={isSoloed ? 'contained' : 'outlined'} size="small" onClick={toggleSolo}>
 								S
 							</Button>
 						</ButtonGroup>

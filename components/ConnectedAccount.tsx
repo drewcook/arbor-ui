@@ -81,9 +81,7 @@ const ConnectedAccount = (): JSX.Element => {
 							</MenuItem>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
-						<Typography sx={styles.address} variant="body2">
-							{formatAddress(currentUser.address)}
-						</Typography>
+						<Typography variant="body2">{formatAddress(currentUser.address)}</Typography>
 					</>
 				)}
 			</Box>
