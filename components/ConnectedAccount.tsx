@@ -10,15 +10,19 @@ const styles = {
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 	},
-	button: {
-		color: '#fff',
-		boxShadow: '3px 3px #23F09A',
+	btn: {
+		borderColor: '#000',
+		borderWidth: '3px',
+		fontWeight: 600,
+		fontStyle: 'italic',
+		'&:hover': {
+			borderWidth: '3px',
+		},
 	},
 	avatar: {
-		marginRight: 0.5,
-	},
-	address: {
-		color: '#fff',
+		mr: 1,
+		p: 0,
+		border: '2px solid #000',
 	},
 }
 
@@ -38,7 +42,7 @@ const ConnectedAccount = (): JSX.Element => {
 		<>
 			<Box sx={styles.wrapper}>
 				{!connected || !currentUser ? (
-					<Button size="small" variant="contained" color="secondary" onClick={handleConnectWallet} sx={styles.button}>
+					<Button size="small" variant="outlined" color="primary" onClick={handleConnectWallet} sx={styles.btn}>
 						Connect Wallet
 					</Button>
 				) : (
@@ -79,9 +83,7 @@ const ConnectedAccount = (): JSX.Element => {
 							</MenuItem>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
-						<Typography sx={styles.address} variant="body2">
-							{formatAddress(currentUser.address)}
-						</Typography>
+						<Typography variant="body2">{formatAddress(currentUser.address)}</Typography>
 					</>
 				)}
 			</Box>

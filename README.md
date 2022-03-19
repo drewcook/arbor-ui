@@ -47,7 +47,7 @@ npm install
 Next, set up local environment variables by copying over the sample env. Run the following command:
 
 ```bash
-# unix
+# Unix
 cp sample.env .env.local
 # windows
 xcopy sample.env .env.local
@@ -74,6 +74,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 This client application is using the built-in Next.js API routes that read and write to a local Mongo database. Here are our recommended steps for getting up and running with a local MongoDB environemnt:
 
 ### 1. Install a MongoDB Host
+
+We recommend using [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/), because it is free and has all the necessary features.
 
 This will set up a host to run in the background on the machine. You can then connect to it via a number of methods when it is up.
 
@@ -102,7 +104,9 @@ The important bit is to **update your local environment variables** in the clien
 MONGODB_URI=mongodb://localhost/polyecho
 ```
 
-This may look different for windows users, but this will now allow the client app to work with a local database.
+This will now allow the client app to work with the local MongoDB instance, and you can now interact with it through Compass as a GUI.
+
+**NOTE:** You can always shut down the background `mongo` daemon that's running after using it. For Mac and Homebrew users, you can check that it's running with `brew services list`, and then you can shut it down with `brew services stop mongodb-community`. For Windows users, it would be `net stop MongoDB`, which is the default service name from the installer.
 
 ---
 

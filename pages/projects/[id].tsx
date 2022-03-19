@@ -1,5 +1,15 @@
-import { Download, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import {
+	AddCircleOutline,
+	Download,
+	PauseRounded,
+	Person,
+	PlayArrowRounded,
+	SkipPrevious,
+	Square,
+} from '@mui/icons-material'
+import {
+	Avatar,
+	AvatarGroup,
 	Box,
 	Button,
 	Chip,
@@ -7,7 +17,6 @@ import {
 	Container,
 	Divider,
 	Fab,
-	Grid,
 	IconButton,
 	Typography,
 } from '@mui/material'
@@ -18,18 +27,18 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
-import SampleDropzone from '../../components/SampleDropzone'
+import SampleUploadDialog from '../../components/SampleUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
-import type { IProjectDoc } from '../../models/project.model'
+import { IProjectDoc } from '../../models/project.model'
 import type { ISampleDoc } from '../../models/sample.model'
-import EthereumIcon from '../../public/ethereum_icon.png'
+import EthereumIcon from '../../public/eth_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
 
@@ -40,31 +49,69 @@ const styles = {
 		textAlign: 'center',
 		marginY: 4,
 	},
-	titleWrap: {
+	headingWrap: {
+		position: 'relative',
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'flex-start',
-		mb: 2,
-	},
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 900,
-		display: 'flex',
-		alignItems: 'center',
-	},
-	playAllBtn: {
-		mr: 2,
-		width: '80px',
-		height: '80px',
-		color: '#fff',
-		fontSize: '2rem',
 	},
 	createdBy: {
 		color: '#a8a8a8',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 300,
 		textTransform: 'uppercase',
+	},
+	title: {
+		mb: 1,
+		fontSize: '54px',
+	},
+	playAllWrap: {
+		mr: 2,
+		height: '100%',
+		width: '96px',
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '100%',
+			position: 'absolute',
+			bottom: '0',
+			left: '43px',
+		},
+	},
+	playAllBtn: {
+		position: 'absolute',
+		borderRadius: '10px',
+		top: 0,
+		width: '90px',
+		height: '90px',
+		backgroundColor: '#000',
+		color: '#fff',
+		boxShadow: 'none',
+		'&:hover, &.Mui-disabled': {
+			backgroundColor: '#444',
+			color: '#fff',
+		},
+		'&.Mui-disabled': {
+			cursor: 'not-allowed',
+			pointerEvents: 'none',
+		},
+	},
+	playAllIcon: {
+		fontSize: '4rem',
+	},
+	metadataWrap: {
+		mb: 1,
+	},
+	metadata: {
+		display: 'inline-block',
+		mr: 5,
+	},
+	metadataKey: {
+		mr: 0.5,
+		display: 'inline-block',
+		color: '#a8a8a8',
 	},
 	desc: {
 		color: '#777',
@@ -72,22 +119,9 @@ const styles = {
 		mb: 2,
 		fontWeight: 300,
 	},
-	metadataWrap: {
-		mb: 3,
-	},
-	metadata: {
-		display: 'inline-block',
-		mr: 5,
-	},
-	metadataKey: {
-		mr: 1,
-		display: 'inline-block',
-		color: '#a8a8a8',
-	},
 	tag: {
 		m: 1,
-		color: '#fff',
-		fontWeight: 500,
+		fontWeight: 400,
 	},
 	mintAndBuy: {
 		mt: 3,
@@ -96,8 +130,11 @@ const styles = {
 		alignItems: 'center',
 	},
 	mintAndBuyBtn: {
-		width: '9rem',
-		boxShadow: '5px 5px #23F09A',
+		fontWeight: 800,
+		fontStyle: 'italic',
+		fontSize: '2rem',
+		letterSpacing: '.5px',
+		color: '#111',
 	},
 	price: {
 		display: 'flex',
@@ -112,39 +149,116 @@ const styles = {
 		my: 3,
 		borderColor: '#ccc',
 	},
-	stemMetadata: {
-		mb: 4,
+	imgWrapper: {
+		border: '3px solid #000',
+		borderRadius: '10px',
+		overflow: 'clip',
+		maxHeight: '300px',
+		maxWidth: '300px',
+		m: 'auto',
+		'@media (min-width: 600px)': {
+			mr: 0,
+		},
 	},
-	stemHistoryTitle: {
+	stemsHeader: {
+		borderTopLeftRadius: '10px',
+		borderTopRightRadius: '10px',
+		backgroundColor: '#000',
+		color: '#fff',
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		px: 3,
+		py: 5,
+		mt: '60px',
+		position: 'relative',
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '60px',
+			position: 'absolute',
+			top: '-60px',
+			left: '43px',
+		},
+		'.MuiAvatar-root': {
+			cursor: 'pointer',
+			'&:hover': {
+				backgroundColor: '#aaa',
+			},
+		},
+	},
+	stemsTitle: {
+		display: 'inline-block',
 		fontSize: '2rem',
 		fontStyle: 'italic',
-		fontWeight: 400,
+		fontWeight: 600,
 		textTransform: 'uppercase',
 	},
-	stemHistoryMeta: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textTransform: 'uppercase',
-		color: '#777',
-	},
-	downloadAllWrap: {
+	stemsMeta: {
 		display: 'flex',
-		justifyContent: 'flex-end',
 		alignItems: 'center',
-		pt: 1,
-	},
-	downloadAllBtn: {
-		ml: 1,
-	},
-	downloadAllText: {
-		color: '#a8a8a8',
 		fontStyle: 'italic',
-		fontWeight: 900,
 		textTransform: 'uppercase',
+	},
+	avatarGroup: {
+		ml: 2,
+	},
+	exportStemsBtn: {
+		fontStyle: 'italic',
+		fontWeight: 800,
+		textTransform: 'uppercase',
+		color: '#fff',
+		'&:hover': {
+			color: '#4CE79D',
+		},
+	},
+	playSection: {
+		p: 2,
+		border: '3px solid #000',
+		// borderRight: '3px solid #000',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	playStopBtn: {
+		color: '#000',
+	},
+	playTracker: {
+		flexGrow: 1,
+		backgroundColor: '#eaeaea',
+		ml: 2,
+		p: 2,
+		textAlign: 'center',
 	},
 	noSamplesMsg: {
 		textAlign: 'center',
-		marginY: 4,
+		py: 3,
+		px: 2,
+		border: '3px solid #000',
+		borderBottomLeftRadius: '10px',
+		borderBottomRightRadius: '10px',
+	},
+	addStemBtn: {
+		borderWidth: '3px',
+		borderColor: '#111',
+		borderRadius: '5px',
+		fontWeight: 800,
+		mt: 4,
+		'&:hover': {
+			borderWidth: '3px',
+		},
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '35px', // margin top + 2px border
+			position: 'absolute',
+			top: '-35px',
+			left: '43px',
+		},
 	},
 }
 
@@ -167,42 +281,61 @@ type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
+	// Project details
 	const [details, setDetails] = useState(data)
-	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
-	const [minting, setMinting] = useState<boolean>(false)
+	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
+	// Minting
+	const [minting, setMinting] = useState<boolean>(false)
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
-	const [playPauseBtns, setPlayPauseBtns] = useState<HTMLElement[]>([])
+	// Play/Pause
+	const [stems, setStems] = useState<Map<number, any>>(new Map())
+	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
+	// Stem Upload
+	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
+	// Other
 	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
 	const router = useRouter()
 
-	useEffect(() => {
-		setAllPlayPauseBtns()
-	}, [])
+	const onWavesInit = (idx: number, ws: any) => {
+		const tmp = new Map(stems.entries())
+		tmp.set(idx, ws)
+		setStems(tmp)
+	}
 
-	useEffect(() => {
-		// Update all sample targets for Play/Pause All feature
-		setAllPlayPauseBtns()
-	}, [details])
-
-	const handlePlayPauseAllSamples = () => {
-		// Loop through play pause btns and click each one
-		playPauseBtns.forEach(btn => btn.click())
-		// Toggle state
+	const handlePlayPauseStems = () => {
+		// Play or pause each stem audio from wavesurfer
+		stems.forEach(ws => {
+			if (ws !== null) ws?.playPause()
+		})
 		setIsPlayingAll(!isPlayingAll)
 	}
 
-	const setAllPlayPauseBtns = () => {
-		const btns: HTMLElement[] = []
-		document.querySelectorAll('button.samplePlayPauseBtn').forEach(el => {
-			const btn = el as HTMLElement
-			btns.push(btn)
+	const handleStop = () => {
+		// Stop playing all tracks
+		stems.forEach(ws => {
+			if (ws !== null) ws?.stop()
 		})
-		setPlayPauseBtns(btns)
+		setIsPlayingAll(false)
+	}
+
+	const handleSkipBeginning = () => {
+		// Bring all tracks back to beginning
+		stems.forEach(ws => {
+			if (ws !== null) ws?.seekTo(0)
+		})
+	}
+
+	const handleSoloStem = (idx: number) => {
+		stems.forEach((ws, i) => {
+			if (ws !== null && i !== idx) {
+				ws?.setMute(!ws?.getMute())
+			}
+		})
 	}
 
 	const handleDownloadAll = async () => {
@@ -225,11 +358,20 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		}
 	}
 
-	const onUploadSuccess = (projectData: IProjectDoc) => {
+	const handleUploadStemOpen = () => {
+		setUploadStemOpen(true)
+	}
+
+	const handleUploadStemClose = () => {
+		setUploadStemOpen(false)
+	}
+
+	const onStemUploadSuccess = (projectData: IProjectDoc) => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
-		setSuccessMsg('Successfully uploaded file to NFT.storage!')
+		setSuccessMsg("Success! You've uploaded a new stem to this project and become a contributor.")
+		handleUploadStemClose()
 	}
 
 	// TODO: Keep track of minted versions and how many mints a project has undergone
@@ -326,13 +468,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!successOpen) setSuccessOpen(true)
 				setSuccessMsg('Success! You now own this music NFT, redirecting...')
 				setMinting(false)
+				setMintingMsg('')
 
 				// Route to user's profile page
 				router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
 			console.error(e)
-
 			// Notify error
 			setMintingOpen(false)
 			setMintingMsg('')
@@ -368,49 +510,57 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				<Container maxWidth="xl">
 					{details ? (
 						<>
-							<Grid container spacing={4}>
-								<Grid item xs={12} md={8}>
+							<Box sx={styles.headingWrap}>
+								<Box sx={styles.playAllWrap}>
+									<Fab
+										size="large"
+										onClick={handlePlayPauseStems}
+										/* @ts-ignore */
+										sx={styles.playAllBtn}
+										disabled={details.samples.length === 0}
+									>
+										{isPlayingAll ? (
+											<PauseRounded sx={styles.playAllIcon} />
+										) : (
+											<PlayArrowRounded sx={styles.playAllIcon} />
+										)}
+									</Fab>
+								</Box>
+								<Box>
 									<Box>
-										<Box sx={styles.titleWrap}>
-											<Fab size="large" onClick={handlePlayPauseAllSamples} sx={styles.playAllBtn} color="primary">
-												{isPlayingAll ? <PauseRounded fontSize="large" /> : <PlayArrowRounded fontSize="large" />}
-											</Fab>
-											<Box>
-												<Typography variant="h4" component="h2" sx={styles.title}>
-													{details.name}
-												</Typography>
-												<Typography sx={styles.createdBy}>
-													Created by{' '}
-													<Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
-												</Typography>
-											</Box>
-										</Box>
-										<Typography sx={styles.desc}>{details.description}</Typography>
-										<Box sx={styles.metadataWrap}>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													BPM:
-												</Typography>
-												{details.bpm}
-											</Typography>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Time Box:
-												</Typography>
-												{details.timeboxMins} Minutes
-											</Typography>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Open To:
-												</Typography>
-												Anyone
-											</Typography>
-										</Box>
+										<Typography sx={styles.createdBy}>
+											Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
+										</Typography>
+										<Typography variant="h4" component="h2" sx={styles.title}>
+											{details.name}
+										</Typography>
 									</Box>
+									<Box sx={styles.metadataWrap}>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												BPM
+											</Typography>
+											{details.bpm}
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Time Box
+											</Typography>
+											{details.timeboxMins} Minutes
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Open To
+											</Typography>
+											Anyone
+										</Typography>
+									</Box>
+									<Typography sx={styles.desc}>{details.description}</Typography>
 									{details.tags.length > 0 &&
 										details.tags.map((tag: string) => (
-											<Chip key={tag} label={tag} variant="filled" color="secondary" sx={styles.tag} />
+											<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
 										))}
+									<Divider sx={styles.divider} />
 									{details.samples.length > 0 && (
 										<Box sx={styles.mintAndBuy}>
 											<Button
@@ -424,8 +574,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
 											</Button>
 											<Box sx={styles.price}>
-												<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
-												<Typography variant="h4" component="div">
+												<ImageOptimized src={EthereumIcon} width={32} height={50} alt="Ethereum" />
+												<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 													0.01{' '}
 													<Typography sx={styles.eth} component="span">
 														ETH
@@ -434,41 +584,65 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											</Box>
 										</Box>
 									)}
-								</Grid>
-								<Grid item xs={12} md={4}>
-									<SampleDropzone project={details} onSuccess={onUploadSuccess} />
-								</Grid>
-							</Grid>
-							<Divider light sx={styles.divider} />
-							<Box sx={styles.stemMetadata}>
-								<Grid container spacing={3}>
-									<Grid item xs={12} sm={4}>
-										<Typography variant="h4" component="h3" sx={styles.stemHistoryTitle}>
-											Stem History
-										</Typography>
-										<Typography sx={styles.stemHistoryMeta}>
-											{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
-											{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
-										</Typography>
-									</Grid>
-									<Grid item xs={12} sm={8}>
-										<Box sx={styles.downloadAllWrap}>
-											<Typography sx={styles.downloadAllText} variant="body2">
-												Download All Stems
-											</Typography>
-											<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll} color="primary">
-												<Download />
-											</IconButton>
-										</Box>
-									</Grid>
-								</Grid>
+								</Box>
+							</Box>
+							{/* @ts-ignore */}
+							<Box sx={styles.stemsHeader}>
+								<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
+									Song Stems
+								</Typography>
+								<Box sx={styles.stemsMeta}>
+									<Typography>
+										{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
+										{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
+									</Typography>
+									<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
+										{details.collaborators.map(c => (
+											<Link key={c} href={`/users/${c}`} passHref>
+												<Avatar>
+													<Person />
+												</Avatar>
+											</Link>
+										))}
+									</AvatarGroup>
+								</Box>
+								<Box>
+									{/* @ts-ignore */}
+									<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
+										Export Stems
+									</Button>
+								</Box>
 							</Box>
 							{details.samples.length > 0 ? (
-								details.samples.map((sample, idx) => (
-									<Fragment key={idx}>
-										<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} />
-									</Fragment>
-								))
+								<>
+									<Box sx={styles.playSection}>
+										<IconButton sx={styles.playStopBtn} onClick={handlePlayPauseStems} disableRipple disableFocusRipple>
+											{isPlayingAll ? (
+												<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+											) : (
+												<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+											)}
+										</IconButton>
+										<IconButton sx={styles.playStopBtn} onClick={handleStop} disableRipple disableFocusRipple>
+											<Square />
+										</IconButton>
+										<IconButton sx={styles.playStopBtn} onClick={handleSkipBeginning} disableRipple disableFocusRipple>
+											<SkipPrevious />
+										</IconButton>
+										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
+									</Box>
+									{details.samples.map((sample, idx) => (
+										<Fragment key={idx}>
+											<SamplePlayer
+												idx={idx + 1}
+												details={sample}
+												onWavesInit={onWavesInit}
+												onSolo={handleSoloStem}
+												onFinish={() => setIsPlayingAll(false)}
+											/>
+										</Fragment>
+									))}
+								</>
 							) : (
 								<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
 							)}
@@ -478,6 +652,23 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							Sorry, no details were found for this project.
 						</Typography>
 					)}
+					<Button
+						variant="outlined"
+						size="large"
+						onClick={handleUploadStemOpen}
+						/* @ts-ignore */
+						sx={styles.addStemBtn}
+						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+					>
+						Add Stem
+					</Button>
+					<SampleUploadDialog
+						open={uploadStemOpen}
+						onClose={handleUploadStemClose}
+						onSuccess={onStemUploadSuccess}
+						/* @ts-ignore */
+						projectDetails={details}
+					/>
 				</Container>
 			</main>
 

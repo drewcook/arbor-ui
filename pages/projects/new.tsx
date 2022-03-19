@@ -15,7 +15,7 @@ const styles = {
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
