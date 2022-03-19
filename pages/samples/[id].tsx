@@ -1,4 +1,6 @@
-import { Box, Container, Divider, Typography } from '@mui/material'
+import { Loop, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
+import { Box, Container, Divider, Fab, Typography } from '@mui/material'
+import { useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -18,6 +20,74 @@ const styles = {
 	error: {
 		textAlign: 'center',
 		marginY: 4,
+	},
+	headingWrap: {
+		position: 'relative',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+	},
+	playWrap: {
+		mr: 2,
+		height: '100%',
+		width: '96px',
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '100%',
+			position: 'absolute',
+			bottom: '0',
+			left: '43px',
+		},
+	},
+	playBtn: {
+		position: 'absolute',
+		borderRadius: '10px',
+		top: 0,
+		width: '90px',
+		height: '90px',
+		backgroundColor: '#000',
+		color: '#fff',
+		boxShadow: 'none',
+		'&:hover, &.Mui-disabled': {
+			backgroundColor: '#444',
+			color: '#fff',
+		},
+		'&.Mui-disabled': {
+			cursor: 'not-allowed',
+			pointerEvents: 'none',
+		},
+	},
+	playIcon: {
+		fontSize: '4rem',
+	},
+	loopBtn: {
+		position: 'absolute',
+		borderRadius: '6px',
+		top: 110,
+		left: 26,
+		width: '36px',
+		height: '36px',
+		backgroundColor: '#000',
+		color: '#fff',
+		boxShadow: 'none',
+		'&:hover, &.Mui-disabled': {
+			backgroundColor: '#444',
+			color: '#fff',
+		},
+		'&.Mui-disabled': {
+			cursor: 'not-allowed',
+			pointerEvents: 'none',
+		},
+		'&.looping': {
+			backgroundColor: '#4CE79D',
+			color: '#000',
+		},
+	},
+	loopIcon: {
+		fontSize: '1.25rem',
 	},
 	title: {
 		textTransform: 'uppercase',
@@ -52,9 +122,8 @@ const styles = {
 		color: '#a8a8a8',
 	},
 	divider: {
-		mt: 3,
 		borderColor: '#000',
-		borderWidth: '2px',
+		borderWidth: '1.5px',
 	},
 }
 
@@ -71,10 +140,45 @@ type SampleDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 	const { data } = props
+	const [waves, setWaves] = useState<any>(null)
+	const [isPlaying, setIsPlaying] = useState<boolean>(false)
+	const [isLooping, setIsLooping] = useState<boolean>(false)
 
-	const onWavesInit = (idx: number, ws: any) => {
-		console.log('onWavesInit()', { idx, ws })
+	const onWavesInit = (idx: number, ws: any) => setWaves(ws)
+
+	const handlePlayPauseStems = () => {
+		// Play or pause the stem audio from wavesurfer
+		if (waves) waves.playPause()
+		// Toggle state
+		setIsPlaying(!isPlaying)
 	}
+
+	// Called when
+	const handleLoopReplay = (idx: number, ws: any) => {
+		// TODO: This logic seems inverted, why??
+		if (!isLooping) {
+			ws.play(0)
+			setIsPlaying(true)
+		} else {
+			setIsPlaying(false)
+		}
+	}
+
+	const handleSkipPrev = () => {
+		// Bring the track back to beginning
+		if (waves) waves.seekTo(0)
+	}
+
+	const handleStop = () => {
+		// Stop playing the track
+		if (waves) waves.stop()
+		// Toggle state
+		setIsPlaying(false)
+	}
+
+	// const handleDownload = () => {
+	// 	console.log('download stem')
+	// }
 
 	return (
 		<>
@@ -91,42 +195,77 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 
 			<main id="app-main">
 				<Container maxWidth="xl">
-					<Typography variant="body1" component="h3" sx={styles.eyebrow}>
-						Sample Details
-					</Typography>
-					<Typography variant="h4" component="h2" sx={styles.title}>
-						{data ? formatSampleName(data.filename) : 'PolyEcho Sample'}
-					</Typography>
-					{data ? (
-						<>
-							<Typography sx={styles.desc}>
-								This is a PolyEcho sample that has been uploaded through our platform and is stored using NFT.storage.
+					<Box sx={styles.headingWrap}>
+						<Box sx={styles.playWrap}>
+							<Fab
+								size="large"
+								onClick={handlePlayPauseStems}
+								/* @ts-ignore */
+								sx={styles.playBtn}
+								title={isPlaying ? 'Pause the stem' : 'Play the stem'}
+							>
+								{isPlaying ? <PauseRounded sx={styles.playIcon} /> : <PlayArrowRounded sx={styles.playIcon} />}
+							</Fab>
+							{/* <Fab
+								size="large"
+								onClick={() => setIsLooping(!isLooping)}
+								// @ts-ignore
+								sx={styles.loopBtn}
+								className={isLooping ? 'looping' : ''}
+								title={isLooping ? 'Unloop the playback' : 'Loop the playback'}
+							>
+								<Loop sx={styles.loopIcon} />
+							</Fab> */}
+						</Box>
+						<Box>
+							<Typography variant="body1" component="h3" sx={styles.eyebrow}>
+								Sample Details
 							</Typography>
-							<Box sx={styles.metadataWrap}>
-								<Typography sx={styles.metadata}>
-									<Typography component="span" sx={styles.metadataKey}>
-										File Type:
+							<Typography variant="h4" component="h2" sx={styles.title}>
+								{data ? formatSampleName(data.filename) : 'PolyEcho Sample'}
+							</Typography>
+							{data && (
+								<>
+									<Typography sx={styles.desc}>
+										This is a PolyEcho sample that has been uploaded through our platform and is stored using
+										NFT.storage.
 									</Typography>
-									{data.filetype}
-								</Typography>
-								<Typography sx={styles.metadata}>
-									<Typography component="span" sx={styles.metadataKey}>
-										Stored At:
-									</Typography>
-									<Link href={data.metadataUrl}>View on IPFS</Link>
-								</Typography>
-								<Typography sx={styles.metadata}>
-									<Typography component="span" sx={styles.metadataKey}>
-										Created On:
-									</Typography>
-									{formatDate(data.createdAt)}
-								</Typography>
-							</Box>
-							<Divider light sx={styles.divider} />
-							<SamplePlayer idx={1} details={data} onWavesInit={onWavesInit} onSolo={() => null} />
-						</>
+									<Box sx={styles.metadataWrap}>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												File Type:
+											</Typography>
+											{data.filetype}
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Stored At:
+											</Typography>
+											<Link href={data.metadataUrl}>View on IPFS</Link>
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Created On:
+											</Typography>
+											{formatDate(data.createdAt)}
+										</Typography>
+									</Box>
+								</>
+							)}
+						</Box>
+					</Box>
+					<Divider light sx={styles.divider} />
+					{data ? (
+						<SamplePlayer
+							idx={1}
+							details={data}
+							onWavesInit={onWavesInit}
+							onFinish={handleLoopReplay}
+							isStemDetails
+							onSkipPrev={handleSkipPrev}
+							onStop={handleStop}
+						/>
 					) : (
-						// <SamplePlayer idx={1} details={data} />
 						<Typography sx={styles.error} color="error">
 							Sorry, no details were found for this sample.
 						</Typography>

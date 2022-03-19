@@ -1,3 +1,4 @@
+import { SkipPrevious, Square } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -72,12 +73,15 @@ type SamplePlayerProps = {
 	idx: number
 	details: ISampleDoc | any
 	onWavesInit: (idx: number, ws: any) => any
-	onSolo: (idx: number) => any
-	onFinish?: (idx: number) => any
+	onFinish?: (idx: number, ws: any) => any
+	isStemDetails?: boolean
+	onSolo?: (idx: number) => any
+	onSkipPrev?: () => any
+	onStop?: () => any
 }
 
 const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
-	const { idx, details, onWavesInit, onSolo, onFinish } = props
+	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
@@ -99,7 +103,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 		// Skip back to zero when finished playing
 		ws.on('finish', () => {
 			ws.seekTo(0)
-			if (onFinish) onFinish(idx)
+			if (onFinish) onFinish(idx, ws)
 		})
 
 		setWavesurfer(ws)
@@ -115,7 +119,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 
 	const toggleSolo = () => {
 		setIsSoloed(!isSoloed)
-		onSolo(idx)
+		if (onSolo) onSolo(idx)
 	}
 
 	const stemTypesToColor: Record<string, string> = {
@@ -155,12 +159,35 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 				<Grid container spacing={1}>
 					<Grid item xs={1} sx={styles.btnsWrap}>
 						<ButtonGroup sx={styles.btnGroup} orientation="vertical">
-							<Button variant={isMuted ? 'contained' : 'outlined'} size="small" onClick={toggleMute}>
-								M
-							</Button>
-							<Button variant={isSoloed ? 'contained' : 'outlined'} size="small" onClick={toggleSolo}>
-								S
-							</Button>
+							{isStemDetails ? (
+								<>
+									<Button size="small" onClick={onSkipPrev} title="Skip to beginning">
+										<SkipPrevious />
+									</Button>
+									<Button size="small" onClick={onStop} title="Stop stem">
+										<Square fontSize="small" />
+									</Button>
+								</>
+							) : (
+								<>
+									<Button
+										variant={isMuted ? 'contained' : 'outlined'}
+										size="small"
+										onClick={toggleMute}
+										title="Mute stem"
+									>
+										M
+									</Button>
+									<Button
+										variant={isSoloed ? 'contained' : 'outlined'}
+										size="small"
+										onClick={toggleSolo}
+										title="Solo stem"
+									>
+										S
+									</Button>
+								</>
+							)}
 						</ButtonGroup>
 					</Grid>
 					<Grid item xs={11}>
@@ -171,6 +198,10 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 			</Box>
 		</Box>
 	)
+}
+
+SamplePlayer.defaultProps = {
+	isStemDetails: false,
 }
 
 export default SamplePlayer

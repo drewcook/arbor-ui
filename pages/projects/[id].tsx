@@ -323,7 +323,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setIsPlayingAll(false)
 	}
 
-	const handleSkipBeginning = () => {
+	const handleSkipPrev = () => {
 		// Bring all tracks back to beginning
 		stems.forEach(ws => {
 			if (ws !== null) ws?.seekTo(0)
@@ -611,7 +611,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										<IconButton sx={styles.playStopBtn} onClick={handleStop} disableRipple disableFocusRipple>
 											<Square />
 										</IconButton>
-										<IconButton sx={styles.playStopBtn} onClick={handleSkipBeginning} disableRipple disableFocusRipple>
+										<IconButton sx={styles.playStopBtn} onClick={handleSkipPrev} disableRipple disableFocusRipple>
 											<SkipPrevious />
 										</IconButton>
 										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
@@ -622,8 +622,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												idx={idx + 1}
 												details={sample}
 												onWavesInit={onWavesInit}
-												onSolo={handleSoloStem}
 												onFinish={() => setIsPlayingAll(false)}
+												onSolo={handleSoloStem}
 											/>
 										</Fragment>
 									))}
