@@ -37,7 +37,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
-import EthereumIcon from '../../public/eth4.png'
+import EthereumIcon from '../../public/eth_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
 
