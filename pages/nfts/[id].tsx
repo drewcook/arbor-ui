@@ -12,7 +12,7 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import EthereumIcon from '../../public/eth_icon.png'
+import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get, update } from '../../utils/http'
@@ -267,11 +267,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 													{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 												</Button>
 												<Box sx={styles.price}>
-													<ImageOptimized src={EthereumIcon} width={32} height={50} alt="Ethereum" />
+													<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
 													<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 														{details.listPrice}{' '}
 														<Typography sx={styles.eth} component="span">
-															ETH
+															MATIC
 														</Typography>
 													</Typography>
 												</Box>
@@ -282,11 +282,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 												<Box sx={styles.buyNowListing}>
 													<ListNftDialog unlist={true} nft={data} onListSuccess={handleListSuccess} />
 													<Box sx={styles.price}>
-														<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
+														<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
 														<Typography variant="h4" component="div">
 															{details.listPrice}{' '}
 															<Typography sx={styles.eth} component="span">
-																ETH
+																MATIC
 															</Typography>
 														</Typography>
 													</Box>

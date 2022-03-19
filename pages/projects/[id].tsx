@@ -37,7 +37,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
-import EthereumIcon from '../../public/eth_icon.png'
+import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
 
@@ -559,11 +559,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
 											</Button>
 											<Box sx={styles.price}>
-												<ImageOptimized src={EthereumIcon} width={32} height={50} alt="Ethereum" />
+												<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
 												<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 													0.01{' '}
 													<Typography sx={styles.eth} component="span">
-														ETH
+														MATIC
 													</Typography>
 												</Typography>
 											</Box>
