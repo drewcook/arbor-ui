@@ -111,7 +111,7 @@ const AppHeader = (): JSX.Element => {
 						</Link>
 					</Box>
 
-					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', textAlign: 'center' } }}>
 						{pages.map(page => (
 							<Link key={page.href} href={page.href} passHref>
 								<Button key={page.href} sx={{ my: 2, color: 'white', display: 'block' }}>
