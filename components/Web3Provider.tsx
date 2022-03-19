@@ -29,7 +29,7 @@ type ProviderProps = {
 }
 
 // Rinkeby
-const NETWORK_ID = 4
+const NETWORK_ID = 80001
 
 // Create context
 // @ts-ignore
