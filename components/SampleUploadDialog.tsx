@@ -2,6 +2,7 @@ import { Close } from '@mui/icons-material'
 import {
 	Box,
 	Button,
+	CircularProgress,
 	Dialog,
 	DialogContent,
 	DialogContentText,
@@ -101,6 +102,9 @@ const styles = {
 		fontWeight: 800,
 		fontStyle: 'italic',
 		textTransform: 'uppercase',
+	},
+	loadingIcon: {
+		my: 0.4,
 	},
 	swatchDrums: {
 		backgroundColor: '#FFA1A1',
@@ -332,7 +336,7 @@ const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
 								sx={styles.submitBtn}
 								disabled={disableUpload}
 							>
-								Upload
+								{loading ? <CircularProgress size={20} sx={styles.loadingIcon} /> : 'Upload'}
 							</Button>
 						</Grid>
 					</Grid>

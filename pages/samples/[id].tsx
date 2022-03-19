@@ -123,7 +123,9 @@ const styles = {
 	},
 	divider: {
 		borderColor: '#000',
-		borderWidth: '1.5px',
+		borderWidth: '10px',
+		borderTopLeftRadius: '10px',
+		borderTopRightRadius: '10px',
 	},
 }
 

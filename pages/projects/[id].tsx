@@ -134,6 +134,7 @@ const styles = {
 		fontSize: '2rem',
 		letterSpacing: '.5px',
 		color: '#111',
+		width: '225px',
 	},
 	price: {
 		display: 'flex',
@@ -556,7 +557,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												sx={styles.mintAndBuyBtn}
 												disabled={minting || details.samples.length < 2}
 											>
-												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
+												{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
 											</Button>
 											<Box sx={styles.price}>
 												<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
