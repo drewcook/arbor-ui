@@ -98,7 +98,7 @@ const styles = {
 		border: '1px solid #aaa',
 	},
 	submitBtn: {
-		fontWeight: 900,
+		fontWeight: 800,
 		fontStyle: 'italic',
 		textTransform: 'uppercase',
 	},

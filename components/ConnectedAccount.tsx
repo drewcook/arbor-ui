@@ -13,14 +13,16 @@ const styles = {
 	btn: {
 		borderColor: '#000',
 		borderWidth: '3px',
-		fontWeight: 300,
+		fontWeight: 600,
 		fontStyle: 'italic',
 		'&:hover': {
 			borderWidth: '3px',
 		},
 	},
 	avatar: {
-		marginRight: 0.5,
+		mr: 1,
+		p: 0,
+		border: '2px solid #000',
 	},
 }
 

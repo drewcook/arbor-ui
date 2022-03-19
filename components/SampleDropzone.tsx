@@ -18,7 +18,7 @@ const styles = {
 	uploadText: {
 		textAlign: 'center',
 		fontSize: '1.25rem',
-		fontWeight: 500,
+		fontWeight: 600,
 		mb: 2,
 	},
 	uploadMeta: {

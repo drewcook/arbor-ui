@@ -21,14 +21,14 @@ const styles = {
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		display: 'flex',
 		alignItems: 'center',
 	},
 	buyableChip: {
 		ml: 1,
 		textTransform: 'uppercase',
-		fontWeight: 900,
+		fontWeight: 800,
 		fontSize: '1rem',
 		backgroundColor: '#ff5200',
 		color: '#fff',
@@ -87,7 +87,7 @@ const styles = {
 	},
 	sectionMeta: {
 		fontStyle: 'italic',
-		// fontWeight: 300,
+		fontWeight: 300,
 		textTransform: 'uppercase',
 		color: '#777',
 		mb: 2,
@@ -408,6 +408,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									({details.collaborators.length})
 								</Typography>
 							</Typography>
+							<Typography sx={styles.sectionMeta}>This NFT was created by the following contributors</Typography>
 							{details.collaborators.length > 0 ? (
 								details.collaborators.map((collaborator: string, idx: number) => (
 									<Box sx={styles.collaborator} key={collaborator}>
@@ -418,7 +419,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									</Box>
 								))
 							) : (
-								<Typography sx={styles.noItemsMsg}>This NFT contains no collaborators.</Typography>
+								<Typography sx={styles.noItemsMsg}>This NFT contains no collaborators</Typography>
 							)}
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
@@ -427,7 +428,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									({details.samples.length})
 								</Typography>
 							</Typography>
-							<Typography gutterBottom>This NFT contains the following samples.</Typography>
+							<Typography sx={styles.sectionMeta}>This NFT contains the following samples</Typography>
 							<Grid container spacing={4}>
 								{details.samples.length > 0 ? (
 									details.samples.map((sample: any) => (
@@ -437,7 +438,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									))
 								) : (
 									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>This NFT contains no samples.</Typography>
+										<Typography sx={styles.noItemsMsg}>This NFT contains no samples</Typography>
 									</Grid>
 								)}
 							</Grid>

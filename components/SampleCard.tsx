@@ -21,7 +21,7 @@ const styles = {
 	detailItem: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
-		fontWeight: 700,
+		fontWeight: 600,
 		mb: 1,
 	},
 	actions: {

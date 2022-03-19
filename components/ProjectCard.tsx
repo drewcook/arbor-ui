@@ -20,7 +20,7 @@ const styles = {
 	collaborators: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
-		fontWeight: 700,
+		fontWeight: 600,
 		mb: 1,
 	},
 	description: {

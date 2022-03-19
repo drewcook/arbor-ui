@@ -57,7 +57,7 @@ const styles = {
 	createdBy: {
 		color: '#a8a8a8',
 		fontStyle: 'italic',
-		fontWeight: 100,
+		fontWeight: 300,
 		textTransform: 'uppercase',
 	},
 	title: {
@@ -120,7 +120,7 @@ const styles = {
 	},
 	tag: {
 		m: 1,
-		fontWeight: 500,
+		fontWeight: 400,
 	},
 	mintAndBuy: {
 		mt: 3,
@@ -192,7 +192,7 @@ const styles = {
 		display: 'inline-block',
 		fontSize: '2rem',
 		fontStyle: 'italic',
-		fontWeight: 400,
+		fontWeight: 600,
 		textTransform: 'uppercase',
 	},
 	stemsMeta: {
@@ -206,7 +206,7 @@ const styles = {
 	},
 	exportStemsBtn: {
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		textTransform: 'uppercase',
 		color: '#fff',
 		'&:hover': {
@@ -243,7 +243,7 @@ const styles = {
 		borderWidth: '3px',
 		borderColor: '#111',
 		borderRadius: '5px',
-		fontWeight: 900,
+		fontWeight: 800,
 		mt: 4,
 		'&:hover': {
 			borderWidth: '3px',

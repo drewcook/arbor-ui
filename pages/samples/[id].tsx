@@ -22,7 +22,7 @@ const styles = {
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		mb: 2,
 		display: 'flex',
 		alignItems: 'center',

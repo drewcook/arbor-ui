@@ -9,7 +9,7 @@ import ImageOptimized from './ImageOptimized'
 const styles = {
 	buyableChip: {
 		textTransform: 'uppercase',
-		fontWeight: 900,
+		fontWeight: 800,
 		fontSize: '1rem',
 		position: 'absolute',
 		top: '1.5rem',
@@ -37,7 +37,7 @@ const styles = {
 	detailItem: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
-		fontWeight: 700,
+		fontWeight: 600,
 		mb: 1,
 	},
 	actions: {

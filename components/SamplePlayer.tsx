@@ -32,7 +32,7 @@ const styles = {
 		display: 'inline-block',
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		wordBreak: 'break-all',
 	},
 	addedBy: {
@@ -45,14 +45,14 @@ const styles = {
 	addressLink: {
 		color: '#000',
 		fontSize: '.9rem',
-		fontWeight: 700,
+		fontWeight: 600,
 		display: 'inline-block',
 		verticalAlign: 'middle',
 	},
 	forkBtn: {
 		backgroundColor: '#fff',
 		textTransform: 'uppercase',
-		fontWeight: 900,
+		fontWeight: 800,
 		'&:hover': {
 			backgroundColor: '#f5f5f5',
 		},
