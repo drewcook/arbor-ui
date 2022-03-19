@@ -1,4 +1,3 @@
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic'
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
@@ -20,21 +19,12 @@ const styles = {
 		backgroundColor: '#ff5200',
 		py: 2.5,
 		color: '#fff',
+		zIndex: 1,
 	},
 	card: {
 		position: 'relative',
 		minWidth: '200px',
 		overflow: 'visible',
-	},
-	cardMedia: {
-		backgroundColor: '#111',
-		borderBottom: '10px solid #4CE79D',
-		py: 1,
-		px: 1.5,
-	},
-	cardMediaIcon: {
-		color: '#fff',
-		fontSize: '2rem',
 	},
 	projectIconLink: {
 		ml: 1,
@@ -88,9 +78,6 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 		<>
 			<Card sx={styles.card} elevation={2}>
 				{details.isListed && <Chip label="Listed For Sale!" size="medium" sx={styles.buyableChip} />}
-				<Box sx={styles.cardMedia}>
-					<LibraryMusicIcon sx={styles.cardMediaIcon} />
-				</Box>
 				<CardContent>
 					<Box className="nft-card-media">
 						<ImageOptimized
@@ -115,26 +102,13 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					<Typography variant="body2" sx={styles.detailItem}>
 						Collaborators: {details.collaborators.length}
 					</Typography>
-					<Typography variant="body2" sx={styles.detailItem}>
-						Samples: {details.samples.length}
-					</Typography>
-					<Typography variant="body2" sx={styles.detailItem}>
-						Block #:{' '}
-						<Link href={`https://rinkeby.etherscan.io/block/${details.token.data.blockNumber}`}>View on Etherscan</Link>
-					</Typography>
-					<Typography variant="body2" sx={styles.detailItem}>
-						Tx Hash:{' '}
-						<Link href={`https://rinkeby.etherscan.io/tx/${details.token.data.transactionHash}`}>
-							View on Etherscan
-						</Link>
-					</Typography>
 				</CardContent>
 				<CardActions sx={styles.actions}>
 					{details.isListed ? (
 						<Box sx={styles.buyNowPrice}>
 							<Box sx={styles.price}>
-								<ImageOptimized src={EthereumIcon} width={30} height={30} alt="Ethereum" />
-								<Typography variant="h5" component="div">
+								<ImageOptimized src={EthereumIcon} width={16} height={26} alt="Ethereum" />
+								<Typography variant="h5" component="div" sx={{ ml: 0.75 }}>
 									{details.listPrice}{' '}
 									<Typography sx={styles.eth} component="span">
 										ETH

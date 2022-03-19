@@ -47,8 +47,11 @@ const styles = {
 		alignItems: 'center',
 	},
 	buyNowBtn: {
-		width: '9rem',
-		boxShadow: '5px 5px #23F09A',
+		fontWeight: 800,
+		fontStyle: 'italic',
+		fontSize: '1rem',
+		letterSpacing: '.5px',
+		color: '#111',
 	},
 	price: {
 		display: 'flex',
@@ -84,7 +87,7 @@ const styles = {
 	},
 	sectionMeta: {
 		fontStyle: 'italic',
-		fontWeight: 300,
+		// fontWeight: 300,
 		textTransform: 'uppercase',
 		color: '#777',
 		mb: 2,
@@ -264,8 +267,8 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 													{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 												</Button>
 												<Box sx={styles.price}>
-													<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
-													<Typography variant="h4" component="div">
+													<ImageOptimized src={EthereumIcon} width={32} height={50} alt="Ethereum" />
+													<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 														{details.listPrice}{' '}
 														<Typography sx={styles.eth} component="span">
 															ETH
@@ -358,16 +361,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											</Link>
 										</Typography>
 									</Box>
-									<Link href={details.metadataUrl} passHref>
-										<Button color="secondary" variant="contained" fullWidth size="large" sx={styles.btn}>
-											View NFT Metadata on IPFS
-										</Button>
-									</Link>
-									<Link href="ipfs://[cid]/blob" passHref>
-										<Button color="secondary" variant="contained" fullWidth size="large" sx={styles.btn}>
-											Listen to the Music NFT
-										</Button>
-									</Link>
 								</Grid>
 								<Grid item xs={12} md={7}>
 									{contractData && (
@@ -396,6 +389,16 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											</Typography>
 										</Paper>
 									)}
+									<Link href={details.metadataUrl} passHref>
+										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
+											View NFT Metadata on IPFS
+										</Button>
+									</Link>
+									<Link href="ipfs://[cid]/blob" passHref>
+										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
+											Listen to the Music NFT
+										</Button>
+									</Link>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
@@ -424,7 +427,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									({details.samples.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>This NFT contains the following samples.</Typography>
+							<Typography gutterBottom>This NFT contains the following samples.</Typography>
 							<Grid container spacing={4}>
 								{details.samples.length > 0 ? (
 									details.samples.map((sample: any) => (
