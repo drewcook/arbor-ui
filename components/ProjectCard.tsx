@@ -9,13 +9,13 @@ const styles = {
 	},
 	cardMedia: {
 		backgroundColor: '#111',
-		borderBottom: '10px solid #4CE79D',
-		py: 3,
+		borderBottom: '3px solid #4CE79D',
+		py: 1,
 		px: 1.5,
 	},
 	cardMediaIcon: {
 		color: '#fff',
-		fontSize: '3rem',
+		fontSize: '2rem',
 	},
 	collaborators: {
 		textTransform: 'uppercase',
