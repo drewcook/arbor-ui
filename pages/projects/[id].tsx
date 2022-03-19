@@ -1,16 +1,5 @@
-import { Download, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import {
-	Box,
-	Button,
-	Chip,
-	CircularProgress,
-	Container,
-	Divider,
-	Fab,
-	Grid,
-	IconButton,
-	Typography,
-} from '@mui/material'
+import { AddCircleOutline, Download, PauseRounded, PlayArrowRounded, Square } from '@mui/icons-material'
+import { Box, Button, Chip, CircularProgress, Container, Divider, Fab, IconButton, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -28,7 +17,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
-import EthereumIcon from '../../public/ethereum_icon.png'
+import EthereumIcon from '../../public/eth4.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
 
@@ -39,31 +28,64 @@ const styles = {
 		textAlign: 'center',
 		marginY: 4,
 	},
-	titleWrap: {
+	headingWrap: {
+		position: 'relative',
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'flex-start',
-		mb: 2,
-	},
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 900,
-		display: 'flex',
-		alignItems: 'center',
-	},
-	playAllBtn: {
-		mr: 2,
-		width: '80px',
-		height: '80px',
-		color: '#fff',
-		fontSize: '2rem',
 	},
 	createdBy: {
 		color: '#a8a8a8',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 100,
 		textTransform: 'uppercase',
+	},
+	title: {
+		mb: 1,
+		fontSize: '54px',
+	},
+	playAllWrap: {
+		mr: 2,
+		height: '100%',
+		width: '96px',
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '100%',
+			position: 'absolute',
+			bottom: '0',
+			left: '43px',
+		},
+	},
+	playAllBtn: {
+		position: 'absolute',
+		borderRadius: '10px',
+		top: 0,
+		width: '90px',
+		height: '90px',
+		backgroundColor: '#000',
+		color: '#fff',
+		boxShadow: 'none',
+		'&:hover': {
+			backgroundColor: '#444',
+		},
+	},
+	playAllIcon: {
+		fontSize: '4rem',
+	},
+	metadataWrap: {
+		mb: 1,
+	},
+	metadata: {
+		display: 'inline-block',
+		mr: 5,
+	},
+	metadataKey: {
+		mr: 0.5,
+		display: 'inline-block',
+		color: '#a8a8a8',
 	},
 	desc: {
 		color: '#777',
@@ -71,21 +93,8 @@ const styles = {
 		mb: 2,
 		fontWeight: 300,
 	},
-	metadataWrap: {
-		mb: 3,
-	},
-	metadata: {
-		display: 'inline-block',
-		mr: 5,
-	},
-	metadataKey: {
-		mr: 1,
-		display: 'inline-block',
-		color: '#a8a8a8',
-	},
 	tag: {
 		m: 1,
-		color: '#fff',
 		fontWeight: 500,
 	},
 	mintAndBuy: {
@@ -95,8 +104,11 @@ const styles = {
 		alignItems: 'center',
 	},
 	mintAndBuyBtn: {
-		width: '9rem',
-		boxShadow: '5px 5px #23F09A',
+		fontWeight: 800,
+		fontStyle: 'italic',
+		fontSize: '2rem',
+		letterSpacing: '.5px',
+		color: '#111',
 	},
 	price: {
 		display: 'flex',
@@ -111,39 +123,106 @@ const styles = {
 		my: 3,
 		borderColor: '#ccc',
 	},
-	stemMetadata: {
-		mb: 4,
+	imgWrapper: {
+		border: '3px solid #000',
+		borderRadius: '10px',
+		overflow: 'clip',
+		maxHeight: '300px',
+		maxWidth: '300px',
+		m: 'auto',
+		'@media (min-width: 600px)': {
+			mr: 0,
+		},
 	},
-	stemHistoryTitle: {
+	stemsHeader: {
+		borderTopLeftRadius: '10px',
+		borderTopRightRadius: '10px',
+		backgroundColor: '#000',
+		color: '#fff',
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		px: 2,
+		py: 5,
+		mt: '60px',
+		position: 'relative',
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '60px',
+			position: 'absolute',
+			top: '-60px',
+			left: '43px',
+		},
+	},
+	stemsTitle: {
+		display: 'inline-block',
 		fontSize: '2rem',
 		fontStyle: 'italic',
 		fontWeight: 400,
 		textTransform: 'uppercase',
 	},
-	stemHistoryMeta: {
+	stemsHistory: {
+		display: 'inline-block',
 		fontStyle: 'italic',
 		fontWeight: 300,
 		textTransform: 'uppercase',
-		color: '#777',
 	},
 	downloadAllWrap: {
-		display: 'flex',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		pt: 1,
-	},
-	downloadAllBtn: {
-		ml: 1,
+		flexGrow: 0,
 	},
 	downloadAllText: {
-		color: '#a8a8a8',
+		display: 'inline-block',
 		fontStyle: 'italic',
 		fontWeight: 900,
 		textTransform: 'uppercase',
 	},
+	downloadAllBtn: {
+		color: '#fff',
+	},
+	playSection: {
+		p: 2,
+		border: '3px solid #000',
+		// borderRight: '3px solid #000',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	playStopBtn: {
+		color: '#000',
+	},
+	playTracker: {
+		flexGrow: 1,
+		backgroundColor: '#eaeaea',
+		ml: 2,
+		p: 2,
+		textAlign: 'center',
+	},
 	noSamplesMsg: {
 		textAlign: 'center',
 		marginY: 4,
+	},
+	addStemBtn: {
+		borderWidth: '3px',
+		borderColor: '#111',
+		borderRadius: '5px',
+		fontWeight: 900,
+		mt: 4,
+		'&:hover': {
+			borderWidth: '3px',
+		},
+		'&::before': {
+			content: '""',
+			display: 'block',
+			backgroundColor: '#000',
+			width: '3px',
+			height: '35px', // margin top + 2px border
+			position: 'absolute',
+			top: '-35px',
+			left: '43px',
+		},
 	},
 }
 
@@ -200,6 +279,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		console.log('download all samples')
 	}
 
+	const handlePlay = () => {
+		console.log('play')
+	}
+
+	const handleStop = () => {
+		console.log('stop')
+	}
+
 	const handleUploadStemOpen = () => {
 		setUploadStemOpen(true)
 	}
@@ -212,7 +299,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
-		setSuccessMsg('Successfully uploaded file to NFT.storage!')
+		setSuccessMsg("Success! You've uploaded a new stem to this project and become a contributor.")
+		handleUploadStemClose()
 	}
 
 	// TODO: Keep track of minted versions and how many mints a project has undergone
@@ -309,13 +397,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!successOpen) setSuccessOpen(true)
 				setSuccessMsg('Success! You now own this music NFT, redirecting...')
 				setMinting(false)
+				setMintingMsg('')
 
 				// Route to user's profile page
 				router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
 			console.error(e)
-
 			// Notify error
 			setMintingOpen(false)
 			setMintingMsg('')
@@ -351,49 +439,51 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				<Container maxWidth="xl">
 					{details ? (
 						<>
-							<Grid container spacing={4}>
-								<Grid item xs={12} md={8}>
+							<Box sx={styles.headingWrap}>
+								<Box sx={styles.playAllWrap}>
+									<Fab size="large" onClick={handlePlayPauseAllSamples} sx={styles.playAllBtn}>
+										{isPlayingAll ? (
+											<PauseRounded sx={styles.playAllIcon} />
+										) : (
+											<PlayArrowRounded sx={styles.playAllIcon} />
+										)}
+									</Fab>
+								</Box>
+								<Box>
 									<Box>
-										<Box sx={styles.titleWrap}>
-											<Fab size="large" onClick={handlePlayPauseAllSamples} sx={styles.playAllBtn} color="primary">
-												{isPlayingAll ? <PauseRounded fontSize="large" /> : <PlayArrowRounded fontSize="large" />}
-											</Fab>
-											<Box>
-												<Typography variant="h4" component="h2" sx={styles.title}>
-													{details.name}
-												</Typography>
-												<Typography sx={styles.createdBy}>
-													Created by{' '}
-													<Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
-												</Typography>
-											</Box>
-										</Box>
-										<Typography sx={styles.desc}>{details.description}</Typography>
-										<Box sx={styles.metadataWrap}>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													BPM:
-												</Typography>
-												{details.bpm}
-											</Typography>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Time Box:
-												</Typography>
-												{details.timeboxMins} Minutes
-											</Typography>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Open To:
-												</Typography>
-												Anyone
-											</Typography>
-										</Box>
+										<Typography sx={styles.createdBy}>
+											Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
+										</Typography>
+										<Typography variant="h4" component="h2" sx={styles.title}>
+											{details.name}
+										</Typography>
 									</Box>
+									<Box sx={styles.metadataWrap}>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												BPM
+											</Typography>
+											{details.bpm}
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Time Box
+											</Typography>
+											{details.timeboxMins} Minutes
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Open To
+											</Typography>
+											Anyone
+										</Typography>
+									</Box>
+									<Typography sx={styles.desc}>{details.description}</Typography>
 									{details.tags.length > 0 &&
 										details.tags.map((tag: string) => (
-											<Chip key={tag} label={tag} variant="filled" color="secondary" sx={styles.tag} />
+											<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
 										))}
+									<Divider sx={styles.divider} />
 									{details.samples.length > 0 && (
 										<Box sx={styles.mintAndBuy}>
 											<Button
@@ -407,8 +497,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												{minting ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Mint & Buy'}
 											</Button>
 											<Box sx={styles.price}>
-												<ImageOptimized src={EthereumIcon} width={50} height={50} alt="Ethereum" />
-												<Typography variant="h4" component="div">
+												<ImageOptimized src={EthereumIcon} width={32} height={50} alt="Ethereum" />
+												<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 													0.01{' '}
 													<Typography sx={styles.eth} component="span">
 														ETH
@@ -417,46 +507,42 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											</Box>
 										</Box>
 									)}
-								</Grid>
-								<Grid item xs={12} md={4}>
-									<ImageOptimized
-										src="https://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link/"
-										alt="PolyEcho NFT"
-										width={400}
-										height={400}
-									/>
-								</Grid>
-							</Grid>
-							<Divider light sx={styles.divider} />
-							<Box sx={styles.stemMetadata}>
-								<Grid container spacing={3}>
-									<Grid item xs={12} sm={4}>
-										<Typography variant="h4" component="h3" sx={styles.stemHistoryTitle}>
-											Stem History
-										</Typography>
-										<Typography sx={styles.stemHistoryMeta}>
-											{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
-											{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
-										</Typography>
-									</Grid>
-									<Grid item xs={12} sm={8}>
-										<Box sx={styles.downloadAllWrap}>
-											<Typography sx={styles.downloadAllText} variant="body2">
-												Download All Stems
-											</Typography>
-											<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll} color="primary">
-												<Download />
-											</IconButton>
-										</Box>
-									</Grid>
-								</Grid>
+								</Box>
+							</Box>
+							<Box sx={styles.stemsHeader}>
+								<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
+									Song Stems
+								</Typography>
+								<Typography sx={styles.stemsHistory}>
+									{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
+									{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
+								</Typography>
+								<Box sx={styles.downloadAllWrap}>
+									<Typography sx={styles.downloadAllText} variant="body2">
+										Export Stems
+									</Typography>
+									<IconButton sx={styles.downloadAllBtn} onClick={handleDownloadAll}>
+										<Download />
+									</IconButton>
+								</Box>
 							</Box>
 							{details.samples.length > 0 ? (
-								details.samples.map((sample, idx) => (
-									<Fragment key={idx}>
-										<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} />
-									</Fragment>
-								))
+								<>
+									<Box sx={styles.playSection}>
+										<IconButton sx={styles.playStopBtn} onClick={handlePlay} disableRipple disableFocusRipple>
+											<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+										</IconButton>
+										<IconButton sx={styles.playStopBtn} onClick={handleStop} disableRipple disableFocusRipple>
+											<Square />
+										</IconButton>
+										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
+									</Box>
+									{details.samples.map((sample, idx) => (
+										<Fragment key={idx}>
+											<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} />
+										</Fragment>
+									))}
+								</>
 							) : (
 								<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
 							)}
@@ -466,7 +552,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							Sorry, no details were found for this project.
 						</Typography>
 					)}
-					<Button variant="outlined" size="large" color="info" onClick={handleUploadStemOpen}>
+					<Button
+						variant="outlined"
+						size="large"
+						onClick={handleUploadStemOpen}
+						sx={styles.addStemBtn}
+						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+					>
 						Add Stem
 					</Button>
 					<SampleUploadDialog

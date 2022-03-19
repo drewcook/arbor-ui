@@ -10,12 +10,13 @@ const styles = {
 		minWidth: '200px',
 	},
 	cardMedia: {
-		backgroundColor: '#23F09A',
+		backgroundColor: '#111',
+		borderBottom: '10px solid #4CE79D',
 		py: 3,
 		px: 1.5,
 	},
 	cardMediaIcon: {
-		color: '#000',
+		color: '#fff',
 		fontSize: '3rem',
 	},
 	detailItem: {

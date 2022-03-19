@@ -8,7 +8,8 @@ const styles = {
 		minWidth: '200px',
 	},
 	cardMedia: {
-		backgroundColor: '#0500ff',
+		backgroundColor: '#111',
+		borderBottom: '10px solid #4CE79D',
 		py: 3,
 		px: 1.5,
 	},

@@ -10,7 +10,7 @@ import {
 	Typography,
 } from '@mui/material'
 import CoinbaseIcon from '../public/coinbasewallet_icon.png'
-import EthereumIcon from '../public/ethereum_icon.png'
+import EthereumIcon from '../public/ethereum_vector.png'
 import MetaMaskIcon from '../public/metamask_icon.png'
 import PortisIcon from '../public/portis_icon.png'
 import TallyIcon from '../public/tally_icon.svg'

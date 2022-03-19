@@ -2,7 +2,7 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic'
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
-import EthereumIcon from '../public/ethereum_icon.png'
+import EthereumIcon from '../public/ethereum_vector.png'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
@@ -13,11 +13,12 @@ const styles = {
 		fontWeight: 900,
 		fontSize: '1rem',
 		position: 'absolute',
-		top: '5rem',
+		top: '1.5rem',
 		right: '-1rem',
 		// backgroundColor: '#91ff00',
 		// backgroundColor: '#d1ff00',
 		backgroundColor: '#ff5200',
+		py: 2.5,
 		color: '#fff',
 	},
 	card: {
@@ -26,13 +27,14 @@ const styles = {
 		overflow: 'visible',
 	},
 	cardMedia: {
-		backgroundColor: '#23bcda',
-		py: 3,
+		backgroundColor: '#111',
+		borderBottom: '10px solid #4CE79D',
+		py: 1,
 		px: 1.5,
 	},
 	cardMediaIcon: {
 		color: '#fff',
-		fontSize: '3rem',
+		fontSize: '2rem',
 	},
 	projectIconLink: {
 		ml: 1,
@@ -85,7 +87,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 	return (
 		<>
 			<Card sx={styles.card} elevation={2}>
-				{details.isListed && <Chip label="Listed For Sale!" size="medium" color="primary" sx={styles.buyableChip} />}
+				{details.isListed && <Chip label="Listed For Sale!" size="medium" sx={styles.buyableChip} />}
 				<Box sx={styles.cardMedia}>
 					<LibraryMusicIcon sx={styles.cardMediaIcon} />
 				</Box>
@@ -128,7 +130,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					</Typography>
 				</CardContent>
 				<CardActions sx={styles.actions}>
-					{details.isListed && (
+					{details.isListed ? (
 						<Box sx={styles.buyNowPrice}>
 							<Box sx={styles.price}>
 								<ImageOptimized src={EthereumIcon} width={30} height={30} alt="Ethereum" />
@@ -140,6 +142,8 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 								</Typography>
 							</Box>
 						</Box>
+					) : (
+						<Box /> // To force justify-between
 					)}
 					<Link href={`/nfts/${details._id}`} passHref>
 						<Button color="secondary">View Details</Button>

@@ -1,6 +1,10 @@
 import mongoose, { Document } from 'mongoose'
 
+export type SampleType = 'drums' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
+
 export interface ISample {
+	name: string
+	type: SampleType
 	metadataUrl: string
 	audioUrl: string
 	audioHref: string
@@ -14,6 +18,14 @@ export interface ISampleDoc extends Document, ISample {}
 
 export const sampleSchema = new mongoose.Schema<ISampleDoc>(
 	{
+		name: {
+			type: String,
+			required: true,
+		},
+		type: {
+			type: String,
+			required: true,
+		},
 		metadataUrl: {
 			type: String,
 			required: true,

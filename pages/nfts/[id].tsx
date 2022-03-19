@@ -12,7 +12,7 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import SampleCard from '../../components/SampleCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import EthereumIcon from '../../public/ethereum_icon.png'
+import EthereumIcon from '../../public/ethereum_vector.png'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get, update } from '../../utils/http'
@@ -359,12 +359,12 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										</Typography>
 									</Box>
 									<Link href={details.metadataUrl} passHref>
-										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
+										<Button color="secondary" variant="contained" fullWidth size="large" sx={styles.btn}>
 											View NFT Metadata on IPFS
 										</Button>
 									</Link>
 									<Link href="ipfs://[cid]/blob" passHref>
-										<Button color="secondary" variant="outlined" fullWidth size="large" sx={styles.btn}>
+										<Button color="secondary" variant="contained" fullWidth size="large" sx={styles.btn}>
 											Listen to the Music NFT
 										</Button>
 									</Link>
