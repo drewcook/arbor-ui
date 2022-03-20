@@ -165,7 +165,7 @@ const NewProjectPage: NextPage = () => {
 						type="number"
 						value={timeboxMins}
 						onChange={e => setTimeboxMins(parseInt(e.target.value))}
-						placeholder="Set a maximum limit on how long samples should be."
+						placeholder="Set a maximum limit on how long stems should be."
 						fullWidth
 					/>
 					<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />

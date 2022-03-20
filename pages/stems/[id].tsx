@@ -1,20 +1,20 @@
-import { Loop, PauseRounded, PlayArrowRounded } from '@mui/icons-material'
+import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import { Box, Container, Divider, Fab, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
-// Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
+// Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import { ISampleDoc } from '../../models/sample.model'
+import { IStemDoc } from '../../models/stem.model'
 import formatDate from '../../utils/formatDate'
-import formatSampleName from '../../utils/formatSampleName'
+import formatStemName from '../../utils/formatStemName'
 import { get } from '../../utils/http'
 
-const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
+const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
 const styles = {
 	error: {
@@ -138,13 +138,13 @@ const propTypes = {
 	}),
 }
 
-type SampleDetailsPageProps = PropTypes.InferProps<typeof propTypes>
+type StemDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
-const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
+const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 	const { data } = props
 	const [waves, setWaves] = useState<any>(null)
 	const [isPlaying, setIsPlaying] = useState<boolean>(false)
-	const [isLooping, setIsLooping] = useState<boolean>(false)
+	// const [isLooping, setIsLooping] = useState<boolean>(false)
 
 	const onWavesInit = (idx: number, ws: any) => setWaves(ws)
 
@@ -156,15 +156,15 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 	}
 
 	// Called when
-	const handleLoopReplay = (idx: number, ws: any) => {
-		// TODO: This logic seems inverted, why??
-		if (!isLooping) {
-			ws.play(0)
-			setIsPlaying(true)
-		} else {
-			setIsPlaying(false)
-		}
-	}
+	// const handleLoopReplay = (idx: number, ws: any) => {
+	// 	// TODO: This logic seems inverted, why??
+	// 	if (!isLooping) {
+	// 		ws.play(0)
+	// 		setIsPlaying(true)
+	// 	} else {
+	// 		setIsPlaying(false)
+	// 	}
+	// }
 
 	const handleSkipPrev = () => {
 		// Bring the track back to beginning
@@ -185,7 +185,7 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Sample Details</title>
+				<title>PolyEcho | Stem Details</title>
 				<meta
 					name="description"
 					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
@@ -221,16 +221,15 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 						</Box>
 						<Box>
 							<Typography variant="body1" component="h3" sx={styles.eyebrow}>
-								Sample Details
+								Stem Details
 							</Typography>
 							<Typography variant="h4" component="h2" sx={styles.title}>
-								{data ? formatSampleName(data.filename) : 'PolyEcho Sample'}
+								{data ? formatStemName(data.filename) : 'PolyEcho Stem'}
 							</Typography>
 							{data && (
 								<>
 									<Typography sx={styles.desc}>
-										This is a PolyEcho sample that has been uploaded through our platform and is stored using
-										NFT.storage.
+										This is a PolyEcho stem that has been uploaded through our platform and is stored using NFT.storage.
 									</Typography>
 									<Box sx={styles.metadataWrap}>
 										<Typography sx={styles.metadata}>
@@ -258,7 +257,7 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 					</Box>
 					<Divider light sx={styles.divider} />
 					{data ? (
-						<SamplePlayer
+						<StemPlayer
 							idx={1}
 							details={data}
 							onWavesInit={onWavesInit}
@@ -269,7 +268,7 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 						/>
 					) : (
 						<Typography sx={styles.error} color="error">
-							Sorry, no details were found for this sample.
+							Sorry, no details were found for this stem.
 						</Typography>
 					)}
 				</Container>
@@ -280,12 +279,12 @@ const SampleDetailsPage: NextPage<SampleDetailsPageProps> = props => {
 	)
 }
 
-SampleDetailsPage.propTypes = propTypes
+StemDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	const sampleId = context.query.id
-	const res = await get(`/samples/${sampleId}`)
-	const data: ISampleDoc | null = res.success ? res.data : null
+	const stemId = context.query.id
+	const res = await get(`/stems/${stemId}`)
+	const data: IStemDoc | null = res.success ? res.data : null
 	return {
 		props: {
 			data,
@@ -293,4 +292,4 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	}
 }
 
-export default SampleDetailsPage
+export default StemDetailsPage

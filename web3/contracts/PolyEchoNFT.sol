@@ -62,7 +62,7 @@ contract PolyEchoNFT is ERC721, Ownable {
         return tokenIdToUri[tokenId];
     }
 
-		// Both mints a new token and pays out value equally to sample contributors
+		// Both mints a new token and pays out value equally to stem contributors
     function mintAndBuy(
         address _buyer,
         string calldata _metadataURI,

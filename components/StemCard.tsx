@@ -3,7 +3,7 @@ import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/ma
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import formatAddress from '../utils/formatAddress'
-import formatSampleName from '../utils/formatSampleName'
+import formatStemName from '../utils/formatStemName'
 
 const styles = {
 	card: {
@@ -41,7 +41,7 @@ const propTypes = {
 	}).isRequired,
 }
 
-type SampleCardProps = PropTypes.InferProps<typeof propTypes>
+type StemCardProps = PropTypes.InferProps<typeof propTypes>
 
 const stemTypesToColor: Record<string, string> = {
 	drums: '#FFA1A1',
@@ -53,7 +53,7 @@ const stemTypesToColor: Record<string, string> = {
 	other: '##FFC467',
 }
 
-const SampleCard = (props: SampleCardProps): JSX.Element => {
+const StemCard = (props: StemCardProps): JSX.Element => {
 	const { details } = props
 
 	return (
@@ -63,7 +63,7 @@ const SampleCard = (props: SampleCardProps): JSX.Element => {
 			</Box>
 			<CardContent>
 				<Typography variant="h5" gutterBottom>
-					{formatSampleName(details.filename)}
+					{formatStemName(details.filename)}
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
 					Creator: <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
@@ -76,7 +76,7 @@ const SampleCard = (props: SampleCardProps): JSX.Element => {
 				</Typography>
 			</CardContent>
 			<CardActions sx={styles.actions}>
-				<Link href={`/samples/${details._id}`} passHref>
+				<Link href={`/stems/${details._id}`} passHref>
 					<Button color="primary">View Details</Button>
 				</Link>
 			</CardActions>
@@ -84,6 +84,6 @@ const SampleCard = (props: SampleCardProps): JSX.Element => {
 	)
 }
 
-SampleCard.propTypes = propTypes
+StemCard.propTypes = propTypes
 
-export default SampleCard
+export default StemCard

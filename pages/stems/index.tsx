@@ -4,8 +4,8 @@ import Head from 'next/head'
 import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
-import SampleCard from '../../components/SampleCard'
-import type { ISampleDoc } from '../../models/sample.model'
+import StemCard from '../../components/StemCard'
+import type { IStemDoc } from '../../models/stem.model'
 import { get } from '../../utils/http'
 
 const styles = {
@@ -42,9 +42,9 @@ const propTypes = {
 	),
 }
 
-type SamplesPageProps = PropTypes.InferProps<typeof propTypes>
+type StemsPageProps = PropTypes.InferProps<typeof propTypes>
 
-const SamplesPage: NextPage<SamplesPageProps> = props => {
+const StemsPage: NextPage<StemsPageProps> = props => {
 	const { data } = props
 
 	return (
@@ -68,20 +68,20 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 								Plunge Into The StemPool
 							</Typography>
 							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the marketplace for unique music stems and samples, upload your own, or grab a few and start a
-								new project with them.
+								Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
+								with them.
 							</Typography>
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
-									{data.map((sample: any) => (
-										<Grid item sm={6} md={4} key={sample._id}>
-											<SampleCard details={sample} />
+									{data.map((stem: any) => (
+										<Grid item sm={6} md={4} key={stem._id}>
+											<StemCard details={stem} />
 										</Grid>
 									))}
 								</Grid>
 							) : (
 								<Box sx={styles.noProjects}>
-									<Typography sx={styles.noProjectsMsg}>No samples to show. Upload one!</Typography>
+									<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>
 								</Box>
 							)}
 						</>
@@ -96,12 +96,12 @@ const SamplesPage: NextPage<SamplesPageProps> = props => {
 	)
 }
 
-SamplesPage.propTypes = propTypes
+StemsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
-	// Get all Samples
-	const res = await get(`/samples`)
-	const data: ISampleDoc[] | null = res.success ? res.data : null
+	// Get all Stems
+	const res = await get(`/stems`)
+	const data: IStemDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,
@@ -109,4 +109,4 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	}
 }
 
-export default SamplesPage
+export default StemsPage

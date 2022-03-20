@@ -3,12 +3,12 @@ import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
-import type { ISampleDoc } from '../models/sample.model'
+import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
-import formatSampleName from '../utils/formatSampleName'
+import formatStemName from '../utils/formatStemName'
 
 const styles = {
-	sample: {
+	stem: {
 		borderLeft: '3px solid #000',
 		borderRight: '3px solid #000',
 		borderBottom: '3px solid #111',
@@ -69,9 +69,9 @@ const styles = {
 }
 
 // We have to pass back up callbacks because we use global controls outside of this player's track
-type SamplePlayerProps = {
+type StemPlayerProps = {
 	idx: number
-	details: ISampleDoc | any
+	details: IStemDoc | any
 	onWavesInit: (idx: number, ws: any) => any
 	onFinish?: (idx: number, ws: any) => any
 	isStemDetails?: boolean
@@ -80,7 +80,7 @@ type SamplePlayerProps = {
 	onStop?: () => any
 }
 
-const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
+const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
@@ -133,12 +133,12 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 	}
 
 	return (
-		<Box sx={styles.sample}>
+		<Box sx={styles.stem}>
 			<Box sx={{ ...styles.header, backgroundColor: stemTypesToColor[details.type] || '#dadada' }}>
 				<Grid container spacing={2} sx={{ alignItems: 'center' }}>
 					<Grid item xs={10}>
 						<Typography sx={styles.title} variant="h4">
-							{formatSampleName(details.name || details.filename)}
+							{formatStemName(details.name || details.filename)}
 						</Typography>
 						<Typography sx={styles.addedBy}>
 							Added X hours ago by{' '}
@@ -200,8 +200,8 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 	)
 }
 
-SamplePlayer.defaultProps = {
+StemPlayer.defaultProps = {
 	isStemDetails: false,
 }
 
-export default SamplePlayer
+export default StemPlayer

@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					name,
 					projectId,
 					collaborators,
-					samples,
+					stems,
 				} = body
 				const payload: INft = {
 					createdBy,
@@ -44,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					name,
 					projectId,
 					collaborators,
-					samples,
+					stems,
 				}
 
 				/* create a new model in the database */

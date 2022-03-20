@@ -10,7 +10,7 @@ import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
-import SampleCard from '../../components/SampleCard'
+import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
@@ -147,7 +147,7 @@ const propTypes = {
 		name: PropTypes.string.isRequired,
 		projectId: PropTypes.string.isRequired,
 		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-		samples: PropTypes.arrayOf(
+		stems: PropTypes.arrayOf(
 			PropTypes.shape({
 				_id: PropTypes.string.isRequired,
 				metadataUrl: PropTypes.string.isRequired,
@@ -423,22 +423,22 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 							)}
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
-								Samples
+								Stems
 								<Typography component="span" sx={styles.sectionCount}>
-									({details.samples.length})
+									({details.stems.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>This NFT contains the following samples</Typography>
+							<Typography sx={styles.sectionMeta}>This NFT contains the following stems</Typography>
 							<Grid container spacing={4}>
-								{details.samples.length > 0 ? (
-									details.samples.map((sample: any) => (
-										<Grid item sm={6} md={4} key={sample._id}>
-											<SampleCard details={sample} />
+								{details.stems.length > 0 ? (
+									details.stems.map((stem: any) => (
+										<Grid item sm={6} md={4} key={stem._id}>
+											<StemCard details={stem} />
 										</Grid>
 									))
 								) : (
 									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>This NFT contains no samples</Typography>
+										<Typography sx={styles.noItemsMsg}>This NFT contains no stems</Typography>
 									</Grid>
 								)}
 							</Grid>
@@ -470,8 +470,8 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const data: any | null = res.success ? res.data : null
 
 	// Get data via Covalent API
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e' // ERC-721 PolyEchoSample contract (Rinkeby)
-	const contractAddress = '0x02c4018D3A1966813a56bEbe1D89A7B8ec34b01E' // ERC-721 PolyEcho (ECHO) contract (Kovan)
+	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e' // ERC-721 PolyEchoNFT contract (Rinkeby)
+	const contractAddress = '0x02c4018D3A1966813a56bEbe1D89A7B8ec34b01E' // ERC-721 PolyEchoNFT (ECHO) contract (Kovan)
 	const chainId = 42 // Kovan
 	const tokenId = 0 // Get latest from smart contract using web3.js
 	// const tokenIdsUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
