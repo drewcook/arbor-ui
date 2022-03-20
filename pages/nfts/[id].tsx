@@ -1,4 +1,4 @@
-import { Box, Button, Chip, CircularProgress, Container, Divider, Grid, Paper, Typography } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
+import CovalentInsights from '../../components/CovalentInsights'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
@@ -67,20 +68,6 @@ const styles = {
 		display: 'block',
 		textAlign: 'center',
 	},
-	covalentWrap: {
-		p: 2,
-		mb: 2,
-		background: '#fafafa',
-		border: '1px solid #ccc',
-		textAlign: 'center',
-	},
-	covalentBtn: {
-		my: 2,
-	},
-	covalentMeta: {
-		display: 'block',
-		mb: 0.5,
-	},
 	divider: {
 		my: 3,
 		borderColor: '#ccc',
@@ -117,16 +104,7 @@ const styles = {
 }
 
 const propTypes = {
-	covalentData: PropTypes.shape({
-		items: PropTypes.arrayOf(
-			PropTypes.shape({
-				contract_address: PropTypes.string.isRequired,
-				nft_transactions: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-				type: PropTypes.string.isRequired,
-			}),
-		).isRequired,
-		updated_at: PropTypes.string.isRequired,
-	}).isRequired,
+	covalentData: PropTypes.shape({}).isRequired,
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		token: PropTypes.shape({
@@ -168,7 +146,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-	const contractData = covalentData ? covalentData.items[0] : null
 	const { connected, handleConnectWallet, currentUser, contract, web3 } = useWeb3()
 	const router = useRouter()
 
@@ -300,8 +277,8 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												Collection:{' '}
 											</Typography>
-											<Link href="https://rinkeby.etherscan.io/token/0x3d90BA73E946aD6332c90C4D1851a96e77f7a5BD">
-												View On Etherscan
+											<Link href="https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
+												View On Explorer
 											</Link>
 										</Typography>
 										<Typography sx={styles.metadata}>
@@ -309,7 +286,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 												ID:
 											</Typography>
 											<Link
-												href={`https://rinkeby.etherscan.io/token/0x3d90BA73E946aD6332c90C4D1851a96e77f7a5BD?a=${details.token.id}#inventory`}
+												href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}#inventory`}
 											>
 												{details.token.id.toString()}
 											</Link>
@@ -348,47 +325,22 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												Block #:{' '}
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/block/${details.token.data.blockNumber}`}>
-												View on Etherscan
+											<Link href={`https://mumbai.polygonscan.com/block/${details.token.data.blockNumber}`}>
+												View on Explorer
 											</Link>
 										</Typography>
 										<Typography variant="body2" sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Tx Hash:{' '}
 											</Typography>
-											<Link href={`https://rinkeby.etherscan.io/tx/${details.token.data.transactionHash}`}>
-												View on Etherscan
+											<Link href={`https://mumbai.polygonscan.com/tx/${details.token.data.transactionHash}`}>
+												View on Explorer
 											</Link>
 										</Typography>
 									</Box>
 								</Grid>
 								<Grid item xs={12} md={7}>
-									{contractData && (
-										<Paper elevation={2} sx={styles.covalentWrap}>
-											<Typography variant="h5" gutterBottom>
-												ERC-721 Smart Contract Details
-											</Typography>
-											<Typography gutterBottom variant="body1">
-												<Link href={`https://kovan.etherscan.io/address/${contractData.contract_address}`} passHref>
-													<Button color="secondary" size="small" variant="outlined" sx={styles.covalentBtn}>
-														View Kovan Contract
-													</Button>
-												</Link>
-											</Typography>
-											<Typography variant="overline" sx={styles.covalentMeta}>
-												<strong>Contract Type:</strong> {contractData.type.toUpperCase()}
-											</Typography>
-											<Typography variant="overline" sx={styles.covalentMeta}>
-												<strong>Total Transactions:</strong> {contractData.nft_transactions.length}
-											</Typography>
-											<Typography variant="overline" sx={styles.covalentMeta}>
-												Last Updated: {formatDate(covalentData.updated_at)}
-											</Typography>
-											<Typography variant="overline" sx={styles.covalentMeta}>
-												Powered by <Link href="https://www.covalenthq.com/">Covalent</Link>
-											</Typography>
-										</Paper>
-									)}
+									{covalentData && <CovalentInsights data={covalentData} />}
 									<Link href={details.metadataUrl} passHref>
 										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
 											View NFT Metadata on IPFS
@@ -469,20 +421,55 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const res = await get(`/nfts/${nftId}`)
 	const data: any | null = res.success ? res.data : null
 
-	// Get data via Covalent API
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e' // ERC-721 PolyEchoNFT contract (Rinkeby)
-	const contractAddress = '0x02c4018D3A1966813a56bEbe1D89A7B8ec34b01E' // ERC-721 PolyEchoNFT (ECHO) contract (Kovan)
-	const chainId = 42 // Kovan
-	const tokenId = 0 // Get latest from smart contract using web3.js
-	// const tokenIdsUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
-	// const metadataUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-	const transactionsUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${tokenId}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-	const covalentRes = await fetch(transactionsUrl)
-	const covalentData = covalentRes.ok ? await covalentRes.json() : null
+	// Get data via Covalent API per network for token collection address
+	// TODO: Get current network id and do lookup in hashmap
+
+	// Rinkeby
+	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
+	// const chainId = 4
+
+	// Kovan
+	// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
+	// const chainId = 42
+
+	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
+	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
+	const chainId = 80001
+
+	// Get's token balance
+	const balRes = await fetch(
+		`https://api.covalenthq.com/v1/${chainId}/address/${contractAddress}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`,
+	)
+	const balData = balRes.ok ? await balRes.json() : null
+
+	// Gets all Tokens in collection
+	const tokensUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
+	const tokensRes = await fetch(tokensUrl)
+	const tokensData = tokensRes.ok ? await tokensRes.json() : null
+
+	// We'll need the token ID for this given NFT details, so only grab token-specific data if we have it
+	let txData = null
+	let metaData = null
+	if (data && data.token.id !== null) {
+		// Txs
+		const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+		const txRes = await fetch(txUrl)
+		txData = txRes.ok ? await txRes.json() : null
+
+		// Metadata
+		const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+		const metaRes = await fetch(metaUrl)
+		metaData = metaRes.ok ? await metaRes.json() : null
+	}
 
 	return {
 		props: {
-			covalentData: covalentData ? covalentData.data : null,
+			covalentData: {
+				balData,
+				tokensData,
+				txData,
+				metaData,
+			},
 			data,
 		},
 	}

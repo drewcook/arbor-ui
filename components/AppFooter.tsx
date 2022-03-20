@@ -45,7 +45,6 @@ const AppFooter = (): JSX.Element => {
 	}, [])
 
 	useEffect(() => {
-		console.log({ router })
 		handleCheckSticky()
 	}, [router.asPath])
 
