@@ -21,7 +21,7 @@ import {
 	Typography,
 } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
-// Because our sample player uses Web APIs for audio, we must ignore it for SSR to avoid errors
+// Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -32,7 +32,7 @@ import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
-import SampleUploadDialog from '../../components/SampleUploadDialog'
+import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
@@ -41,12 +41,21 @@ import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
 
-const SamplePlayer = dynamic(() => import('../../components/SamplePlayer'), { ssr: false })
+const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
 const styles = {
 	error: {
 		textAlign: 'center',
 		marginY: 4,
+	},
+	limitReachedChip: {
+		backgroundColor: '#ff399f',
+		color: '#fff',
+		ml: 1,
+		fontSize: '.8rem',
+		height: '1.75rem',
+		textShadow: 'none',
+		mb: 1,
 	},
 	headingWrap: {
 		position: 'relative',
@@ -232,7 +241,7 @@ const styles = {
 		p: 2,
 		textAlign: 'center',
 	},
-	noSamplesMsg: {
+	noStemsMsg: {
 		textAlign: 'center',
 		py: 3,
 		px: 2,
@@ -265,12 +274,12 @@ const styles = {
 const propTypes = {
 	projectId: PropTypes.string.isRequired,
 	data: PropTypes.shape({
-		samples: PropTypes.array.isRequired,
+		stems: PropTypes.array.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string.isRequired,
 		bpm: PropTypes.number.isRequired,
-		timeboxMins: PropTypes.number.isRequired,
+		trackLimit: PropTypes.number.isRequired,
 		tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		cid: PropTypes.string,
@@ -298,8 +307,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	// Stem Upload
 	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
 	// Other
-	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
 	const router = useRouter()
+	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
+	const limitReached = details ? details.stems.length >= details.trackLimit : false
 
 	const onWavesInit = (idx: number, ws: any) => {
 		const tmp = new Map(stems.entries())
@@ -341,7 +351,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 	// TODO: Fix downloading files
 	const handleDownloadAll = () => {
-		console.log('download all samples')
+		console.log('download all stems')
 	}
 
 	const handleUploadStemOpen = () => {
@@ -369,7 +379,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
-				// Hit Python HTTP server to flatten samples into a singular one
+				// Hit Python HTTP server to flatten stems into a singular one
 				// TODO: Move uploading to NFT.storage out from the flattening service
 				// Have it return a file, or base64 of the audio and add to payload as;
 				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
@@ -381,15 +391,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// 	headers: {
 				// 		'Content-Type': 'application/json',
 				// 	},
-				// 	body: JSON.stringify({ sample_cids: details.samples.map(s => s?.audioUrl.replace('ipfs://', '')) }),
+				// 	body: JSON.stringify({ sample_cids: details.stems.map(s => s?.audioUrl.replace('ipfs://', '')) }),
 				// })
 				// // Catch flatten audio error
 				// if (!response.ok) throw new Error('Failed to flatten the audio files')
 				// const flattenedData = await response.json() // Catch fro .json()
 				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
-				// TODO: create new sample from flattened audio
-				// TODO: add new sample created to user's info
+				// TODO: create new stem from flattened audio
+				// TODO: add new stem created to user's info
 
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Uploading to NFT.storage...')
@@ -405,7 +415,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						createdBy: currentUser.address,
 						audio: `ipfs//[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
 						collaborators: details.collaborators,
-						samples: details.samples.map((s: any) => s.metadataUrl),
+						stems: details.stems.map((s: any) => s.metadataUrl),
 					},
 				})
 
@@ -445,7 +455,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					audioHref: nftsRes.data.properties.audio,
 					projectId,
 					collaborators: details.collaborators,
-					samples: details.samples, // Direct 1:1 map
+					stems: details.stems, // Direct 1:1 map
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)
@@ -503,7 +513,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										onClick={handlePlayPauseStems}
 										/* @ts-ignore */
 										sx={styles.playAllBtn}
-										disabled={details.samples.length === 0}
+										disabled={details.stems.length === 0}
 									>
 										{isPlayingAll ? (
 											<PauseRounded sx={styles.playAllIcon} />
@@ -512,7 +522,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										)}
 									</Fab>
 								</Box>
-								<Box>
+								<Box sx={{ flexGrow: 1 }}>
 									<Box>
 										<Typography sx={styles.createdBy}>
 											Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
@@ -530,9 +540,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
-												Time Box
+												Track Limit
 											</Typography>
-											{details.timeboxMins} Minutes
+											{details.trackLimit} Tracks
+											{limitReached && <Chip label="Limit Reached" size="small" sx={styles.limitReachedChip} />}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
@@ -547,7 +558,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 											<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
 										))}
 									<Divider sx={styles.divider} />
-									{details.samples.length > 0 && (
+									{details.stems.length > 0 && (
 										<Box sx={styles.mintAndBuy}>
 											<Button
 												size="large"
@@ -555,7 +566,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												variant="contained"
 												color="secondary"
 												sx={styles.mintAndBuyBtn}
-												disabled={minting || details.samples.length < 2}
+												disabled={minting || details.stems.length < 2}
 											>
 												{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
 											</Button>
@@ -579,7 +590,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 								</Typography>
 								<Box sx={styles.stemsMeta}>
 									<Typography>
-										{details.samples.length} Stem{details.samples.length === 1 ? '' : 's'} from{' '}
+										{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from{' '}
 										{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
 									</Typography>
 									<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
@@ -599,7 +610,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									</Button>
 								</Box>
 							</Box>
-							{details.samples.length > 0 ? (
+							{details.stems.length > 0 ? (
 								<>
 									<Box sx={styles.playSection}>
 										<IconButton sx={styles.playStopBtn} onClick={handlePlayPauseStems} disableRipple disableFocusRipple>
@@ -617,11 +628,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										</IconButton>
 										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
 									</Box>
-									{details.samples.map((sample, idx) => (
+									{details.stems.map((stem, idx) => (
 										<Fragment key={idx}>
-											<SamplePlayer
+											<StemPlayer
 												idx={idx + 1}
-												details={sample}
+												details={stem}
 												onWavesInit={onWavesInit}
 												onFinish={() => setIsPlayingAll(false)}
 												onSolo={handleSoloStem}
@@ -630,7 +641,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									))}
 								</>
 							) : (
-								<Typography sx={styles.noSamplesMsg}>No samples to show, upload one!</Typography>
+								<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 							)}
 						</>
 					) : (
@@ -638,23 +649,27 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							Sorry, no details were found for this project.
 						</Typography>
 					)}
-					<Button
-						variant="outlined"
-						size="large"
-						onClick={handleUploadStemOpen}
-						/* @ts-ignore */
-						sx={styles.addStemBtn}
-						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
-					>
-						Add Stem
-					</Button>
-					<SampleUploadDialog
-						open={uploadStemOpen}
-						onClose={handleUploadStemClose}
-						onSuccess={onStemUploadSuccess}
-						/* @ts-ignore */
-						projectDetails={details}
-					/>
+					{!limitReached && (
+						<>
+							<Button
+								variant="outlined"
+								size="large"
+								onClick={handleUploadStemOpen}
+								/* @ts-ignore */
+								sx={styles.addStemBtn}
+								startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+							>
+								Add Stem
+							</Button>
+							<StemUploadDialog
+								open={uploadStemOpen}
+								onClose={handleUploadStemClose}
+								onSuccess={onStemUploadSuccess}
+								/* @ts-ignore */
+								projectDetails={details}
+							/>
+						</>
+					)}
 				</Container>
 			</main>
 

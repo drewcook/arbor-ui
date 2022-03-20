@@ -38,7 +38,7 @@ const styles = {
 const pages = [
 	{ href: '/projects/new', title: 'Create' },
 	{ href: '/projects', title: 'Projects' },
-	{ href: '/samples', title: 'Stems' },
+	{ href: '/stems', title: 'Stems' },
 	{ href: '/nfts', title: 'Marketplace' },
 ]
 

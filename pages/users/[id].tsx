@@ -9,7 +9,7 @@ import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
 import ProjectCard from '../../components/ProjectCard'
-import SampleCard from '../../components/SampleCard'
+import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
@@ -80,7 +80,7 @@ const propTypes = {
 		}).isRequired,
 		nfts: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
-		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+		stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
 }
 
@@ -233,22 +233,22 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
-								Samples
+								Stems
 								<Typography component="span" sx={styles.sectionCount}>
-									({details.samples.length})
+									({details.stems.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>Samples this user has uploaded</Typography>
+							<Typography sx={styles.sectionMeta}>Stems this user has uploaded</Typography>
 							<Grid container spacing={4}>
-								{details.samples.length > 0 ? (
-									details.samples.map((sample: any) => (
-										<Grid item sm={6} md={4} key={sample._id}>
-											<SampleCard details={sample} />
+								{details.stems.length > 0 ? (
+									details.stems.map((stem: any) => (
+										<Grid item sm={6} md={4} key={stem._id}>
+											<StemCard details={stem} />
 										</Grid>
 									))
 								) : (
 									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No samples to show, upload one!</Typography>
+										<Typography sx={styles.noItemsMsg}>No stems to show, upload one!</Typography>
 									</Grid>
 								)}
 							</Grid>

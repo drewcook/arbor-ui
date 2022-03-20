@@ -21,7 +21,7 @@ const AppFooter = (): JSX.Element => {
 		<footer>
 			<Box sx={styles.footer}>
 				<Typography sx={styles.copy} variant="body2">
-					&copy; 2022 PolyEcho | All Rights Reserved
+					&copy; 2022 POLYECHO | All Rights Reserved
 				</Typography>
 			</Box>
 		</footer>

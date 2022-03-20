@@ -29,6 +29,12 @@ const polyEchoTheme = createTheme({
 		),
 	},
 	palette: {
+		// Ideas
+		// '#91ff00'
+		// '#d1ff00'
+		// '#ff5200'
+		// '#ff399f'
+
 		primary: {
 			main: '#000',
 			contrastText: '#fff',

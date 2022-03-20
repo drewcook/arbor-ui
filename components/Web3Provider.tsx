@@ -53,15 +53,15 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// Get network provider and web3 instance
 			const web3Instance = await getWeb3()
-
 			if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
-
 			setWeb3(web3Instance)
 
-			// // Get SampleNFT contract
+			// Get blockchain network
 			const networkId = await web3Instance.eth.net.getId()
 			/* @ts-ignore */
 			const deployedNetwork = NFTContract.networks[networkId]
+
+			// // Get PolyEchoNFT smart contract
 			const nftContract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
 			setContract(nftContract)
 

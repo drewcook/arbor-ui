@@ -26,9 +26,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'PUT' /* Edit a model by its ID */:
 			try {
-				// Update samples
+				// Update stems
 				let project: IProjectDoc | null
-				if (body.newSample) {
+				if (body.newStem) {
 					project = await Project.findByIdAndUpdate(
 						id,
 						{
@@ -36,7 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 								collaborators: body.collaborators,
 							},
 							$push: {
-								samples: body.newSample,
+								stems: body.newStem,
 							},
 						},
 						{
@@ -47,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 					// Catch error
 					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to add samples or collaborators to project' })
+						return res.status(400).json({ success: false, error: 'failed to add stems or collaborators to project' })
 					}
 
 					res.status(200).json({ success: true, data: project })

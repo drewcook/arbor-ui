@@ -69,12 +69,12 @@ export type IFileToUpload = {
 	type: string
 }
 
-type SampleDropzoneProps = {
+type StemDropzoneProps = {
 	hasFile: boolean
 	onDrop: (file: IFileToUpload) => void
 }
 
-const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
+const StemDropzone = (props: StemDropzoneProps): JSX.Element => {
 	const { hasFile, onDrop } = props
 	const { getRootProps, getInputProps, isFocused, isDragActive, isDragAccept, isDragReject, fileRejections } =
 		useDropzone({
@@ -126,4 +126,4 @@ const SampleDropzone = (props: SampleDropzoneProps): JSX.Element => {
 	)
 }
 
-export default SampleDropzone
+export default StemDropzone

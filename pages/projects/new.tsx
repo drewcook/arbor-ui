@@ -44,7 +44,7 @@ const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState<string>('')
 	const [description, setDescription] = useState<string>('')
 	const [bpm, setBpm] = useState<number>(120)
-	const [timeboxMins, setTimeboxMins] = useState<number>(2)
+	const [trackLimit, setTrackLimit] = useState<number>(10)
 	const [tags, setTags] = useState<string[]>([])
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -53,7 +53,23 @@ const NewProjectPage: NextPage = () => {
 	const router = useRouter()
 	const { currentUser } = useWeb3()
 
-	// Tags
+	// Form Field Handlers
+	const handleSetBpm = (e: any) => {
+		// Minimum is zero, prevent negatives
+		let val = parseInt(e.target.value)
+		if (val < 0) val = 0
+		// Maximum is 1000
+		if (val > 1000) val = 1000
+		setBpm(val)
+	}
+	const handleSetTrackLimit = (e: any) => {
+		// Minimum is zero, prevent negatives
+		let val = parseInt(e.target.value)
+		if (val < 0) val = 0
+		// Maximum is 1000
+		if (val > 1000) val = 1000
+		setTrackLimit(val)
+	}
 	const handleAddTag = (tag: string) => setTags([...tags, tag])
 	const handleRemoveTag = (tag: string) => setTags(tags.filter(t => t !== tag))
 
@@ -70,7 +86,7 @@ const NewProjectPage: NextPage = () => {
 				name,
 				description,
 				bpm,
-				timeboxMins,
+				trackLimit,
 				tags,
 			}
 			const res = await post('/projects', payload)
@@ -93,7 +109,7 @@ const NewProjectPage: NextPage = () => {
 		setName('')
 		setDescription('')
 		setBpm(120)
-		setTimeboxMins(2)
+		setTrackLimit(10)
 		setTags([])
 	}
 
@@ -154,18 +170,18 @@ const NewProjectPage: NextPage = () => {
 						margin="normal"
 						type="number"
 						value={bpm}
-						onChange={e => setBpm(parseInt(e.target.value))}
+						onChange={handleSetBpm}
 						placeholder="What BPM is this project targetting?"
 						fullWidth
 					/>
 					<TextField
-						label="Project Timebox (mins)"
+						label="Track Limit"
 						variant="filled"
 						margin="normal"
 						type="number"
-						value={timeboxMins}
-						onChange={e => setTimeboxMins(parseInt(e.target.value))}
-						placeholder="Set a maximum limit on how long samples should be."
+						value={trackLimit}
+						onChange={handleSetTrackLimit}
+						placeholder="Set a maximum limit of tracks that can be uploaded to this project."
 						fullWidth
 					/>
 					<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />

@@ -24,8 +24,8 @@ import { useState } from 'react'
 import logoBinary from '../lib/logoBinary'
 import { post, update } from '../utils/http'
 import Notification from './Notification'
-import type { IFileToUpload } from './SampleDropzone'
-import SampleDropzone from './SampleDropzone'
+import type { IFileToUpload } from './StemDropzone'
+import StemDropzone from './StemDropzone'
 import { useWeb3 } from './Web3Provider'
 
 const stemTypes = [
@@ -139,9 +139,9 @@ const propTypes = {
 	}).isRequired,
 }
 
-type SampleUploadDialogProps = PropTypes.InferProps<typeof propTypes>
+type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
 
-const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
+const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	const { open, onClose, projectDetails, onSuccess } = props
 	const [loading, setLoading] = useState(false)
 	// Notifications
@@ -212,8 +212,8 @@ const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
 			if (!uploadingOpen) setUploadingOpen(true)
 			setUploadingMsg('Updating project details...')
 
-			// Create the new sample (and adds to user's samples)
-			let res = await post('/samples', {
+			// Create the new stem (and adds to user's stems)
+			let res = await post('/stems', {
 				name: stemName,
 				type: stemType,
 				metadataUrl: nftsRes.url,
@@ -225,22 +225,21 @@ const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 			})
 			if (!res.success) throw new Error(res.error)
-			const sampleCreated = res.data
+			const stemCreated = res.data
 
 			// Add the current user as a collaborator if they aren't one already
 			const collaborators = projectDetails.collaborators
 			if (!projectDetails.collaborators.some((c: string) => c === currentUser.address))
 				collaborators.push(currentUser.address)
 
-			// Add the new sample to the project and new collaborators list
-			res = await update(`/projects/${projectDetails._id}`, { newSample: sampleCreated, collaborators })
+			// Add the new stem to the project and new collaborators list
+			res = await update(`/projects/${projectDetails._id}`, { newStem: stemCreated, collaborators })
 
 			// Catch error or invoke success callback with new project data
 			if (!res.success) throw new Error(res.error)
 			else {
 				// Notify success
-				setUploadingOpen(false)
-				setUploadingMsg('')
+				onNotificationClose()
 				setLoading(false)
 				onSuccess(res.data)
 			}
@@ -281,7 +280,7 @@ const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
 					<Grid container spacing={2}>
 						<Grid item xs={12} sm={6}>
 							<div className={loading ? 'dropzone-loading' : ''}>
-								<SampleDropzone onDrop={handleDrop} hasFile={file} />
+								<StemDropzone onDrop={handleDrop} hasFile={file} />
 							</div>
 						</Grid>
 						<Grid item xs={12} sm={6}>
@@ -356,6 +355,6 @@ const SampleUploadDialog = (props: SampleUploadDialogProps): JSX.Element => {
 	)
 }
 
-SampleUploadDialog.propTypes = propTypes
+StemUploadDialog.propTypes = propTypes
 
-export default SampleUploadDialog
+export default StemUploadDialog

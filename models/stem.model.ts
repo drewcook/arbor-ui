@@ -1,10 +1,10 @@
 import mongoose, { Document } from 'mongoose'
 
-export type SampleType = 'drums' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
+export type StemType = 'drums' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
 
-export interface ISample {
+export interface IStem {
 	name: string
-	type: SampleType
+	type: StemType
 	metadataUrl: string
 	audioUrl: string
 	audioHref: string
@@ -14,9 +14,9 @@ export interface ISample {
 	createdBy: string
 }
 
-export interface ISampleDoc extends Document, ISample {}
+export interface IStemDoc extends Document, IStem {}
 
-export const sampleSchema = new mongoose.Schema<ISampleDoc>(
+export const stemSchema = new mongoose.Schema<IStemDoc>(
 	{
 		name: {
 			type: String,
@@ -58,9 +58,9 @@ export const sampleSchema = new mongoose.Schema<ISampleDoc>(
 			type: String,
 			required: true,
 		},
-		// TODO: Add tags field to help describe the sample
+		// TODO: Add tags field to help describe the stem
 	},
 	{ timestamps: true },
 )
 
-export const Sample = mongoose.models.sample || mongoose.model<ISampleDoc>('sample', sampleSchema)
+export const Stem = mongoose.models.stem || mongoose.model<IStemDoc>('stem', stemSchema)
