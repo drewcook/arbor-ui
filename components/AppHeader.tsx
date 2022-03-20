@@ -40,6 +40,7 @@ const pages = [
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
 	{ href: '/nfts', title: 'Marketplace' },
+	{ href: 'https://drewcook.github.io/polyecho-analytics/', title: 'Stats' },
 ]
 
 const AppHeader = (): JSX.Element => {
