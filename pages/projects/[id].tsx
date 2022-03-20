@@ -48,6 +48,15 @@ const styles = {
 		textAlign: 'center',
 		marginY: 4,
 	},
+	limitReachedChip: {
+		backgroundColor: '#ff399f',
+		color: '#fff',
+		ml: 1,
+		fontSize: '.8rem',
+		height: '1.75rem',
+		textShadow: 'none',
+		mb: 1,
+	},
 	headingWrap: {
 		position: 'relative',
 		display: 'flex',
@@ -270,7 +279,7 @@ const propTypes = {
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string.isRequired,
 		bpm: PropTypes.number.isRequired,
-		timeboxMins: PropTypes.number.isRequired,
+		trackLimit: PropTypes.number.isRequired,
 		tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		collaborators: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 		cid: PropTypes.string,
@@ -298,8 +307,9 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	// Stem Upload
 	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
 	// Other
-	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
 	const router = useRouter()
+	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
+	const limitReached = details ? details.stems.length >= details.trackLimit : false
 
 	const onWavesInit = (idx: number, ws: any) => {
 		const tmp = new Map(stems.entries())
@@ -512,7 +522,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										)}
 									</Fab>
 								</Box>
-								<Box>
+								<Box sx={{ flexGrow: 1 }}>
 									<Box>
 										<Typography sx={styles.createdBy}>
 											Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
@@ -530,9 +540,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
-												Time Box
+												Track Limit
 											</Typography>
-											{details.timeboxMins} Minutes
+											{details.trackLimit} Tracks
+											{limitReached && <Chip label="Limit Reached" size="small" sx={styles.limitReachedChip} />}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
@@ -638,23 +649,27 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							Sorry, no details were found for this project.
 						</Typography>
 					)}
-					<Button
-						variant="outlined"
-						size="large"
-						onClick={handleUploadStemOpen}
-						/* @ts-ignore */
-						sx={styles.addStemBtn}
-						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
-					>
-						Add Stem
-					</Button>
-					<StemUploadDialog
-						open={uploadStemOpen}
-						onClose={handleUploadStemClose}
-						onSuccess={onStemUploadSuccess}
-						/* @ts-ignore */
-						projectDetails={details}
-					/>
+					{!limitReached && (
+						<>
+							<Button
+								variant="outlined"
+								size="large"
+								onClick={handleUploadStemOpen}
+								/* @ts-ignore */
+								sx={styles.addStemBtn}
+								startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+							>
+								Add Stem
+							</Button>
+							<StemUploadDialog
+								open={uploadStemOpen}
+								onClose={handleUploadStemClose}
+								onSuccess={onStemUploadSuccess}
+								/* @ts-ignore */
+								projectDetails={details}
+							/>
+						</>
+					)}
 				</Container>
 			</main>
 

@@ -8,7 +8,7 @@ export interface IProject {
 	name: string
 	description: string
 	bpm: number
-	timeboxMins: number
+	trackLimit: number
 	tags: string[]
 	stems: IStemDoc[]
 }
@@ -42,14 +42,14 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 		bpm: {
 			type: Number,
 			required: true,
-			min: 40,
-			max: 300,
+			min: 0,
+			max: 1000,
 		},
-		timeboxMins: {
+		trackLimit: {
 			type: Number,
 			required: true,
 			min: 0,
-			max: 30,
+			max: 1000,
 		},
 		tags: {
 			type: [String],

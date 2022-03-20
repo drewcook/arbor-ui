@@ -239,8 +239,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			if (!res.success) throw new Error(res.error)
 			else {
 				// Notify success
-				setUploadingOpen(false)
-				setUploadingMsg('')
+				onNotificationClose()
 				setLoading(false)
 				onSuccess(res.data)
 			}
