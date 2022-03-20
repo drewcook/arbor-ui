@@ -68,9 +68,10 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 					{details.name}
 				</Typography>
 				<Typography variant="body2" sx={styles.collaborators}>
-					{details.collaborators.length} Collaborator
-					{details.collaborators.length === 1 ? '' : 's'} • {details.stems.length} Stem
-					{details.stems.length === 1 ? '' : 's'}
+					{details.stems.length} Stem
+					{details.stems.length === 1 ? '' : 's'} • {details.trackLimit} Stem Max • {details.collaborators.length}{' '}
+					Collaborator
+					{details.collaborators.length === 1 ? '' : 's'}
 				</Typography>
 				<Typography gutterBottom sx={styles.description}>
 					{details.description.slice(0, 60) + '...'}

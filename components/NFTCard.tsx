@@ -122,10 +122,10 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					</Link>
 					{/* {details.isListed && currentUser?.address !== details.owner && (
 						<Button
-							variant="contained"
-							color="primary"
-							onClick={connected ? handleBuyNft : handleConnectWallet}
-							sx={styles.buyNowBtn}
+						variant="contained"
+						color="primary"
+						onClick={connected ? handleBuyNft : handleConnectWallet}
+						sx={styles.buyNowBtn}
 						>
 							Buy Now
 						</Button>
