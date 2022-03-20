@@ -14,16 +14,14 @@ const styles = {
 		position: 'absolute',
 		top: '1.5rem',
 		right: '-1rem',
-		// backgroundColor: '#91ff00',
-		// backgroundColor: '#d1ff00',
 		backgroundColor: '#ff5200',
 		py: 2.5,
 		color: '#fff',
 		zIndex: 1,
 	},
 	card: {
-		position: 'relative',
 		minWidth: '200px',
+		position: 'relative',
 		overflow: 'visible',
 	},
 	projectIconLink: {
@@ -77,7 +75,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 	return (
 		<>
 			<Card sx={styles.card} elevation={2}>
-				{details.isListed && <Chip label="Listed For Sale!" size="medium" sx={styles.buyableChip} />}
+				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
 				<CardContent>
 					<Box className="nft-card-media">
 						<ImageOptimized
