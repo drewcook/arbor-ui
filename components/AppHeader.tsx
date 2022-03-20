@@ -96,7 +96,7 @@ const AppHeader = (): JSX.Element => {
 						>
 							{pages.map(page => (
 								<Link key={page.href} href={page.href} passHref>
-									<MenuItem onClick={handleCloseNavMenu} color="primary">
+									<MenuItem onClick={handleCloseNavMenu}>
 										<Typography textAlign="center">{page.title}</Typography>
 									</MenuItem>
 								</Link>
@@ -114,9 +114,7 @@ const AppHeader = (): JSX.Element => {
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', textAlign: 'center' } }}>
 						{pages.map(page => (
 							<Link key={page.href} href={page.href} passHref>
-								<Button key={page.href} sx={{ my: 2, color: 'white', display: 'block' }}>
-									{page.title}
-								</Button>
+								<Button key={page.href}>{page.title}</Button>
 							</Link>
 						))}
 					</Box>
