@@ -78,7 +78,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 									kind.
 								</Typography>
 							</Container>
-							<Divider sxs={styles.divider} />
+							<Divider sx={styles.divider} />
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map(project => (
