@@ -1,8 +1,8 @@
 require('@nomiclabs/hardhat-waffle')
 
 // Keys
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
-const ARBITRUM_TESTNET_PRIVATE_KEY = process.env.ARBITRUM_TESTNET_PRIVATE_KEY
+/* eslint-disable-next-line */
+const { ALCHEMY_API_KEY, ARBITRUM_TESTNET_PRIVATE_KEY } = require('./keys')
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
