@@ -50,6 +50,7 @@ const AppFooter = (): JSX.Element => {
 	}, [router.asPath])
 
 	return (
+		// @ts-ignore
 		<Box sx={styles.footer} component="footer" className={stuck ? 'stuck' : ''}>
 			<Typography sx={styles.copy} variant="body2">
 				&copy; 2022 POLYECHO | All Rights Reserved
