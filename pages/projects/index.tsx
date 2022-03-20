@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -24,6 +24,10 @@ const styles = {
 		fontWeight: 300,
 		textAlign: 'center',
 		mb: 4,
+	},
+	divider: {
+		my: 3,
+		borderColor: '#ccc',
 	},
 	noProjects: {
 		textAlign: 'center',
@@ -74,6 +78,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 									kind.
 								</Typography>
 							</Container>
+							<Divider sxs={styles.divider} />
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map(project => (
