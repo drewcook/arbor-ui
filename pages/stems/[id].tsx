@@ -261,7 +261,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 							idx={1}
 							details={data}
 							onWavesInit={onWavesInit}
-							onFinish={handleLoopReplay}
+							// onFinish={handleLoopReplay}
 							isStemDetails
 							onSkipPrev={handleSkipPrev}
 							onStop={handleStop}
