@@ -413,6 +413,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					formData.append(`files`, files[i])
 				}
 				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
+				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
 				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
 					method: 'POST',
 					body: formData,
