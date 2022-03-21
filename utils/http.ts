@@ -12,7 +12,7 @@ const instance = axios.create({ baseURL: process.env.CLIENT_HOST })
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
 	try {
-		const { data } = await instance.get(`/api${pathname}`, params)
+		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
 	} catch (e: any) {
 		return { success: false, error: e }
