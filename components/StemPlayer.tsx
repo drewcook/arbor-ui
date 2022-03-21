@@ -117,6 +117,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 			height: 80,
 			barGap: 2,
 		})
+
 		// Load audio from an XHR request
 		if (blobFileToLoad) ws.loadBlob(blobFileToLoad)
 		else ws.load(details.audioHref)
