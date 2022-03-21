@@ -4,7 +4,7 @@ import type { IProjectDoc } from '../../../models/project.model'
 import { Project } from '../../../models/project.model'
 import type { IStemDoc } from '../../../models/stem.model'
 import { Stem } from '../../../models/stem.model'
-import type { IUser, IUserFull } from '../../../models/user.model'
+import type { IUser, IUserDoc, IUserFull } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
 
@@ -70,7 +70,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'PUT' /* Edit a model by its ID */:
 			try {
-				let user
+				let user: IUserDoc | null
 				if (body.newProject) {
 					// Update the Projects list
 					user = await User.findOneAndUpdate(
@@ -156,17 +156,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 					// If invalid payload, return
 					if (Object.keys(updateObj).length === 0) throw new Error('Invalid edit user payload')
-					console.log({ updateObj, id })
+					console.log(updateObj.displayName, id)
 
 					// Otherwise, update user details
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$set: updateObj, // not updating.... breaking
+							$set: {
+								displayName: updateObj.displayName,
+							}, // not updating.... breaking
 						},
 						{
 							new: true,
-							runValidators: false,
+							runValidators: true, // false doesn't fix,
 						},
 					)
 					// Returns
