@@ -258,7 +258,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								{currentUser?.address === details.owner &&
 									(details.isListed ? (
 										<Box sx={styles.buyNowListing}>
-											<ListNftDialog unlist={true} nft={data} onListSuccess={handleListSuccess} />
+											<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
 											<Box sx={styles.price}>
 												<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
 												<Typography variant="h4" component="div">
@@ -271,7 +271,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										</Box>
 									) : (
 										<Box sx={{ my: 2 }}>
-											<ListNftDialog nft={data} onListSuccess={handleListSuccess} />
+											<ListNftDialog nft={details} onListSuccess={handleListSuccess} />
 										</Box>
 									))}
 							</Box>
