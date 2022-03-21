@@ -9,7 +9,7 @@ import AppHeader from '../components/AppHeader'
 const styles = {
 	banner: {
 		py: '100px',
-		backgroundColor: '#fafafa',
+		backgroundColor: '#111',
 		color: '#fff',
 	},
 	heading: {
