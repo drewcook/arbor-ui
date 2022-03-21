@@ -21,6 +21,8 @@ contract PolyEchoNFT is ERC721, Ownable {
     event NameUpdated(string name);
     event TokenCreated(uint256 _tokenId, string _tokenURI);
 		event NftBought(uint256 _tokenId, address _seller, address _buyer, uint256 _price);
+		event ListedForSale(address _lister, uint256 _tokenId, uint256 _price);
+		event RemovedForSale(address _lister, uint256 _tokenId);
 		event SellerPaid(uint256 _tokenId, uint256 _price);
 		event RoyaltiesPaid(uint256 _tokenId, uint256 _price, address[] _contributors);
 
@@ -111,6 +113,9 @@ contract PolyEchoNFT is ERC721, Ownable {
 
 				// Set the sale price
         tokenIdToPrice[_tokenId] = _price;
+
+				// Emit the event
+				emit ListedForSale(msg.sender, _tokenId, _price);
     }
 
 		// This is called when an owner wants to remove the NFT from being for sale.
@@ -120,6 +125,9 @@ contract PolyEchoNFT is ERC721, Ownable {
 
 				// Unlist the tokenId, null price
         tokenIdToPrice[_tokenId] = 0;
+
+				// Emit the event
+				emit RemovedForSale(msg.sender, _tokenId);
     }
 
 		// This is called when a caller wants to buy a token at its sale price
