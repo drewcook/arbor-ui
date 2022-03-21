@@ -388,20 +388,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
-				// Hit Python HTTP server to flatten stems into a singular one
-				// TODO: Move uploading to NFT.storage out from the flattening service
-				// Have it return a file, or base64 of the audio and add to payload as;
-				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+				const formData = new FormData()
+				for (let i = 0; i < files.length; i++) {
+					formData.append(`files`, files[i])
+				}
+				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
+					method: 'POST',
+					body: formData,
+				})
 
-				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
-
-				// const response = await fetch('/api/flatten', {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		'Content-Type': 'application/json',
-				// 	},
-				// 	body: JSON.stringify({ sample_cids: details.stems.map(s => s?.audioUrl.replace('ipfs://', '')) }),
-				// })
 				// // Catch flatten audio error
 				if (!response.ok) throw new Error('Failed to flatten the audio files')
 				// const flattenedData = await response.json() // Catch fro .json()
