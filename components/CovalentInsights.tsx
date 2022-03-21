@@ -1,10 +1,11 @@
-import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material'
+import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import prettyPrintJson from '../utils/prettyPrintJson'
 import web3 from 'web3'
+import { ArrowForwardIos } from '@mui/icons-material'
 
 const styles = {
 	covalentWrap: {
@@ -13,16 +14,28 @@ const styles = {
 		background: '#fafafa',
 		border: '1px solid #ccc',
 	},
+	cardTitle: {
+		mb: 3,
+	},
 	covalentBtn: {
-		my: 2,
+		mb: 2,
 	},
-	noDataMsg: {
-		my: 3,
-		textAlign: 'center',
+	numMinted: {
+		fontWeight: 300,
+		fontSize: '2.5rem',
+		display: 'inline-block',
+		ml: 2,
+		verticalAlign: 'sub',
 	},
-	divider: {
-		my: 3,
-		borderColor: '#ccc',
+	tokenRow: {
+		py: 2,
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		borderBottom: '1px solid #ccc',
+		'&:last-of-type': {
+			borderBottom: 0,
+		},
 	},
 	txRow: {
 		textAlign: 'left',
@@ -30,123 +43,125 @@ const styles = {
 	},
 	covalentMeta: {
 		display: 'block',
-		mb: 0.5,
+		mb: 5,
+		fontSize: '1rem',
+		lineHeight: '1.3rem',
 	},
 }
 
 const propTypes = {
-	data: PropTypes.shape({
-		balData: PropTypes.shape({
-			data: PropTypes.shape({
-				address: PropTypes.string.isRequired,
-				updated_at: PropTypes.string.isRequired,
-				next_update_at: PropTypes.string.isRequired,
-				quote_currency: PropTypes.string.isRequired,
-				chain_id: PropTypes.number.isRequired,
-				items: PropTypes.array.isRequired,
-			}).isRequired,
-		}),
-		tokensData: PropTypes.shape({
-			data: PropTypes.shape({
-				items: PropTypes.array.isRequired,
-				updated_at: PropTypes.string.isRequired,
-			}).isRequired,
-		}),
-		txData: PropTypes.shape({
-			data: PropTypes.shape({
-				items: PropTypes.array.isRequired,
-				updated_at: PropTypes.string.isRequired,
-			}).isRequired,
-		}),
-		metaData: PropTypes.shape({
-			data: PropTypes.shape({
-				items: PropTypes.array.isRequired,
-				updated_at: PropTypes.string.isRequired,
-			}).isRequired,
-		}),
-	}).isRequired,
+	balData: PropTypes.shape({
+		address: PropTypes.string.isRequired,
+		updated_at: PropTypes.string.isRequired,
+		next_update_at: PropTypes.string.isRequired,
+		quote_currency: PropTypes.string.isRequired,
+		chain_id: PropTypes.number.isRequired,
+		items: PropTypes.array.isRequired,
+	}),
+	tokensData: PropTypes.shape({
+		items: PropTypes.array.isRequired,
+		updated_at: PropTypes.string.isRequired,
+	}),
+	txData: PropTypes.shape({
+		items: PropTypes.array.isRequired,
+		updated_at: PropTypes.string.isRequired,
+	}),
+	metaData: PropTypes.shape({
+		items: PropTypes.array.isRequired,
+		updated_at: PropTypes.string.isRequired,
+	}),
 }
 
 type CovalentInsightsProps = PropTypes.InferProps<typeof propTypes>
 
 const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
-	const { data } = props
+	const { balData, tokensData, txData, metaData } = props
+	console.log('client props', props)
 
 	return (
-		<Paper elevation={2} sx={styles.covalentWrap}>
-			<Typography variant="h4" gutterBottom>
-				NFT Collection Stats
-			</Typography>
-			{data.balData ? (
-				<>
+		<>
+			{balData && (
+				<Paper elevation={2} sx={styles.covalentWrap}>
+					<Typography variant="h4" sx={styles.cardTitle}>
+						NFT Collection Stats
+					</Typography>
 					<Typography gutterBottom variant="body1">
-						<Link href={`https://mumbai.polygonscan.com/address/${data.balData.data.address}`} passHref>
-							<Button color="secondary" size="small" variant="outlined" sx={styles.covalentBtn}>
+						<Link href={`https://mumbai.polygonscan.com/address/${balData.address}`} passHref>
+							<Button color="secondary" size="small" variant="contained" sx={styles.covalentBtn}>
 								View Contract Address
 							</Button>
 						</Link>
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						Last Updated: {formatDate(data.balData.data.updated_at)}
-					</Typography>
-				</>
-			) : (
-				<Typography sx={styles.noDataMsg}>
-					No data to show. Make sure you are connected on the Polygon Mumbai testnet.
-				</Typography>
-			)}
-			{data.metaData && (
-				<>
-					<Typography>Contract Name: {data.metaData.data.items[0].contract_name}</Typography>
-					<Typography>Ticker Symbol: {data.metaData.data.items[0].contract_ticker_symbol}</Typography>
-				</>
-			)}
-			<Divider sx={styles.divider} />
-			<Typography variant="h4" gutterBottom>
-				PolyEchoNFT Token Stats
-			</Typography>
-			{data.tokensData ? (
-				<>
-					<Typography variant="overline" sx={styles.covalentMeta}>
-						Last Updated: {formatDate(data.tokensData.data.updated_at)}
+						<strong>Last Updated:</strong> {formatDate(balData.updated_at)}
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						Total Tokens Minted: {data.tokensData.data.items.length}
+						<strong>Token Name:</strong> PolyEcho
 					</Typography>
-				</>
-			) : (
-				<Typography sx={styles.noDataMsg}>
-					No data to show. Make sure you are connected on the Polygon Mumbai testnet.
-				</Typography>
+					<Typography variant="overline" sx={styles.covalentMeta}>
+						<strong>Ticker Symbol:</strong> (ECHO)
+					</Typography>
+				</Paper>
 			)}
-			{data.metaData && (
-				<>
-					<Typography variant="h5" gutterBottom>
+			{tokensData && (
+				<Paper elevation={2} sx={styles.covalentWrap}>
+					<Typography variant="h4" sx={styles.cardTitle}>
+						PolyEchoNFT Token Stats
+					</Typography>
+					<Typography variant="overline" sx={styles.covalentMeta}>
+						<strong>Last Updated:</strong> {formatDate(tokensData.updated_at)}
+					</Typography>
+					<Typography variant="overline" sx={styles.covalentMeta}>
+						<strong>Total Tokens Minted:</strong>{' '}
+						<Typography component="span" sx={styles.numMinted}>
+							{tokensData.items.length}
+						</Typography>
+					</Typography>
+					{tokensData.items.map((token, idx) => (
+						<Box sx={styles.tokenRow} key={idx}>
+							<Typography variant="h6">Token #{token.token_id}</Typography>
+							<Link
+								href={`https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}#inventory`}
+								passHref
+							>
+								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
+									View NFT
+								</Button>
+							</Link>
+						</Box>
+					))}
+				</Paper>
+			)}
+			{metaData && (
+				<Paper elevation={2} sx={styles.covalentWrap}>
+					<Typography variant="h4" sx={styles.cardTitle}>
 						Token Metadata
 					</Typography>
+					<Typography>Contract Name: {metaData.items[0].contract_name}</Typography>
+					<Typography>Ticker Symbol: {metaData.items[0].contract_ticker_symbol}</Typography>
 					<pre>
 						<code
 							className="code-block"
 							dangerouslySetInnerHTML={{
-								__html: prettyPrintJson(data.metaData.data.items[0].nft_data[0]),
+								__html: prettyPrintJson(metaData.items[0].nft_data[0]),
 							}}
 						/>
 					</pre>
-				</>
+				</Paper>
 			)}
-			<Typography variant="h5" gutterBottom>
-				Token Transaction Stats
-			</Typography>
-			{data.txData ? (
-				<>
-					<Typography variant="overline" sx={styles.covalentMeta}>
-						Last Updated: {formatDate(data.txData.data.updated_at)}
+			{txData && (
+				<Paper elevation={2} sx={styles.covalentWrap}>
+					<Typography variant="h4" sx={styles.cardTitle}>
+						Token Transaction Stats
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						Total Transactions: {data.txData.data.items.length}
+						Last Updated: {formatDate(txData.updated_at)}
 					</Typography>
-					{data.txData.data.items.length > 0 && <Typography variant="h5">Transaction History</Typography>}
-					{data.txData.data.items.map((tx, idx) => {
+					<Typography variant="overline" sx={styles.covalentMeta}>
+						Total Transactions: {txData.items.length}
+					</Typography>
+					{txData.items.length > 0 && <Typography variant="h5">Transaction History</Typography>}
+					{txData.items.map((tx, idx) => {
 						const hash = tx.nft_transactions[0].tx_hash
 						const to = tx.nft_transactions[0].to_address
 						const from = tx.nft_transactions[0].from_address
@@ -168,17 +183,12 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 							</Box>
 						)
 					})}
-				</>
-			) : (
-				<Typography sx={styles.noDataMsg}>
-					No data to show. Make sure you are connected on the Polygon Mumbai testnet.
-				</Typography>
+				</Paper>
 			)}
-			<Divider sx={styles.divider} />
 			<Typography variant="overline" sx={{ ...styles.covalentMeta, textAlign: 'center' }}>
 				Powered by <Link href="https://www.covalenthq.com/">Covalent</Link>
 			</Typography>
-		</Paper>
+		</>
 	)
 }
 

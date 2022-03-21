@@ -1,4 +1,5 @@
-import { Box, Button, Chip, CircularProgress, Container, Divider, Grid, Typography } from '@mui/material'
+import { Avatar, Box, Button, Chip, CircularProgress, Container, Divider, Grid, Typography } from '@mui/material'
+import { Person } from '@mui/icons-material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -88,10 +89,11 @@ const styles = {
 	collaborator: {
 		my: 3,
 		display: 'flex',
+		alignItems: 'center',
 	},
-	collaboratorMeta: {
-		color: '#a8a8a8',
-		mr: 2,
+	collaboratorAddress: {
+		ml: 1,
+		fontStyle: 'italic',
 	},
 	noItemsMsg: {
 		textAlign: 'center',
@@ -104,14 +106,15 @@ const styles = {
 }
 
 const propTypes = {
-	covalentData: PropTypes.shape({}).isRequired,
+	covalentData: PropTypes.shape({
+		txData: PropTypes.shape({}),
+		metaData: PropTypes.shape({}),
+	}).isRequired,
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		token: PropTypes.shape({
 			id: PropTypes.number.isRequired,
-			tokenURI: PropTypes.string.isRequired,
 			data: PropTypes.shape({
-				blockNumber: PropTypes.number.isRequired,
 				transactionHash: PropTypes.string.isRequired,
 			}),
 		}).isRequired,
@@ -140,6 +143,7 @@ type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { covalentData, data } = props
+	console.log(covalentData)
 	const [details, setDetails] = useState<any>(data)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -222,135 +226,116 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 				<Container maxWidth="xl">
 					{details ? (
 						<>
+							<Box sx={{ mb: 4 }}>
+								<Typography variant="h4" component="h2" sx={styles.title}>
+									NFT Details
+									{details.isListed && (
+										<Chip label="Listed For Sale!" size="medium" color="primary" sx={styles.buyableChip} />
+									)}
+								</Typography>
+								{details.isListed && currentUser?.address !== details.owner && (
+									<Box sx={styles.buyNowListing}>
+										<Button
+											size="large"
+											onClick={connected ? handleBuyNft : handleConnectWallet}
+											variant="contained"
+											color="secondary"
+											sx={styles.buyNowBtn}
+											disabled={loading}
+										>
+											{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
+										</Button>
+										<Box sx={styles.price}>
+											<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+											<Typography variant="h4" component="div" sx={{ ml: 1 }}>
+												{details.listPrice}{' '}
+												<Typography sx={styles.eth} component="span">
+													MATIC
+												</Typography>
+											</Typography>
+										</Box>
+									</Box>
+								)}
+								{currentUser?.address === details.owner &&
+									(details.isListed ? (
+										<Box sx={styles.buyNowListing}>
+											<ListNftDialog unlist={true} nft={data} onListSuccess={handleListSuccess} />
+											<Box sx={styles.price}>
+												<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+												<Typography variant="h4" component="div">
+													{details.listPrice}{' '}
+													<Typography sx={styles.eth} component="span">
+														MATIC
+													</Typography>
+												</Typography>
+											</Box>
+										</Box>
+									) : (
+										<Box sx={{ my: 2 }}>
+											<ListNftDialog nft={data} onListSuccess={handleListSuccess} />
+										</Box>
+									))}
+							</Box>
 							<Grid container spacing={4}>
 								<Grid item xs={12} md={5}>
-									<Box>
-										<Typography variant="h4" component="h2" sx={styles.title}>
-											NFT Details
-											{details.isListed && (
-												<Chip label="Listed For Sale!" size="medium" color="primary" sx={styles.buyableChip} />
-											)}
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Name:
 										</Typography>
-										{details.isListed && currentUser?.address !== details.owner && (
-											<Box sx={styles.buyNowListing}>
-												<Button
-													size="large"
-													onClick={connected ? handleBuyNft : handleConnectWallet}
-													variant="contained"
-													color="secondary"
-													sx={styles.buyNowBtn}
-													disabled={loading}
-												>
-													{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
-												</Button>
-												<Box sx={styles.price}>
-													<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
-													<Typography variant="h4" component="div" sx={{ ml: 1 }}>
-														{details.listPrice}{' '}
-														<Typography sx={styles.eth} component="span">
-															MATIC
-														</Typography>
-													</Typography>
-												</Box>
-											</Box>
-										)}
-										{currentUser?.address === details.owner &&
-											(details.isListed ? (
-												<Box sx={styles.buyNowListing}>
-													<ListNftDialog unlist={true} nft={data} onListSuccess={handleListSuccess} />
-													<Box sx={styles.price}>
-														<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
-														<Typography variant="h4" component="div">
-															{details.listPrice}{' '}
-															<Typography sx={styles.eth} component="span">
-																MATIC
-															</Typography>
-														</Typography>
-													</Box>
-												</Box>
-											) : (
-												<Box sx={{ my: 2 }}>
-													<ListNftDialog nft={data} onListSuccess={handleListSuccess} />
-												</Box>
-											))}
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Collection:{' '}
-											</Typography>
-											<Link href="https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
-												View On Explorer
-											</Link>
+										<Link href={`/users/${details.createdBy}`}>{details.name}</Link>
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Owner:
 										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												ID:
-											</Typography>
-											<Link
-												href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}#inventory`}
-											>
-												{details.token.id.toString()}
-											</Link>
+										<Link href={`/users/${details.owner}`}>{formatAddress(details.owner)}</Link>
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Minted By:
 										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Name:
-											</Typography>
-											<Link href={`/users/${details.createdBy}`}>{details.name}</Link>
+										<Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Minted On:
 										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Owner:
-											</Typography>
-											{formatAddress(details.owner)}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Minted By:
-											</Typography>
-											{formatAddress(details.createdBy)}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Minted On:
-											</Typography>
-											{formatDate(details.createdAt)}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Project ID:
-											</Typography>
-											<Link href={`/projects/${details.projectId}`}>{details.projectId}</Link>
-										</Typography>
-										<Typography variant="body2" sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Block #:{' '}
-											</Typography>
-											<Link href={`https://mumbai.polygonscan.com/block/${details.token.data.blockNumber}`}>
-												View on Explorer
-											</Link>
-										</Typography>
-										<Typography variant="body2" sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Tx Hash:{' '}
-											</Typography>
-											<Link href={`https://mumbai.polygonscan.com/tx/${details.token.data.transactionHash}`}>
-												View on Explorer
-											</Link>
-										</Typography>
-									</Box>
+										{formatDate(details.createdAt)}
+									</Typography>
 								</Grid>
 								<Grid item xs={12} md={7}>
-									{covalentData && <CovalentInsights data={covalentData} />}
-									<Link href={details.metadataUrl} passHref>
-										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
-											View NFT Metadata on IPFS
-										</Button>
-									</Link>
-									<Link href="ipfs://[cid]/blob" passHref>
-										<Button variant="outlined" fullWidth size="large" sx={styles.btn}>
-											Listen to the Music NFT
-										</Button>
-									</Link>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											ID:
+										</Typography>
+										<Link
+											href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}#inventory`}
+										>
+											{details.token.id.toString()}
+										</Link>
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Collection:{' '}
+										</Typography>
+										<Link href="https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
+											View On Explorer
+										</Link>
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Tx Hash:{' '}
+										</Typography>
+										<Link href={`https://mumbai.polygonscan.com/tx/${details.token.data.transactionHash}`}>
+											View On Explorer
+										</Link>
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Project ID:
+										</Typography>
+										<Link href={`/projects/${details.projectId}`}>{details.projectId}</Link>
+									</Typography>
 								</Grid>
 							</Grid>
 							<Divider light sx={styles.divider} />
@@ -360,12 +345,18 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									({details.collaborators.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>This NFT was created by the following contributors</Typography>
+							<Typography sx={styles.sectionMeta}>
+								This NFT was created by {details.collaborators.length || 0} contributor
+								{details.collaborators.length === 1 ? '' : 's'} and composed of {details.stems.length || 0} stem
+								{details.stems.length === 1 ? '' : 's'}
+							</Typography>
 							{details.collaborators.length > 0 ? (
-								details.collaborators.map((collaborator: string, idx: number) => (
+								details.collaborators.map((collaborator: string) => (
 									<Box sx={styles.collaborator} key={collaborator}>
-										<Typography sx={styles.collaboratorMeta}>#{idx + 1}:</Typography>
-										<Typography>
+										<Avatar>
+											<Person />
+										</Avatar>
+										<Typography sx={styles.collaboratorAddress}>
 											<Link href={`/users/${collaborator}`}>{formatAddress(collaborator)}</Link>
 										</Typography>
 									</Box>
@@ -373,7 +364,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 							) : (
 								<Typography sx={styles.noItemsMsg}>This NFT contains no collaborators</Typography>
 							)}
-							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
 								Stems
 								<Typography component="span" sx={styles.sectionCount}>
@@ -400,6 +390,17 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 							Sorry, no details were found for this NFT.
 						</Typography>
 					)}
+					<Divider light sx={styles.divider} />
+					{covalentData && (
+						<Grid container spacing={3}>
+							<Grid item xs={12} sm={6} md={7}>
+								<CovalentInsights metaData={covalentData.metaData} />
+							</Grid>
+							<Grid item xs={12} sm={6} md={5}>
+								<CovalentInsights txData={covalentData.txData} />
+							</Grid>
+						</Grid>
+					)}
 				</Container>
 			</main>
 
@@ -410,6 +411,8 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 		</>
 	)
 }
+
+NftDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	// Get NFT details based off ID
@@ -436,37 +439,25 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
 	const chainId = 80001
 
-	// Get's token balance
-	const balRes = await fetch(
-		`https://api.covalenthq.com/v1/${chainId}/address/${contractAddress}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`,
-	)
-	const balData = balRes.ok ? await balRes.json() : null
-
-	// Gets all Tokens in collection
-	const tokensUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
-	const tokensRes = await fetch(tokensUrl)
-	const tokensData = tokensRes.ok ? await tokensRes.json() : null
-
-	// We'll need the token ID for this given NFT details, so only grab token-specific data if we have it
 	let txData = null
 	let metaData = null
 	if (data && data.token.id !== null) {
 		// Txs
 		const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
 		const txRes = await fetch(txUrl)
-		txData = txRes.ok ? await txRes.json() : null
+		const txJson = txRes.ok ? await txRes.json() : null
+		txData = txJson.data
 
 		// Metadata
 		const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
 		const metaRes = await fetch(metaUrl)
-		metaData = metaRes.ok ? await metaRes.json() : null
+		const metaJson = metaRes.ok ? await metaRes.json() : null
+		metaData = metaJson.data
 	}
 
 	return {
 		props: {
 			covalentData: {
-				balData,
-				tokensData,
 				txData,
 				metaData,
 			},
