@@ -78,7 +78,7 @@ type StemPlayerProps = {
 	onSolo?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: () => any
-	onNewFile: (newFile: Blob) => void
+	onNewFile?: (newFile: Blob) => void
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
@@ -97,7 +97,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				fetch(details.audioHref).then(resp => {
 					resp.blob().then(b => {
 						setBlob(b)
-						onNewFile(b)
+						if (onNewFile) onNewFile(b)
 						blobFileToLoad = b
 					})
 				})
