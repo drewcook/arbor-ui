@@ -78,15 +78,31 @@ type StemPlayerProps = {
 	onSolo?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: () => any
+	onNewFile: (newFile: Blob) => void
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
-	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop } = props
+	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop, onNewFile } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
+	const [blob, setBlob] = useState<Blob>()
+	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
 
 	useEffect(() => {
+		if (!blob) {
+			if (!loadingBlob) {
+				setLoadingBlob(true)
+				fetch(details.audioHref).then(resp => {
+					resp.blob().then(b => {
+						setBlob(b)
+						onNewFile(b)
+					})
+				})
+				setLoadingBlob(false)
+			}
+		}
+
 		const ws = WaveSurfer.create({
 			container: `#waveform-${details._id}-${idx}`,
 			waveColor: '#bbb',
@@ -99,7 +115,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 			barGap: 2,
 		})
 		// Load audio from an XHR request
-		ws.load(details.audioHref)
+		ws.load_blob(blob)
 		// Skip back to zero when finished playing
 		ws.on('finish', () => {
 			ws.seekTo(0)
