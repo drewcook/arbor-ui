@@ -293,6 +293,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	// Project details
 	const [details, setDetails] = useState(data)
+	const [files, setFiles] = useState<Array<Blob>>([])
+
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -388,6 +390,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		handleUploadStemClose()
 	}
 
+	const onNewFile = (newFile: Blob) => {
+		if (!files) {
+			setFiles(() => [newFile])
+		} else {
+			setFiles(files => [...files, newFile])
+		}
+	}
+
 	// TODO: Keep track of minted versions and how many mints a project has undergone
 	const handleMintAndBuy = async () => {
 		try {
@@ -397,27 +407,23 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
-				// Hit Python HTTP server to flatten stems into a singular one
-				// TODO: Move uploading to NFT.storage out from the flattening service
-				// Have it return a file, or base64 of the audio and add to payload as;
-				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+				// Construct files and post to flattening service
+				const formData = new FormData()
+				for (let i = 0; i < files.length; i++) {
+					formData.append(`files`, files[i])
+				}
+				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
+					method: 'POST',
+					body: formData,
+				})
 
-				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
+				// Catch flatten audio error
+				if (!response.ok) throw new Error('Failed to flatten the audio files')
+				if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 
-				// const response = await fetch('/api/flatten', {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		'Content-Type': 'application/json',
-				// 	},
-				// 	body: JSON.stringify({ sample_cids: details.stems.map(s => s?.audioUrl.replace('ipfs://', '')) }),
-				// })
-				// // Catch flatten audio error
-				// if (!response.ok) throw new Error('Failed to flatten the audio files')
-				// const flattenedData = await response.json() // Catch fro .json()
-				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
-
-				// TODO: create new stem from flattened audio
-				// TODO: add new stem created to user's info
+				const flattenedAudioBlob = await response.blob()
+				if (!flattenedAudioBlob) throw new Error('Failed to flatten the audio files')
 
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Uploading to NFT.storage...')
@@ -431,7 +437,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						audio: `ipfs://[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+						audio: flattenedAudioBlob,
 						collaborators: details.collaborators,
 						stems: details.stems.map((s: any) => s.metadataUrl),
 					},
@@ -473,7 +479,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					audioHref: nftsRes.data.properties.audio,
 					projectId,
 					collaborators: details.collaborators,
-					stems: details.stems, // Direct 1:1 map
+					stems: details.stems, // Direct 1:1 deep clone
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)
@@ -654,6 +660,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												onWavesInit={onWavesInit}
 												onFinish={() => setIsPlayingAll(false)}
 												onSolo={handleSoloStem}
+												onNewFile={onNewFile}
 											/>
 										</Fragment>
 									))}
