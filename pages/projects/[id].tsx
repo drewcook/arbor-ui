@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
@@ -166,6 +166,8 @@ type ProjectPageProps = PropTypes.InferProps<typeof propTypes>
 const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	const [details, setDetails] = useState(data)
+	const [files, setFiles] = useState<Array<Blob>>([])
+
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	const [minting, setMinting] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -197,7 +199,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setSuccessOpen(true)
 		setSuccessMsg('Successfully uploaded file to NFT.storage!')
 	}
-
+	const onNewFile = (newFile: Blob) => {
+		console.log('New File Found')
+		if (!files) {
+			setFiles(() => [newFile])
+		} else {
+			setFiles(files => [...files, newFile])
+		}
+	}
 	// TODO: Keep track of minted versions and how many mints a project has undergone
 	const handleMintAndBuy = async () => {
 		try {
@@ -213,16 +222,25 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
 
 				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
-
-				// const response = await fetch('/api/flatten', {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		'Content-Type': 'application/json',
-				// 	},
-				// 	body: JSON.stringify({ sample_cids: details.samples.map(s => s?.audioUrl.replace('ipfs://', '')) }),
-				// })
+				// console.log(details.samples)
+				if (files) {
+					console.log('Files:')
+					console.log(files)
+				}
+				const formData = new FormData()
+				for (let i = 0; i < files.length; i++) {
+					formData.append(`file_${i}`, files[i])
+				}
+				const response = await fetch('/api/flatten', {
+					method: 'POST',
+					// headers: {
+					// 	'Content-Type': 'application/json',
+					// },
+					body: formData,
+				})
 				// // Catch flatten audio error
-				// if (!response.ok) throw new Error('Failed to flatten the audio files')
+				if (!response.ok) throw new Error('Failed to flatten the audio files')
+				response.json().then(r => console.log(r))
 				// const flattenedData = await response.json() // Catch fro .json()
 				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
@@ -310,7 +328,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Project Details</title>
+				<title>{files.length} PolyEcho | Project Details</title>
 				<meta
 					name="description"
 					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
@@ -422,7 +440,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							{details.samples.length > 0 ? (
 								details.samples.map((sample, idx) => (
 									<Fragment key={idx}>
-										<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} />
+										<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} onNewFile={onNewFile} />
 									</Fragment>
 								))
 							) : (

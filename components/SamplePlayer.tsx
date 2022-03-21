@@ -44,34 +44,50 @@ type SamplePlayerProps = {
 	idx: number
 	details: ISampleDoc | any
 	showEyebrow: boolean
+	onNewFile: (newFile: Blob) => void
 }
 
 const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
-	const { idx, details, showEyebrow } = props
+	const { idx, details, showEyebrow, onNewFile } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isPlaying, setIsPlaying] = useState<boolean>(false)
+	const [blob, setBlob] = useState<Blob>()
+	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
 
 	useEffect(() => {
-		const ws = WaveSurfer.create({
-			container: `#waveform-${details._id}-${idx}`,
-			waveColor: '#D9DCFF',
-			progressColor: '#4353FF',
-			cursorColor: '#4353FF',
-			barWidth: 3,
-			barRadius: 3,
-			cursorWidth: 1,
-			height: 200,
-			barGap: 3,
-			plugins: [
-				TimelinePlugin.create({
-					container: `#timeline-${details._id}-${idx}`,
-				}),
-			],
-		})
-		ws.load(details.audioHref)
-		setWavesurfer(ws)
-		return () => ws.destroy()
-	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
+		if (blob) {
+			const ws = WaveSurfer.create({
+				container: `#waveform-${details._id}-${idx}`,
+				waveColor: '#D9DCFF',
+				progressColor: '#4353FF',
+				cursorColor: '#4353FF',
+				barWidth: 3,
+				barRadius: 3,
+				cursorWidth: 1,
+				height: 200,
+				barGap: 3,
+				plugins: [
+					TimelinePlugin.create({
+						container: `#timeline-${details._id}-${idx}`,
+					}),
+				],
+			})
+			console.log('Loaded wavesurfer')
+			ws.loadBlob(blob)
+			setWavesurfer(ws)
+			return () => ws.destroy()
+		} else {
+			if (!loadingBlob) {
+				setLoadingBlob(true)
+				fetch(details.audioHref).then(resp => {
+					resp.blob().then(b => {
+						setBlob(b)
+						onNewFile(b)
+					})
+				})
+			}
+		}
+	}, [blob, loadingBlob]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
 	const handlePlayPause = () => {
 		setIsPlaying(!isPlaying)
