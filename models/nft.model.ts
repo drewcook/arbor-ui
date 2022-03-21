@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import type { ISampleDoc } from './sample.model'
-import { sampleSchema } from './sample.model'
+import type { IStemDoc } from './stem.model'
+import { stemSchema } from './stem.model'
 
 // TODO: create token model
 type Token = {
@@ -20,7 +20,7 @@ export interface INft {
 	name: string
 	projectId: string
 	collaborators: string[]
-	samples: ISampleDoc[]
+	stems: IStemDoc[]
 }
 
 export interface INftDoc extends Document, INft {}
@@ -51,8 +51,8 @@ const nftSchema = new mongoose.Schema<INftDoc>(
 			type: [String],
 			required: true,
 		},
-		samples: {
-			type: [sampleSchema],
+		stems: {
+			type: [stemSchema],
 			required: true,
 		},
 		createdBy: {

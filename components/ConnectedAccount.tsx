@@ -78,9 +78,9 @@ const ConnectedAccount = (): JSX.Element => {
 							open={Boolean(anchorEl)}
 							onClose={handleCloseMenu}
 						>
-							<MenuItem>
-								<Link href={`/users/${currentUser.address}`}>Profile</Link>
-							</MenuItem>
+							<Link href={`/users/${currentUser.address}`} passHref>
+								<MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+							</Link>
 							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
 						<Typography variant="body2">{formatAddress(currentUser.address)}</Typography>

@@ -7,7 +7,7 @@ export type CreateUserPayload = {
 	displayName: string
 	avatarUrl: string
 	projectIds: string[]
-	sampleIds: string[]
+	stemIds: string[]
 	nftIds: string[]
 }
 
@@ -40,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					displayName: accountAddress,
 					avatarUrl,
 					projectIds: [],
-					sampleIds: [],
+					stemIds: [],
 					nftIds: [],
 				}
 

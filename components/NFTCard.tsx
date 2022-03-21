@@ -1,7 +1,7 @@
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
-import EthereumIcon from '../public/eth_icon.png'
+import PolygonIcon from '../public/polygon_logo_black.png'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
@@ -14,16 +14,14 @@ const styles = {
 		position: 'absolute',
 		top: '1.5rem',
 		right: '-1rem',
-		// backgroundColor: '#91ff00',
-		// backgroundColor: '#d1ff00',
 		backgroundColor: '#ff5200',
 		py: 2.5,
 		color: '#fff',
 		zIndex: 1,
 	},
 	card: {
-		position: 'relative',
 		minWidth: '200px',
+		position: 'relative',
 		overflow: 'visible',
 	},
 	projectIconLink: {
@@ -77,7 +75,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 	return (
 		<>
 			<Card sx={styles.card} elevation={2}>
-				{details.isListed && <Chip label="Listed For Sale!" size="medium" sx={styles.buyableChip} />}
+				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
 				<CardContent>
 					<Box className="nft-card-media">
 						<ImageOptimized
@@ -107,11 +105,11 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					{details.isListed ? (
 						<Box sx={styles.buyNowPrice}>
 							<Box sx={styles.price}>
-								<ImageOptimized src={EthereumIcon} width={16} height={26} alt="Ethereum" />
+								<ImageOptimized src={PolygonIcon} width={28} height={28} alt="Polygon" />
 								<Typography variant="h5" component="div" sx={{ ml: 0.75 }}>
 									{details.listPrice}{' '}
 									<Typography sx={styles.eth} component="span">
-										ETH
+										MATIC
 									</Typography>
 								</Typography>
 							</Box>
@@ -124,10 +122,10 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					</Link>
 					{/* {details.isListed && currentUser?.address !== details.owner && (
 						<Button
-							variant="contained"
-							color="primary"
-							onClick={connected ? handleBuyNft : handleConnectWallet}
-							sx={styles.buyNowBtn}
+						variant="contained"
+						color="primary"
+						onClick={connected ? handleBuyNft : handleConnectWallet}
+						sx={styles.buyNowBtn}
 						>
 							Buy Now
 						</Button>

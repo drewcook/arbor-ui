@@ -1,13 +1,14 @@
+import { SkipPrevious, Square } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
-import type { ISampleDoc } from '../models/sample.model'
+import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
-import formatSampleName from '../utils/formatSampleName'
+import formatStemName from '../utils/formatStemName'
 
 const styles = {
-	sample: {
+	stem: {
 		borderLeft: '3px solid #000',
 		borderRight: '3px solid #000',
 		borderBottom: '3px solid #111',
@@ -68,16 +69,19 @@ const styles = {
 }
 
 // We have to pass back up callbacks because we use global controls outside of this player's track
-type SamplePlayerProps = {
+type StemPlayerProps = {
 	idx: number
-	details: ISampleDoc | any
+	details: IStemDoc | any
 	onWavesInit: (idx: number, ws: any) => any
-	onSolo: (idx: number) => any
-	onFinish?: (idx: number) => any
+	onFinish?: (idx: number, ws: any) => any
+	isStemDetails?: boolean
+	onSolo?: (idx: number) => any
+	onSkipPrev?: () => any
+	onStop?: () => any
 }
 
-const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
-	const { idx, details, onWavesInit, onSolo, onFinish } = props
+const StemPlayer = (props: StemPlayerProps): JSX.Element => {
+	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
@@ -99,7 +103,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 		// Skip back to zero when finished playing
 		ws.on('finish', () => {
 			ws.seekTo(0)
-			if (onFinish) onFinish(idx)
+			if (onFinish) onFinish(idx, ws)
 		})
 
 		setWavesurfer(ws)
@@ -115,7 +119,7 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 
 	const toggleSolo = () => {
 		setIsSoloed(!isSoloed)
-		onSolo(idx)
+		if (onSolo) onSolo(idx)
 	}
 
 	const stemTypesToColor: Record<string, string> = {
@@ -129,12 +133,12 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 	}
 
 	return (
-		<Box sx={styles.sample}>
+		<Box sx={styles.stem}>
 			<Box sx={{ ...styles.header, backgroundColor: stemTypesToColor[details.type] || '#dadada' }}>
 				<Grid container spacing={2} sx={{ alignItems: 'center' }}>
 					<Grid item xs={10}>
 						<Typography sx={styles.title} variant="h4">
-							{formatSampleName(details.name || details.filename)}
+							{formatStemName(details.name || details.filename)}
 						</Typography>
 						<Typography sx={styles.addedBy}>
 							Added X hours ago by{' '}
@@ -155,12 +159,35 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 				<Grid container spacing={1}>
 					<Grid item xs={1} sx={styles.btnsWrap}>
 						<ButtonGroup sx={styles.btnGroup} orientation="vertical">
-							<Button variant={isMuted ? 'contained' : 'outlined'} size="small" onClick={toggleMute}>
-								M
-							</Button>
-							<Button variant={isSoloed ? 'contained' : 'outlined'} size="small" onClick={toggleSolo}>
-								S
-							</Button>
+							{isStemDetails ? (
+								<>
+									<Button size="small" onClick={onSkipPrev} title="Skip to beginning">
+										<SkipPrevious />
+									</Button>
+									<Button size="small" onClick={onStop} title="Stop stem">
+										<Square fontSize="small" />
+									</Button>
+								</>
+							) : (
+								<>
+									<Button
+										variant={isMuted ? 'contained' : 'outlined'}
+										size="small"
+										onClick={toggleMute}
+										title="Mute stem"
+									>
+										M
+									</Button>
+									<Button
+										variant={isSoloed ? 'contained' : 'outlined'}
+										size="small"
+										onClick={toggleSolo}
+										title="Solo stem"
+									>
+										S
+									</Button>
+								</>
+							)}
 						</ButtonGroup>
 					</Grid>
 					<Grid item xs={11}>
@@ -173,4 +200,8 @@ const SamplePlayer = (props: SamplePlayerProps): JSX.Element => {
 	)
 }
 
-export default SamplePlayer
+StemPlayer.defaultProps = {
+	isStemDetails: false,
+}
+
+export default StemPlayer

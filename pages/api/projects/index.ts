@@ -9,7 +9,7 @@ export type CreateProjectPayload = {
 	name: string
 	description: string
 	bpm: number
-	timeboxMins: number
+	trackLimit: number
 	tags: string[]
 }
 
@@ -35,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					name: req.body.name,
 					description: req.body.description,
 					bpm: req.body.bpm,
-					timeboxMins: req.body.timeboxMins,
+					trackLimit: req.body.trackLimit,
 					tags: req.body.tags,
 				}
 				/* create a new model in the database */

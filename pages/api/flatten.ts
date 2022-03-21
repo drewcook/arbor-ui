@@ -4,9 +4,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 const pythonServer = axios.create({ baseURL: process.env.PYTHON_HTTP_HOST })
 
 /**
- * Hits an external Python service to combine and flatten individual samples into a singular sample
- * @param req.body - An array of IPFS CIDs that represent individual samples
- * @returns res.data - A singular IPFS CID that represents the newly, flattened sample
+ * Hits an external Python service to combine and flatten individual stems into a singular stem
+ * @param req.body - An array of IPFS CIDs that represent individual stems
+ * @returns res.data - A singular IPFS CID that represents the newly, flattened stem
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req
