@@ -6,7 +6,6 @@ import ConnectedAccount from './ConnectedAccount'
 
 const styles = {
 	appbar: {
-		marginBottom: 4,
 		backgroundColor: '#fff',
 		color: '#111',
 		boxShadow: 0,
