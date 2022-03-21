@@ -136,7 +136,7 @@ const propTypes = {
 	projectDetails: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		collaborators: PropTypes.array.isRequired,
-	}).isRequired,
+	}),
 }
 
 type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
@@ -180,7 +180,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	}
 
 	const handleUpload = async () => {
-		if (!file || !currentUser) return
+		if (!file || !currentUser || !projectDetails) return
 
 		try {
 			setLoading(true)

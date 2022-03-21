@@ -143,7 +143,6 @@ type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const { covalentData, data } = props
-	console.log(covalentData)
 	const [details, setDetails] = useState<any>(data)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
