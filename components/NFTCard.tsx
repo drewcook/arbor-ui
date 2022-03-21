@@ -1,5 +1,6 @@
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
+import Image from 'next/image'
 import Link from 'next/link'
 import PolygonIcon from '../public/polygon_logo_black.png'
 import formatAddress from '../utils/formatAddress'
@@ -78,11 +79,12 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
 				<CardContent>
 					<Box className="nft-card-media">
-						<ImageOptimized
+						<Image
 							src="https://bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link/"
-							alt="PolyEcho NFT"
+							alt="PolyEcho NFT Image"
 							width={400}
 							height={400}
+							title="PolyEcho NFT Image"
 						/>
 					</Box>
 					<Typography variant="h5" gutterBottom>

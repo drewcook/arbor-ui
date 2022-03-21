@@ -76,7 +76,6 @@ type CovalentInsightsProps = PropTypes.InferProps<typeof propTypes>
 
 const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 	const { balData, tokensData, txData, metaData } = props
-	console.log('client props', props)
 
 	return (
 		<>
