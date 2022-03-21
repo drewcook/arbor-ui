@@ -136,7 +136,7 @@ const propTypes = {
 	projectDetails: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		collaborators: PropTypes.array.isRequired,
-	}).isRequired,
+	}),
 }
 
 type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
@@ -180,7 +180,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	}
 
 	const handleUpload = async () => {
-		if (!file || !currentUser) return
+		if (!file || !currentUser || !projectDetails) return
 
 		try {
 			setLoading(true)
@@ -231,7 +231,6 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			const collaborators = projectDetails.collaborators
 			if (!projectDetails.collaborators.some((c: string) => c === currentUser.address))
 				collaborators.push(currentUser.address)
-
 			// Add the new stem to the project and new collaborators list
 			res = await update(`/projects/${projectDetails._id}`, { newStem: stemCreated, collaborators })
 
