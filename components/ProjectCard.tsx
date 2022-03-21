@@ -23,6 +23,8 @@ const styles = {
 	},
 	cardMedia: {
 		backgroundColor: '#111',
+		borderTopLeftRadius: '4px',
+		borderTopRightRadius: '4px',
 		borderBottom: '3px solid #4CE79D',
 		py: 1,
 		px: 1.5,
