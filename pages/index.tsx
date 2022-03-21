@@ -1,5 +1,5 @@
 import { ArrowDownward, ArrowUpward, Lightbulb, MusicNote, Sell } from '@mui/icons-material'
-import { Box, Button, Container, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
+import { Box, Button, Container, Grid, List, ListItem, ListItemIcon, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
