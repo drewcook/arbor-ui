@@ -5,7 +5,7 @@ import downloadURL from '../../../../utils/downloadURL'
 
 /**
  * Takes in a URL to download from and writes the file to a stream
- * @param req.body.url - An IPFS CID that represent an individual sample
+ * @param req.body.url - An IPFS CID that represent an individual stem
  * @returns res.data - A file to write to
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const downloadsPath = path.resolve(
 		process.env.HOME || __dirname,
 		'Downloads',
-		`PolyEcho_Sample_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
+		`PolyEcho_Stem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
 	)
 
 	switch (method) {

@@ -356,7 +356,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				data?.stems.forEach(async (stem: IStemDoc) => {
 					const res = await get(`/stems/download`, {
 						url: stem.audioUrl,
-						filename: `PolyEcho_Sample_${projectId}_${stem.filename}`,
+						filename: `PolyEcho_Stem_${projectId}_${stem.filename}`,
 					})
 
 					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
