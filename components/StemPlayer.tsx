@@ -90,7 +90,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
 
 	useEffect(() => {
-		let blobFileToLoad: Blob | undefined
 		if (!blob) {
 			if (!loadingBlob) {
 				setLoadingBlob(true)
@@ -98,40 +97,38 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 					resp.blob().then(b => {
 						setBlob(b)
 						if (onNewFile) onNewFile(b)
-						blobFileToLoad = b
 					})
 				})
 				setLoadingBlob(false)
 			}
+		} else {
+			const ws = WaveSurfer.create({
+				container: `#waveform-${details._id}-${idx}`,
+				waveColor: '#bbb',
+				progressColor: '#444',
+				cursorColor: '#656565',
+				barWidth: 3,
+				barRadius: 3,
+				cursorWidth: 1,
+				height: 80,
+				barGap: 2,
+			})
+
+			// Load audio from an XHR request
+			ws.loadBlob(blob)
+
+			// Skip back to zero when finished playing
+			ws.on('finish', () => {
+				ws.seekTo(0)
+				if (onFinish) onFinish(idx, ws)
+			})
+
+			setWavesurfer(ws)
+			// Callback to the parent
+			onWavesInit(idx, ws)
+			return () => ws.destroy()
 		}
-
-		const ws = WaveSurfer.create({
-			container: `#waveform-${details._id}-${idx}`,
-			waveColor: '#bbb',
-			progressColor: '#444',
-			cursorColor: '#656565',
-			barWidth: 3,
-			barRadius: 3,
-			cursorWidth: 1,
-			height: 80,
-			barGap: 2,
-		})
-
-		// Load audio from an XHR request
-		if (blobFileToLoad) ws.loadBlob(blobFileToLoad)
-		else ws.load(details.audioHref)
-
-		// Skip back to zero when finished playing
-		ws.on('finish', () => {
-			ws.seekTo(0)
-			if (onFinish) onFinish(idx, ws)
-		})
-
-		setWavesurfer(ws)
-		// Callback to the parent
-		onWavesInit(idx, ws)
-		return () => ws.destroy()
-	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
+	}, [blob, loadingBlob]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
 	const toggleMute = () => {
 		setIsMuted(!isMuted)
