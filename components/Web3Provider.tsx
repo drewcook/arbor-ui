@@ -30,6 +30,8 @@ type ProviderProps = {
 
 // Polygon Mumbai
 const NETWORK_ID = 80001
+// Kovan
+// const NETWORK_ID = 4
 
 // Create context
 // @ts-ignore

@@ -267,8 +267,11 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 		<>
 			<Dialog onClose={handleClose} open={open} maxWidth="md">
 				<Toolbar>
-					<DialogTitle sx={styles.title}>Upload A Stem</DialogTitle>
-					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+					{/* @ts-ignore */}
+					<DialogTitle sx={styles.title} variant="h4">
+						Upload A Stem
+					</DialogTitle>
+					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close" disabled={loading}>
 						<Close />
 					</IconButton>
 				</Toolbar>

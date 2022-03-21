@@ -23,6 +23,8 @@ const styles = {
 	},
 	cardMedia: {
 		backgroundColor: '#111',
+		borderTopLeftRadius: '4px',
+		borderTopRightRadius: '4px',
 		borderBottom: '3px solid #4CE79D',
 		py: 1,
 		px: 1.5,
@@ -84,7 +86,7 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 			</CardContent>
 			<CardActions sx={styles.actions}>
 				<Link href={`/projects/${details._id}`} passHref>
-					<Button color="secondary">View Details</Button>
+					<Button color="primary">View Details</Button>
 				</Link>
 			</CardActions>
 		</Card>
