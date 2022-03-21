@@ -40,6 +40,7 @@ const pages = [
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
 	{ href: '/nfts', title: 'Marketplace' },
+	{ href: '/stats', title: 'Stats' },
 ]
 
 const AppHeader = (): JSX.Element => {

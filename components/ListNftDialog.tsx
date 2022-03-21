@@ -189,7 +189,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 					</Typography>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="info">
+					<Button onClick={handleClose} color="info" disabled={loading}>
 						Cancel
 					</Button>
 					<Button onClick={handleUnlist} variant="contained" color="info" disabled={loading}>
