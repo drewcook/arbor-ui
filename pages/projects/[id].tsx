@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
@@ -216,31 +216,17 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
-				// Hit Python HTTP server to flatten samples into a singular one
-				// TODO: Move uploading to NFT.storage out from the flattening service
-				// Have it return a file, or base64 of the audio and add to payload as;
-				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
-
-				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
-				// console.log(details.samples)
-				if (files) {
-					console.log('Files:')
-					console.log(files)
-				}
 				const formData = new FormData()
 				for (let i = 0; i < files.length; i++) {
-					formData.append(`file_${i}`, files[i])
+					formData.append(`files`, files[i])
 				}
-				const response = await fetch('/api/flatten', {
+				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
 					method: 'POST',
-					// headers: {
-					// 	'Content-Type': 'application/json',
-					// },
 					body: formData,
 				})
 				// // Catch flatten audio error
 				if (!response.ok) throw new Error('Failed to flatten the audio files')
-				response.json().then(r => console.log(r))
 				// const flattenedData = await response.json() // Catch fro .json()
 				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
 
@@ -250,6 +236,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Uploading to NFT.storage...')
 
+				if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 				// Construct NFT.storage data and store
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
@@ -259,7 +246,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						audio: `ipfs//[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+						audio: await response.blob(),
 						collaborators: details.collaborators,
 						samples: details.samples.map((s: any) => s.metadataUrl),
 					},
@@ -328,7 +315,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>{files.length} PolyEcho | Project Details</title>
+				<title>PolyEcho | Project Details</title>
 				<meta
 					name="description"
 					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
