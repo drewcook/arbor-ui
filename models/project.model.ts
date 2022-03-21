@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose'
-import type { ISampleDoc } from './sample.model'
-import { sampleSchema } from './sample.model'
+import type { IStemDoc } from './stem.model'
+import { stemSchema } from './stem.model'
 
 export interface IProject {
 	createdBy: string
@@ -8,9 +8,9 @@ export interface IProject {
 	name: string
 	description: string
 	bpm: number
-	timeboxMins: number
+	trackLimit: number
 	tags: string[]
-	samples: ISampleDoc[]
+	stems: IStemDoc[]
 }
 
 export interface IProjectDoc extends Document, IProject {}
@@ -42,22 +42,22 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 		bpm: {
 			type: Number,
 			required: true,
-			min: 40,
-			max: 300,
+			min: 0,
+			max: 1000,
 		},
-		timeboxMins: {
+		trackLimit: {
 			type: Number,
 			required: true,
 			min: 0,
-			max: 30,
+			max: 1000,
 		},
 		tags: {
 			type: [String],
 			required: false,
 			default: [],
 		},
-		samples: {
-			type: [sampleSchema],
+		stems: {
+			type: [stemSchema],
 			required: false,
 			default: [],
 		},

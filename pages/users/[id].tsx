@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
+import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
-import Notification from '../../components/Notification'
 import ProjectCard from '../../components/ProjectCard'
-import SampleCard from '../../components/SampleCard'
+import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
@@ -62,6 +62,9 @@ const styles = {
 		ml: 1,
 		fontSize: '1.5rem',
 	},
+	nftActionBtn: {
+		m: 1,
+	},
 	noItemsMsg: {
 		textAlign: 'center',
 		marginY: 4,
@@ -71,12 +74,13 @@ const styles = {
 const propTypes = {
 	data: PropTypes.shape({
 		_doc: PropTypes.shape({
+			_id: PropTypes.string.isRequired,
 			address: PropTypes.string.isRequired,
 			createdAt: PropTypes.string.isRequired,
 		}).isRequired,
 		nfts: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
-		samples: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+		stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
 }
 
@@ -86,10 +90,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
 	const [details, setDetails] = useState<any | null>(null)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
-	const [successOpen, setSuccessOpen] = useState<boolean>(false)
-	const [successMsg, setSuccessMsg] = useState<string>('')
-	const [errorOpen, setErrorOpen] = useState<boolean>(false)
-	const [errorMsg, setErrorMsg] = useState<string>('')
 	const { currentUser } = useWeb3()
 
 	useEffect(() => {
@@ -111,11 +111,15 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 		}
 	}, [currentUser]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
-	const onNotificationClose = () => {
-		setSuccessOpen(false)
-		setSuccessMsg('')
-		setErrorOpen(false)
-		setErrorMsg('')
+	// Refetch user details after successfully listing a card
+	const handleListSuccess = async () => {
+		try {
+			const res = await get(`/users/${data?._doc.address}`, { params: { fullDetails: true } })
+			const newDetails: IUserFull | null = res.success ? res.data : null
+			setDetails(newDetails)
+		} catch (e: any) {
+			console.error(e.message)
+		}
 	}
 
 	return (
@@ -174,17 +178,27 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
-								Minted NFTs
+								My NFT Collection
 								<Typography component="span" sx={styles.sectionCount}>
 									({details.nfts.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>NFTs this user has minted</Typography>
+							<Typography sx={styles.sectionMeta}>NFTs this user has minted or collected</Typography>
 							<Grid container spacing={4}>
 								{details.nfts.length > 0 ? (
-									details.nfts.map((mintedNFT: any, idx: number) => (
-										<Grid item sm={6} md={4} key={`${mintedNFT.cid}-${idx}`}>
-											<NFTCard details={mintedNFT} />
+									details.nfts.map((nft: any, idx: number) => (
+										<Grid item sm={6} md={4} key={`${nft.cid}-${idx}`}>
+											<NFTCard details={nft} />
+											{nft.owner === currentUser?.address &&
+												(nft.isListed ? (
+													<Box sx={{ my: 2 }}>
+														<ListNftDialog unlist={true} nft={nft} onListSuccess={handleListSuccess} />
+													</Box>
+												) : (
+													<Box sx={{ my: 2 }}>
+														<ListNftDialog nft={nft} onListSuccess={handleListSuccess} />
+													</Box>
+												))}
 										</Grid>
 									))
 								) : (
@@ -219,22 +233,22 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							</Grid>
 							<Divider light sx={styles.divider} />
 							<Typography variant="h4" gutterBottom>
-								Samples
+								Stems
 								<Typography component="span" sx={styles.sectionCount}>
-									({details.samples.length})
+									({details.stems.length})
 								</Typography>
 							</Typography>
-							<Typography sx={styles.sectionMeta}>Samples this user has uploaded</Typography>
+							<Typography sx={styles.sectionMeta}>Stems this user has uploaded</Typography>
 							<Grid container spacing={4}>
-								{details.samples.length > 0 ? (
-									details.samples.map((sample: any) => (
-										<Grid item sm={6} md={4} key={sample._id}>
-											<SampleCard details={sample} />
+								{details.stems.length > 0 ? (
+									details.stems.map((stem: any) => (
+										<Grid item sm={6} md={4} key={stem._id}>
+											<StemCard details={stem} />
 										</Grid>
 									))
 								) : (
 									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No samples to show, upload one!</Typography>
+										<Typography sx={styles.noItemsMsg}>No stems to show, upload one!</Typography>
 									</Grid>
 								)}
 							</Grid>
@@ -248,9 +262,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 			</main>
 
 			<AppFooter />
-
-			{successOpen && <Notification type="success" open={successOpen} msg={successMsg} onClose={onNotificationClose} />}
-			{errorOpen && <Notification type="error" open={errorOpen} msg={errorMsg} onClose={onNotificationClose} />}
 		</>
 	)
 }

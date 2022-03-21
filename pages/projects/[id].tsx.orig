@@ -292,9 +292,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	// Project details
 	const [details, setDetails] = useState(data)
+<<<<<<< HEAD
 	const [files, setFiles] = useState<Array<Blob>>([])
 
+	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
+	const [minting, setMinting] = useState<boolean>(false)
+=======
 	// Notifications
+>>>>>>> main
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
@@ -388,6 +393,17 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
+<<<<<<< HEAD
+				const formData = new FormData()
+				for (let i = 0; i < files.length; i++) {
+					formData.append(`files`, files[i])
+				}
+				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
+					method: 'POST',
+					body: formData,
+				})
+=======
 				// Hit Python HTTP server to flatten stems into a singular one
 				// TODO: Move uploading to NFT.storage out from the flattening service
 				// Have it return a file, or base64 of the audio and add to payload as;
@@ -402,6 +418,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// 	},
 				// 	body: JSON.stringify({ sample_cids: details.stems.map(s => s?.audioUrl.replace('ipfs://', '')) }),
 				// })
+>>>>>>> main
 				// // Catch flatten audio error
 				if (!response.ok) throw new Error('Failed to flatten the audio files')
 				// const flattenedData = await response.json() // Catch fro .json()
@@ -620,6 +637,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 									</Button>
 								</Box>
 							</Box>
+<<<<<<< HEAD
+							{details.samples.length > 0 ? (
+								details.samples.map((sample, idx) => (
+									<Fragment key={idx}>
+										<SamplePlayer idx={idx + 1} details={sample} showEyebrow={true} onNewFile={onNewFile} />
+									</Fragment>
+								))
+=======
 							{details.stems.length > 0 ? (
 								<>
 									<Box sx={styles.playSection}>
@@ -646,11 +671,11 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 												onWavesInit={onWavesInit}
 												onFinish={() => setIsPlayingAll(false)}
 												onSolo={handleSoloStem}
-												onNewFile={onNewFile}
 											/>
 										</Fragment>
 									))}
 								</>
+>>>>>>> main
 							) : (
 								<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 							)}

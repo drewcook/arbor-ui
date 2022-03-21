@@ -42,27 +42,27 @@ module.exports = {
 			network_id: 1337,
 		},
 		// Mainnet
-		mainnet: getInfuraNetworkConfig('mainnet'),
+		// mainnet: getInfuraNetworkConfig('mainnet'),
 		// Rinkeby
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
 		kovan: getInfuraNetworkConfig('kovan'),
 		// Polygon testnet
-		// matic: {
-		// 	provider: () =>
-		// 		new HDWalletProvider(
-		// 			process.env.MNEMONIC,
-		// 			`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
-		// 		),
-		// 	network_id: 80001,
-		// },
-		// Polygon mainnet
 		matic: {
 			provider: () =>
 				new HDWalletProvider(
 					process.env.MNEMONIC,
-					`https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+					`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
 				),
-			network_id: 137,
+			network_id: 80001,
 		},
+		// Polygon mainnet
+		// matic: {
+		// 	provider: () =>
+		// 		new HDWalletProvider(
+		// 			process.env.MNEMONIC,
+		// 			`https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+		// 		),
+		// 	network_id: 137,
+		// },
 	},
 }

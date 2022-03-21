@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { INftDoc, Nft } from '../../../models/nft.model'
 import type { IProjectDoc } from '../../../models/project.model'
 import { Project } from '../../../models/project.model'
-import type { ISampleDoc } from '../../../models/sample.model'
-import { Sample } from '../../../models/sample.model'
+import type { IStemDoc } from '../../../models/stem.model'
+import { Stem } from '../../../models/stem.model'
 import type { IUser, IUserFull } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					const fullUser: IUserFull = {
 						...user,
 						projects: [],
-						samples: [],
+						stems: [],
 						nfts: [],
 					}
 
@@ -49,11 +49,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						else console.error(`Failed to find user project of ID - ${projectId}`)
 					}
 
-					// Get user's samples' details
-					for (const sampleId of user.sampleIds) {
-						const sample: ISampleDoc | null = await Sample.findById(sampleId)
-						if (sample) fullUser.samples.push(sample)
-						else console.error(`Failed to find user sample of ID - ${sampleId}`)
+					// Get user's stems' details
+					for (const stemId of user.stemIds) {
+						const stem: IStemDoc | null = await Stem.findById(stemId)
+						if (stem) fullUser.stems.push(stem)
+						else console.error(`Failed to find user stem of ID - ${stemId}`)
 					}
 
 					res.status(200).json({ success: true, data: fullUser })
@@ -73,7 +73,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$push: {
+							$addToSet: {
 								projectIds: body.newProject,
 							},
 						},
@@ -87,13 +87,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						return res.status(400).json({ success: false, error: 'failed to add project to user' })
 					}
 					res.status(200).json({ success: true, data: user })
-				} else if (body.newSample) {
-					// Update the Samples list
+				} else if (body.newStem) {
+					// Update the stems list for the user, add to it if doesn't exist
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$push: {
-								sampleIds: body.newSample,
+							$addToSet: {
+								stemIds: body.newStem,
 							},
 						},
 						{
@@ -103,16 +103,35 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					)
 					// Returns
 					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add sample to user' })
+						return res.status(400).json({ success: false, error: 'failed to add stem to user' })
 					}
 					res.status(200).json({ success: true, data: user })
-				} else if (body.newNFT) {
+				} else if (body.addNFT) {
 					// Update the NFTs list
 					user = await User.findOneAndUpdate(
 						{ address: id },
 						{
-							$push: {
-								nftIds: body.newNFT,
+							$addToSet: {
+								nftIds: body.addNFT,
+							},
+						},
+						{
+							new: true,
+							runValidators: true,
+						},
+					)
+					// Returns
+					if (!user) {
+						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
+					}
+					res.status(200).json({ success: true, data: user })
+				} else if (body.removeNFT) {
+					// Update the NFTs list
+					user = await User.findOneAndUpdate(
+						{ address: id },
+						{
+							$pull: {
+								nftIds: body.removeNFT,
 							},
 						},
 						{

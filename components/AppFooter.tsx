@@ -1,4 +1,6 @@
 import { Box, Typography } from '@mui/material'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const styles = {
 	footer: {
@@ -10,6 +12,11 @@ const styles = {
 		flexDirection: 'column',
 		justifyContent: 'center',
 		alignItems: 'center',
+		'&.stuck': {
+			position: 'fixed',
+			bottom: 0,
+			width: '100%',
+		},
 	},
 	copy: {
 		textAlign: 'center',
@@ -17,14 +24,38 @@ const styles = {
 }
 
 const AppFooter = (): JSX.Element => {
+	const [stuck, setStuck] = useState(false)
+	const router = useRouter()
+
+	// If page content is less than viewport height, stick to bottom
+	const handleCheckSticky = () => {
+		const footer: HTMLElement | null = document.querySelector('footer')
+		if (footer) {
+			const shouldStick: boolean = window.innerHeight - (footer.offsetTop + footer.offsetHeight) > 0
+			setStuck(shouldStick)
+		}
+	}
+
+	useEffect(() => {
+		handleCheckSticky()
+		window.addEventListener('resize', handleCheckSticky)
+		return () => {
+			window.removeEventListener('resize', handleCheckSticky)
+		}
+	}, [])
+
+	useEffect(() => {
+		console.log({ router })
+		handleCheckSticky()
+	}, [router.asPath])
+
 	return (
-		<footer>
-			<Box sx={styles.footer}>
-				<Typography sx={styles.copy} variant="body2">
-					&copy; 2022 | All Rights Reserved
-				</Typography>
-			</Box>
-		</footer>
+		/* @ts-ignore */
+		<Box sx={styles.footer} component="footer" className={stuck ? 'stuck' : ''}>
+			<Typography sx={styles.copy} variant="body2">
+				&copy; 2022 POLYECHO | All Rights Reserved
+			</Typography>
+		</Box>
 	)
 }
 

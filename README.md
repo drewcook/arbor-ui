@@ -1,34 +1,115 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PolyEcho
+
+PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
+
+**LIVE DEMO**: <https://polyecho.xyz>
+
+---
 
 ## Getting Started
 
-First, run the development server:
+First, clone this repository to your local machine:
 
 ```bash
-npm run dev
+git clone https://github.com/polyecho/polyecho.git
+```
+
+There is some local setup that needs to happen to fully run this client application locally.
+
+Dependencies:
+
+- npm or yarn
+- Node.js
+- MongoDB
+
+### 1. Install dependencies
+
+You can download the latest version of Node.js [here](https://nodejs.org/en/download/).  You can check that you are running NPM and Node with the following commands:
+
+```bash
+node -v
+# v16.14.0
+
+npm -v
+# 8.3.1
+```
+
+Install the client dependencies with the following command:
+
+```bash
+yarn install
 # or
+npm install
+```
+
+### 2. Environment Variables
+
+Next, set up local environment variables by copying over the sample env. Run the following command:
+
+```bash
+# Unix
+cp sample.env .env.local
+# windows
+xcopy sample.env .env.local
+```
+
+**NOTE:** Please reach out to the core team for a set of values to fill in your local env file.
+
+### 3. Run the Application
+
+Finally, you can run the development server using the following command:
+
+```bash
 yarn dev
+# or
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+---
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Setting Up A Local Database (MongoDB)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+This client application is using the built-in Next.js API routes that read and write to a local Mongo database. Here are our recommended steps for getting up and running with a local MongoDB environemnt:
 
-## Learn More
+### 1. Install a MongoDB Host
 
-To learn more about Next.js, take a look at the following resources:
+We recommend using [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/), because it is free and has all the necessary features.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This will set up a host to run in the background on the machine. You can then connect to it via a number of methods when it is up.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- For Mac users, you can follow the steps listed [here](https://medium.com/macoclock/setup-mongodb-on-macos-94e0c687c649).
+- For Windows users, you can follow the steps listed [here](https://medium.com/stackfame/run-mongodb-as-a-service-in-windows-b0acd3a4b712).
 
-## Deploy on Vercel
+### 2. Install a MongoDB Client
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+There are many ways to interact with a MongoDB host. My recommendation is to use a GUI, as it makes for viewing the data easily, and MongoDB Compass is free and easy to use. Install it using the documentation [here](https://docs.mongodb.com/compass/current/install/).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 3. Create a Connection
+
+Once MongoDB Compass is installed and you have a MongoDB host running in the background, you can now connect the client to the host and set up this new connection. Open up Compass and click "New Connection" in the top left of the GUI, or in the menubar. Paste in the local connection string; it should look similar to this on Mac:
+
+```txt
+mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false
+```
+
+### 4. Create a Database and Link It
+
+Create a new database for polyecho. Title it `polyecho` or whatever suits your fancy. It may prompt you to add a collection to it as well.  Please add a `users` collection.
+
+The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
+
+```txt
+MONGODB_URI=mongodb://localhost/polyecho
+```
+
+This will now allow the client app to work with the local MongoDB instance, and you can now interact with it through Compass as a GUI.
+
+**NOTE:** You can always shut down the background `mongo` daemon that's running after using it. For Mac and Homebrew users, you can check that it's running with `brew services list`, and then you can shut it down with `brew services stop mongodb-community`. For Windows users, it would be `net stop MongoDB`, which is the default service name from the installer.
+
+---
+
+## Issues
+
+We encourage the open-source atmosphere. If you find any bugs or issues with this repository, don't hesitate to [file an issue](https://github.com/polyecho/polyecho/issues/new) for it. We will work to continually engage with these issues and encourage you to contribute.

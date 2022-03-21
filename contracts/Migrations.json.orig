@@ -2184,12 +2184,25 @@
     "42": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
+      "address": "0x2B99203DA4E02aFCbc8b0e4AC21C0505Aaa36fe8",
+      "transactionHash": "0x46bfd84b9aa96b1f83ae3ef59e2bad3c8ada28e7dc445c20730b102f9daf1899"
+=======
       "address": "0x2d7155C690f6b80c9A14E0e2313a185420C6dEC4",
       "transactionHash": "0xb1e380216e96033f11025361884d7992c7cc9021cc255e502cb78a934405a41f"
+>>>>>>> main
     },
     "1337": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
+      "address": "0xA232B81e2483DF7De8b93cbe751262AC6f462109",
+      "transactionHash": "0xbe476cf2a512b27ef6559f3b49594651adf990724ff6c69e112e1548a1a2acc5"
+    }
+  },
+  "schemaVersion": "3.4.6",
+  "updatedAt": "2022-03-17T08:11:41.511Z",
+=======
       "address": "0xccC16693a08C1B4D6A8ACad0B50028801f8324C1",
       "transactionHash": "0xc594cb6a4665e8b110fa8e4384451c939c9813b1b76eb21bbc9446bc38253315"
     },
@@ -2202,6 +2215,7 @@
   },
   "schemaVersion": "3.4.3",
   "updatedAt": "2022-03-19T21:05:42.753Z",
+>>>>>>> main
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

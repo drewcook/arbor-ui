@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { ISampleDoc } from '../../../models/sample.model'
-import { Sample } from '../../../models/sample.model'
+import type { IStemDoc } from '../../../models/stem.model'
+import { Stem } from '../../../models/stem.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
 
@@ -12,8 +12,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find all the data in our database */
-				const samples: ISampleDoc[] = await Sample.find({})
-				res.status(200).json({ success: true, data: samples })
+				const stems: IStemDoc[] = await Stem.find({})
+				res.status(200).json({ success: true, data: stems })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}
@@ -21,15 +21,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				/* create a new model in the database */
-				const sample: ISampleDoc = await Sample.create(body)
+				const stem: IStemDoc = await Stem.create(body)
 
-				// Add new sample to user's samples' details
-				const userUpdated = await update(`/users/${body.createdBy}`, { newSample: sample._id })
+				// Add new stem to user's stems' details
+				const userUpdated = await update(`/users/${body.createdBy}`, { newStem: stem._id })
 				if (!userUpdated) {
-					return res.status(400).json({ success: false, error: "Failed to update user's samples" })
+					return res.status(400).json({ success: false, error: "Failed to update user's stems" })
 				}
 
-				res.status(201).json({ success: true, data: sample })
+				res.status(201).json({ success: true, data: stem })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}

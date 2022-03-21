@@ -5,34 +5,41 @@ import { useState } from 'react'
 import ConnectedAccount from './ConnectedAccount'
 
 const styles = {
-	wrapper: {
+	appbar: {
 		marginBottom: 4,
-		backgroundColor: '#111',
-		color: '#fff',
+		backgroundColor: '#fff',
+		color: '#111',
+		boxShadow: 0,
 	},
 	alphaChip: {
+		backgroundColor: '#FF5200',
+		color: '#fff',
 		ml: 1,
 		fontSize: '.6rem',
 		height: '1.25rem',
+		textShadow: 'none',
 	},
 	logoDesktop: {
 		mr: 2,
 		display: { xs: 'none', md: 'flex' },
-		textShadow: '1px 1px #23F09A',
+		cursor: 'pointer',
+		textTransform: 'uppercase',
+		fontSize: '2rem',
 	},
 	logoMobile: {
 		display: { xs: 'flex', alignItems: 'center', md: 'none' },
 		ml: 1,
-		textShadow: '1px 1px #23F09A',
+		cursor: 'pointer',
+		textTransform: 'uppercase',
+		fontSize: '2rem',
 	},
 }
 
 const pages = [
-	{ href: '/', title: 'Home' },
-	{ href: '/nfts', title: 'Marketplace' },
-	{ href: '/projects', title: 'Explore' },
-	{ href: '/samples', title: 'StemPool' },
 	{ href: '/projects/new', title: 'Create' },
+	{ href: '/projects', title: 'Projects' },
+	{ href: '/stems', title: 'Stems' },
+	{ href: '/nfts', title: 'Marketplace' },
 ]
 
 const AppHeader = (): JSX.Element => {
@@ -47,13 +54,16 @@ const AppHeader = (): JSX.Element => {
 	}
 
 	return (
-		<AppBar position="static" sx={styles.wrapper} enableColorOnDark>
+		<AppBar position="static" sx={styles.appbar} enableColorOnDark>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
-					<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
-						PolyEcho
-						<Chip label="Alpha" size="small" color="primary" sx={styles.alphaChip} />
-					</Typography>
+					<Link href="/" passHref>
+						{/* @ts-ignore */}
+						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
+							PolyEcho
+							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
+						</Typography>
+					</Link>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 						<IconButton
@@ -92,18 +102,19 @@ const AppHeader = (): JSX.Element => {
 								</Link>
 							))}
 						</Menu>
-						<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
-							PolyEcho
-							<Chip label="Alpha" size="small" color="primary" sx={styles.alphaChip} />
-						</Typography>
+						<Link href="/" passHref>
+							{/* @ts-ignore */}
+							<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
+								PolyEcho
+								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
+							</Typography>
+						</Link>
 					</Box>
 
-					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', textAlign: 'center' } }}>
 						{pages.map(page => (
 							<Link key={page.href} href={page.href} passHref>
-								<Button key={page.href} sx={{ my: 2, color: 'white', display: 'block' }}>
-									{page.title}
-								</Button>
+								<Button key={page.href}>{page.title}</Button>
 							</Link>
 						))}
 					</Box>

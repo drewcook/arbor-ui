@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { ISampleDoc, Sample } from '../../../models/sample.model'
+import { IStemDoc, Stem } from '../../../models/stem.model'
 import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -14,11 +14,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:
 			try {
-				const sample: ISampleDoc | null = await Sample.findById(id)
-				if (!sample) {
+				const stem: IStemDoc | null = await Stem.findById(id)
+				if (!stem) {
 					return res.status(400).json({ success: false })
 				}
-				res.status(200).json({ success: true, data: sample })
+				res.status(200).json({ success: true, data: stem })
 			} catch (error) {
 				res.status(400).json({ success: false })
 			}
@@ -27,17 +27,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'PUT' /* Edit a model by its ID */:
 			try {
 				// Update anything passed through,
-				const sample: ISampleDoc | null = await Sample.findByIdAndUpdate(id, body, {
+				const stem: IStemDoc | null = await Stem.findByIdAndUpdate(id, body, {
 					new: true,
 					runValidators: true,
 				})
 
 				// Catch error
-				if (!sample) {
-					return res.status(400).json({ success: false, error: 'failed to update sample' })
+				if (!stem) {
+					return res.status(400).json({ success: false, error: 'failed to update stem' })
 				}
 
-				res.status(200).json({ success: true, data: sample })
+				res.status(200).json({ success: true, data: stem })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}
@@ -45,14 +45,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'DELETE' /* Delete a model by its ID */:
 			try {
-				const deletedSample = await Sample.deleteOne({ _id: id })
-				if (!deletedSample) {
-					return res.status(400).json({ success: false, error: 'failed to delete sample' })
+				const deletedStem = await Stem.deleteOne({ _id: id })
+				if (!deletedStem) {
+					return res.status(400).json({ success: false, error: 'failed to delete stem' })
 				}
 
-				// TODO: Delete from user's samples
+				// TODO: Delete from user's stems
 
-				res.status(200).json({ success: true, data: deletedSample })
+				res.status(200).json({ success: true, data: deletedStem })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}

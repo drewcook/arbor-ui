@@ -4,22 +4,37 @@ import Link from 'next/link'
 import type { IProjectDoc } from '../models/project.model'
 
 const styles = {
+	limitReachedChip: {
+		textTransform: 'uppercase',
+		fontWeight: 800,
+		fontSize: '1rem',
+		position: 'absolute',
+		top: '1.5rem',
+		right: '-1rem',
+		backgroundColor: '#ff399f',
+		py: 2.5,
+		color: '#fff',
+		zIndex: 1,
+	},
 	card: {
 		minWidth: '200px',
+		position: 'relative',
+		overflow: 'visible',
 	},
 	cardMedia: {
-		backgroundColor: '#0500ff',
-		py: 3,
+		backgroundColor: '#111',
+		borderBottom: '3px solid #4CE79D',
+		py: 1,
 		px: 1.5,
 	},
 	cardMediaIcon: {
 		color: '#fff',
-		fontSize: '3rem',
+		fontSize: '2rem',
 	},
 	collaborators: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
-		fontWeight: 700,
+		fontWeight: 600,
 		mb: 1,
 	},
 	description: {
@@ -40,9 +55,11 @@ type ProjectCardProps = {
 
 const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 	const { details } = props
+	const limitReached = details ? details.stems.length >= details.trackLimit : false
 
 	return (
 		<Card sx={styles.card} elevation={2}>
+			{limitReached && <Chip label="Track Limit Reached" size="medium" sx={styles.limitReachedChip} />}
 			<Box sx={styles.cardMedia}>
 				<QueueMusicIcon sx={styles.cardMediaIcon} />
 			</Box>
@@ -51,9 +68,10 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 					{details.name}
 				</Typography>
 				<Typography variant="body2" sx={styles.collaborators}>
-					{details.collaborators.length} Collaborator
-					{details.collaborators.length === 1 ? '' : 's'} • {details.samples.length} Sample
-					{details.samples.length === 1 ? '' : 's'}
+					{details.stems.length} Stem
+					{details.stems.length === 1 ? '' : 's'} • {details.trackLimit} Stem Max • {details.collaborators.length}{' '}
+					Collaborator
+					{details.collaborators.length === 1 ? '' : 's'}
 				</Typography>
 				<Typography gutterBottom sx={styles.description}>
 					{details.description.slice(0, 60) + '...'}

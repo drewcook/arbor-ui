@@ -16,9 +16,13 @@ a, a:visited {
 	transition: color 200ms ease-in-out;
 }
 
-a:hover, a:active {
-	color: #0500ff;
+a:hover:not(.MuiButton-root:hover), a:active:not(.MuiButton-root:active) {
+	color: #4CE79D;
 	transition: color 200ms ease-in-out;
+}
+
+button a:hover, button a:active {
+	color: initial;
 }
 
 ol, ul {
@@ -51,4 +55,10 @@ ol, ul {
 .nft-card-media span {
 	width: 100% !important;
 	height: auto !important;
+}
+
+#upload-stem-type-input {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }

@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -13,7 +13,7 @@ const styles = {
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -24,6 +24,10 @@ const styles = {
 		fontWeight: 300,
 		textAlign: 'center',
 		mb: 4,
+	},
+	divider: {
+		my: 3,
+		borderColor: '#ccc',
 	},
 	noProjects: {
 		textAlign: 'center',
@@ -68,10 +72,13 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 							<Typography variant="h4" component="h1" sx={styles.title}>
 								PolyEcho Music Projects
 							</Typography>
-							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the ecosystem for unique music, collaborate and build with others, create something one of a
-								kind.
-							</Typography>
+							<Container maxWidth="sm">
+								<Typography variant="h5" sx={styles.subtitle}>
+									Explore the ecosystem for unique music, collaborate and build with others, create something one of a
+									kind.
+								</Typography>
+							</Container>
+							<Divider sx={styles.divider} />
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map(project => (

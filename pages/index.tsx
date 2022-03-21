@@ -6,6 +6,10 @@ import AppFooter from '../components/AppFooter'
 import AppHeader from '../components/AppHeader'
 
 const styles = {
+	divider: {
+		my: 3,
+		borderColor: '#ccc',
+	},
 	centered: {
 		textAlign: 'center',
 		pt: 5,
@@ -19,12 +23,27 @@ const styles = {
 	},
 	btn: {
 		mt: 5,
-		color: '#fff',
-		boxShadow: '5px 5px #23F09A',
+		borderColor: '#000',
+		borderWidth: '3px',
+		fontWeight: 600,
+		fontStyle: 'italic',
+		'&:hover': {
+			borderWidth: '3px',
+		},
 	},
 }
 
 const Home: NextPage = () => {
+	// const { contract } = useWeb3()
+
+	// useEffect(() => {
+	// 	try {
+	// 		console.log('Get contract details', contract)
+	// 	} catch (e: any) {
+	// 		console.error(e.message)
+	// 	}
+	// }, [contract])
+
 	return (
 		<>
 			<Head>
@@ -55,11 +74,18 @@ const Home: NextPage = () => {
 							Proceeds are distributed to the artists, including future royalties.
 						</Typography>
 						<Link href="/projects" passHref>
-							<Button size="large" variant="contained" color="secondary" sx={styles.btn}>
+							<Button size="large" variant="outlined" sx={styles.btn}>
 								Get Started!
 							</Button>
 						</Link>
 					</Box>
+					{/* <Divider light sx={styles.divider} />
+					<Typography variant="h2">NFTs</Typography>
+					<List>
+						<ListItem>
+							<ListItemText>Total Supply: {}</ListItemText>
+						</ListItem>
+					</List> */}
 				</Container>
 			</main>
 

@@ -1,7 +1,6 @@
-import { Box, Button, Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import PropTypes from 'prop-types'
 import AppFooter from '../../components/AppFooter'
 import AppHeader from '../../components/AppHeader'
@@ -13,7 +12,7 @@ const styles = {
 	title: {
 		textTransform: 'uppercase',
 		fontStyle: 'italic',
-		fontWeight: 900,
+		fontWeight: 800,
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -24,6 +23,10 @@ const styles = {
 		fontWeight: 300,
 		textAlign: 'center',
 		mb: 4,
+	},
+	divider: {
+		my: 3,
+		borderColor: '#ccc',
 	},
 	noProjects: {
 		textAlign: 'center',
@@ -68,10 +71,13 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 							<Typography variant="h4" component="h1" sx={styles.title}>
 								PolyEcho Audio NFTs
 							</Typography>
-							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right
-								here on PolyEcho.
-							</Typography>
+							<Container maxWidth="sm">
+								<Typography variant="h5" sx={styles.subtitle}>
+									Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right
+									here on PolyEcho.
+								</Typography>
+							</Container>
+							<Divider sx={styles.divider} />
 							{data.length > 0 ? (
 								<Grid container spacing={4}>
 									{data.map(nft => (
@@ -83,11 +89,6 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 							) : (
 								<Box sx={styles.noProjects}>
 									<Typography sx={styles.noProjectsMsg}>No NFTs to show.</Typography>
-									<Link href="/projects/new" passHref>
-										<Button variant="contained" color="secondary">
-											Create Project
-										</Button>
-									</Link>
 								</Box>
 							)}
 						</>
