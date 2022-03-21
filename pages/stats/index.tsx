@@ -79,6 +79,7 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 						</Typography>
 					</Container>
 					<Divider sx={styles.divider} />
+					{/* @ts-ignore */}
 					<CovalentInsights balData={balData} tokensData={tokensData} />
 				</Container>
 			</main>

@@ -394,9 +394,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					{covalentData && (
 						<Grid container spacing={3}>
 							<Grid item xs={12} sm={6} md={7}>
+								{/* @ts-ignore */}
 								<CovalentInsights metaData={covalentData.metaData} />
 							</Grid>
 							<Grid item xs={12} sm={6} md={5}>
+								{/* @ts-ignore */}
 								<CovalentInsights txData={covalentData.txData} />
 							</Grid>
 						</Grid>
