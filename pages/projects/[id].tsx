@@ -389,6 +389,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		setSuccessMsg("Success! You've uploaded a new stem to this project and become a contributor.")
 		handleUploadStemClose()
 	}
+
 	const onNewFile = (newFile: Blob) => {
 		if (!files) {
 			setFiles(() => [newFile])
@@ -396,6 +397,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			setFiles(files => [...files, newFile])
 		}
 	}
+
 	// TODO: Keep track of minted versions and how many mints a project has undergone
 	const handleMintAndBuy = async () => {
 		try {
@@ -405,6 +407,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
+				// Construct files and post to flattening service
 				const formData = new FormData()
 				for (let i = 0; i < files.length; i++) {
 					formData.append(`files`, files[i])
@@ -415,18 +418,16 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					body: formData,
 				})
 
-				// // Catch flatten audio error
+				// Catch flatten audio error
 				if (!response.ok) throw new Error('Failed to flatten the audio files')
-				// const flattenedData = await response.json() // Catch fro .json()
-				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
+				if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 
-				// TODO: create new stem from flattened audio
-				// TODO: add new stem created to user's info
+				const flattenedAudioBlob = await response.blob()
+				if (!flattenedAudioBlob) throw new Error('Failed to flatten the audio files')
 
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Uploading to NFT.storage...')
 
-				if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 				// Construct NFT.storage data and store
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
@@ -436,7 +437,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						audio: await response.blob(),
+						audio: flattenedAudioBlob,
 						collaborators: details.collaborators,
 						stems: details.stems.map((s: any) => s.metadataUrl),
 					},
@@ -478,7 +479,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					audioHref: nftsRes.data.properties.audio,
 					projectId,
 					collaborators: details.collaborators,
-					stems: details.stems, // Direct 1:1 map
+					stems: details.stems, // Direct 1:1 deep clone
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)

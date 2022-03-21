@@ -10,7 +10,7 @@ import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
-		query: { id, fullDetails },
+		query: { id, params },
 		body,
 		method,
 	} = req
@@ -27,7 +27,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				// Check to get full details or not
-				if (fullDetails) {
+				const paramData = typeof params === 'object' ? params[0] : params
+				const paramsJson = JSON.parse(paramData)
+				const getFullDetails: boolean = paramsJson?.fullDetails ?? false
+				if (getFullDetails) {
 					const fullUser: IUserFull = {
 						...user,
 						projects: [],
