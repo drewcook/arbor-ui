@@ -241,6 +241,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				onNotificationClose()
 				setLoading(false)
 				onSuccess(res.data)
+				handleClose()
 			}
 
 			// TODO: if added as a new collaborator, add this projectID to user's list of projects
