@@ -360,9 +360,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					})
 
 					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
-					console.log('downloaded stem', { res })
+					// Notify success
+					setSuccessOpen(true)
+					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
 				})
-				// TODO: Notify success
 			}
 		} catch (e: any) {
 			console.error(e.message)
