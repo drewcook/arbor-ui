@@ -10,6 +10,8 @@ const styles = {
 		minWidth: '200px',
 	},
 	cardMedia: {
+		borderTopLeftRadius: '4px',
+		borderTopRightRadius: '4px',
 		borderBottom: '3px solid #000',
 		py: 1,
 		px: 1.5,

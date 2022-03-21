@@ -6,7 +6,6 @@ import ConnectedAccount from './ConnectedAccount'
 
 const styles = {
 	appbar: {
-		marginBottom: 4,
 		backgroundColor: '#fff',
 		color: '#111',
 		boxShadow: 0,
@@ -40,6 +39,7 @@ const pages = [
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
 	{ href: '/nfts', title: 'Marketplace' },
+	{ href: '/stats', title: 'Stats' },
 ]
 
 const AppHeader = (): JSX.Element => {

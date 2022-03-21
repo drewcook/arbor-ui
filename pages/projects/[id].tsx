@@ -37,6 +37,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
+import type { IStemDoc } from '../../models/stem.model'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post } from '../../utils/http'
@@ -351,9 +352,26 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		})
 	}
 
-	// TODO: Fix downloading files
-	const handleDownloadAll = () => {
-		console.log('download all stems')
+	const handleDownloadAll = async () => {
+		try {
+			if (details) {
+				data?.stems.forEach(async (stem: IStemDoc) => {
+					const res = await get(`/stems/download`, {
+						url: stem.audioUrl,
+						filename: `PolyEcho_Stem_${projectId}_${stem.filename}`,
+					})
+
+					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+					// Notify success
+					setSuccessOpen(true)
+					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
+				})
+			}
+		} catch (e: any) {
+			console.error(e.message)
+			setErrorOpen(true)
+			setErrorMsg('Failed to download all stems')
+		}
 	}
 
 	const handleUploadStemOpen = () => {

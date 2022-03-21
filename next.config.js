@@ -8,6 +8,7 @@ const nextConfig = {
 		NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY,
 		COVALENT_API_KEY: process.env.COVALENT_API_KEY,
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
+		HOME: process.env.HOME,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
