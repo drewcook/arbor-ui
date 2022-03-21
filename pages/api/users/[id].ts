@@ -147,6 +147,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
 					}
 					res.status(200).json({ success: true, data: user })
+				} else if (body.edits) {
+					// Edit a user's details and/or profile information
+					// Supported fields - displayName, avatarUrl
+					const updateObj: Record<string, string> = {}
+					if (body.edits.displayName) updateObj['displayName'] = body.edits.displayName
+					if (body.edits.avatarUrl) updateObj['avatarUrl'] = body.edits.avatarUrl
+
+					// If invalid payload, return
+					if (Object.keys(updateObj).length === 0) throw new Error('Invalid edit user payload')
+					console.log({ updateObj, id })
+
+					// Otherwise, update user details
+					user = await User.findOneAndUpdate(
+						{ address: id },
+						{
+							$set: updateObj, // not updating.... breaking
+						},
+						{
+							new: true,
+							runValidators: false,
+						},
+					)
+					// Returns
+					if (!user) {
+						console.log({ user }) // user is null, why?
+						return res.status(400).json({ success: false, error: 'failed to update user details' })
+					}
+					res.status(200).json({ success: true, data: user })
 				} else {
 					user = await User.findOneAndUpdate({ address: id }, body, {
 						new: true,
@@ -159,6 +187,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					res.status(200).json({ success: true, data: user })
 				}
 			} catch (e) {
+				console.error(e)
 				res.status(400).json({ success: false, error: e })
 			}
 			break

@@ -59,7 +59,7 @@ button a:hover, button a:active {
 /* App */
 
 #app-main {
-  min-height: calc(100vh - 185px);
+  min-height: calc(100vh - 254px); /* calculates header and footer height */
   padding: 5rem 0;
 }
 

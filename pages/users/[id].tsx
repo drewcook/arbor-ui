@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import { Box, Button, ButtonGroup, Container, Divider, Grid, TextField, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
@@ -15,7 +15,7 @@ import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
-import { get } from '../../utils/http'
+import { get, update } from '../../utils/http'
 
 const styles = {
 	error: {
@@ -24,6 +24,10 @@ const styles = {
 	},
 	editProfileWrap: {
 		my: 2,
+	},
+	editBtns: {
+		display: 'block',
+		mb: 3,
 	},
 	avatar: {
 		border: '3px solid #a0b3a0',
@@ -89,8 +93,10 @@ type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
 	const [details, setDetails] = useState<any | null>(null)
-	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
+	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState(false)
+	const [isEditing, setIsEditing] = useState(false)
 	const { currentUser } = useWeb3()
+	const [displayNameEdit, setDisplayNameEdit] = useState(details?._doc.displayName || '')
 
 	useEffect(() => {
 		// Update the details when changing the route directly
@@ -120,6 +126,42 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 		} catch (e: any) {
 			console.error(e.message)
 		}
+	}
+
+	const handleOpenEdit = () => {
+		// Set field value to display name if not set already or in bad state
+		if (displayNameEdit !== details._doc.displayName) setDisplayNameEdit(details._doc.displayName)
+		setIsEditing(true)
+	}
+
+	const handleCancelEdit = () => {
+		// Reset values and state
+		setDisplayNameEdit(details._doc.displayName)
+		setIsEditing(false)
+	}
+
+	const handleSaveEdits = async () => {
+		try {
+			// Construct payload
+			const payload = {
+				displayName: displayNameEdit,
+				// avatarUrl: 'some new url to choose from'
+			}
+			// Make PUT request to API route
+			const res = await update(`/users/${details._doc._id}`, { edits: payload })
+			console.log({ res })
+		} catch (err: any) {
+			console.error(err)
+		}
+		setIsEditing(false)
+	}
+
+	// Disabling editing
+	const disableSaveEdits = (): boolean => {
+		const val = displayNameEdit.trim()
+		const len = val.length
+		const shouldDisable = val === '' || len < 3 || len > 30
+		return shouldDisable
 	}
 
 	return (
@@ -160,9 +202,36 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											</Typography>
 											{isCurrentUserDetails && (
 												<Box sx={styles.editProfileWrap}>
-													<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-														Edit Profile
-													</Button>
+													{isEditing ? (
+														<>
+															<ButtonGroup sx={styles.editBtns}>
+																<Button variant="contained" color="primary" onClick={handleCancelEdit}>
+																	Cancel
+																</Button>
+																<Button
+																	variant="contained"
+																	color="secondary"
+																	onClick={handleSaveEdits}
+																	disabled={disableSaveEdits()}
+																>
+																	Save
+																</Button>
+															</ButtonGroup>
+															<TextField
+																variant="outlined"
+																value={displayNameEdit}
+																onChange={e => setDisplayNameEdit(e.target.value)}
+																margin="normal"
+																label="Display Name"
+																placeholder="A nickname, alias, or ENS domain for your address"
+																fullWidth
+															/>
+														</>
+													) : (
+														<Button variant="contained" color="primary" onClick={handleOpenEdit}>
+															Edit Profile
+														</Button>
+													)}
 												</Box>
 											)}
 										</Box>
