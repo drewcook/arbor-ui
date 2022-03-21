@@ -253,7 +253,7 @@ const Home: NextPage = () => {
 								<Box sx={{ mb: 4 }}>
 									<Typography sx={styles.blurbBold}>Like open source?</Typography>
 									<Typography sx={styles.blurb}>
-										All stems and songs are dedicated to the public domain under the COO license. All files are hosted
+										All stems and songs are dedicated to the public domain under the CCO license. All files are hosted
 										directly on IPFS.
 									</Typography>
 								</Box>
@@ -284,7 +284,7 @@ const Home: NextPage = () => {
 								<Box sx={{ mb: 4 }}>
 									<Typography sx={styles.blurbBold}>Crunched for time?</Typography>
 									<Typography sx={styles.blurb}>
-										All contributions are welcome, even if it&apo;s just one stem.
+										All contributions are welcome, even if it&apos;s just one stem.
 									</Typography>
 								</Box>
 							</Grid>
