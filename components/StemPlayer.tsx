@@ -1,4 +1,5 @@
 import { SkipPrevious, Square } from '@mui/icons-material'
+import { Blob } from 'nft.storage'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -90,6 +91,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
 
 	useEffect(() => {
+		let blobFileToLoad: Blob | undefined
 		if (!blob) {
 			if (!loadingBlob) {
 				setLoadingBlob(true)
@@ -97,6 +99,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 					resp.blob().then(b => {
 						setBlob(b)
 						onNewFile(b)
+						blobFileToLoad = b
 					})
 				})
 				setLoadingBlob(false)
@@ -115,7 +118,9 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 			barGap: 2,
 		})
 		// Load audio from an XHR request
-		ws.load_blob(blob)
+		if (blobFileToLoad) ws.loadBlob(blobFileToLoad)
+		else ws.load(details.audioHref)
+
 		// Skip back to zero when finished playing
 		ws.on('finish', () => {
 			ws.seekTo(0)
