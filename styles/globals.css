@@ -60,7 +60,16 @@ button a:hover, button a:active {
 
 #app-main {
   min-height: calc(100vh - 185px);
-  padding-bottom: 5rem;
+  padding: 5rem 0;
+}
+
+#app-main.homepage {
+	padding: 0;
+}
+
+.homepage-banner {
+	background: url('/banner_bg.png') center center no-repeat;
+	background-size: cover;
 }
 
 .dropzone-loading {
