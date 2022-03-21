@@ -75,7 +75,7 @@ const Web3Fallback = (): JSX.Element => (
 									<ImageOptimized src={MetaMaskIcon} alt="MetaMask" title="MetaMask" />
 								</ListItemIcon>
 								<ListItemText primary="MetaMask" />
-								<ListItemText secondaryTypographyProps={{ align: 'right' }} />
+								<ListItemText secondary="Recommended" secondaryTypographyProps={{ align: 'right' }} />
 							</ListItemButton>
 						</ListItem>
 					</Link>
