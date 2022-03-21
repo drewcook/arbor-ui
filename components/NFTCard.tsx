@@ -120,7 +120,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 						<Box /> // To force justify-between
 					)}
 					<Link href={`/nfts/${details._id}`} passHref>
-						<Button color="secondary">View Details</Button>
+						<Button color="primary">View Details</Button>
 					</Link>
 					{/* {details.isListed && currentUser?.address !== details.owner && (
 						<Button

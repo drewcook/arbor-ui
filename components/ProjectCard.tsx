@@ -84,7 +84,7 @@ const ProjectCard = (props: ProjectCardProps): JSX.Element => {
 			</CardContent>
 			<CardActions sx={styles.actions}>
 				<Link href={`/projects/${details._id}`} passHref>
-					<Button color="secondary">View Details</Button>
+					<Button color="primary">View Details</Button>
 				</Link>
 			</CardActions>
 		</Card>
