@@ -1,5 +1,4 @@
 import { SkipPrevious, Square } from '@mui/icons-material'
-import { Blob } from 'nft.storage'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'

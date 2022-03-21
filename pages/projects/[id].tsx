@@ -390,7 +390,6 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		handleUploadStemClose()
 	}
 	const onNewFile = (newFile: Blob) => {
-		console.log('New File Found')
 		if (!files) {
 			setFiles(() => [newFile])
 		} else {
