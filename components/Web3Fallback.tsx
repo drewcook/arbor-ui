@@ -1,5 +1,6 @@
 import {
 	Box,
+	Button,
 	Container,
 	Link,
 	List,
@@ -16,6 +17,8 @@ import PortisIcon from '../public/portis_icon.png'
 import TallyIcon from '../public/tally_icon.svg'
 import TorusIcon from '../public/torus_icon.svg'
 import ImageOptimized from './ImageOptimized'
+import NextLink from 'next/link'
+import PropTypes from 'prop-types'
 
 const styles = {
 	wrapper: {
@@ -41,9 +44,18 @@ const styles = {
 		width: 50,
 		height: 50,
 	},
+	btn: {
+		borderColor: '#000',
+		borderWidth: '3px',
+		fontWeight: 600,
+		fontStyle: 'italic',
+		'&:hover': {
+			borderWidth: '3px',
+		},
+	},
 }
 
-const Web3Fallback = (): JSX.Element => (
+const Web3Fallback = ({ onBtnClick }): JSX.Element => (
 	<Box sx={styles.wrapper}>
 		<Container maxWidth="md">
 			<Typography gutterBottom variant="h2" component="h2">
@@ -120,9 +132,20 @@ const Web3Fallback = (): JSX.Element => (
 						</ListItem>
 					</Link>
 				</List>
+				<Box sx={{ mt: 4 }}>
+					<Button sx={styles.btn} variant="contained" onClick={onBtnClick}>
+						<NextLink href="/" passHref>
+							Back To Home
+						</NextLink>
+					</Button>
+				</Box>
 			</Container>
 		</Container>
 	</Box>
 )
+
+Web3Fallback.propTypes = {
+	onBtnClick: PropTypes.func.isRequired,
+}
 
 export default Web3Fallback

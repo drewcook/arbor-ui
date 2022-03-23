@@ -308,7 +308,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 											ID:
 										</Typography>
 										<Link
-											href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}#inventory`}
+											href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
 										>
 											{details.token.id.toString()}
 										</Link>
@@ -323,7 +323,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									</Typography>
 									<Typography sx={styles.metadata}>
 										<Typography component="span" sx={styles.metadataKey}>
-											Tx Hash:{' '}
+											Mint Tx Hash:{' '}
 										</Typography>
 										<Link href={`https://mumbai.polygonscan.com/tx/${details.token.data.transactionHash}`}>
 											View On Explorer

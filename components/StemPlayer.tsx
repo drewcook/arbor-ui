@@ -210,7 +210,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 					</Grid>
 					<Grid item xs={11}>
 						<div id={`waveform-${details._id}-${idx}`} />
-						<div id={`timeline-${details._id}-${idx}`} />
 					</Grid>
 				</Grid>
 			</Box>

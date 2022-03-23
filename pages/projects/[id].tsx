@@ -652,7 +652,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										<IconButton sx={styles.playStopBtn} onClick={handleSkipPrev} disableRipple disableFocusRipple>
 											<SkipPrevious />
 										</IconButton>
-										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
+										<Box sx={styles.playTracker} />
 									</Box>
 									{details.stems.map((stem, idx) => (
 										<Fragment key={idx}>

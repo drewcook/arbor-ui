@@ -178,9 +178,12 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// If there is not a user created for this connected account, create one
 			const res = await get(`/users/${account.toLowerCase()}`)
+			console.log({ userRes: res })
 			let data = res.success ? res.data : null
 			setCurrentUser(data)
 			if (!data) {
+				console.info('no user found, creating new one...')
+				// TODO: for some reason this still comes back when users exist
 				const res = await post('/users', {
 					address: account.toLowerCase(),
 				})
@@ -202,12 +205,14 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			await onboard?.walletReset()
 			setConnected(false)
 			setCurrentUser(null)
+			// Refresh the window to help fix re-connect issues
+			window.location.reload()
 		} catch (e) {
 			console.error(e)
 		}
 	}
 
-	if (error) return <Web3Fallback />
+	if (error) return <Web3Fallback onBtnClick={() => setError(false)} />
 
 	return (
 		<Web3Context.Provider
