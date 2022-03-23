@@ -212,7 +212,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 		}
 	}
 
-	if (error) return <Web3Fallback onBtnClick={() => setError(false)} />
+	if (error) return <Web3Fallback onBtnClick={() => setError(null)} />
 
 	return (
 		<Web3Context.Provider
