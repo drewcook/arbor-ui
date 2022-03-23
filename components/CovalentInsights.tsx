@@ -166,9 +166,10 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						const from = tx.from_address
 						const value = tx.value
 						const amount = web3.utils.fromWei(value, 'ether')
+						const txNumber = txData.items[0].nft_transactions.length - idx
 						return (
 							<Box sx={styles.txRow} key={idx}>
-								<Typography variant="h6">Transaction {idx + 1}</Typography>
+								<Typography variant="h6">Transaction #{txNumber}</Typography>
 								<Grid container spacing={1}>
 									<Grid item xs={12} sm={6}>
 										<Typography>Price: {amount} MATIC</Typography>
