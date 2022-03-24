@@ -75,9 +75,10 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// Listen for account changes
 			web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
-				console.info('Switching wallet accounts')
+				const newAccount = newAccounts[0]
+				console.info(`Switching wallet accounts to ${newAccount}`)
 				setAccounts(newAccounts)
-				await findOrCreateUser(newAccounts[0])
+				await findOrCreateUser(newAccount)
 			})
 
 			// Listen for chain changes
