@@ -61,9 +61,6 @@ const styles = {
 			background: 'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
 		},
 	},
-	featureArrow: {
-		// my: -4,
-	},
 	about: {
 		py: 10,
 		backgroundColor: '#fafafa',
