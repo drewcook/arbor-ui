@@ -1,9 +1,8 @@
 import axios from 'axios'
 import _cloneDeep from 'lodash/cloneDeep'
 
-// Create Axios instance
-// const instance = axios.create({ baseURL: process.env.CLIENT_HOST })
-const instance = axios.create() // Use default baseUrl
+// Create Axios instance using the hostname for baseurl
+const instance = axios.create()
 
 /**
  * A generic GET request wrapper to ease use within React
