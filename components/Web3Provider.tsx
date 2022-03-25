@@ -1,5 +1,3 @@
-import Onboard from 'bnc-onboard'
-import type { API, Wallet } from 'bnc-onboard/dist/src/interfaces'
 import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
@@ -8,15 +6,14 @@ import { IUser } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
 import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
-import wallets from '../utils/web3wallets'
 import Web3Fallback from './Web3Fallback'
-import { MONGODB_URI } from '../utils/db'
+// import { MONGODB_URI } from '../utils/db'
 
 // Context types
 type Web3ContextProps = {
 	web3: any
 	NFTStore: any
-	onboard: any
+	// onboard: any
 	accounts: any
 	contract: any
 	connected: boolean
@@ -45,7 +42,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	const [contract, setContract] = useState(null)
 	const [accounts, setAccounts] = useState<string[]>([])
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
-	const [onboard, setOnboard] = useState<API | null>(null)
+	// const [onboard, setOnboard] = useState<API | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
 	const [currentUser, setCurrentUser] = useState<IUser | null>(null)
 
@@ -59,8 +56,20 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
 			setWeb3(web3Instance)
 
-			// Get blockchain network
+			// Web3 Methods
+			//  Get Chain Id
+			// const chainId = async () => await web3Instance.eth.getChainId()
+			// Get Network Id
 			const networkId = await web3Instance.eth.net.getId()
+			// Send Transaction
+			// const txHash = async (tx: any) => await web3Instance.eth.sendTransaction(tx)
+			// Sign Transaction
+			// const signedTx = async (tx: any) => await web3Instance.eth.signTransaction(tx)
+			// Sign Message
+			// const signedMessage = async (msg: any) => await web3Instance.eth.sign(msg)
+			// Sign Typed Data
+			// const signedTypedData = async (msg: any) => await web3Instance.eth.signTypedData(msg)
+
 			/* @ts-ignore */
 			const deployedNetwork = NFTContract.networks[networkId]
 
@@ -90,50 +99,50 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			})
 
 			// Initialize Onboard.js for production builds (bypass for local dev)
-			const onboardInstance = Onboard({
-				dappId: process.env.BLOCKNATIVE_KEY,
-				networkId: process.env.NODE_ENV === 'production' ? NETWORK_ID : 1337,
-				darkMode: true,
-				subscriptions: {
-					address: async (address: string) => {
-						setAccounts([address])
-					},
-					wallet: async (wallet: Wallet) => {
-						console.log(`${wallet.name} connected!`)
-						// store the selected wallet name to be retrieved next time the app loads
-						window.localStorage.setItem('polyechoSelectedWallet', wallet.name || '')
-					},
-				},
-				walletSelect: {
-					wallets,
-				},
-			})
-			setOnboard(onboardInstance)
+			// const onboardInstance = Onboard({
+			// 	dappId: process.env.BLOCKNATIVE_KEY,
+			// 	networkId: process.env.NODE_ENV === 'production' ? NETWORK_ID : 1337,
+			// 	darkMode: true,
+			// 	subscriptions: {
+			// 		address: async (address: string) => {
+			// 			setAccounts([address])
+			// 		},
+			// 		wallet: async (wallet: Wallet) => {
+			// 			console.log(`${wallet.name} connected!`)
+			// 			// store the selected wallet name to be retrieved next time the app loads
+			// 			window.localStorage.setItem('polyechoSelectedWallet', wallet.name || '')
+			// 		},
+			// 	},
+			// 	walletSelect: {
+			// 		wallets,
+			// 	},
+			// })
+			// setOnboard(onboardInstance)
 
 			/*
 			 *	Auto-select wallet by checking local storage
 			 */
 			// Get the selectedWallet value from local storage
-			const previouslySelectedWallet = window.localStorage.getItem('polyechoSelectedWallet')
+			// const previouslySelectedWallet = window.localStorage.getItem('polyechoSelectedWallet')
 
-			// Call wallet select with that value if it exists
-			let connected
-			if (previouslySelectedWallet !== null && previouslySelectedWallet !== '') {
-				connected = await onboardInstance.walletSelect(previouslySelectedWallet)
-			} else {
-				// Otherwise, connect wallet
-				connected = await onboardInstance.walletSelect()
-			}
+			// // Call wallet select with that value if it exists
+			// let connected
+			// if (previouslySelectedWallet !== null && previouslySelectedWallet !== '') {
+			// 	connected = await onboardInstance.walletSelect(previouslySelectedWallet)
+			// } else {
+			// 	// Otherwise, connect wallet
+			// 	connected = await onboardInstance.walletSelect()
+			// }
 
-			if (connected) {
-				setConnected(true)
-				// Get ready to transact
-				const readyToTransact = await onboardInstance.walletCheck()
-				if (!readyToTransact)
-					console.warn(
-						'Wallet connected but not ready to transact. Please try disconnecting and reconnecting your wallet.',
-					)
-			}
+			// if (connected) {
+			// 	setConnected(true)
+			// 	// Get ready to transact
+			// 	const readyToTransact = await onboardInstance.walletCheck()
+			// 	if (!readyToTransact)
+			// 		console.warn(
+			// 			'Wallet connected but not ready to transact. Please try disconnecting and reconnecting your wallet.',
+			// 		)
+			// }
 
 			return { connectedAccount: connectedAccounts[0] }
 		} catch (e: any) {
@@ -164,7 +173,8 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	const handleConnectWallet = async () => {
 		try {
 			const { connectedAccount } = await loadWeb3()
-			await findOrCreateUser(connectedAccount)
+			console.log({ connectedAccount })
+			// await findOrCreateUser(connectedAccount)
 		} catch (e) {
 			console.error(e)
 		}
@@ -180,9 +190,9 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// If there is not a user created for this connected account, create one
 			const res = await get(`/users/${account.toLowerCase()}`)
-			console.log({ userRes: res, db: MONGODB_URI })
 			let data = res.success ? res.data : null
 			setCurrentUser(data)
+
 			if (!data) {
 				console.info('no user found, creating new one...')
 				// TODO: for some reason this still comes back when users exist
@@ -204,7 +214,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	 */
 	const handleDisconnectWallet = async () => {
 		try {
-			await onboard?.walletReset()
+			// await onboard?.walletReset()
 			setConnected(false)
 			setCurrentUser(null)
 			// Refresh the window to help fix re-connect issues
@@ -223,7 +233,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 				accounts,
 				contract,
 				NFTStore,
-				onboard,
+				// onboard,
 				connected,
 				handleConnectWallet,
 				handleDisconnectWallet,
