@@ -22,48 +22,53 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// We will always be getting users by their address, not their MongoDB _id.
 				const user: IUser | null = await User.findOne({ address: id })
+
 				if (!user) {
 					return res.status(404).json({ success: false })
 				}
 
 				// Check to get full details or not
 				const paramData = typeof params === 'object' ? params[0] : params
-				const paramsJson = JSON.parse(paramData)
-				const getFullDetails: boolean = paramsJson?.fullDetails ?? false
-				if (getFullDetails) {
-					const fullUser: IUserFull = {
-						...user,
-						projects: [],
-						stems: [],
-						nfts: [],
-					}
+				if (paramData) {
+					const paramsJson = JSON.parse(paramData)
+					const getFullDetails: boolean = paramsJson?.fullDetails ?? false
+					if (getFullDetails) {
+						const fullUser: IUserFull = {
+							...user,
+							projects: [],
+							stems: [],
+							nfts: [],
+						}
 
-					// Get user's NFT details
-					for (const nftId of user.nftIds) {
-						const nft: INftDoc | null = await Nft.findById(nftId)
-						if (nft) fullUser.nfts.push(nft)
-						else console.error(`Failed to find user NFT of ID - ${nftId}`)
-					}
+						// Get user's NFT details
+						for (const nftId of user.nftIds) {
+							const nft: INftDoc | null = await Nft.findById(nftId)
+							if (nft) fullUser.nfts.push(nft)
+							else console.error(`Failed to find user NFT of ID - ${nftId}`)
+						}
 
-					// Get user's projects' details
-					for (const projectId of user.projectIds) {
-						const project: IProjectDoc | null = await Project.findById(projectId)
-						if (project) fullUser.projects.push(project)
-						else console.error(`Failed to find user project of ID - ${projectId}`)
-					}
+						// Get user's projects' details
+						for (const projectId of user.projectIds) {
+							const project: IProjectDoc | null = await Project.findById(projectId)
+							if (project) fullUser.projects.push(project)
+							else console.error(`Failed to find user project of ID - ${projectId}`)
+						}
 
-					// Get user's stems' details
-					for (const stemId of user.stemIds) {
-						const stem: IStemDoc | null = await Stem.findById(stemId)
-						if (stem) fullUser.stems.push(stem)
-						else console.error(`Failed to find user stem of ID - ${stemId}`)
-					}
+						// Get user's stems' details
+						for (const stemId of user.stemIds) {
+							const stem: IStemDoc | null = await Stem.findById(stemId)
+							if (stem) fullUser.stems.push(stem)
+							else console.error(`Failed to find user stem of ID - ${stemId}`)
+						}
 
-					res.status(200).json({ success: true, data: fullUser })
+						res.status(200).json({ success: true, data: fullUser })
+					}
+					res.status(200).json({ success: true, data: user })
 				} else {
 					res.status(200).json({ success: true, data: user })
 				}
 			} catch (error) {
+				console.error(error)
 				res.status(400).json({ success: false })
 			}
 			break
