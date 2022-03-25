@@ -10,6 +10,7 @@ import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
 import wallets from '../utils/web3wallets'
 import Web3Fallback from './Web3Fallback'
+import { MONGODB_URI } from '../utils/db'
 
 // Context types
 type Web3ContextProps = {
@@ -74,9 +75,10 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// Listen for account changes
 			web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
-				console.info('Switching wallet accounts')
+				const newAccount = newAccounts[0]
+				console.info(`Switching wallet accounts to ${newAccount}`)
 				setAccounts(newAccounts)
-				await findOrCreateUser(newAccounts[0])
+				await findOrCreateUser(newAccount)
 			})
 
 			// Listen for chain changes
@@ -178,7 +180,6 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// If there is not a user created for this connected account, create one
 			const res = await get(`/users/${account.toLowerCase()}`)
-			console.log({ userRes: res })
 			let data = res.success ? res.data : null
 			setCurrentUser(data)
 			if (!data) {
