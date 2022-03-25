@@ -3,6 +3,7 @@ import { INftDoc, Nft } from '../../../models/nft.model'
 import type { IProjectDoc } from '../../../models/project.model'
 import { Project } from '../../../models/project.model'
 import type { IStemDoc } from '../../../models/stem.model'
+import _get from 'lodash/get'
 import { Stem } from '../../../models/stem.model'
 import type { IUser, IUserFull } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
@@ -22,17 +23,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// We will always be getting users by their address, not their MongoDB _id.
 				const user: IUser | null = await User.findOne({ address: id })
+				console.log({ id, params, body })
 
 				if (!user) {
 					return res.status(404).json({ success: false })
 				}
 
 				// Check to get full details or not
-				const paramData = typeof params === 'object' ? params[0] : params
-				if (paramData) {
-					const paramsJson = JSON.parse(paramData)
-					const getFullDetails: boolean = paramsJson?.fullDetails ?? false
-					if (getFullDetails) {
+					if (_get(JSON.parse(typeof params === 'object' ? params[0] : params), 'fullDetails', false)) {
 						const fullUser: IUserFull = {
 							...user,
 							projects: [],
