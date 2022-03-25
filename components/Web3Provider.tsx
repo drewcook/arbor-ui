@@ -180,7 +180,6 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 
 			// If there is not a user created for this connected account, create one
 			const res = await get(`/users/${account.toLowerCase()}`)
-			console.log({ userRes: res, db: MONGODB_URI })
 			let data = res.success ? res.data : null
 			setCurrentUser(data)
 			if (!data) {
