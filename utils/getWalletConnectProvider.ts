@@ -23,7 +23,6 @@ const getWalletConnectProvider = async () => {
 			url: 'https://polyecho.xyz',
 			icons: ['https://polyecho.xyz/nft_thumb.png'],
 		},
-		mobileLinks: ['rainbow', 'metamask', 'argent', 'trust', 'imtoken', 'pillar'],
 	})
 	// 2. Subscribe to client events
 	client.on(CLIENT_EVENTS.pairing.proposal, async (proposal: PairingTypes.Proposal) => {
