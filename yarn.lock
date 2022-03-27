@@ -6944,10 +6944,10 @@ nextjs-progressbar@^0.0.14:
     nprogress "^0.2.0"
     prop-types "^15.7.2"
 
-nft.storage@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.npmjs.org/nft.storage/-/nft.storage-6.0.2.tgz"
-  integrity sha512-TaycdqD2DabEZ0mSNdcTeO2D3FKMlbIukXpihncMb8BL805sieOWt2tZBZmlUgHMxtDZIeWpiQOIr7YjhuMI0Q==
+nft.storage@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/nft.storage/-/nft.storage-6.1.0.tgz#2cba7f5a5097dd518d56ed1c734dcf0b43297344"
+  integrity sha512-7qK9ZRAIWu7Z4dsdYHHL2TkzMIhijxaH37eK8CzP1JmM/wFX3lwTyGHywlGPmWL8pq7OhS8FgMJlmSyMbAVWYA==
   dependencies:
     "@ipld/car" "^3.2.3"
     "@ipld/dag-cbor" "^6.0.13"
