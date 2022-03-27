@@ -2,6 +2,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	env: {
+		CLIENT_HOST: process.env.CLIENT_HOST,
 		MONGODB_URI: process.env.MONGODB_URI,
 		BLOCKNATIVE_KEY: process.env.BLOCKNATIVE_KEY,
 		NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY,

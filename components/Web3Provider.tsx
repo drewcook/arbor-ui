@@ -10,7 +10,6 @@ import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
 import wallets from '../utils/web3wallets'
 import Web3Fallback from './Web3Fallback'
-import { MONGODB_URI } from '../utils/db'
 
 // Context types
 type Web3ContextProps = {
@@ -177,19 +176,15 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	const findOrCreateUser = async (account?: string | null) => {
 		try {
 			if (!account) return
-
 			// If there is not a user created for this connected account, create one
 			const res = await get(`/users/${account.toLowerCase()}`)
 			let data = res.success ? res.data : null
 			setCurrentUser(data)
 			if (!data) {
-				console.info('no user found, creating new one...')
-				// TODO: for some reason this still comes back when users exist
 				const res = await post('/users', {
 					address: account.toLowerCase(),
 				})
 				data = res.success ? res.data : null
-
 				setCurrentUser(data)
 			}
 			// If there is a user, great
