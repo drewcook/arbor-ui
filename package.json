@@ -23,7 +23,7 @@
     "downshift": "^6.1.7",
     "lodash": "^4.17.21",
     "mongoose": "^6.2.2",
-    "next": "12.1.0",
+    "next": "12.1.1",
     "nextjs-progressbar": "^0.0.14",
     "nft.storage": "^6.0.2",
     "react": "17.0.2",
