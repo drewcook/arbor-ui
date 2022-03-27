@@ -18,6 +18,7 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
 	} catch (e: any) {
+		console.error(e)
 		return { success: false, error: e }
 	}
 }
