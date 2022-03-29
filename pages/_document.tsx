@@ -18,7 +18,7 @@ class AppDocument extends Document {
 						rel="stylesheet"
 					/>
 					<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-					<script async src="https://www.googletagmanager.com/gtag/js?id=G-NE0CW8ZW1B"></script>
+					<script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6RKG6N7H"></script>
 					<script
 						dangerouslySetInnerHTML={{
 							__html: `
@@ -26,7 +26,7 @@ class AppDocument extends Document {
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
 
-                gtag('config', 'G-NE0CW8ZW1B');
+                gtag('config', 'G-BV6RKG6N7H');
               `,
 						}}
 					/>
