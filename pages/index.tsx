@@ -250,7 +250,7 @@ const Home: NextPage = () => {
 								<Box sx={{ mb: 4 }}>
 									<Typography sx={styles.blurbBold}>Like open source?</Typography>
 									<Typography sx={styles.blurb}>
-										All stems and songs are dedicated to the public domain under the CCO license. All files are hosted
+										All stems and songs are dedicated to the public domain under the CC0 license. All files are hosted
 										directly on IPFS.
 									</Typography>
 								</Box>
