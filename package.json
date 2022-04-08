@@ -20,7 +20,7 @@
     "axios": "^0.26.0",
     "bnc-onboard": "^1.38.1",
     "date-fns": "^2.28.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16.0.0",
     "downshift": "^6.1.7",
     "lodash": "^4.17.21",
     "mongoose": "^6.2.10",
