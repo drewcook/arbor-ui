@@ -97,6 +97,9 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 					address: async (address: string) => {
 						setAccounts([address])
 					},
+					ens: async (ens: any) => {
+						console.log('ENS changed', { ens })
+					},
 					wallet: async (wallet: Wallet) => {
 						console.log(`${wallet.name} connected!`)
 						// store the selected wallet name to be retrieved next time the app loads
@@ -106,6 +109,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 				walletSelect: {
 					wallets,
 				},
+				walletCheck: [{ checkName: 'derivationPath' }, { checkName: 'connect' }, { checkName: 'accounts' }],
 			})
 			setOnboard(onboardInstance)
 

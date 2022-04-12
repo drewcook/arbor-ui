@@ -4,11 +4,12 @@ const nextConfig = {
 	env: {
 		CLIENT_HOST: process.env.CLIENT_HOST,
 		MONGODB_URI: process.env.MONGODB_URI,
+		WALLETCONNECT_ID: process.env.WALLETCONNECT_ID,
 		BLOCKNATIVE_KEY: process.env.BLOCKNATIVE_KEY,
 		NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY,
 		COVALENT_API_KEY: process.env.COVALENT_API_KEY,
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
-		HOME: process.env.HOME,
+		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
