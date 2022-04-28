@@ -120,18 +120,15 @@ contract('PolyEchoNFT: mintAndBuy()', accounts => {
 		actualMetadataURI = tx.logs[2].args._tokenURI
 		assert.equal(tokenId, 2, 'tokenID should be incremented')
 		assert.equal(actualMetadataURI, metadataURI2, 'metadata URIs should match')
-		const tokenIdURIState = await contract.tokenIdToUri()[tokenId - 1]
-		assert.equal(tokenIdURIState, actualMetadataURI, 'state should be equal')
 	})
 
-	// TODO:
+	// TODO: It is possible that we should emit an event for each transfer to a contributor, and test that way
 	it.skip('Should pay out the mint price evenly to contributors', async () => {
 		const mintPrice = await contract.mintPrice()
 		const expectedContributorCut = mintPrice / contributors.length
 		const tx = await contract.mintAndBuy(minter, metadataURI1, contributors, {
 			value: mintPrice,
 		})
-		// It is possible that we should emit an event for each transfer to a contributor, and test that way
 		const actualContributors = await contract.tokenIdToContributors(0)
 		assert.equal(actualContributors, contributors, 'contributors should be tied to the newly minted tokenID')
 	})
