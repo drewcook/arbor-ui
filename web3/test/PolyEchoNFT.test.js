@@ -1,5 +1,9 @@
 const NFTContract = artifacts.require('PolyEchoNFT')
 
+// Quick helpers
+const toEth = wei => web3.utils.fromWei(`${wei}`, 'ether')
+const toWei = eth => web3.utils.toWei(`${eth}`, 'ether')
+
 contract('PolyEchoNFT: deployment', () => {
 	let contract
 
@@ -66,7 +70,8 @@ contract('PolyEchoNFT: state properties', accounts => {
 	})
 })
 
-contract('PolyEchoNFT: minting an NFT', accounts => {
+contract('PolyEchoNFT: minting an NFT', accts => {
+	const accounts = accts.map(a => a.toLowerCase())
 	let contract
 	const owner = accounts[0]
 	const minter = accounts[1]
@@ -79,8 +84,9 @@ contract('PolyEchoNFT: minting an NFT', accounts => {
 	})
 
 	it('Should have a static mint price', async () => {
-		const mintPrice = await contract.mintPrice()
-		assert.equal(mintPrice, 10000000000000000)
+		const actualMintPrice = await contract.mintPrice()
+		const expectedMintPrice = toWei(0.01)
+		assert.equal(actualMintPrice, expectedMintPrice)
 	})
 
 	it('Throws an error if sender sends less than the mint price', async () => {
@@ -123,27 +129,31 @@ contract('PolyEchoNFT: minting an NFT', accounts => {
 	})
 
 	// TODO: It is possible that we should emit an event for each transfer to a contributor, and test that way
-	it.skip('Should pay out the mint price evenly to contributors', async () => {
-		const mintPrice = await contract.mintPrice()
-		const expectedContributorCut = mintPrice / contributors.length
-		const tx = await contract.mintAndBuy(minter, metadataURI1, contributors, {
-			value: mintPrice,
-		})
-		const actualContributors = await contract.tokenIdToContributors(0)
-		assert.equal(actualContributors, contributors, 'contributors should be tied to the newly minted tokenID')
-	})
+	// it('Should pay out the mint price evenly to contributors', async () => {
+	// 	const mintPrice = await contract.mintPrice()
+	// 	const expectedContributorCut = mintPrice / contributors.length
+	// 	const tx = await contract.mintAndBuy(minter, metadataURI1, contributors, {
+	// 		value: mintPrice,
+	// 	})
+	// 	const actualContributors = await contract.tokenIdToContributors(0)
+	// 	assert.equal(actualContributors, contributors, 'contributors should be tied to the newly minted tokenID')
+	// 	// TODO: check the balance of the contributor addresses for the difference
+	// })
 })
 
-contract('PolyEchoNFT: listing and selling an NFT', async accounts => {
+contract('PolyEchoNFT: listing and un-listing an NFT', async accts => {
+	const accounts = accts.map(a => a.toLowerCase())
 	let contract
 	let tokenId
+	let contributorBalance
+	let sellerBalance
 	const minter = accounts[1]
 	const nonminter = accounts[0]
 	const buyer1 = accounts[2]
 	const buyer2 = accounts[3]
 	const contributors = [accounts[4], accounts[5], accounts[6]]
-	const salePrice1 = 2000000000000000
-	const salePrice2 = 5000000000000000
+	const salePrice1 = toWei(0.02)
+	const salePrice2 = toWei(0.05)
 
 	beforeEach(async () => {
 		contract = await NFTContract.deployed()
@@ -153,6 +163,24 @@ contract('PolyEchoNFT: listing and selling an NFT', async accounts => {
 			from: minter,
 		})
 		tokenId = tx.logs[0].args[2].toNumber()
+
+		// Get seller balance
+		web3.eth.getBalance(minter, async (err, result) => {
+			if (err) {
+				console.log(err)
+			} else {
+				sellerBalance = toEth(result)
+			}
+		})
+
+		// Get contributor balance once (will be used for all though)
+		web3.eth.getBalance(contributors[0], (err, result) => {
+			if (err) {
+				console.log(err)
+			} else {
+				contributorBalance = toEth(result)
+			}
+		})
 	})
 
 	describe('Listing for sale', () => {
@@ -208,8 +236,105 @@ contract('PolyEchoNFT: listing and selling an NFT', async accounts => {
 			const tx = await contract.disallowBuy(tokenId, {
 				from: minter,
 			})
-			assert.equal(tx.receipt.from.toLowerCase(), minter.toLowerCase(), 'minter not tied to transaction')
+			assert.equal(tx.receipt.from.toLowerCase(), minter, 'minter not tied to transaction')
 			// assert.equal(await contract.tokenIdToPrice(1), undefined, 'should remove from state of tokens listed')
+		})
+	})
+
+	describe('Buying and selling a token on the market', () => {
+		it('Should throw an error if trying to buy a token not for sale', async () => {
+			const tokenIdNotForSale = 10
+			try {
+				await contract.buy(tokenIdNotForSale, {
+					from: buyer1,
+					value: salePrice1,
+				})
+			} catch (err) {
+				const expectedError = 'This token is not for sale'
+				const actualError = err.reason
+				assert.equal(actualError, expectedError, 'should not be permitted')
+			}
+		})
+
+		it('Should throw an error if trying to buy with the incorrect listed price', async () => {
+			try {
+				// Minter lists it for sale
+				await contract.allowBuy(tokenId, salePrice1, {
+					from: minter,
+				})
+				// Buyer pays wrong price
+				await contract.buy(tokenId, {
+					from: buyer1,
+					value: salePrice2,
+				})
+			} catch (err) {
+				const expectedError = 'Incorrect value'
+				const actualError = err.reason
+				assert.equal(actualError, expectedError, 'should not be permitted')
+			}
+		})
+
+		it('Should transfer ownership to the buyer', async () => {
+			// Minter lists it for sale
+			await contract.allowBuy(tokenId, salePrice1, {
+				from: minter,
+			})
+
+			// Buyer buys it for correct sale price
+			const tx = await contract.buy(tokenId, {
+				from: buyer1,
+				value: salePrice1,
+			})
+
+			// Events emitted
+			const actualEvents = tx.logs.map(l => l.event)
+			assert.equal(actualEvents[2], 'Transfer', 'transfer events should match')
+			assert.equal(actualEvents[3], 'NftBought', 'NFT bought events should match')
+			assert.equal(actualEvents[4], 'SellerPaid', 'seller paid events should match')
+			assert.equal(actualEvents[5], 'RoyaltiesPaid', 'royalties paid events should match')
+
+			// Test event arguments
+			const actualEventArgs = tx.logs.map(l => l.args)
+			assert.equal(actualEventArgs[4]._price, salePrice1 * 0.9, 'seller should receive 90% take from sale')
+			assert.equal(actualEventArgs[5]._price, salePrice1 * 0.1, 'contributors should receive 10% take from sale')
+			// console.log(actualEventArgs[5]._contributors.map(c => c.toLowerCase()) === contributors)
+			// assert.equal(
+			// 	actualEventArgs[5]._contributors.map(c => c.toLowerCase()),
+			// 	contributors,
+			// 	'contributors should match',
+			// )
+
+			// Check the balance of the seller's address for the 90% difference
+			// const sellersCut = salePrice1 * 0.9
+			// web3.eth.getBalance(minter, (err, result) => {
+			// 	if (err) {
+			// 		console.log(err)
+			// 	} else {
+			// 		const newSellerBalance = toEth(result)
+			// 		const gasCost = toEth(tx.receipt.gasUsed)
+			// 		console.log(sellerBalance + ' ETH')
+			// 		console.log(newSellerBalance + ' ETH')
+			// 		console.log(gasCost + ' ETH')
+			// 		assert.equal(
+			// 			sellerBalance.toBN() - gasCost.toBN(),
+			// 			newBalanceSeller.toBN(),
+			// 			'seller should receive 90% take on sale price',
+			// 		)
+			// 	}
+			// })
+
+			// Check the balance of the contributor addresses for the 10% difference
+			// const royaltyValue = 200000000000000
+			// contributors.map(contributor => {
+			// 	web3.eth.getBalance(contributor, (err, result) => {
+			// 		if (err) {
+			// 			console.log(err)
+			// 		} else {
+			// 			console.log(web3.utils.fromWei(result, 'ether') + ' ETH')
+			// 		}
+			// 	})
+			// })
+			// console.log(newBalanceSeller - startBalanceSeller, sellersCut, contributorBalancesStart, contributorBalancesEnd)
 		})
 	})
 })
