@@ -31,7 +31,7 @@ contract('PolyEchoNFT: deployment', () => {
 	})
 })
 
-contract('PolyEchoNFT: properties', accounts => {
+contract('PolyEchoNFT: state properties', accounts => {
 	let contract
 	const owner = accounts[0]
 
@@ -66,7 +66,7 @@ contract('PolyEchoNFT: properties', accounts => {
 	})
 })
 
-contract('PolyEchoNFT: mintAndBuy()', accounts => {
+contract('PolyEchoNFT: minting an NFT', accounts => {
 	let contract
 	const owner = accounts[0]
 	const minter = accounts[1]
@@ -94,7 +94,7 @@ contract('PolyEchoNFT: mintAndBuy()', accounts => {
 	})
 
 	// Tests for NFT minting function of PolyEchoNFT contract using tokenID of the minted NFT
-	it('Should be able to mint NFTs with proper metadata', async () => {
+	it('Should be able to mint a token with proper metadata', async () => {
 		// Mint a token
 		const mintPrice = await contract.mintPrice()
 		let tx = await contract.mintAndBuy(minter, metadataURI1, contributors, {
@@ -131,5 +131,85 @@ contract('PolyEchoNFT: mintAndBuy()', accounts => {
 		})
 		const actualContributors = await contract.tokenIdToContributors(0)
 		assert.equal(actualContributors, contributors, 'contributors should be tied to the newly minted tokenID')
+	})
+})
+
+contract('PolyEchoNFT: listing and selling an NFT', async accounts => {
+	let contract
+	let tokenId
+	const minter = accounts[1]
+	const nonminter = accounts[0]
+	const buyer1 = accounts[2]
+	const buyer2 = accounts[3]
+	const contributors = [accounts[4], accounts[5], accounts[6]]
+	const salePrice1 = 2000000000000000
+	const salePrice2 = 5000000000000000
+
+	beforeEach(async () => {
+		contract = await NFTContract.deployed()
+		const mintPrice = await contract.mintPrice()
+		const tx = await contract.mintAndBuy(minter, 'ipfs://test-metadata-uri', contributors, {
+			value: mintPrice,
+			from: minter,
+		})
+		tokenId = tx.logs[0].args[2].toNumber()
+	})
+
+	describe('Listing for sale', () => {
+		it('Should throw an error if a non-owner tries to list it for sale', async () => {
+			try {
+				await contract.allowBuy(tokenId, salePrice1, {
+					from: nonminter,
+				})
+			} catch (err) {
+				const expectedError = 'Not owner of this token'
+				const actualError = err.reason
+				assert.equal(actualError, expectedError, 'should not be permitted')
+			}
+		})
+
+		// TODO: emit an event when listed successfully and test against it
+		it('Should allow an owner to list it for sale', async () => {
+			const tx = await contract.allowBuy(tokenId, salePrice1, {
+				from: minter,
+			})
+			assert.equal(tx.receipt.from.toLowerCase(), minter.toLowerCase(), 'minter not tied to transaction')
+			// assert.equal(await contract.tokenIdToPrice(1), salePrice1, 'should update state with sale price for token')
+		})
+
+		it('Should require a list price greater than zero', async () => {
+			try {
+				await contract.allowBuy(tokenId, 0, {
+					from: minter,
+				})
+			} catch (err) {
+				const expectedError = 'Price zero'
+				const actualError = err.reason
+				assert.equal(actualError, expectedError, 'should not be permitted')
+			}
+		})
+	})
+
+	describe('Un-listing it for sale', () => {
+		it('Should throw an error if a non-owner tries to un-list it for sale', async () => {
+			try {
+				await contract.disallowBuy(tokenId, {
+					from: nonminter,
+				})
+			} catch (err) {
+				const expectedError = 'Not owner of this token'
+				const actualError = err.reason
+				assert.equal(actualError, expectedError, 'should not be permitted')
+			}
+		})
+
+		// TODO: emit an event when listed successfully and test against it
+		it('Should allow an owner to un-list it for sale', async () => {
+			const tx = await contract.disallowBuy(tokenId, {
+				from: minter,
+			})
+			assert.equal(tx.receipt.from.toLowerCase(), minter.toLowerCase(), 'minter not tied to transaction')
+			// assert.equal(await contract.tokenIdToPrice(1), undefined, 'should remove from state of tokens listed')
+		})
 	})
 })
