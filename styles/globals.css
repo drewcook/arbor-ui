@@ -72,9 +72,9 @@
 
 
   /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL */
+  --onboard-wallet-columns: 1;
   /* --onboard-connect-content-width: #fff; */
   /* --onboard-connect-content-height: #fff; */
-  --onboard-wallet-columns: 1;
   /* --onboard-connect-sidebar-background: #fff; */
   /* --onboard-connect-sidebar-color: #fff; */
   /* --onboard-connect-sidebar-progress-background: #fff; */
