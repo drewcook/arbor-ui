@@ -95,7 +95,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<strong>Last Updated:</strong> {formatDate(balData.updated_at)}
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						<strong>Token Name:</strong> PolyEcho
+						<strong>Token Name:</strong> Polyecho
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
 						<strong>Ticker Symbol:</strong> (ECHO)

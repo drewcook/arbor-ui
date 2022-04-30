@@ -21,7 +21,7 @@ type Web3ContextProps = {
 	currentUser: IUser | null
 }
 
-type ProviderProps = {
+type Web3ProviderProps = {
 	children: ReactNode
 }
 
@@ -33,7 +33,7 @@ const POLYGON_TESTNET_CHAIN_ID = '0x13881' // Onboard takes hexadecimal values
 const Web3Context = createContext<Web3ContextProps>({})
 
 // Context provider
-export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
+export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	const [web3, setWeb3] = useState(null)
 	const [contract, setContract] = useState(null)
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
