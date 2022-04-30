@@ -174,21 +174,20 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	/**
 	 * This is responsible for finding or creating a user based off of a given wallet address.
 	 * This is called when connecting a wallet or switching wallet accounts.
+	 * This will set our current user state based on the record data
 	 */
 	const findOrCreateUser = async (account: string) => {
 		try {
-			// If there is not a user created for this connected account, create one
-			const res = await get(`/users/${account.toLowerCase()}`)
-			let data = res.success ? res.data : null
-			setCurrentUser(data)
-			if (!data) {
-				const res = await post('/users', {
+			// If there is not a user found for this connected account, create a new user record
+			const findRes = await get(`/users/${account.toLowerCase()}`)
+			if (findRes.data) {
+				setCurrentUser(findRes.data)
+			} else {
+				const createRes = await post('/users', {
 					address: account.toLowerCase(),
 				})
-				data = res.success ? res.data : null
-				setCurrentUser(data)
+				setCurrentUser(createRes.data)
 			}
-			// If there is a user, great
 		} catch (e: any) {
 			console.error(e.message)
 		}
@@ -199,15 +198,13 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 	 */
 	const handleDisconnectWallet = async () => {
 		try {
-			if (!onboard) return
 			// Disconnect the first wallet in the wallets array
+			if (!onboard) return
 			const primaryWallet = onboard.state.get().wallets[0]
 			await onboard.disconnectWallet({ label: primaryWallet.label })
 			setConnected(false)
 			setCurrentUser(null)
-			console.log('Successfully disconnected wallet')
-			// TODO: Possibly refresh the window to help fix re-connect issues
-			// window.location.reload()
+			console.info('Successfully disconnected wallet')
 		} catch (e: any) {
 			console.error(e.message)
 		}
