@@ -33,7 +33,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-dropzone": "^12.0.5",
-    "wavesurfer.js": "5.2.0",
+    "wavesurfer.js": "6.1.0",
     "web3": "^1.7.3"
   },
   "devDependencies": {
