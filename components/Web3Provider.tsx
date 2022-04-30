@@ -202,6 +202,7 @@ export const Web3Provider = ({ children }: ProviderProps): JSX.Element => {
 			if (!onboard) return
 			const primaryWallet = onboard.state.get().wallets[0]
 			await onboard.disconnectWallet({ label: primaryWallet.label })
+			// Set provider local state
 			setConnected(false)
 			setCurrentUser(null)
 			console.info('Successfully disconnected wallet')
