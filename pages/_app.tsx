@@ -1,18 +1,21 @@
 import type { AppProps } from 'next/app'
 import NextNProgress from 'nextjs-progressbar'
-import PolyEchoThemeProvider from '../components/PolyEchoThemeProvider'
+import PolyechoThemeProvider from '../components/PolyechoThemeProvider'
+import AppLayout from '../components/AppLayout'
 import { Web3Provider } from '../components/Web3Provider'
 import '../styles/globals.css'
 
-function PolyEchoApp({ Component, pageProps }: AppProps) {
+function PolyechoApp({ Component, pageProps }: AppProps) {
 	return (
-		<PolyEchoThemeProvider>
+		<PolyechoThemeProvider>
 			<Web3Provider>
 				<NextNProgress color="#23F09A" />
-				<Component {...pageProps} />
+				<AppLayout>
+					<Component {...pageProps} />
+				</AppLayout>
 			</Web3Provider>
-		</PolyEchoThemeProvider>
+		</PolyechoThemeProvider>
 	)
 }
 
-export default PolyEchoApp
+export default PolyechoApp
