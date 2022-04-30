@@ -21,14 +21,14 @@ const getWeb3 = async () => {
 	else if (window.web3) {
 		// Use Mist/MetaMask's provider.
 		const web3 = window.web3
-		console.log('Injected web3 detected.')
+		console.info('Injected web3 detected.')
 		return web3
 	}
 	// Fallback to localhost use dev console port by default...
 	else {
 		const provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545')
 		const web3 = new Web3(provider)
-		console.log('No web3 instance injected, using Local web3.')
+		console.info('No web3 instance injected, using Local web3.')
 		return web3
 	}
 }

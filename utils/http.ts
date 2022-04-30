@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import _cloneDeep from 'lodash/cloneDeep'
-console.log('host', process.env.CLIENT_HOST)
+
 // Create Axios instance using the hostname for baseurl
 const instance: AxiosInstance =
 	process.env.CLIENT_HOST === 'test' // We store this for Vercel Preview builds
@@ -18,7 +18,6 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
 	} catch (e: any) {
-		console.error(e)
 		return { success: false, error: e }
 	}
 }
