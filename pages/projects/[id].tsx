@@ -540,6 +540,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										/* @ts-ignore */
 										sx={styles.playAllBtn}
 										disabled={details.stems.length === 0}
+										title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
 									>
 										{isPlayingAll ? (
 											<PauseRounded sx={styles.playAllIcon} />
@@ -639,17 +640,35 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							{details.stems.length > 0 ? (
 								<>
 									<Box sx={styles.playSection}>
-										<IconButton sx={styles.playStopBtn} onClick={handlePlayPauseStems} disableRipple disableFocusRipple>
+										<IconButton
+											sx={styles.playStopBtn}
+											onClick={handlePlayPauseStems}
+											disableRipple
+											disableFocusRipple
+											title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+										>
 											{isPlayingAll ? (
 												<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
 											) : (
 												<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
 											)}
 										</IconButton>
-										<IconButton sx={styles.playStopBtn} onClick={handleStop} disableRipple disableFocusRipple>
+										<IconButton
+											sx={styles.playStopBtn}
+											onClick={handleStop}
+											disableRipple
+											disableFocusRipple
+											title="Stop playback"
+										>
 											<Square />
 										</IconButton>
-										<IconButton sx={styles.playStopBtn} onClick={handleSkipPrev} disableRipple disableFocusRipple>
+										<IconButton
+											sx={styles.playStopBtn}
+											onClick={handleSkipPrev}
+											disableRipple
+											disableFocusRipple
+											title="Skip to beginning"
+										>
 											<SkipPrevious />
 										</IconButton>
 										<Box sx={styles.playTracker} />
