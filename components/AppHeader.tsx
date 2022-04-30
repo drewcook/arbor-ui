@@ -54,7 +54,7 @@ const AppHeader = (): JSX.Element => {
 	}
 
 	return (
-		<AppBar position="static" sx={styles.appbar} enableColorOnDark>
+		<AppBar id="app-header" position="static" sx={styles.appbar} enableColorOnDark>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Link href="/" passHref>

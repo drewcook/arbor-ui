@@ -43,27 +43,6 @@
   --onboard-warning-600: #cc8c00;
   --onboard-warning-700: #664600;
 
-  /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL *
-  --onboard-connect-content-width: #fff;
-  --onboard-connect-content-height: #fff;
-  --onboard-wallet-columns: #fff;
-  --onboard-connect-sidebar-background: #fff;
-  --onboard-connect-sidebar-color: #fff;
-  --onboard-connect-sidebar-progress-background: #fff;
-  --onboard-connect-sidebar-progress-color: #fff;
-  --onboard-connect-header-background: #fff;
-  --onboard-connect-header-color: #fff;
-  --onboard-link-color: #fff;
-  --onboard-close-button-background: #fff;
-  --onboard-close-button-color: #fff;
-  --onboard-checkbox-background: #fff;
-  --onboard-checkbox-color: #fff;
-  --onboard-wallet-button-background: #fff;
-  --onboard-wallet-button-background-hover: #fff;
-  --onboard-wallet-button-color: #fff;
-  --onboard-wallet-button-border-color: #fff;
-  --onboard-wallet-app-icon-border-color: #fff;
-
   /* FONTS *
   --onboard-font-family-normal: Sofia Pro;
   --onboard-font-family-semibold: Sofia Pro Semibold;
@@ -90,6 +69,28 @@
 
   --onboard-modal-z-index: 10
 	*/
+
+
+  /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL */
+  /* --onboard-connect-content-width: #fff; */
+  /* --onboard-connect-content-height: #fff; */
+  --onboard-wallet-columns: 1;
+  /* --onboard-connect-sidebar-background: #fff; */
+  /* --onboard-connect-sidebar-color: #fff; */
+  /* --onboard-connect-sidebar-progress-background: #fff; */
+  /* --onboard-connect-sidebar-progress-color: #fff; */
+  /* --onboard-connect-header-background: #fff; */
+  /* --onboard-connect-header-color: #fff; */
+  /* --onboard-link-color: #fff; */
+  /* --onboard-close-button-background: #fff; */
+  /* --onboard-close-button-color: #fff; */
+  /* --onboard-checkbox-background: #fff; */
+  /* --onboard-checkbox-color: #fff; */
+  /* --onboard-wallet-button-background: #fff; */
+  /* --onboard-wallet-button-background-hover: #fff; */
+  /* --onboard-wallet-button-color: #fff; */
+  /* --onboard-wallet-button-border-color: #fff; */
+  /* --onboard-wallet-app-icon-border-color: #fff; */
 }
 
 * {
@@ -151,17 +152,11 @@ button a:hover, button a:active {
 /* App */
 
 #app-main {
-  min-height: calc(100vh - 185px);
-  padding: 5rem 0 0;
+  padding: 5rem 0;
 }
 
 #app-main.homepage {
 	padding: 0;
-}
-
-.homepage-banner {
-	background: url('/banner_bg.png') center center no-repeat;
-	background-size: cover;
 }
 
 .dropzone-loading {
