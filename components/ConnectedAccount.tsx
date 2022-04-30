@@ -33,7 +33,7 @@ const ConnectedAccount = (): JSX.Element => {
 	const handleOpenMenu = (e: { target: any }) => setAnchorEl(e.target)
 	const handleCloseMenu = () => setAnchorEl(null)
 
-	const handleLogout = async () => {
+	const handleDisconnect = async () => {
 		await handleDisconnectWallet()
 		setAnchorEl(null)
 	}
@@ -81,7 +81,7 @@ const ConnectedAccount = (): JSX.Element => {
 							<Link href={`/users/${currentUser.address}`} passHref>
 								<MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
 							</Link>
-							<MenuItem onClick={handleLogout}>Logout</MenuItem>
+							<MenuItem onClick={handleDisconnect}>Disconnect</MenuItem>
 						</Menu>
 						<Typography variant="body2">{formatAddress(currentUser.address)}</Typography>
 					</>
