@@ -1,8 +1,10 @@
 /* Base */
 
+/* Blocknative Onboard CSS Vars */
+/* See https://docs.blocknative.com/onboard/core#custom-styling */
 :root {
-  /* CUSTOMIZE THE ONBOARD COLOR PALLETTE */
-  --onboard-white: white;
+  /*
+	--onboard-white: white;
   --onboard-black: black;
   --onboard-primary-1: #2f80ed;
   --onboard-primary-100: #eff1fc;
@@ -41,8 +43,8 @@
   --onboard-warning-600: #cc8c00;
   --onboard-warning-700: #664600;
 
-  /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL */
-  /* --onboard-connect-content-width: #fff;
+  /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL *
+  --onboard-connect-content-width: #fff;
   --onboard-connect-content-height: #fff;
   --onboard-wallet-columns: #fff;
   --onboard-connect-sidebar-background: #fff;
@@ -60,9 +62,9 @@
   --onboard-wallet-button-background-hover: #fff;
   --onboard-wallet-button-color: #fff;
   --onboard-wallet-button-border-color: #fff;
-  --onboard-wallet-app-icon-border-color: #fff; */
+  --onboard-wallet-app-icon-border-color: #fff;
 
-  /* FONTS */
+  /* FONTS *
   --onboard-font-family-normal: Sofia Pro;
   --onboard-font-family-semibold: Sofia Pro Semibold;
   --onboard-font-family-light: Sofia Pro Light;
@@ -75,18 +77,19 @@
   --onboard-font-size-6: 0.875rem;
   --onboard-font-size-7: 0.75rem;
 
-  /* SPACING */
+  /* SPACING *
   --onboard-spacing-1: 3rem;
   --onboard-spacing-2: 2rem;
   --onboard-spacing-3: 1.5rem;
   --onboard-spacing-4: 1rem;
   --onboard-spacing-5: 0.5rem;
 
-  /* SHADOWS */
+  /* SHADOWS *
   --onboard-shadow-1: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --onboard-shadow-2: inset 0px -1px 0px rgba(0, 0, 0, 0.1);
 
   --onboard-modal-z-index: 10
+	*/
 }
 
 * {
