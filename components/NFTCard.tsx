@@ -66,11 +66,6 @@ type NFTCardProps = {
 
 const NFTCard = (props: NFTCardProps): JSX.Element => {
 	const { details } = props
-	// const { connected, handleConnectWallet, currentUser } = useWeb3()
-
-	// const handleBuyNft = () => {
-	// 	console.log('buy this nft', details._id)
-	// }
 
 	return (
 		<>
@@ -121,16 +116,6 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					<Link href={`/nfts/${details._id}`} passHref>
 						<Button color="primary">View Details</Button>
 					</Link>
-					{/* {details.isListed && currentUser?.address !== details.owner && (
-						<Button
-						variant="contained"
-						color="primary"
-						onClick={connected ? handleBuyNft : handleConnectWallet}
-						sx={styles.buyNowBtn}
-						>
-							Buy Now
-						</Button>
-					)} */}
 				</CardActions>
 			</Card>
 		</>
