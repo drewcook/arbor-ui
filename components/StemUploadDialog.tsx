@@ -191,7 +191,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			// Upload to NFT.storage
 			const nftsRes = await NFTStore.store({
 				name: file.name,
-				description: 'An audio file uploaded through the PolyEcho platform',
+				description: 'An audio file uploaded through the Polyecho platform',
 				image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 				properties: {
 					name: stemName,
@@ -277,7 +277,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				</Toolbar>
 				<DialogContent>
 					<DialogContentText sx={styles.text}>
-						When you upload a stem to a PolyEcho project, you become a collaborator, where you&apos;ll split a 10% cut
+						When you upload a stem to a Polyecho project, you become a collaborator, where you&apos;ll split a 10% cut
 						for each sale with other collaborators.
 					</DialogContentText>
 					<Grid container spacing={2}>

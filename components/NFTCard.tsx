@@ -75,10 +75,10 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					<Box className="nft-card-media">
 						<ImageOptimized
 							src="/polyecho_logo_square.png"
-							alt="PolyEcho NFT Image"
+							alt="Polyecho NFT Image"
 							width={400}
 							height={400}
-							title="PolyEcho NFT Image"
+							title="Polyecho NFT Image"
 						/>
 					</Box>
 					<Typography variant="h5" gutterBottom>

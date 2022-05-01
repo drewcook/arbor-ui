@@ -355,7 +355,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				data?.stems.forEach(async (stem: IStemDoc) => {
 					const res = await get(`/stems/download`, {
 						url: stem.audioUrl,
-						filename: `PolyEcho_Stem_${projectId}_${stem.filename}`,
+						filename: `Polyecho_Stem_${projectId}_${stem.filename}`,
 					})
 
 					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
@@ -431,7 +431,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
-						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
+						'A Polyecho NFT representing collaborative music from multiple contributors on the decentralized web.',
 					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),

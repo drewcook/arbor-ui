@@ -53,12 +53,12 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 			{data ? (
 				<>
 					<Typography variant="h4" component="h1" sx={styles.title}>
-						PolyEcho Audio NFTs
+						Polyecho Audio NFTs
 					</Typography>
 					<Container maxWidth="sm">
 						<Typography variant="h5" sx={styles.subtitle}>
 							Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right here
-							on PolyEcho.
+							on Polyecho.
 						</Typography>
 					</Container>
 					{data.length > 0 ? (

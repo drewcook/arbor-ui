@@ -105,7 +105,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 			{tokensData && (
 				<Paper elevation={2} sx={styles.covalentWrap}>
 					<Typography variant="h4" sx={styles.cardTitle}>
-						PolyEchoNFT Token Stats
+						PolyechoNFT Token Stats
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
 						<strong>Last Updated:</strong> {formatDate(tokensData.updated_at)}

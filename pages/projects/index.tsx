@@ -54,7 +54,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 			{data ? (
 				<>
 					<Typography variant="h4" component="h1" sx={styles.title}>
-						PolyEcho Music Projects
+						Polyecho Music Projects
 					</Typography>
 					<Container maxWidth="sm">
 						<Typography variant="h5" sx={styles.subtitle}>

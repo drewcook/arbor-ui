@@ -280,7 +280,7 @@ const Home: NextPage = () => {
 										Hard drive full of &quot;WIP&quot; tracks collecting dust?
 									</Typography>
 									<Typography sx={styles.blurb}>
-										Dig through &apos;em. One of your gently used stems could be worth something on PolyEcho.
+										Dig through &apos;em. One of your gently used stems could be worth something on Polyecho.
 									</Typography>
 								</Box>
 								<Box sx={{ mb: 4 }}>

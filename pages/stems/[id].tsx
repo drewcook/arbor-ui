@@ -212,12 +212,12 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 						Stem Details
 					</Typography>
 					<Typography variant="h4" component="h2" sx={styles.title}>
-						{data ? formatStemName(data.filename) : 'PolyEcho Stem'}
+						{data ? formatStemName(data.filename) : 'Polyecho Stem'}
 					</Typography>
 					{data && (
 						<>
 							<Typography sx={styles.desc}>
-								This is a PolyEcho stem that has been uploaded through our platform and is stored using NFT.storage.
+								This is a Polyecho stem that has been uploaded through our platform and is stored using NFT.storage.
 							</Typography>
 							<Box sx={styles.metadataWrap}>
 								<Typography sx={styles.metadata}>
