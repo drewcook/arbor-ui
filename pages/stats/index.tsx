@@ -54,7 +54,7 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 				<title>Polyecho | NFT Details</title>
 			</Head>
 			<Typography variant="h4" component="h1" sx={styles.title}>
-				Polyecho Audio NFT On-Chain Stats
+				Polyecho Music NFT On-Chain Stats
 			</Typography>
 			<Container maxWidth="md">
 				<Typography variant="h5" sx={styles.subtitle}>
