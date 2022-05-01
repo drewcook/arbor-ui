@@ -1,10 +1,8 @@
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import { Box, Button, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import AppFooter from '../../components/AppFooter'
-import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
@@ -125,143 +123,129 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | User Details</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | User Details</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="xl">
-					{details ? (
-						<>
-							<Grid container spacing={4}>
-								<Grid item xs={12} md={8}>
-									<Box>
-										<Typography variant="h5" gutterBottom>
-											User Details
+			{details ? (
+				<>
+					<Grid container spacing={4}>
+						<Grid item xs={12} md={8}>
+							<Box>
+								<Typography variant="h5" gutterBottom>
+									User Details
+								</Typography>
+								<Box sx={styles.metadataWrap}>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Display Name:
 										</Typography>
-										<Box sx={styles.metadataWrap}>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Display Name:
-												</Typography>
-												{formatAddress(details._doc.displayName)}
-											</Typography>
-											<Typography sx={styles.metadata}>
-												<Typography component="span" sx={styles.metadataKey}>
-													Joined On:
-												</Typography>
-												{formatDate(details._doc.createdAt)}
-											</Typography>
-											{isCurrentUserDetails && (
-												<Box sx={styles.editProfileWrap}>
-													<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-														Edit Profile
-													</Button>
-												</Box>
-											)}
+										{formatAddress(details._doc.displayName)}
+									</Typography>
+									<Typography sx={styles.metadata}>
+										<Typography component="span" sx={styles.metadataKey}>
+											Joined On:
+										</Typography>
+										{formatDate(details._doc.createdAt)}
+									</Typography>
+									{isCurrentUserDetails && (
+										<Box sx={styles.editProfileWrap}>
+											<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
+												Edit Profile
+											</Button>
 										</Box>
-									</Box>
-								</Grid>
-								<Grid item xs={12} md={4}>
-									<Box className="avatar-wrap">
-										<Box sx={styles.avatar}>
-											<ImageOptimized src={details._doc.avatarUrl} alt="User Avatar" width={200} height={200} />
-										</Box>
-									</Box>
-								</Grid>
-							</Grid>
-							<Divider light sx={styles.divider} />
-							<Typography variant="h4" gutterBottom>
-								My NFT Collection
-								<Typography component="span" sx={styles.sectionCount}>
-									({details.nfts.length})
-								</Typography>
-							</Typography>
-							<Typography sx={styles.sectionMeta}>NFTs this user has minted or collected</Typography>
-							<Grid container spacing={4}>
-								{details.nfts.length > 0 ? (
-									details.nfts.map((nft: any, idx: number) => (
-										<Grid item sm={6} md={4} key={`${nft.cid}-${idx}`}>
-											<NFTCard details={nft} />
-											{nft.owner === currentUser?.address &&
-												(nft.isListed ? (
-													<Box sx={{ my: 2 }}>
-														<ListNftDialog unlist={true} nft={nft} onListSuccess={handleListSuccess} />
-													</Box>
-												) : (
-													<Box sx={{ my: 2 }}>
-														<ListNftDialog nft={nft} onListSuccess={handleListSuccess} />
-													</Box>
-												))}
-										</Grid>
-									))
-								) : (
-									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No NFTs to show, mint one!</Typography>
-									</Grid>
-								)}
-							</Grid>
-							<Divider light sx={styles.divider} />
-							<Typography variant="h4" gutterBottom>
-								Projects
-								<Typography component="span" sx={styles.sectionCount}>
-									({details.projects.length})
-								</Typography>
-							</Typography>
-							<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
-							<Typography sx={styles.sectionMeta}>
-								<strong>TODO:</strong> Show projects that a user has collaborated on as well
-							</Typography>
-							<Grid container spacing={4}>
-								{details.projects.length > 0 ? (
-									details.projects.map((project: IProjectDoc) => (
-										<Grid item sm={6} md={4} key={project._id}>
-											<ProjectCard details={project} />
-										</Grid>
-									))
-								) : (
-									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No projects to show, upload one!</Typography>
-									</Grid>
-								)}
-							</Grid>
-							<Divider light sx={styles.divider} />
-							<Typography variant="h4" gutterBottom>
-								Stems
-								<Typography component="span" sx={styles.sectionCount}>
-									({details.stems.length})
-								</Typography>
-							</Typography>
-							<Typography sx={styles.sectionMeta}>Stems this user has uploaded</Typography>
-							<Grid container spacing={4}>
-								{details.stems.length > 0 ? (
-									details.stems.map((stem: any) => (
-										<Grid item sm={6} md={4} key={stem._id}>
-											<StemCard details={stem} />
-										</Grid>
-									))
-								) : (
-									<Grid item xs={12}>
-										<Typography sx={styles.noItemsMsg}>No stems to show, upload one!</Typography>
-									</Grid>
-								)}
-							</Grid>
-						</>
-					) : (
-						<Typography sx={styles.error} color="error">
-							Sorry, no details were found for this user.
+									)}
+								</Box>
+							</Box>
+						</Grid>
+						<Grid item xs={12} md={4}>
+							<Box className="avatar-wrap">
+								<Box sx={styles.avatar}>
+									<ImageOptimized src={details._doc.avatarUrl} alt="User Avatar" width={200} height={200} />
+								</Box>
+							</Box>
+						</Grid>
+					</Grid>
+					<Divider light sx={styles.divider} />
+					<Typography variant="h4" gutterBottom>
+						My NFT Collection
+						<Typography component="span" sx={styles.sectionCount}>
+							({details.nfts.length})
 						</Typography>
-					)}
-				</Container>
-			</main>
-
-			<AppFooter />
+					</Typography>
+					<Typography sx={styles.sectionMeta}>NFTs this user has minted or collected</Typography>
+					<Grid container spacing={4}>
+						{details.nfts.length > 0 ? (
+							details.nfts.map((nft: any, idx: number) => (
+								<Grid item sm={6} md={4} key={`${nft.cid}-${idx}`}>
+									<NFTCard details={nft} />
+									{nft.owner === currentUser?.address &&
+										(nft.isListed ? (
+											<Box sx={{ my: 2 }}>
+												<ListNftDialog unlist={true} nft={nft} onListSuccess={handleListSuccess} />
+											</Box>
+										) : (
+											<Box sx={{ my: 2 }}>
+												<ListNftDialog nft={nft} onListSuccess={handleListSuccess} />
+											</Box>
+										))}
+								</Grid>
+							))
+						) : (
+							<Grid item xs={12}>
+								<Typography sx={styles.noItemsMsg}>No NFTs to show, mint one!</Typography>
+							</Grid>
+						)}
+					</Grid>
+					<Divider light sx={styles.divider} />
+					<Typography variant="h4" gutterBottom>
+						Projects
+						<Typography component="span" sx={styles.sectionCount}>
+							({details.projects.length})
+						</Typography>
+					</Typography>
+					<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
+					<Typography sx={styles.sectionMeta}>
+						<strong>TODO:</strong> Show projects that a user has collaborated on as well
+					</Typography>
+					<Grid container spacing={4}>
+						{details.projects.length > 0 ? (
+							details.projects.map((project: IProjectDoc) => (
+								<Grid item sm={6} md={4} key={project._id}>
+									<ProjectCard details={project} />
+								</Grid>
+							))
+						) : (
+							<Grid item xs={12}>
+								<Typography sx={styles.noItemsMsg}>No projects to show, upload one!</Typography>
+							</Grid>
+						)}
+					</Grid>
+					<Divider light sx={styles.divider} />
+					<Typography variant="h4" gutterBottom>
+						Stems
+						<Typography component="span" sx={styles.sectionCount}>
+							({details.stems.length})
+						</Typography>
+					</Typography>
+					<Typography sx={styles.sectionMeta}>Stems this user has uploaded</Typography>
+					<Grid container spacing={4}>
+						{details.stems.length > 0 ? (
+							details.stems.map((stem: any) => (
+								<Grid item sm={6} md={4} key={stem._id}>
+									<StemCard details={stem} />
+								</Grid>
+							))
+						) : (
+							<Grid item xs={12}>
+								<Typography sx={styles.noItemsMsg}>No stems to show, upload one!</Typography>
+							</Grid>
+						)}
+					</Grid>
+				</>
+			) : (
+				<Typography sx={styles.error} color="error">
+					Sorry, no details were found for this user.
+				</Typography>
+			)}
 		</>
 	)
 }

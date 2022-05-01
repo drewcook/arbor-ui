@@ -2,8 +2,6 @@ import type { GetServerSideProps, NextPage } from 'next'
 import { Container, Divider, Typography } from '@mui/material'
 import CovalentInsights from '../../components/CovalentInsights'
 import PropTypes from 'prop-types'
-import AppHeader from '../../components/AppHeader'
-import AppFooter from '../../components/AppFooter'
 import Head from 'next/head'
 import Link from 'next/link'
 
@@ -53,38 +51,24 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | NFT Details</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | NFT Details</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="xl">
-					<Typography variant="h4" component="h1" sx={styles.title}>
-						PolyEcho Audio NFT On-Chain Stats
-					</Typography>
-					<Container maxWidth="md">
-						<Typography variant="h5" sx={styles.subtitle}>
-							Check out the statistics for our ERC721 Token that handles all the interaction with the NFTs created on
-							our platform.
-						</Typography>
-						<Typography variant="overline" sx={styles.text}>
-							All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked
-							against the <Link href="https://mumbai.polygonscan.com/">Polygon Mumbai testnet.</Link>
-						</Typography>
-					</Container>
-					<Divider sx={styles.divider} />
-					{/* @ts-ignore */}
-					<CovalentInsights balData={balData} tokensData={tokensData} />
-				</Container>
-			</main>
-
-			<AppFooter />
+			<Typography variant="h4" component="h1" sx={styles.title}>
+				PolyEcho Audio NFT On-Chain Stats
+			</Typography>
+			<Container maxWidth="md">
+				<Typography variant="h5" sx={styles.subtitle}>
+					Check out the statistics for our ERC721 Token that handles all the interaction with the NFTs created on our
+					platform.
+				</Typography>
+				<Typography variant="overline" sx={styles.text}>
+					All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked against
+					the <Link href="https://mumbai.polygonscan.com/">Polygon Mumbai testnet.</Link>
+				</Typography>
+			</Container>
+			<Divider sx={styles.divider} />
+			{/* @ts-ignore */}
+			<CovalentInsights balData={balData} tokensData={tokensData} />
 		</>
 	)
 }

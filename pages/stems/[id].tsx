@@ -1,5 +1,5 @@
 import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import { Box, Container, Divider, Fab, Typography } from '@mui/material'
+import { Box, Divider, Fab, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -7,8 +7,6 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import AppFooter from '../../components/AppFooter'
-import AppHeader from '../../components/AppHeader'
 import { IStemDoc } from '../../models/stem.model'
 import formatDate from '../../utils/formatDate'
 import formatStemName from '../../utils/formatStemName'
@@ -185,30 +183,20 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Stem Details</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | Stem Details</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="xl">
-					<Box sx={styles.headingWrap}>
-						<Box sx={styles.playWrap}>
-							<Fab
-								size="large"
-								onClick={handlePlayPauseStems}
-								/* @ts-ignore */
-								sx={styles.playBtn}
-								title={isPlaying ? 'Pause the stem' : 'Play the stem'}
-							>
-								{isPlaying ? <PauseRounded sx={styles.playIcon} /> : <PlayArrowRounded sx={styles.playIcon} />}
-							</Fab>
-							{/* <Fab
+			<Box sx={styles.headingWrap}>
+				<Box sx={styles.playWrap}>
+					<Fab
+						size="large"
+						onClick={handlePlayPauseStems}
+						/* @ts-ignore */
+						sx={styles.playBtn}
+						title={isPlaying ? 'Pause the stem' : 'Play the stem'}
+					>
+						{isPlaying ? <PauseRounded sx={styles.playIcon} /> : <PlayArrowRounded sx={styles.playIcon} />}
+					</Fab>
+					{/* <Fab
 								size="large"
 								onClick={() => setIsLooping(!isLooping)}
 								// @ts-ignore
@@ -218,63 +206,59 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 							>
 								<Loop sx={styles.loopIcon} />
 							</Fab> */}
-						</Box>
-						<Box>
-							<Typography variant="body1" component="h3" sx={styles.eyebrow}>
-								Stem Details
+				</Box>
+				<Box>
+					<Typography variant="body1" component="h3" sx={styles.eyebrow}>
+						Stem Details
+					</Typography>
+					<Typography variant="h4" component="h2" sx={styles.title}>
+						{data ? formatStemName(data.filename) : 'PolyEcho Stem'}
+					</Typography>
+					{data && (
+						<>
+							<Typography sx={styles.desc}>
+								This is a PolyEcho stem that has been uploaded through our platform and is stored using NFT.storage.
 							</Typography>
-							<Typography variant="h4" component="h2" sx={styles.title}>
-								{data ? formatStemName(data.filename) : 'PolyEcho Stem'}
-							</Typography>
-							{data && (
-								<>
-									<Typography sx={styles.desc}>
-										This is a PolyEcho stem that has been uploaded through our platform and is stored using NFT.storage.
+							<Box sx={styles.metadataWrap}>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										File Type:
 									</Typography>
-									<Box sx={styles.metadataWrap}>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												File Type:
-											</Typography>
-											{data.filetype}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Stored At:
-											</Typography>
-											<Link href={data.metadataUrl}>View on IPFS</Link>
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Created On:
-											</Typography>
-											{formatDate(data.createdAt)}
-										</Typography>
-									</Box>
-								</>
-							)}
-						</Box>
-					</Box>
-					<Divider light sx={styles.divider} />
-					{data ? (
-						<StemPlayer
-							idx={1}
-							details={data}
-							onWavesInit={onWavesInit}
-							// onFinish={handleLoopReplay}
-							isStemDetails
-							onSkipPrev={handleSkipPrev}
-							onStop={handleStop}
-						/>
-					) : (
-						<Typography sx={styles.error} color="error">
-							Sorry, no details were found for this stem.
-						</Typography>
+									{data.filetype}
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Stored At:
+									</Typography>
+									<Link href={data.metadataUrl}>View on IPFS</Link>
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Created On:
+									</Typography>
+									{formatDate(data.createdAt)}
+								</Typography>
+							</Box>
+						</>
 					)}
-				</Container>
-			</main>
-
-			<AppFooter />
+				</Box>
+			</Box>
+			<Divider light sx={styles.divider} />
+			{data ? (
+				<StemPlayer
+					idx={1}
+					details={data}
+					onWavesInit={onWavesInit}
+					// onFinish={handleLoopReplay}
+					isStemDetails
+					onSkipPrev={handleSkipPrev}
+					onStop={handleStop}
+				/>
+			) : (
+				<Typography sx={styles.error} color="error">
+					Sorry, no details were found for this stem.
+				</Typography>
+			)}
 		</>
 	)
 }

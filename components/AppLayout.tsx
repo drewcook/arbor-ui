@@ -1,18 +1,17 @@
 import type { ReactNode } from 'react'
 import AppFooter from './AppFooter'
 import AppHeader from './AppHeader'
+import { Container } from '@mui/material'
 
 type LayoutProps = {
-	children: ReactNode,
+	children: ReactNode
 }
-
-const styles = {}
 
 const AppLayout = ({ children }: LayoutProps): JSX.Element => (
 	<>
 		<AppHeader />
 		<main id="app-main">
-			{children}
+			<Container maxWidth="xl">{children}</Container>
 		</main>
 		<AppFooter />
 	</>
