@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app'
 import NextNProgress from 'nextjs-progressbar'
-import PolyechoThemeProvider from '../components/PolyechoThemeProvider'
+import PolyechoThemeProvider from '../components/PolyEchoThemeProvider'
 import AppLayout from '../components/AppLayout'
 import { Web3Provider } from '../components/Web3Provider'
 import '../styles/globals.css'
