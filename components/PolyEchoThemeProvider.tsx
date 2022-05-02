@@ -1,6 +1,10 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import type { ReactNode } from 'react'
 
+type ThemeProviderProps = {
+	children: ReactNode
+}
+
 declare module '@mui/material/styles' {
 	interface Palette {
 		swatchDrums: Palette['primary']
@@ -75,12 +79,8 @@ const polyEchoTheme = createTheme({
 	},
 })
 
-type ProviderProps = {
-	children: ReactNode
-}
-
-const PolyEchoThemeProvider = ({ children }: ProviderProps): JSX.Element => (
+const PolyechoThemeProvider = ({ children }: ThemeProviderProps): JSX.Element => (
 	<ThemeProvider theme={polyEchoTheme}>{children}</ThemeProvider>
 )
 
-export default PolyEchoThemeProvider
+export default PolyechoThemeProvider

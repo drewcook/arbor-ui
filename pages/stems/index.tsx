@@ -2,8 +2,6 @@ import { Box, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
-import AppFooter from '../../components/AppFooter'
-import AppHeader from '../../components/AppHeader'
 import StemCard from '../../components/StemCard'
 import type { IStemDoc } from '../../models/stem.model'
 import { get } from '../../utils/http'
@@ -48,53 +46,39 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 	const { data } = props
 
 	return (
-		<div>
+		<>
 			<Head>
-				<title>PolyEcho | Explore The StemPool</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | Explore The StemPool</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="lg">
-					{data ? (
-						<>
-							<Typography variant="h4" component="h1" sx={styles.title}>
-								Plunge Into The StemPool
-							</Typography>
-							<Container maxWidth="sm">
-								<Typography variant="h5" sx={styles.subtitle}>
-									Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
-									with them.
-								</Typography>
-							</Container>
-							{data.length > 0 ? (
-								<Grid container spacing={4}>
-									{data.map((stem: any) => (
-										<Grid item sm={6} md={4} key={stem._id}>
-											<StemCard details={stem} />
-										</Grid>
-									))}
+			{data ? (
+				<>
+					<Typography variant="h4" component="h1" sx={styles.title}>
+						Plunge Into The StemPool
+					</Typography>
+					<Container maxWidth="sm">
+						<Typography variant="h5" sx={styles.subtitle}>
+							Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
+							with them.
+						</Typography>
+					</Container>
+					{data.length > 0 ? (
+						<Grid container spacing={4}>
+							{data.map((stem: any) => (
+								<Grid item sm={6} md={4} key={stem._id}>
+									<StemCard details={stem} />
 								</Grid>
-							) : (
-								<Box sx={styles.noProjects}>
-									<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>
-								</Box>
-							)}
-						</>
+							))}
+						</Grid>
 					) : (
-						<Typography sx={styles.noProjects}>Something went wrong</Typography>
+						<Box sx={styles.noProjects}>
+							<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>
+						</Box>
 					)}
-				</Container>
-			</main>
-
-			<AppFooter />
-		</div>
+				</>
+			) : (
+				<Typography sx={styles.noProjects}>Something went wrong</Typography>
+			)}
+		</>
 	)
 }
 
