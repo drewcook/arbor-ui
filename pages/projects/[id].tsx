@@ -298,6 +298,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [downloading, setDownloading] = useState<boolean>(false)
+	const [downloadingMsg, setDownloadingMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	// Minting
@@ -354,15 +356,21 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 	const handleDownloadAll = async () => {
 		try {
+			setDownloading(true)
+			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
 				data?.stems.forEach(async (stem: IStemDoc) => {
 					const res = await get(`/stems/download`, {
 						url: stem.audioUrl,
-						filename: `PolyEcho_Stem_${projectId}_${stem.filename}`,
+						projectId,
+						filename: stem.filename,
 					})
 
 					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+
 					// Notify success
+					setDownloading(false)
+					setDownloadingMsg('')
 					setSuccessOpen(true)
 					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
 				})
@@ -509,10 +517,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
 		setSuccessMsg('')
-		setMintingOpen(false)
-		setMintingMsg('')
 		setErrorOpen(false)
 		setErrorMsg('')
+		setDownloading(false)
+		setDownloadingMsg('')
+		setMintingOpen(false)
+		setMintingMsg('')
 	}
 
 	return (
@@ -720,6 +730,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			</main>
 
 			<AppFooter />
+			{downloading && (
+				<Notification
+					open={downloading}
+					msg={downloadingMsg}
+					type="info"
+					onClose={onNotificationClose}
+					duration={10000}
+				/>
+			)}
 			{mintingOpen && (
 				<Notification open={mintingOpen} msg={mintingMsg} type="info" onClose={onNotificationClose} duration={10000} />
 			)}
