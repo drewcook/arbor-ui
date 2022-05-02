@@ -34,7 +34,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					uri = url.replace('ipfs://', '').replace('/blob', '')
 					uri = 'https://' + uri + '.ipfs.dweb.link/blob'
 				}
-				await downloadURL(uri, downloadsPath)
+				const downloadRes = await downloadURL(uri, downloadsPath)
+				console.log({ downloadRes })
 
 				// 2. Use NFT.storage API to download
 				// const nftStorage = axios.create({
