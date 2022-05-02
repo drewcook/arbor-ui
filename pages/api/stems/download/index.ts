@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const downloadsPath = path.resolve(
 		process.env.HOME || __dirname,
 		'Downloads',
-		`PolyEcho_Stem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
+		`PolyechoStem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
 	)
 
 	switch (method) {
@@ -29,6 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// 1. Use downloadURL utility and send to user's filesystem, handle IPFS:// links
 				let uri = url
+				// If is ipfs uri, transform to web link
 				if (url.includes('ipfs://')) {
 					uri = url.replace('ipfs://', '').replace('/blob', '')
 					uri = 'https://' + uri + '.ipfs.dweb.link/blob'

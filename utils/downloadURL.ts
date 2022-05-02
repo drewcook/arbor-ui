@@ -21,10 +21,6 @@ const downloadURL = async (url: string, downloadPath: string): Promise<any> => {
 	// Pipe read stream into the write stream
 	response.data.pipe(writer)
 
-	// TODO: Taking a while after downloading to resolve should end stream?
-	// writer.end()
-	// writer.on('finish', listener)
-
 	// Resolve when finished streaming, reject if any error
 	return new Promise((resolve, reject) => {
 		writer.on('finish', resolve)

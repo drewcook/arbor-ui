@@ -295,6 +295,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [downloading, setDownloading] = useState<boolean>(false)
+	const [downloadingMsg, setDownloadingMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	// Minting
@@ -351,15 +353,21 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 	const handleDownloadAll = async () => {
 		try {
+			setDownloading(true)
+			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
 				data?.stems.forEach(async (stem: IStemDoc) => {
 					const res = await get(`/stems/download`, {
 						url: stem.audioUrl,
-						filename: `Polyecho_Stem_${projectId}_${stem.filename}`,
+						projectId,
+						filename: stem.filename,
 					})
 
 					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+
 					// Notify success
+					setDownloading(false)
+					setDownloadingMsg('')
 					setSuccessOpen(true)
 					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
 				})
@@ -506,10 +514,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
 		setSuccessMsg('')
-		setMintingOpen(false)
-		setMintingMsg('')
 		setErrorOpen(false)
 		setErrorMsg('')
+		setDownloading(false)
+		setDownloadingMsg('')
+		setMintingOpen(false)
+		setMintingMsg('')
 	}
 
 	return (
@@ -672,38 +682,55 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					) : (
 						<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 					)}
+					{!limitReached && (
+						<>
+							<Button
+								variant="outlined"
+								size="large"
+								onClick={handleUploadStemOpen}
+								/* @ts-ignore */
+								sx={styles.addStemBtn}
+								startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+							>
+								Add Stem
+							</Button>
+							<StemUploadDialog
+								open={uploadStemOpen}
+								onClose={handleUploadStemClose}
+								onSuccess={onStemUploadSuccess}
+								/* @ts-ignore */
+								projectDetails={details}
+							/>
+						</>
+					)}
+					{downloading && (
+						<Notification
+							open={downloading}
+							msg={downloadingMsg}
+							type="info"
+							onClose={onNotificationClose}
+							duration={10000}
+						/>
+					)}
+					{mintingOpen && (
+						<Notification
+							open={mintingOpen}
+							msg={mintingMsg}
+							type="info"
+							onClose={onNotificationClose}
+							duration={10000}
+						/>
+					)}
+					{successOpen && (
+						<Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />
+					)}
+					{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 				</>
 			) : (
 				<Typography sx={styles.error} color="error">
 					Sorry, no details were found for this project.
 				</Typography>
 			)}
-			{!limitReached && (
-				<>
-					<Button
-						variant="outlined"
-						size="large"
-						onClick={handleUploadStemOpen}
-						/* @ts-ignore */
-						sx={styles.addStemBtn}
-						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
-					>
-						Add Stem
-					</Button>
-					<StemUploadDialog
-						open={uploadStemOpen}
-						onClose={handleUploadStemClose}
-						onSuccess={onStemUploadSuccess}
-						/* @ts-ignore */
-						projectDetails={details}
-					/>
-				</>
-			)}
-			{mintingOpen && (
-				<Notification open={mintingOpen} msg={mintingMsg} type="info" onClose={onNotificationClose} duration={10000} />
-			)}
-			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
-			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
 	)
 }
