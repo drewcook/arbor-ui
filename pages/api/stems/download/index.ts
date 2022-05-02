@@ -29,11 +29,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// 1. Use downloadURL utility and send to user's filesystem, handle IPFS:// links
 				let uri = url
+				// If is ipfs uri, transform to web link
 				if (url.includes('ipfs://')) {
 					uri = url.replace('ipfs://', '').replace('/blob', '')
 					uri = 'https://' + uri + '.ipfs.dweb.link/blob'
 				}
-				await downloadURL(uri, downloadsPath)
+				await downloadURL(uri, downloadsPath).then(res => {
+					console.log('resolved', res)
+				})
 
 				// 2. Use NFT.storage API to download
 				// const nftStorage = axios.create({
