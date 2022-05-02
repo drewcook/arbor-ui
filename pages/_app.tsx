@@ -10,7 +10,7 @@ function PolyechoApp({ Component, pageProps }: AppProps) {
 		<PolyechoThemeProvider>
 			<Web3Provider>
 				<NextNProgress color="#23F09A" />
-				<AppLayout>
+				<AppLayout isHome={Component.name === 'Home'}>
 					<Component {...pageProps} />
 				</AppLayout>
 			</Web3Provider>

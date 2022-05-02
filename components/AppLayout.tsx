@@ -4,15 +4,14 @@ import AppHeader from './AppHeader'
 import { Container } from '@mui/material'
 
 type LayoutProps = {
+	isHome: boolean
 	children: ReactNode
 }
 
-const AppLayout = ({ children }: LayoutProps): JSX.Element => (
+const AppLayout = ({ isHome, children }: LayoutProps): JSX.Element => (
 	<>
 		<AppHeader />
-		<main id="app-main">
-			<Container maxWidth="xl">{children}</Container>
-		</main>
+		<main id="app-main">{isHome ? children : <Container maxWidth="xl">{children}</Container>}</main>
 		<AppFooter />
 	</>
 )
