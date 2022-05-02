@@ -23,6 +23,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		`PolyechoStem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
 	)
 
+	console.log({ downloadsPath, home: process.env.HOME, dirname: __dirname })
+
 	switch (method) {
 		case 'GET':
 			// Get a file from NFT.storage
@@ -35,7 +37,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					uri = 'https://' + uri + '.ipfs.dweb.link/blob'
 				}
 				const downloadRes = await downloadURL(uri, downloadsPath)
-				console.log({ downloadsPath, downloadRes })
+				console.log({ downloadRes })
 
 				// 2. Use NFT.storage API to download
 				// const nftStorage = axios.create({
@@ -52,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				return res.status(200).json({ success: true, data: 'ok' })
 			} catch (e: any) {
-				console.error(e)
+				console.error('Error downloading stems', e)
 				return res.status(400).json({ success: false, error: e })
 			}
 		default:
