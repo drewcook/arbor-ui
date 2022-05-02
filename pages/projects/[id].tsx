@@ -14,7 +14,6 @@ import {
 	Button,
 	Chip,
 	CircularProgress,
-	Container,
 	Divider,
 	Fab,
 	IconButton,
@@ -28,8 +27,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { Fragment, useState } from 'react'
-import AppFooter from '../../components/AppFooter'
-import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
@@ -358,7 +355,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				data?.stems.forEach(async (stem: IStemDoc) => {
 					const res = await get(`/stems/download`, {
 						url: stem.audioUrl,
-						filename: `PolyEcho_Stem_${projectId}_${stem.filename}`,
+						filename: `Polyecho_Stem_${projectId}_${stem.filename}`,
 					})
 
 					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
@@ -434,7 +431,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
-						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
+						'A Polyecho NFT representing collaborative music from multiple contributors on the decentralized web.',
 					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),
@@ -518,208 +515,190 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Project Details</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | Project Details</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="xl">
-					{details ? (
-						<>
-							<Box sx={styles.headingWrap}>
-								<Box sx={styles.playAllWrap}>
-									<Fab
-										size="large"
-										onClick={handlePlayPauseStems}
-										/* @ts-ignore */
-										sx={styles.playAllBtn}
-										disabled={details.stems.length === 0}
-										title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
-									>
-										{isPlayingAll ? (
-											<PauseRounded sx={styles.playAllIcon} />
-										) : (
-											<PlayArrowRounded sx={styles.playAllIcon} />
-										)}
-									</Fab>
-								</Box>
-								<Box sx={{ flexGrow: 1 }}>
-									<Box>
-										<Typography sx={styles.createdBy}>
-											Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
-										</Typography>
-										<Typography variant="h4" component="h2" sx={styles.title}>
-											{details.name}
-										</Typography>
-									</Box>
-									<Box sx={styles.metadataWrap}>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												BPM
-											</Typography>
-											{details.bpm}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Track Limit
-											</Typography>
-											{details.trackLimit} Tracks
-											{limitReached && <Chip label="Limit Reached" size="small" sx={styles.limitReachedChip} />}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Open To
-											</Typography>
-											Anyone
-										</Typography>
-									</Box>
-									<Typography sx={styles.desc}>{details.description}</Typography>
-									{details.tags.length > 0 &&
-										details.tags.map((tag: string) => (
-											<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
-										))}
-									<Divider sx={styles.divider} />
-									{details.stems.length > 0 && (
-										<Box sx={styles.mintAndBuy}>
-											<Button
-												size="large"
-												onClick={connected ? handleMintAndBuy : handleConnectWallet}
-												variant="contained"
-												color="secondary"
-												sx={styles.mintAndBuyBtn}
-												disabled={minting || details.stems.length < 2}
-											>
-												{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
-											</Button>
-											<Box sx={styles.price}>
-												<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
-												<Typography variant="h4" component="div" sx={{ ml: 1 }}>
-													0.01{' '}
-													<Typography sx={styles.eth} component="span">
-														MATIC
-													</Typography>
-												</Typography>
-											</Box>
-										</Box>
-									)}
-								</Box>
-							</Box>
-							{/* @ts-ignore */}
-							<Box sx={styles.stemsHeader}>
-								<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
-									Song Stems
+			{details ? (
+				<>
+					<Box sx={styles.headingWrap}>
+						<Box sx={styles.playAllWrap}>
+							<Fab
+								size="large"
+								onClick={handlePlayPauseStems}
+								/* @ts-ignore */
+								sx={styles.playAllBtn}
+								disabled={details.stems.length === 0}
+								title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+							>
+								{isPlayingAll ? <PauseRounded sx={styles.playAllIcon} /> : <PlayArrowRounded sx={styles.playAllIcon} />}
+							</Fab>
+						</Box>
+						<Box sx={{ flexGrow: 1 }}>
+							<Box>
+								<Typography sx={styles.createdBy}>
+									Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
 								</Typography>
-								<Box sx={styles.stemsMeta}>
-									<Typography>
-										{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from{' '}
-										{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
-									</Typography>
-									<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
-										{details.collaborators.map(c => (
-											<Link key={c} href={`/users/${c}`} passHref>
-												<Avatar>
-													<Person />
-												</Avatar>
-											</Link>
-										))}
-									</AvatarGroup>
-								</Box>
-								<Box>
-									{/* @ts-ignore */}
-									<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
-										Export Stems
-									</Button>
-								</Box>
+								<Typography variant="h4" component="h2" sx={styles.title}>
+									{details.name}
+								</Typography>
 							</Box>
-							{details.stems.length > 0 ? (
-								<>
-									<Box sx={styles.playSection}>
-										<IconButton
-											sx={styles.playStopBtn}
-											onClick={handlePlayPauseStems}
-											disableRipple
-											disableFocusRipple
-											title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
-										>
-											{isPlayingAll ? (
-												<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
-											) : (
-												<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
-											)}
-										</IconButton>
-										<IconButton
-											sx={styles.playStopBtn}
-											onClick={handleStop}
-											disableRipple
-											disableFocusRipple
-											title="Stop playback"
-										>
-											<Square />
-										</IconButton>
-										<IconButton
-											sx={styles.playStopBtn}
-											onClick={handleSkipPrev}
-											disableRipple
-											disableFocusRipple
-											title="Skip to beginning"
-										>
-											<SkipPrevious />
-										</IconButton>
-										<Box sx={styles.playTracker} />
+							<Box sx={styles.metadataWrap}>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										BPM
+									</Typography>
+									{details.bpm}
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Track Limit
+									</Typography>
+									{details.trackLimit} Tracks
+									{limitReached && <Chip label="Limit Reached" size="small" sx={styles.limitReachedChip} />}
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Open To
+									</Typography>
+									Anyone
+								</Typography>
+							</Box>
+							<Typography sx={styles.desc}>{details.description}</Typography>
+							{details.tags.length > 0 &&
+								details.tags.map((tag: string) => (
+									<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
+								))}
+							<Divider sx={styles.divider} />
+							{details.stems.length > 0 && (
+								<Box sx={styles.mintAndBuy}>
+									<Button
+										size="large"
+										onClick={connected ? handleMintAndBuy : handleConnectWallet}
+										variant="contained"
+										color="secondary"
+										sx={styles.mintAndBuyBtn}
+										disabled={minting || details.stems.length < 2}
+									>
+										{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
+									</Button>
+									<Box sx={styles.price}>
+										<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+										<Typography variant="h4" component="div" sx={{ ml: 1 }}>
+											0.01{' '}
+											<Typography sx={styles.eth} component="span">
+												MATIC
+											</Typography>
+										</Typography>
 									</Box>
-									{details.stems.map((stem, idx) => (
-										<Fragment key={idx}>
-											<StemPlayer
-												idx={idx + 1}
-												details={stem}
-												onWavesInit={onWavesInit}
-												onFinish={() => setIsPlayingAll(false)}
-												onSolo={handleSoloStem}
-												onNewFile={onNewFile}
-											/>
-										</Fragment>
-									))}
-								</>
-							) : (
-								<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
+								</Box>
 							)}
+						</Box>
+					</Box>
+					{/* @ts-ignore */}
+					<Box sx={styles.stemsHeader}>
+						<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
+							Song Stems
+						</Typography>
+						<Box sx={styles.stemsMeta}>
+							<Typography>
+								{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from {details.collaborators.length}{' '}
+								Collaborator{details.collaborators.length === 1 ? '' : 's'}
+							</Typography>
+							<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
+								{details.collaborators.map(c => (
+									<Link key={c} href={`/users/${c}`} passHref>
+										<Avatar>
+											<Person />
+										</Avatar>
+									</Link>
+								))}
+							</AvatarGroup>
+						</Box>
+						<Box>
+							{/* @ts-ignore */}
+							<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
+								Export Stems
+							</Button>
+						</Box>
+					</Box>
+					{details.stems.length > 0 ? (
+						<>
+							<Box sx={styles.playSection}>
+								<IconButton
+									sx={styles.playStopBtn}
+									onClick={handlePlayPauseStems}
+									disableRipple
+									disableFocusRipple
+									title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+								>
+									{isPlayingAll ? (
+										<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+									) : (
+										<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+									)}
+								</IconButton>
+								<IconButton
+									sx={styles.playStopBtn}
+									onClick={handleStop}
+									disableRipple
+									disableFocusRipple
+									title="Stop playback"
+								>
+									<Square />
+								</IconButton>
+								<IconButton
+									sx={styles.playStopBtn}
+									onClick={handleSkipPrev}
+									disableRipple
+									disableFocusRipple
+									title="Skip to beginning"
+								>
+									<SkipPrevious />
+								</IconButton>
+								<Box sx={styles.playTracker} />
+							</Box>
+							{details.stems.map((stem, idx) => (
+								<Fragment key={idx}>
+									<StemPlayer
+										idx={idx + 1}
+										details={stem}
+										onWavesInit={onWavesInit}
+										onFinish={() => setIsPlayingAll(false)}
+										onSolo={handleSoloStem}
+										onNewFile={onNewFile}
+									/>
+								</Fragment>
+							))}
 						</>
 					) : (
-						<Typography sx={styles.error} color="error">
-							Sorry, no details were found for this project.
-						</Typography>
+						<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 					)}
-					{!limitReached && (
-						<>
-							<Button
-								variant="outlined"
-								size="large"
-								onClick={handleUploadStemOpen}
-								/* @ts-ignore */
-								sx={styles.addStemBtn}
-								startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
-							>
-								Add Stem
-							</Button>
-							<StemUploadDialog
-								open={uploadStemOpen}
-								onClose={handleUploadStemClose}
-								onSuccess={onStemUploadSuccess}
-								/* @ts-ignore */
-								projectDetails={details}
-							/>
-						</>
-					)}
-				</Container>
-			</main>
-
-			<AppFooter />
+				</>
+			) : (
+				<Typography sx={styles.error} color="error">
+					Sorry, no details were found for this project.
+				</Typography>
+			)}
+			{!limitReached && (
+				<>
+					<Button
+						variant="outlined"
+						size="large"
+						onClick={handleUploadStemOpen}
+						/* @ts-ignore */
+						sx={styles.addStemBtn}
+						startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+					>
+						Add Stem
+					</Button>
+					<StemUploadDialog
+						open={uploadStemOpen}
+						onClose={handleUploadStemClose}
+						onSuccess={onStemUploadSuccess}
+						/* @ts-ignore */
+						projectDetails={details}
+					/>
+				</>
+			)}
 			{mintingOpen && (
 				<Notification open={mintingOpen} msg={mintingMsg} type="info" onClose={onNotificationClose} duration={10000} />
 			)}

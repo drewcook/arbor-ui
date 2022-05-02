@@ -3,10 +3,11 @@ import { Box, Button, Container, Grid, List, ListItem, ListItemIcon, Typography 
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import AppFooter from '../components/AppFooter'
-import AppHeader from '../components/AppHeader'
 
 const styles = {
+	negateMainPadding: {
+		m: '-5rem 0',
+	},
 	banner: {
 		py: '100px',
 		backgroundColor: '#111',
@@ -111,17 +112,9 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Welcome</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | A Generative Music NFT Platform</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main" className="homepage">
+			<Box sx={styles.negateMainPadding}>
 				<Box sx={styles.banner} component="section" className="homepage-banner">
 					<Container maxWidth="xl">
 						<Typography variant="h2" sx={styles.heading}>
@@ -287,7 +280,7 @@ const Home: NextPage = () => {
 										Hard drive full of &quot;WIP&quot; tracks collecting dust?
 									</Typography>
 									<Typography sx={styles.blurb}>
-										Dig through &apos;em. One of your gently used stems could be worth something on PolyEcho.
+										Dig through &apos;em. One of your gently used stems could be worth something on Polyecho.
 									</Typography>
 								</Box>
 								<Box sx={{ mb: 4 }}>
@@ -314,9 +307,7 @@ const Home: NextPage = () => {
 						</Box>
 					</Container>
 				</Box>
-			</main>
-
-			<AppFooter />
+			</Box>
 		</>
 	)
 }
