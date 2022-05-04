@@ -41,8 +41,8 @@ ImageOptimized.propTypes = {
 }
 
 ImageOptimized.defaultProps = {
-	alt: 'PolyEcho Image',
-	title: 'PolyEcho Image',
+	alt: 'Polyecho Image',
+	title: 'Polyecho Image',
 	width: 200,
 	height: 200,
 }

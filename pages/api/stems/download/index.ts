@@ -20,8 +20,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const downloadsPath = path.resolve(
 		process.env.HOME || __dirname,
 		'Downloads',
-		`PolyEcho_Stem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
+		`PolyechoStem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
 	)
+
+	console.log({ downloadsPath, home: process.env.HOME, dirname: __dirname })
 
 	switch (method) {
 		case 'GET':
@@ -29,11 +31,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// 1. Use downloadURL utility and send to user's filesystem, handle IPFS:// links
 				let uri = url
+				// If is ipfs uri, transform to web link
 				if (url.includes('ipfs://')) {
 					uri = url.replace('ipfs://', '').replace('/blob', '')
 					uri = 'https://' + uri + '.ipfs.dweb.link/blob'
 				}
-				await downloadURL(uri, downloadsPath)
+				const downloadRes = await downloadURL(uri, downloadsPath)
+				console.log({ downloadRes })
 
 				// 2. Use NFT.storage API to download
 				// const nftStorage = axios.create({
@@ -50,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				return res.status(200).json({ success: true, data: 'ok' })
 			} catch (e: any) {
-				console.error(e)
+				console.error('Error downloading stems', e)
 				return res.status(400).json({ success: false, error: e })
 			}
 		default:

@@ -60,7 +60,7 @@ const AppHeader = (): JSX.Element => {
 					<Link href="/" passHref>
 						{/* @ts-ignore */}
 						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
-							PolyEcho
+							Polyecho
 							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 						</Typography>
 					</Link>
@@ -105,7 +105,7 @@ const AppHeader = (): JSX.Element => {
 						<Link href="/" passHref>
 							{/* @ts-ignore */}
 							<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
-								PolyEcho
+								Polyecho
 								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 							</Typography>
 						</Link>
