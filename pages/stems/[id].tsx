@@ -263,8 +263,8 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 					<Box sx={styles.avWrap}>
 						<AudioVisual
 							audio={{
-								url: data.audioUrl,
-								href: data.audioHref,
+								url: data?.audioUrl,
+								href: data?.audioHref,
 							}}
 							size={150}
 						/>

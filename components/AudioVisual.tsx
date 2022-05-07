@@ -41,6 +41,7 @@ const AudioVisual = (props): JSX.Element => {
 
 	return (
 		<Box sx={styles(size).wrapper} className="sketchAv" onClick={() => playAudioVisual(audio.href)}>
+			{/* @ts-ignore */}
 			<Sketch setup={setup} draw={draw} />
 		</Box>
 	)

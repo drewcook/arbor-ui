@@ -1,5 +1,3 @@
-// import p5 from 'p5'
-
 /* eslint-disable */
 
 let audioContext
