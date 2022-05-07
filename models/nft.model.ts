@@ -16,7 +16,8 @@ export interface INft {
 	listPrice: number // In gwei
 	token: Token
 	metadataUrl: string
-	audioHref: string
+	audioUrl: string // The ipfs:/ link
+	audioHref: string // The nft.storage link
 	name: string
 	projectId: string
 	collaborators: string[]
@@ -32,6 +33,10 @@ const nftSchema = new mongoose.Schema<INftDoc>(
 			required: true,
 		},
 		metadataUrl: {
+			type: String,
+			required: true,
+		},
+		audioUrl: {
 			type: String,
 			required: true,
 		},

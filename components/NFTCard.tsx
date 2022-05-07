@@ -5,6 +5,7 @@ import PolygonIcon from '../public/polygon_logo_black.png'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
+import AudioVisual from './AudioVisual'
 
 const styles = {
 	buyableChip: {
@@ -23,6 +24,14 @@ const styles = {
 		minWidth: '200px',
 		position: 'relative',
 		overflow: 'visible',
+		maxWidth: '300px',
+		margin: 'auto',
+	},
+	avWrap: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		mb: 1,
 	},
 	projectIconLink: {
 		ml: 1,
@@ -72,13 +81,20 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 			<Card sx={styles.card} elevation={2}>
 				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
 				<CardContent>
-					<Box className="nft-card-media">
-						<ImageOptimized
+					<Box className="nft-card-media" sx={styles.avWrap}>
+						{/* <ImageOptimized
 							src="/polyecho_logo_square.png"
 							alt="Polyecho Token Image"
 							width={400}
 							height={400}
 							title="Polyecho Token Image"
+						/> */}
+						<AudioVisual
+							audio={{
+								url: details.audioUrl,
+								href: details.audioHref,
+							}}
+							size={230}
 						/>
 					</Box>
 					<Typography variant="h5" gutterBottom>

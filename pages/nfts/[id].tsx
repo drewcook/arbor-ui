@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import AudioVisual from '../../components/AudioVisual'
 import CovalentInsights from '../../components/CovalentInsights'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
@@ -34,7 +35,7 @@ const styles = {
 		color: '#fff',
 	},
 	metadata: {
-		my: 2,
+		mt: 2,
 	},
 	metadataKey: {
 		mr: 1,
@@ -66,6 +67,14 @@ const styles = {
 		mb: 2,
 		display: 'block',
 		textAlign: 'center',
+	},
+	avWrap: {
+		display: 'flex',
+		alignItems: 'flex-end',
+		justifyContent: 'center',
+		'@media (min-width: 900px)': {
+			justifyContent: 'flex-end',
+		},
 	},
 	divider: {
 		my: 3,
@@ -122,6 +131,7 @@ const propTypes = {
 		isListed: PropTypes.bool.isRequired,
 		listPrice: PropTypes.number.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
+		audioUrl: PropTypes.string,
 		audioHref: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		projectId: PropTypes.string.isRequired,
@@ -289,8 +299,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								</Typography>
 								{formatDate(details.createdAt)}
 							</Typography>
-						</Grid>
-						<Grid item xs={12} md={7}>
 							<Typography sx={styles.metadata}>
 								<Typography component="span" sx={styles.metadataKey}>
 									ID:
@@ -323,6 +331,17 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								</Typography>
 								<Link href={`/projects/${details.projectId}`}>{details.projectId}</Link>
 							</Typography>
+						</Grid>
+						<Grid item xs={12} md={7}>
+							<Box sx={styles.avWrap}>
+								<AudioVisual
+									audio={{
+										url: details.audioUrl || `ipfs://${details.audioHref.replace('https://nftstorage.link/ipfs/', '')}`,
+										href: details.audioHref,
+									}}
+									size={360}
+								/>
+							</Box>
 						</Grid>
 					</Grid>
 					<Divider light sx={styles.divider} />
@@ -361,7 +380,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					<Grid container spacing={4}>
 						{details.stems.length > 0 ? (
 							details.stems.map((stem: any) => (
-								<Grid item sm={6} md={4} key={stem._id}>
+								<Grid item xs={12} sm={6} md={4} key={stem._id}>
 									<StemCard details={stem} />
 								</Grid>
 							))

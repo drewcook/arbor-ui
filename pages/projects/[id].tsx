@@ -483,11 +483,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					},
 					name: details.name,
 					metadataUrl: nftsRes.url,
-					audioHref: nftsRes.data.properties.audio,
+					audioUrl: nftsRes.data.properties.audio.href,
+					audioHref: nftsRes.embed().properties.audio.href,
 					projectId,
 					collaborators: details.collaborators,
 					stems: details.stems, // Direct 1:1 deep clone
 				}
+				console.log(newNftPayload)
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)
 

@@ -209,7 +209,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 					<Grid container spacing={4}>
 						{details.projects.length > 0 ? (
 							details.projects.map((project: IProjectDoc) => (
-								<Grid item sm={6} md={4} key={project._id}>
+								<Grid item xs={12} sm={6} md={4} key={project._id}>
 									<ProjectCard details={project} />
 								</Grid>
 							))
@@ -230,7 +230,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 					<Grid container spacing={4}>
 						{details.stems.length > 0 ? (
 							details.stems.map((stem: any) => (
-								<Grid item sm={6} md={4} key={stem._id}>
+								<Grid item xs={12} sm={6} md={4} key={stem._id}>
 									<StemCard details={stem} />
 								</Grid>
 							))
