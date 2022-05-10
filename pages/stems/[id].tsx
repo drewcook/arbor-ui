@@ -159,7 +159,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 
 	const onWavesInit = (idx: number, ws: any) => setWaves(ws)
 
-	const handlePlayPauseStems = () => {
+	const handlePlayPause = () => {
 		// Play or pause the stem audio from wavesurfer
 		if (waves) waves.playPause()
 		// Toggle state
@@ -204,7 +204,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 						<Box sx={styles.playWrap}>
 							<Fab
 								size="large"
-								onClick={handlePlayPauseStems}
+								onClick={handlePlayPause}
 								/* @ts-ignore */
 								sx={styles.playBtn}
 								title={isPlaying ? 'Pause the stem' : 'Play the stem'}
@@ -267,6 +267,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 								href: data?.audioHref,
 							}}
 							size={150}
+							onClick={handlePlayPause}
 						/>
 					</Box>
 				</Grid>

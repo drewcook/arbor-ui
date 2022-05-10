@@ -25,7 +25,7 @@ const styles = (size: number) => ({
 })
 
 const AudioVisual = (props): JSX.Element => {
-	const { audio, size } = props
+	const { audio, size, onClick } = props
 
 	// See: https://levelup.gitconnected.com/integrating-p5-sketches-into-your-react-app-de44a8c74e91
 	const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -39,8 +39,13 @@ const AudioVisual = (props): JSX.Element => {
 
 	const draw = (p5: p5Types) => drawSquares(p5, size)
 
+	const handleOnWrapperClick = () => {
+		if (onClick) onClick()
+		playAudioVisual(audio.href)
+	}
+
 	return (
-		<Box sx={styles(size).wrapper} className="sketchAv" onClick={() => playAudioVisual(audio.href)}>
+		<Box sx={styles(size).wrapper} className="sketchAv" onClick={handleOnWrapperClick}>
 			{/* @ts-ignore */}
 			<Sketch setup={setup} draw={draw} />
 		</Box>
@@ -53,10 +58,12 @@ AudioVisual.propTypes = {
 		href: PropTypes.string,
 	}),
 	size: PropTypes.number,
+	onClick: PropTypes.func,
 }
 
 AudioVisual.defaultProps = {
 	size: 400,
+	onClick: undefined,
 }
 
 export default AudioVisual
