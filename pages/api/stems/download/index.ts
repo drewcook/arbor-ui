@@ -17,6 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 	// Set downloads path to OS /Downloads folder
 	// Dynamically generated filename
+	// TODO: Download files into a tmp directory in /public and then download it with an anchor tag
 	const downloadsPath = path.resolve(
 		process.env.HOME || __dirname,
 		'Downloads',

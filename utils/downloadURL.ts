@@ -23,7 +23,10 @@ const downloadURL = async (url: string, downloadPath: string): Promise<any> => {
 
 	// Resolve when finished streaming, reject if any error
 	return new Promise((resolve, reject) => {
-		writer.on('finish', resolve)
+		writer.on('finish', () => {
+			console.log('finished')
+			return resolve
+		})
 		writer.on('error', reject)
 	})
 }
