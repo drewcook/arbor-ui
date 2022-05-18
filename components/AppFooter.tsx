@@ -95,7 +95,7 @@ const AppFooter = (): JSX.Element => {
 							<ImageOptimized src={TwitterIconSvg} width={40} height={40} />
 						</Box>
 					</Link>
-					<Link href="https://github.com/polyecho" passHref>
+					<Link href="https://github.com/polyecho-labs" passHref>
 						<Box sx={styles.socialIcon}>
 							<ImageOptimized src={GithubIconSvg} width={40} height={40} />
 						</Box>
