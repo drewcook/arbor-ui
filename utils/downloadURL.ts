@@ -10,9 +10,11 @@ import archiver from 'archiver'
  * @returns - Promise
  */
 const downloadURL = async (url: string, downloadDir: string, downloadPath: string): Promise<string> => {
+	// TODO: Figure out how to check if file exists already in directory and re-use, fs.access is synchronous
+
 	// Delete directory and start fresh each time if exists
 	if (fs.existsSync(downloadDir)) fs.rmdirSync(downloadDir, { recursive: true })
-	// TODO: Figure out how to check if file exists already in directory and re-use, fs.access is synchronous
+	console.log(__dirname, downloadDir)
 	// Create write stream
 	fs.mkdirSync(downloadDir, { recursive: true })
 	const writer = fs.createWriteStream(downloadPath)
