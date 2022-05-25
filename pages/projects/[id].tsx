@@ -370,7 +370,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				const anchor = document.createElement('a')
 				anchor.href = downloadPath
 				// Give it a good name for local downloading
-				anchor.download = `${details.name}_PEStems_${Date.now()}.zip`
+				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
 				document.body.appendChild(anchor)
 				anchor.click()
 				document.body.removeChild(anchor)
