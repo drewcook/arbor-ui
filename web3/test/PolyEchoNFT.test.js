@@ -58,19 +58,24 @@ contract('PolyechoNFT: state properties', accounts => {
 		const nonOwner = accounts[1]
 
 		it('Should prevent non-owners from updating the collection name', async () => {
-			const name = await contract.methods.updateCollectionName('Polyecho Branches', {
-				from: nonOwner,
-			})
-			assert.equal(name, 'Polyecho Branches')
+			try {
+				await contract.updateCollectionName('Polyecho Branches', {
+					from: nonOwner,
+				})
+			} catch (err) {
+				assert.equal(err.reason, 'Ownable: caller is not the owner')
+			}
 		})
 
 		it('Should allow owners to be able to update the collection name', async () => {
-			const name = await contract.methods.updateCollectionName('Polyecho Branches', { from: owner })
-			assert.equal(name, 'Polyecho Branches')
+			const tx = await contract.updateCollectionName('Polyecho Branches', { from: owner })
+			const expectedValue = 'Polyecho Branches'
+			const actualValue = tx.logs[0].args.name
+			assert.equal(actualValue, expectedValue, 'events should match')
 		})
 
 		it('should emit the CollectionNameUpdated event', async () => {
-			const tx = await contract.methods.updateCollectionName('Genesis Collection', {
+			const tx = await contract.updateCollectionName('Genesis Collection', {
 				from: owner,
 			})
 			const expectedEvent = 'CollectionNameUpdated'
