@@ -13,9 +13,15 @@ const downloadURL = async (url: string, downloadDir: string, downloadPath: strin
 	// TODO: Figure out how to check if file exists already in directory and re-use, fs.access is synchronous
 
 	// Delete directory and start fresh each time if exists
-	if (fs.existsSync(downloadDir)) fs.rmdirSync(downloadDir, { recursive: true })
-	console.log(__dirname, downloadDir)
-	return Promise.resolve('')
+	try {
+		if (fs.existsSync(downloadDir)) fs.rmdirSync(downloadDir, { recursive: true })
+		console.log(__dirname, downloadDir)
+		return Promise.resolve('')
+
+	} catch (e: any) {
+		console.error('Error downloading URL', e)
+		return Promise.reject('')
+	}
 	// Create write stream
 	// fs.mkdirSync(downloadDir, { recursive: true })
 	// const writer = fs.createWriteStream(downloadPath)
