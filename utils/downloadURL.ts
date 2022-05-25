@@ -20,7 +20,7 @@ const downloadURL = async (url: string, downloadDir: string, downloadPath: strin
 
 	} catch (e: any) {
 		console.error('Error downloading URL', e)
-		return Promise.reject('')
+		return Promise.reject(e)
 	}
 	// Create write stream
 	// fs.mkdirSync(downloadDir, { recursive: true })
@@ -70,8 +70,14 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 	// A higher level will result in better compression, but will take longer to complete. A lower level will result in less compression, but will be much faster. Level 5 is a good balance.s
 	const archive = archiver('zip', { zlib: { level: 5 } })
 	// Delete directory and start fresh each time if exists
-	if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
-	fs.mkdirSync(outDir, { recursive: true })
+	try {
+		if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
+		// fs.mkdirSync(outDir, { recursive: true })
+		console.log(__dirname, sourceDir, outDir)
+		return Promise.resolve('')
+	} catch (e: any) {
+		console.error(e)
+	}
 	// Create write stream
 	const writer = fs.createWriteStream(`${outDir}/${filename}`)
 
