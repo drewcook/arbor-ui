@@ -356,21 +356,30 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			setDownloading(true)
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
-				data?.stems.forEach(async (stem: IStemDoc) => {
-					const res = await get(`/stems/download`, {
-						url: stem.audioUrl,
-						projectId,
-						filename: stem.filename,
-					})
-
-					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
-
-					// Notify success
-					setDownloading(false)
-					setDownloadingMsg('')
-					setSuccessOpen(true)
-					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
+				const stemData = data?.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
+				const res = await post(`/stems/download`, {
+					projectId,
+					stemData,
 				})
+				if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+				// Notify success
+				if (!downloading) setDownloading(true)
+				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
+				// Create a temp anchor element to download from this url, then remove it
+				console.log(res.data)
+				const anchor = document.createElement('a')
+				anchor.href = res.data
+				console.log(res.data.split('exports/'))
+				anchor.download = res.data.split('exports/').pop()
+				document.body.appendChild(anchor)
+				anchor.click()
+				document.body.removeChild(anchor)
+				// Completed saving them
+				// setDownloading(false)
+				// setDownloadingMsg('')
+				// setSuccessOpen(true)
+				// setSuccessMsg(`Stem(s) downloaded succussfully`)
+				// TODO: Clean up the tmp directories and remove files after user saves them to disk
 			}
 		} catch (e: any) {
 			console.error(e.message)

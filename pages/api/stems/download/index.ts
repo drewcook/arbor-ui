@@ -1,7 +1,7 @@
 // import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import path from 'path'
-import downloadURL from '../../../../utils/downloadURL'
+import downloadURL, { zipDirectory } from '../../../../utils/downloadURL'
 
 /**
  * Takes in a URL to download from and writes the file to a stream
@@ -9,51 +9,40 @@ import downloadURL from '../../../../utils/downloadURL'
  * @returns res.data - A file to write to
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const { method, query } = req
+	const { method, body } = req
+	const projectId: string = body.projectId
+	const stemData: { url: string; filename: string }[] = body.stemData
 
-	const url: string = typeof query.url === 'object' ? query.url[0] : query.url
-	const projectId: string = typeof query.projectId === 'object' ? query.projectId[0] : query.projectId
-	const filename: string = typeof query.filename === 'object' ? query.filename[0] : query.filename
-
-	// Set downloads path to OS /Downloads folder
-	// Dynamically generated filename
-	// TODO: Download files into a tmp directory in /public and then download it with an anchor tag
-	const downloadsPath = path.resolve(
-		process.env.HOME || __dirname,
-		'Downloads',
-		`PolyechoStem_${projectId}_${filename.trim().replace(' ', '_')}`, // Includes .wav in most cases,
-	)
-
-	console.log({ downloadsPath, home: process.env.HOME, dirname: __dirname })
+	// Download files into a tmp directory in /public and then download it with an anchor tag
+	const baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
+	const zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + '/tmp/exports/'
 
 	switch (method) {
-		case 'GET':
-			// Get a file from NFT.storage
+		case 'POST':
 			try {
-				// 1. Use downloadURL utility and send to user's filesystem, handle IPFS:// links
-				let uri = url
-				// If is ipfs uri, transform to web link
-				if (url.includes('ipfs://')) {
-					uri = url.replace('ipfs://', '').replace('/blob', '')
-					uri = 'https://' + uri + '.ipfs.dweb.link/blob'
-				}
-				const downloadRes = await downloadURL(uri, downloadsPath)
-				console.log({ downloadRes })
-
-				// 2. Use NFT.storage API to download
-				// const nftStorage = axios.create({
-				// 	baseURL: 'https://api.nft.storage',
-				// 	responseType: 'arraybuffer',
-				// 	headers: {
-				// 		authorization: `Bearer ${process.env.NFT_STORAGE_KEY}`,
-				// 	},
-				// })
-				// cid = cid.replace('ipfs://', '').split('/')[0]
-				// console.log({ cid })
-				// const response = await nftStorage.get(`/${cid}`)
-				// const buffer = Buffer.from(response.data, 'utf-8') // same as response.data
-
-				return res.status(200).json({ success: true, data: 'ok' })
+				// 1. Use downloadURL utility to download each stem to a temp directory, convert IPFS:// to web links
+				await Promise.all(
+					stemData.map(async stem => {
+						let uri = stem.url
+						// If is ipfs uri, transform to web link
+						if (stem.url.includes('ipfs://')) {
+							uri = stem.url.replace('ipfs://', '').replace('/blob', '')
+							uri = 'https://' + uri + '.ipfs.dweb.link/blob'
+						}
+						const downloadPath = `${baseDownloadsDir}/${stem.filename.trim().replace(' ', '_')}` // Includes .wav in most cases,
+						// A new file will be downloaded at {host}/tmp/downloads/{projectId}/{filename}.wav
+						await downloadURL(uri, baseDownloadsDir, downloadPath)
+					}),
+				)
+				// 2. Compress the temp directory to a .zip file to prep for a single file download
+				const zippedRes = await zipDirectory(
+					`${baseDownloadsDir}/`,
+					zipDownloadsDir,
+					`PolyechoStems_${projectId}_${Date.now()}.zip`,
+				)
+				if (!zippedRes) return res.status(400).json({ success: false })
+				// A zipped file will be available at {host}/tmp/exports/PolyechoStems_{projectId}_{timestamp}.zip
+				return res.status(200).json({ success: true, data: zippedRes })
 			} catch (e: any) {
 				console.error('Error downloading stems', e)
 				return res.status(400).json({ success: false, error: e })
