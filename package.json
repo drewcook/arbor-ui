@@ -28,7 +28,7 @@
     "dotenv": "^16.0.0",
     "downshift": "^6.1.7",
     "lodash": "^4.17.21",
-    "mongoose": "^6.2.10",
+    "mongoose": "^6.3.4",
     "next": "12.1.6",
     "nextjs-progressbar": "^0.0.14",
     "nft.storage": "^6.2.0",
