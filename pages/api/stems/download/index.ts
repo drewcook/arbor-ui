@@ -1,6 +1,7 @@
 // import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import path from 'path'
+import fs from 'fs'
 import downloadURL, { zipDirectory } from '../../../../utils/downloadURL'
 
 /**
@@ -15,7 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 	// Download files into a tmp directory in /public and then download it with an anchor tag
 	const baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
-	const zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + '/tmp/exports/'
+	const zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/exports/${projectId}`
 
 	switch (method) {
 		case 'POST':
@@ -45,6 +46,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				return res.status(200).json({ success: true, data: zippedRes })
 			} catch (e: any) {
 				console.error('Error downloading stems', e)
+				return res.status(400).json({ success: false, error: e })
+			}
+		case 'DELETE':
+			try {
+				if (fs.existsSync(baseDownloadsDir)) fs.rmdirSync(baseDownloadsDir, { recursive: true })
+				if (fs.existsSync(zipDownloadsDir)) fs.rmdirSync(zipDownloadsDir, { recursive: true })
+				return res.status(200).json({ success: true, data: 'ok' })
+			} catch (e: any) {
+				console.error('Error deleting stems', e)
 				return res.status(400).json({ success: false, error: e })
 			}
 		default:

@@ -51,3 +51,18 @@ export const update = async (pathname: string, data?: any): Promise<any> => {
 		return { success: false, error: e }
 	}
 }
+
+/**
+ * A generic DELETE request wrapper to ease use within React
+ * @param pathname - The name of the API route
+ * @param data - Any data to be passed in
+ * @returns - Resources from our database
+ */
+export const remove = async (pathname: string, data?: any): Promise<any> => {
+	try {
+		const res = await instance.delete(`/api${pathname}`, { data: _cloneDeep(data) })
+		return res.data
+	} catch (e: any) {
+		return { success: false, error: e }
+	}
+}
