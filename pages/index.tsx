@@ -3,24 +3,45 @@ import { Box, Button, Container, Grid, List, ListItem, ListItemIcon, Typography 
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import AppFooter from '../components/AppFooter'
-import AppHeader from '../components/AppHeader'
 
 const styles = {
+	negateMainPadding: {
+		m: '-5rem 0',
+	},
 	banner: {
 		py: '100px',
 		backgroundColor: '#111',
 		color: '#fff',
+		background: 'url("/banner_bg.png") center center no-repeat',
+		backgroundSize: 'cover',
 	},
 	heading: {
 		mb: 5,
-		fontSize: '5rem',
+		fontSize: '3rem',
 		fontWeight: 500,
+		'@media (min-width: 600px)': {
+			fontSize: '5rem',
+		},
 	},
 	subHeading: {
 		mb: 1,
 		span: {
 			fontSize: 'inherit',
+		},
+	},
+	sectionHeading: {
+		mb: 5,
+		fontSize: '3rem',
+		'@media (min-width: 600px)': {
+			fontSize: '4rem',
+		},
+	},
+	howItWorksText: {
+		fontSize: '1.5rem',
+		mb: 7,
+		'@media (min-width: 600px)': {
+			fontSize: '1.75rem',
+			mb: 10,
 		},
 	},
 	features: {
@@ -61,9 +82,6 @@ const styles = {
 			background: 'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
 		},
 	},
-	featureArrow: {
-		// my: -4,
-	},
 	about: {
 		py: 10,
 		backgroundColor: '#fafafa',
@@ -80,10 +98,13 @@ const styles = {
 	btn: {
 		fontWeight: 800,
 		fontStyle: 'italic',
-		fontSize: '2rem',
+		fontSize: '1.2rem',
 		letterSpacing: '.5px',
 		color: '#fff',
 		mt: 5,
+		'@media (min-width: 600px)': {
+			fontSize: '1.6rem',
+		},
 	},
 }
 
@@ -91,74 +112,62 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Welcome</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | A Generative Music NFT Platform</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main" className="homepage">
+			<Box sx={styles.negateMainPadding}>
 				<Box sx={styles.banner} component="section" className="homepage-banner">
 					<Container maxWidth="xl">
-						<Grid container spacing={3}>
-							<Grid item xs={12} sm={8} lg={6}>
-								<Typography variant="h2" sx={styles.heading}>
-									Create Together,
-									<br />
-									Earn Together.
+						<Typography variant="h2" sx={styles.heading}>
+							Create Together,
+							<br />
+							Earn Together.
+						</Typography>
+						<List>
+							<ListItem>
+								<ListItemIcon sx={{ color: '#fff' }}>
+									<MusicNote />
+								</ListItemIcon>
+								<Typography variant="h5" component="p" sx={styles.subHeading}>
+									Co-create songs with anyone
 								</Typography>
-								<List>
-									<ListItem>
-										<ListItemIcon sx={{ color: '#fff' }}>
-											<MusicNote />
-										</ListItemIcon>
-										<Typography variant="h5" component="p" sx={styles.subHeading}>
-											Co-create songs with anyone
-										</Typography>
-									</ListItem>
-									<ListItem>
-										<ListItemIcon sx={{ color: '#fff' }}>
-											<MusicNote />
-										</ListItemIcon>
-										<Typography variant="h5" component="p" sx={styles.subHeading}>
-											Use the DAW you already love
-										</Typography>
-									</ListItem>
-									<ListItem>
-										<ListItemIcon sx={{ color: '#fff' }}>
-											<MusicNote />
-										</ListItemIcon>
-										<Typography variant="h5" component="p" sx={styles.subHeading}>
-											Collectors buy songs as NFTs
-										</Typography>
-									</ListItem>
-									<ListItem>
-										<ListItemIcon sx={{ color: '#fff' }}>
-											<MusicNote />
-										</ListItemIcon>
-										<Typography variant="h5" component="p" sx={styles.subHeading}>
-											The artists earn{' '}
-											<Typography component="span" sx={{ textDecoration: 'underline' }}>
-												all
-											</Typography>{' '}
-											proceeds.
-										</Typography>
-									</ListItem>
-								</List>
-							</Grid>
-						</Grid>
+							</ListItem>
+							<ListItem>
+								<ListItemIcon sx={{ color: '#fff' }}>
+									<MusicNote />
+								</ListItemIcon>
+								<Typography variant="h5" component="p" sx={styles.subHeading}>
+									Use the DAW you already love
+								</Typography>
+							</ListItem>
+							<ListItem>
+								<ListItemIcon sx={{ color: '#fff' }}>
+									<MusicNote />
+								</ListItemIcon>
+								<Typography variant="h5" component="p" sx={styles.subHeading}>
+									Collectors buy songs as NFTs
+								</Typography>
+							</ListItem>
+							<ListItem>
+								<ListItemIcon sx={{ color: '#fff' }}>
+									<MusicNote />
+								</ListItemIcon>
+								<Typography variant="h5" component="p" sx={styles.subHeading}>
+									The artists earn{' '}
+									<Typography component="span" sx={{ textDecoration: 'underline' }}>
+										all
+									</Typography>{' '}
+									proceeds.
+								</Typography>
+							</ListItem>
+						</List>
 					</Container>
 				</Box>
 				<Box sx={styles.features} component="section">
 					<Container maxWidth="xl">
-						<Typography variant="h2" sx={{ fontSize: '5rem', mb: 2 }}>
+						<Typography variant="h2" sx={styles.sectionHeading}>
 							How It Works
 						</Typography>
-						<Typography sx={{ fontSize: '2rem', mb: 7 }}>
+						<Typography sx={styles.howItWorksText}>
 							Songs are created publicly via stems and sold as NFTs. Proceeds are split equally among artists.
 						</Typography>
 						<Grid container spacing={3}>
@@ -239,7 +248,7 @@ const Home: NextPage = () => {
 				</Box>
 				<Box sx={styles.about} component="section">
 					<Container maxWidth="xl">
-						<Typography variant="h2" gutterBottom>
+						<Typography variant="h2" sx={styles.sectionHeading}>
 							Why Create Here?
 						</Typography>
 						<Grid container spacing={3}>
@@ -253,7 +262,7 @@ const Home: NextPage = () => {
 								<Box sx={{ mb: 4 }}>
 									<Typography sx={styles.blurbBold}>Like open source?</Typography>
 									<Typography sx={styles.blurb}>
-										All stems and songs are dedicated to the public domain under the CCO license. All files are hosted
+										All stems and songs are dedicated to the public domain under the CC0 license. All files are hosted
 										directly on IPFS.
 									</Typography>
 								</Box>
@@ -271,7 +280,7 @@ const Home: NextPage = () => {
 										Hard drive full of &quot;WIP&quot; tracks collecting dust?
 									</Typography>
 									<Typography sx={styles.blurb}>
-										Dig through &apos;em. One of your gently used stems could be worth something on PolyEcho.
+										Dig through &apos;em. One of your gently used stems could be worth something on Polyecho.
 									</Typography>
 								</Box>
 								<Box sx={{ mb: 4 }}>
@@ -298,9 +307,7 @@ const Home: NextPage = () => {
 						</Box>
 					</Container>
 				</Box>
-			</main>
-
-			<AppFooter />
+			</Box>
 		</>
 	)
 }

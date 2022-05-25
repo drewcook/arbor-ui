@@ -14,7 +14,6 @@ import {
 	Button,
 	Chip,
 	CircularProgress,
-	Container,
 	Divider,
 	Fab,
 	IconButton,
@@ -28,8 +27,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { Fragment, useState } from 'react'
-import AppFooter from '../../components/AppFooter'
-import AppHeader from '../../components/AppHeader'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
@@ -40,7 +37,7 @@ import { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, post } from '../../utils/http'
+import { get, post, remove } from '../../utils/http'
 
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
@@ -293,9 +290,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	// Project details
 	const [details, setDetails] = useState(data)
+	const [files, setFiles] = useState<Array<Blob>>([])
+
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
+	const [downloading, setDownloading] = useState<boolean>(false)
+	const [downloadingMsg, setDownloadingMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	// Minting
@@ -352,18 +353,34 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 	const handleDownloadAll = async () => {
 		try {
+			setDownloading(true)
+			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
-				data?.stems.forEach(async (stem: IStemDoc) => {
-					const res = await get(`/stems/download`, {
-						url: stem.audioUrl,
-						filename: `PolyEcho_Stem_${projectId}_${stem.filename}`,
-					})
-
-					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
-					// Notify success
-					setSuccessOpen(true)
-					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
+				const stemData = data?.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
+				const res = await post(`/stems/download`, {
+					projectId,
+					stemData,
 				})
+				if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+				// Notify success
+				if (!downloading) setDownloading(true)
+				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
+				// Create a temp anchor element to download from this url, then remove it
+				const downloadPath = `/${res.data.split('public/').pop()}`
+				const anchor = document.createElement('a')
+				anchor.href = downloadPath
+				// Give it a good name for local downloading
+				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
+				document.body.appendChild(anchor)
+				anchor.click()
+				document.body.removeChild(anchor)
+				// Clean up the tmp directories and remove files after user saves them to disk
+				await remove('/stems/download', { projectId })
+				// Completed saving them
+				setDownloading(false)
+				setDownloadingMsg('')
+				setSuccessOpen(true)
+				setSuccessMsg(`Stem(s) downloaded succussfully`)
 			}
 		} catch (e: any) {
 			console.error(e.message)
@@ -388,6 +405,14 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		handleUploadStemClose()
 	}
 
+	const onNewFile = (newFile: Blob) => {
+		if (!files) {
+			setFiles(() => [newFile])
+		} else {
+			setFiles(files => [...files, newFile])
+		}
+	}
+
 	// TODO: Keep track of minted versions and how many mints a project has undergone
 	const handleMintAndBuy = async () => {
 		try {
@@ -397,27 +422,25 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
-				// Hit Python HTTP server to flatten stems into a singular one
-				// TODO: Move uploading to NFT.storage out from the flattening service
-				// Have it return a file, or base64 of the audio and add to payload as;
-				// audioUrl: new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+				// Construct files and post to flattening service
+				const formData = new FormData()
+				for (let i = 0; i < files.length; i++) {
+					formData.append(`files`, files[i])
+				}
+				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
+				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
+				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
+					method: 'POST',
+					body: formData,
+				})
 
-				// TODO: Allow support of '{cid}/blob' files to be flattened, or dlink.web links to files
+				// Catch flatten audio error
+				if (!response.ok) throw new Error('Failed to flatten the audio files')
+				if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 
-				// const response = await fetch('/api/flatten', {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		'Content-Type': 'application/json',
-				// 	},
-				// 	body: JSON.stringify({ sample_cids: details.stems.map(s => s?.audioUrl.replace('ipfs://', '')) }),
-				// })
-				// // Catch flatten audio error
-				// if (!response.ok) throw new Error('Failed to flatten the audio files')
-				// const flattenedData = await response.json() // Catch fro .json()
-				// if (!flattenedData.success) throw new Error('Failed to flatten the audio files')
-
-				// TODO: create new stem from flattened audio
-				// TODO: add new stem created to user's info
+				const flattenedAudioBlob = await response.blob()
+				if (!flattenedAudioBlob) throw new Error('Failed to flatten the audio files')
 
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Uploading to NFT.storage...')
@@ -426,12 +449,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
-						'A PolyEcho NFT representing collaborative music from multiple contributors on the decentralized web.',
+						'A Polyecho NFT representing collaborative music from multiple contributors on the decentralized web.',
 					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),
 						createdBy: currentUser.address,
-						audio: `ipfs://[cid]/blob`, // TODO: use new Blob([Buffer.from(file, 'base64')], { type: 'audio/wav' })
+						audio: flattenedAudioBlob,
 						collaborators: details.collaborators,
 						stems: details.stems.map((s: any) => s.metadataUrl),
 					},
@@ -473,7 +496,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					audioHref: nftsRes.data.properties.audio,
 					projectId,
 					collaborators: details.collaborators,
-					stems: details.stems, // Direct 1:1 map
+					stems: details.stems, // Direct 1:1 deep clone
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)
@@ -501,171 +524,173 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
 		setSuccessMsg('')
-		setMintingOpen(false)
-		setMintingMsg('')
 		setErrorOpen(false)
 		setErrorMsg('')
+		setDownloading(false)
+		setDownloadingMsg('')
+		setMintingOpen(false)
+		setMintingMsg('')
 	}
 
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Project Details</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | Project Details</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="xl">
-					{details ? (
-						<>
-							<Box sx={styles.headingWrap}>
-								<Box sx={styles.playAllWrap}>
-									<Fab
-										size="large"
-										onClick={handlePlayPauseStems}
-										/* @ts-ignore */
-										sx={styles.playAllBtn}
-										disabled={details.stems.length === 0}
-									>
-										{isPlayingAll ? (
-											<PauseRounded sx={styles.playAllIcon} />
-										) : (
-											<PlayArrowRounded sx={styles.playAllIcon} />
-										)}
-									</Fab>
-								</Box>
-								<Box sx={{ flexGrow: 1 }}>
-									<Box>
-										<Typography sx={styles.createdBy}>
-											Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
-										</Typography>
-										<Typography variant="h4" component="h2" sx={styles.title}>
-											{details.name}
-										</Typography>
-									</Box>
-									<Box sx={styles.metadataWrap}>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												BPM
-											</Typography>
-											{details.bpm}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Track Limit
-											</Typography>
-											{details.trackLimit} Tracks
-											{limitReached && <Chip label="Limit Reached" size="small" sx={styles.limitReachedChip} />}
-										</Typography>
-										<Typography sx={styles.metadata}>
-											<Typography component="span" sx={styles.metadataKey}>
-												Open To
-											</Typography>
-											Anyone
-										</Typography>
-									</Box>
-									<Typography sx={styles.desc}>{details.description}</Typography>
-									{details.tags.length > 0 &&
-										details.tags.map((tag: string) => (
-											<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
-										))}
-									<Divider sx={styles.divider} />
-									{details.stems.length > 0 && (
-										<Box sx={styles.mintAndBuy}>
-											<Button
-												size="large"
-												onClick={connected ? handleMintAndBuy : handleConnectWallet}
-												variant="contained"
-												color="secondary"
-												sx={styles.mintAndBuyBtn}
-												disabled={minting || details.stems.length < 2}
-											>
-												{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
-											</Button>
-											<Box sx={styles.price}>
-												<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
-												<Typography variant="h4" component="div" sx={{ ml: 1 }}>
-													0.01{' '}
-													<Typography sx={styles.eth} component="span">
-														MATIC
-													</Typography>
-												</Typography>
-											</Box>
-										</Box>
-									)}
-								</Box>
-							</Box>
-							{/* @ts-ignore */}
-							<Box sx={styles.stemsHeader}>
-								<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
-									Song Stems
+			{details ? (
+				<>
+					<Box sx={styles.headingWrap}>
+						<Box sx={styles.playAllWrap}>
+							<Fab
+								size="large"
+								onClick={handlePlayPauseStems}
+								/* @ts-ignore */
+								sx={styles.playAllBtn}
+								disabled={details.stems.length === 0}
+								title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+							>
+								{isPlayingAll ? <PauseRounded sx={styles.playAllIcon} /> : <PlayArrowRounded sx={styles.playAllIcon} />}
+							</Fab>
+						</Box>
+						<Box sx={{ flexGrow: 1 }}>
+							<Box>
+								<Typography sx={styles.createdBy}>
+									Created by <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>
 								</Typography>
-								<Box sx={styles.stemsMeta}>
-									<Typography>
-										{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from{' '}
-										{details.collaborators.length} Collaborator{details.collaborators.length === 1 ? '' : 's'}
-									</Typography>
-									<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
-										{details.collaborators.map(c => (
-											<Link key={c} href={`/users/${c}`} passHref>
-												<Avatar>
-													<Person />
-												</Avatar>
-											</Link>
-										))}
-									</AvatarGroup>
-								</Box>
-								<Box>
-									{/* @ts-ignore */}
-									<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
-										Export Stems
-									</Button>
-								</Box>
+								<Typography variant="h4" component="h2" sx={styles.title}>
+									{details.name}
+								</Typography>
 							</Box>
-							{details.stems.length > 0 ? (
-								<>
-									<Box sx={styles.playSection}>
-										<IconButton sx={styles.playStopBtn} onClick={handlePlayPauseStems} disableRipple disableFocusRipple>
-											{isPlayingAll ? (
-												<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
-											) : (
-												<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
-											)}
-										</IconButton>
-										<IconButton sx={styles.playStopBtn} onClick={handleStop} disableRipple disableFocusRipple>
-											<Square />
-										</IconButton>
-										<IconButton sx={styles.playStopBtn} onClick={handleSkipPrev} disableRipple disableFocusRipple>
-											<SkipPrevious />
-										</IconButton>
-										<Box sx={styles.playTracker}>Timeline of full song will go here</Box>
+							<Box sx={styles.metadataWrap}>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										BPM
+									</Typography>
+									{details.bpm}
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Track Limit
+									</Typography>
+									{details.trackLimit} Tracks
+									{limitReached && <Chip label="Limit Reached" size="small" sx={styles.limitReachedChip} />}
+								</Typography>
+								<Typography sx={styles.metadata}>
+									<Typography component="span" sx={styles.metadataKey}>
+										Open To
+									</Typography>
+									Anyone
+								</Typography>
+							</Box>
+							<Typography sx={styles.desc}>{details.description}</Typography>
+							{details.tags.length > 0 &&
+								details.tags.map((tag: string) => (
+									<Chip key={tag} label={tag} variant="outlined" color="primary" sx={styles.tag} />
+								))}
+							<Divider sx={styles.divider} />
+							{details.stems.length > 0 && (
+								<Box sx={styles.mintAndBuy}>
+									<Button
+										size="large"
+										onClick={connected ? handleMintAndBuy : handleConnectWallet}
+										variant="contained"
+										color="secondary"
+										sx={styles.mintAndBuyBtn}
+										disabled={minting || details.stems.length < 2}
+									>
+										{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
+									</Button>
+									<Box sx={styles.price}>
+										<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+										<Typography variant="h4" component="div" sx={{ ml: 1 }}>
+											0.01{' '}
+											<Typography sx={styles.eth} component="span">
+												MATIC
+											</Typography>
+										</Typography>
 									</Box>
-									{details.stems.map((stem, idx) => (
-										<Fragment key={idx}>
-											<StemPlayer
-												idx={idx + 1}
-												details={stem}
-												onWavesInit={onWavesInit}
-												onFinish={() => setIsPlayingAll(false)}
-												onSolo={handleSoloStem}
-											/>
-										</Fragment>
-									))}
-								</>
-							) : (
-								<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
+								</Box>
 							)}
+						</Box>
+					</Box>
+					{/* @ts-ignore */}
+					<Box sx={styles.stemsHeader}>
+						<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
+							Song Stems
+						</Typography>
+						<Box sx={styles.stemsMeta}>
+							<Typography>
+								{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from {details.collaborators.length}{' '}
+								Collaborator{details.collaborators.length === 1 ? '' : 's'}
+							</Typography>
+							<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
+								{details.collaborators.map(c => (
+									<Link key={c} href={`/users/${c}`} passHref>
+										<Avatar>
+											<Person />
+										</Avatar>
+									</Link>
+								))}
+							</AvatarGroup>
+						</Box>
+						<Box>
+							{/* @ts-ignore */}
+							<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
+								Export Stems
+							</Button>
+						</Box>
+					</Box>
+					{details.stems.length > 0 ? (
+						<>
+							<Box sx={styles.playSection}>
+								<IconButton
+									sx={styles.playStopBtn}
+									onClick={handlePlayPauseStems}
+									disableRipple
+									disableFocusRipple
+									title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+								>
+									{isPlayingAll ? (
+										<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+									) : (
+										<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+									)}
+								</IconButton>
+								<IconButton
+									sx={styles.playStopBtn}
+									onClick={handleStop}
+									disableRipple
+									disableFocusRipple
+									title="Stop playback"
+								>
+									<Square />
+								</IconButton>
+								<IconButton
+									sx={styles.playStopBtn}
+									onClick={handleSkipPrev}
+									disableRipple
+									disableFocusRipple
+									title="Skip to beginning"
+								>
+									<SkipPrevious />
+								</IconButton>
+								<Box sx={styles.playTracker} />
+							</Box>
+							{details.stems.map((stem, idx) => (
+								<Fragment key={idx}>
+									<StemPlayer
+										idx={idx + 1}
+										details={stem}
+										onWavesInit={onWavesInit}
+										onFinish={() => setIsPlayingAll(false)}
+										onSolo={handleSoloStem}
+										onNewFile={onNewFile}
+									/>
+								</Fragment>
+							))}
 						</>
 					) : (
-						<Typography sx={styles.error} color="error">
-							Sorry, no details were found for this project.
-						</Typography>
+						<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 					)}
 					{!limitReached && (
 						<>
@@ -688,15 +713,34 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 							/>
 						</>
 					)}
-				</Container>
-			</main>
-
-			<AppFooter />
-			{mintingOpen && (
-				<Notification open={mintingOpen} msg={mintingMsg} type="info" onClose={onNotificationClose} duration={10000} />
+					{downloading && (
+						<Notification
+							open={downloading}
+							msg={downloadingMsg}
+							type="info"
+							onClose={onNotificationClose}
+							duration={10000}
+						/>
+					)}
+					{mintingOpen && (
+						<Notification
+							open={mintingOpen}
+							msg={mintingMsg}
+							type="info"
+							onClose={onNotificationClose}
+							duration={10000}
+						/>
+					)}
+					{successOpen && (
+						<Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />
+					)}
+					{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
+				</>
+			) : (
+				<Typography sx={styles.error} color="error">
+					Sorry, no details were found for this project.
+				</Typography>
 			)}
-			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
-			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
 	)
 }

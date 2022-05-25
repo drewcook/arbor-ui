@@ -1,6 +1,6 @@
-# PolyEcho
+# Polyecho
 
-PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
+Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
 **LIVE DEMO**: <https://polyecho.xyz>
 
@@ -44,13 +44,13 @@ npm install
 
 ### 2. Environment Variables
 
-Next, set up local environment variables by copying over the sample env. Run the following command:
+Next, set up local environment variables by copying over the values from `.env` to a `.env.local` file. Run the following command:
 
 ```bash
 # Unix
-cp sample.env .env.local
+cp .env .env.local
 # windows
-xcopy sample.env .env.local
+xcopy .env .env.local
 ```
 
 **NOTE:** Please reach out to the core team for a set of values to fill in your local env file.

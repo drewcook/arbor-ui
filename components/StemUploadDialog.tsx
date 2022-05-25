@@ -136,7 +136,7 @@ const propTypes = {
 	projectDetails: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		collaborators: PropTypes.array.isRequired,
-	}).isRequired,
+	}),
 }
 
 type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
@@ -180,7 +180,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	}
 
 	const handleUpload = async () => {
-		if (!file || !currentUser) return
+		if (!file || !currentUser || !projectDetails) return
 
 		try {
 			setLoading(true)
@@ -191,7 +191,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			// Upload to NFT.storage
 			const nftsRes = await NFTStore.store({
 				name: file.name,
-				description: 'An audio file uploaded through the PolyEcho platform',
+				description: 'An audio file uploaded through the Polyecho platform',
 				image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 				properties: {
 					name: stemName,
@@ -231,7 +231,6 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			const collaborators = projectDetails.collaborators
 			if (!projectDetails.collaborators.some((c: string) => c === currentUser.address))
 				collaborators.push(currentUser.address)
-
 			// Add the new stem to the project and new collaborators list
 			res = await update(`/projects/${projectDetails._id}`, { newStem: stemCreated, collaborators })
 
@@ -242,6 +241,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				onNotificationClose()
 				setLoading(false)
 				onSuccess(res.data)
+				handleClose()
 			}
 
 			// TODO: if added as a new collaborator, add this projectID to user's list of projects
@@ -277,7 +277,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				</Toolbar>
 				<DialogContent>
 					<DialogContentText sx={styles.text}>
-						When you upload a stem to a PolyEcho project, you become a collaborator, where you&apos;ll split a 10% cut
+						When you upload a stem to a Polyecho project, you become a collaborator, where you&apos;ll split a 10% cut
 						for each sale with other collaborators.
 					</DialogContentText>
 					<Grid container spacing={2}>

@@ -95,7 +95,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<strong>Last Updated:</strong> {formatDate(balData.updated_at)}
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						<strong>Token Name:</strong> PolyEcho
+						<strong>Token Name:</strong> Polyecho
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
 						<strong>Ticker Symbol:</strong> (ECHO)
@@ -105,7 +105,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 			{tokensData && (
 				<Paper elevation={2} sx={styles.covalentWrap}>
 					<Typography variant="h4" sx={styles.cardTitle}>
-						PolyEchoNFT Token Stats
+						Polyecho Token Stats
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
 						<strong>Last Updated:</strong> {formatDate(tokensData.updated_at)}
@@ -120,7 +120,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<Box sx={styles.tokenRow} key={idx}>
 							<Typography variant="h6">Token #{token.token_id}</Typography>
 							<Link
-								href={`https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}#inventory`}
+								href={`https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
 								passHref
 							>
 								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
@@ -157,26 +157,33 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						Last Updated: {formatDate(txData.updated_at)}
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						Total Transactions: {txData.items.length}
+						Total Transactions: {txData.items[0].nft_transactions.length}
 					</Typography>
 					{txData.items.length > 0 && <Typography variant="h5">Transaction History</Typography>}
-					{txData.items.map((tx, idx) => {
-						const hash = tx.nft_transactions[0].tx_hash
-						const to = tx.nft_transactions[0].to_address
-						const from = tx.nft_transactions[0].from_address
-						const value = tx.nft_transactions[0].value
+					{txData.items[0].nft_transactions.map((tx, idx) => {
+						const hash = tx.tx_hash
+						const to = tx.to_address
+						const from = tx.from_address
+						const value = tx.value
 						const amount = web3.utils.fromWei(value, 'ether')
+						const txNumber = txData.items[0].nft_transactions.length - idx
 						return (
 							<Box sx={styles.txRow} key={idx}>
-								<Typography variant="h6">Transaction {idx + 1}</Typography>
+								<Typography variant="h6">Transaction #{txNumber}</Typography>
 								<Grid container spacing={1}>
 									<Grid item xs={12} sm={6}>
 										<Typography>Price: {amount} MATIC</Typography>
-										<Typography>Hash: {formatAddress(hash)}</Typography>
+										<Typography>
+											Hash: <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>{formatAddress(hash)}</Link>
+										</Typography>
 									</Grid>
 									<Grid item xs={12} sm={6}>
-										<Typography>From: {formatAddress(from)}</Typography>
-										<Typography>To: {formatAddress(to)}</Typography>
+										<Typography>
+											From: <Link href={`/users/${from}`}>{formatAddress(from)}</Link>
+										</Typography>
+										<Typography>
+											To: <Link href={`/users/${to}`}>{formatAddress(to)}</Link>
+										</Typography>
 									</Grid>
 								</Grid>
 							</Box>

@@ -1,5 +1,98 @@
 /* Base */
 
+/* Blocknative Onboard CSS Vars */
+/* See https://docs.blocknative.com/onboard/core#custom-styling */
+:root {
+  /*
+	--onboard-white: white;
+  --onboard-black: black;
+  --onboard-primary-1: #2f80ed;
+  --onboard-primary-100: #eff1fc;
+  --onboard-primary-200: #d0d4f7;
+  --onboard-primary-300: #b1b8f2;
+  --onboard-primary-400: #929bed;
+  --onboard-primary-500: #6370e5;
+  --onboard-primary-600: #454ea0;
+  --onboard-primary-700: #323873;
+  --onboard-gray-100: #ebebed;
+  --onboard-gray-200: #c2c4c9;
+  --onboard-gray-300: #999ca5;
+  --onboard-gray-400: #707481;
+  --onboard-gray-500: #33394b;
+  --onboard-gray-600: #242835;
+  --onboard-gray-700: #1a1d26;
+  --onboard-success-100: #d1fae3;
+  --onboard-success-200: #baf7d5;
+  --onboard-success-300: #a4f4c6;
+  --onboard-success-400: #8df2b8;
+  --onboard-success-500: #5aec99;
+  --onboard-success-600: #18ce66;
+  --onboard-success-700: #129b4d;
+  --onboard-danger-100: #ffe5e6;
+  --onboard-danger-200: #ffcccc;
+  --onboard-danger-300: #ffb3b3;
+  --onboard-danger-400: #ff8080;
+  --onboard-danger-500: #ff4f4f;
+  --onboard-danger-600: #cc0000;
+  --onboard-danger-700: #660000;
+  --onboard-warning-100: #ffefcc;
+  --onboard-warning-200: #ffe7b3;
+  --onboard-warning-300: #ffd780;
+  --onboard-warning-400: #ffc74c;
+  --onboard-warning-500: #ffaf00;
+  --onboard-warning-600: #cc8c00;
+  --onboard-warning-700: #664600;
+
+  /* FONTS *
+  --onboard-font-family-normal: Sofia Pro;
+  --onboard-font-family-semibold: Sofia Pro Semibold;
+  --onboard-font-family-light: Sofia Pro Light;
+
+  --onboard-font-size-1: 3rem;
+  --onboard-font-size-2: 2.25rem;
+  --onboard-font-size-3: 1.5rem;
+  --onboard-font-size-4: 1.25rem;
+  --onboard-font-size-5: 1rem;
+  --onboard-font-size-6: 0.875rem;
+  --onboard-font-size-7: 0.75rem;
+
+  /* SPACING *
+  --onboard-spacing-1: 3rem;
+  --onboard-spacing-2: 2rem;
+  --onboard-spacing-3: 1.5rem;
+  --onboard-spacing-4: 1rem;
+  --onboard-spacing-5: 0.5rem;
+
+  /* SHADOWS *
+  --onboard-shadow-1: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  --onboard-shadow-2: inset 0px -1px 0px rgba(0, 0, 0, 0.1);
+
+  --onboard-modal-z-index: 10
+	*/
+
+
+  /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL */
+  --onboard-wallet-columns: 1;
+  /* --onboard-connect-content-width: #fff; */
+  /* --onboard-connect-content-height: #fff; */
+  /* --onboard-connect-sidebar-background: #fff; */
+  /* --onboard-connect-sidebar-color: #fff; */
+  /* --onboard-connect-sidebar-progress-background: #fff; */
+  /* --onboard-connect-sidebar-progress-color: #fff; */
+  /* --onboard-connect-header-background: #fff; */
+  /* --onboard-connect-header-color: #fff; */
+  /* --onboard-link-color: #fff; */
+  /* --onboard-close-button-background: #fff; */
+  /* --onboard-close-button-color: #fff; */
+  /* --onboard-checkbox-background: #fff; */
+  /* --onboard-checkbox-color: #fff; */
+  /* --onboard-wallet-button-background: #fff; */
+  /* --onboard-wallet-button-background-hover: #fff; */
+  /* --onboard-wallet-button-color: #fff; */
+  /* --onboard-wallet-button-border-color: #fff; */
+  /* --onboard-wallet-app-icon-border-color: #fff; */
+}
+
 * {
   box-sizing: border-box;
 }
@@ -13,8 +106,8 @@ body {
 }
 
 ol, ul {
-	margin: 0;
 	padding: 0;
+	margin: 0;
 }
 
 .code-block {
@@ -59,17 +152,11 @@ button a:hover, button a:active {
 /* App */
 
 #app-main {
-  min-height: calc(100vh - 185px);
   padding: 5rem 0;
 }
 
 #app-main.homepage {
 	padding: 0;
-}
-
-.homepage-banner {
-	background: url('/banner_bg.png') center center no-repeat;
-	background-size: cover;
 }
 
 .dropzone-loading {

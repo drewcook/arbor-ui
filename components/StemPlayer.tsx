@@ -78,39 +78,57 @@ type StemPlayerProps = {
 	onSolo?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: () => any
+	onNewFile?: (newFile: Blob) => void
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
-	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop } = props
+	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop, onNewFile } = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
+	const [blob, setBlob] = useState<Blob>()
+	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
 
 	useEffect(() => {
-		const ws = WaveSurfer.create({
-			container: `#waveform-${details._id}-${idx}`,
-			waveColor: '#bbb',
-			progressColor: '#444',
-			cursorColor: '#656565',
-			barWidth: 3,
-			barRadius: 3,
-			cursorWidth: 1,
-			height: 80,
-			barGap: 2,
-		})
-		// Load audio from an XHR request
-		ws.load(details.audioHref)
-		// Skip back to zero when finished playing
-		ws.on('finish', () => {
-			ws.seekTo(0)
-			if (onFinish) onFinish(idx, ws)
-		})
+		if (!blob) {
+			if (!loadingBlob) {
+				setLoadingBlob(true)
+				fetch(details.audioHref).then(resp => {
+					resp.blob().then(b => {
+						setBlob(b)
+						if (onNewFile) onNewFile(b)
+					})
+				})
+				setLoadingBlob(false)
+			}
+		} else {
+			const ws = WaveSurfer.create({
+				container: `#waveform-${details._id}-${idx}`,
+				waveColor: '#bbb',
+				progressColor: '#444',
+				cursorColor: '#656565',
+				barWidth: 3,
+				barRadius: 3,
+				cursorWidth: 1,
+				height: 80,
+				barGap: 2,
+			})
 
-		setWavesurfer(ws)
-		// Callback to the parent
-		onWavesInit(idx, ws)
-		return () => ws.destroy()
-	}, []) /* eslint-disable-line react-hooks/exhaustive-deps */
+			// Load audio from an XHR request
+			ws.loadBlob(blob)
+
+			// Skip back to zero when finished playing
+			ws.on('finish', () => {
+				ws.seekTo(0)
+				if (onFinish) onFinish(idx, ws)
+			})
+
+			setWavesurfer(ws)
+			// Callback to the parent
+			onWavesInit(idx, ws)
+			return () => ws.destroy()
+		}
+	}, [blob, loadingBlob]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
 	const toggleMute = () => {
 		setIsMuted(!isMuted)
@@ -192,7 +210,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 					</Grid>
 					<Grid item xs={11}>
 						<div id={`waveform-${details._id}-${idx}`} />
-						<div id={`timeline-${details._id}-${idx}`} />
 					</Grid>
 				</Grid>
 			</Box>

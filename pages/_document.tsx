@@ -11,6 +11,11 @@ class AppDocument extends Document {
 		return (
 			<Html>
 				<Head>
+					<meta
+						name="description"
+						content="Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
+					/>
+					<link rel="icon" href="/favicon.ico" />
 					<link rel="preconnect" href="https://fonts.googleapis.com" />
 					<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
 					<link
@@ -18,7 +23,7 @@ class AppDocument extends Document {
 						rel="stylesheet"
 					/>
 					<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-					<script async src="https://www.googletagmanager.com/gtag/js?id=G-NE0CW8ZW1B"></script>
+					<script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6RKG6N7H"></script>
 					<script
 						dangerouslySetInnerHTML={{
 							__html: `
@@ -26,7 +31,7 @@ class AppDocument extends Document {
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
 
-                gtag('config', 'G-NE0CW8ZW1B');
+                gtag('config', 'G-BV6RKG6N7H');
               `,
 						}}
 					/>

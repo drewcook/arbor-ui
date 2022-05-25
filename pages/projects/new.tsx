@@ -3,8 +3,6 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import AppFooter from '../../components/AppFooter'
-import AppHeader from '../../components/AppHeader'
 import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
@@ -123,82 +121,70 @@ const NewProjectPage: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>PolyEcho | Create A New Project</title>
-				<meta
-					name="description"
-					content="PolyEcho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
-				/>
-				<link rel="icon" href="/favicon.ico" />
+				<title>Polyecho | Create A New Project</title>
 			</Head>
-
-			<AppHeader />
-
-			<main id="app-main">
-				<Container maxWidth="md">
-					<Typography variant="h4" component="h1" sx={styles.title}>
-						Create A New Project
-					</Typography>
-					<Typography variant="h5" sx={styles.subtitle}>
-						Start a new project of your own so you can start uploading music stems and creating music.
-					</Typography>
-					<Typography sx={styles.text}>
-						You can decide to be specific on what your project&apos;s direction and constraints are, if any, or choose
-						to be completely open without guardrails. It&apos;s all your choice.
-					</Typography>
-					<Typography sx={styles.text}>Just start by filling out the details below.</Typography>
-					<TextField
-						label="Project Name"
-						variant="filled"
-						margin="normal"
-						value={name}
-						onChange={e => setName(e.target.value)}
-						placeholder="Give it a catchy name!"
-						fullWidth
-					/>
-					<TextField
-						label="Project Description"
-						variant="filled"
-						margin="normal"
-						value={description}
-						onChange={e => setDescription(e.target.value)}
-						placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
-						fullWidth
-					/>
-					<TextField
-						label="Project BPM"
-						variant="filled"
-						margin="normal"
-						type="number"
-						value={bpm}
-						onChange={handleSetBpm}
-						placeholder="What BPM is this project targetting?"
-						fullWidth
-					/>
-					<TextField
-						label="Track Limit"
-						variant="filled"
-						margin="normal"
-						type="number"
-						value={trackLimit}
-						onChange={handleSetTrackLimit}
-						placeholder="Set a maximum limit of tracks that can be uploaded to this project."
-						fullWidth
-					/>
-					<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />
-					<Button
-						variant="contained"
-						color="secondary"
-						size="large"
-						onClick={handleSubmit}
-						fullWidth
-						sx={styles.submitBtn}
-					>
-						Create Project
-					</Button>
-				</Container>
-			</main>
-
-			<AppFooter />
+			<Container maxWidth="md">
+				<Typography variant="h4" component="h1" sx={styles.title}>
+					Create A New Project
+				</Typography>
+				<Typography variant="h5" sx={styles.subtitle}>
+					Start a new project of your own so you can start uploading music stems and creating music.
+				</Typography>
+				<Typography sx={styles.text}>
+					You can decide to be specific on what your project&apos;s direction and constraints are, if any, or choose to
+					be completely open without guardrails. It&apos;s all your choice.
+				</Typography>
+				<Typography sx={styles.text}>Just start by filling out the details below.</Typography>
+				<TextField
+					label="Project Name"
+					variant="filled"
+					margin="normal"
+					value={name}
+					onChange={e => setName(e.target.value)}
+					placeholder="Give it a catchy name!"
+					fullWidth
+				/>
+				<TextField
+					label="Project Description"
+					variant="filled"
+					margin="normal"
+					value={description}
+					onChange={e => setDescription(e.target.value)}
+					placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
+					fullWidth
+				/>
+				<TextField
+					label="Project BPM"
+					variant="filled"
+					margin="normal"
+					type="number"
+					value={bpm}
+					onChange={handleSetBpm}
+					placeholder="What BPM is this project targetting?"
+					fullWidth
+				/>
+				<TextField
+					label="Track Limit"
+					variant="filled"
+					margin="normal"
+					type="number"
+					value={trackLimit}
+					onChange={handleSetTrackLimit}
+					placeholder="Set a maximum limit of tracks that can be uploaded to this project."
+					fullWidth
+				/>
+				<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />
+				<Button
+					variant="contained"
+					color="secondary"
+					size="large"
+					onClick={handleSubmit}
+					fullWidth
+					sx={styles.submitBtn}
+				>
+					Create Project
+				</Button>
+			</Container>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
 			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
