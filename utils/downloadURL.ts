@@ -15,27 +15,28 @@ const downloadURL = async (url: string, downloadDir: string, downloadPath: strin
 	// Delete directory and start fresh each time if exists
 	if (fs.existsSync(downloadDir)) fs.rmdirSync(downloadDir, { recursive: true })
 	console.log(__dirname, downloadDir)
+	return Promise.resolve('')
 	// Create write stream
-	fs.mkdirSync(downloadDir, { recursive: true })
-	const writer = fs.createWriteStream(downloadPath)
+	// fs.mkdirSync(downloadDir, { recursive: true })
+	// const writer = fs.createWriteStream(downloadPath)
 
-	// Create read stream with axios
-	const response = await axios({
-		url,
-		method: 'GET',
-		responseType: 'stream',
-	})
+	// // Create read stream with axios
+	// const response = await axios({
+	// 	url,
+	// 	method: 'GET',
+	// 	responseType: 'stream',
+	// })
 
-	// Pipe read stream into the write stream
-	response.data.pipe(writer)
+	// // Pipe read stream into the write stream
+	// response.data.pipe(writer)
 
-	// Resolve when finished streaming, reject if any error
-	return new Promise((resolve, reject) => {
-		writer.on('finish', () => {
-			return resolve(downloadPath)
-		})
-		writer.on('error', reject)
-	})
+	// // Resolve when finished streaming, reject if any error
+	// return new Promise((resolve, reject) => {
+	// 	writer.on('finish', () => {
+	// 		return resolve(downloadPath)
+	// 	})
+	// 	writer.on('error', reject)
+	// })
 
 	// ====== FOR REFERENCE ONLY ======
 	// Alternatively, Use NFT.storage API to download
