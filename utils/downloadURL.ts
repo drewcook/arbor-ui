@@ -34,6 +34,20 @@ const downloadURL = async (url: string, downloadDir: string, downloadPath: strin
 		})
 		writer.on('error', reject)
 	})
+
+	// ====== FOR REFERENCE ONLY ======
+	// Alternatively, Use NFT.storage API to download
+	// const nftStorage = axios.create({
+	// 	baseURL: 'https://api.nft.storage',
+	// 	responseType: 'arraybuffer',
+	// 	headers: {
+	// 		authorization: `Bearer ${process.env.NFT_STORAGE_KEY}`,
+	// 	},
+	// })
+	// cid = cid.replace('ipfs://', '').split('/')[0]
+	// console.log({ cid })
+	// const response = await nftStorage.get(`/${cid}`)
+	// const buffer = Buffer.from(response.data, 'utf-8') // same as response.data
 }
 
 /**
