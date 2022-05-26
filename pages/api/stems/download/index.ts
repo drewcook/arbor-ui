@@ -22,7 +22,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		// use build static dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../static/media/') + `tmp/downloads/${projectId}`
 		zipDownloadsDir = path.resolve(__dirname, '../../../../static/media/') + `tmp/exports/${projectId}`
-		logger.blue(`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDirectory}`)
+		logger.blue(
+			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDirectory}`,
+		)
 	} else {
 		// local dev, use public dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
