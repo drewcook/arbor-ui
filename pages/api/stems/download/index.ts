@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import path from 'path'
 import fs from 'fs'
 import downloadURL, { zipDirectory } from '../../../../utils/downloadURL'
+import logger from '../../../../utils/logger'
 
 /**
  * Takes in a URL to download from and writes the file to a stream
@@ -15,8 +16,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const stemData: { url: string; filename: string }[] = body.stemData
 
 	// Download files into a tmp directory in /public and then download it with an anchor tag
-	const baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
-	const zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/exports/${projectId}`
+	let baseDownloadsDir
+	let zipDownloadsDir
+	if (process.env.NODE_ENV === 'production') {
+		// use build static dir
+		baseDownloadsDir = path.resolve(__dirname, '../../../../static/media/') + `tmp/downloads/${projectId}`
+		zipDownloadsDir = path.resolve(__dirname, '../../../../static/media/') + `tmp/exports/${projectId}`
+		logger.blue(`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDirectory}`)
+	} else {
+		// local dev, use public dir
+		baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
+		zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/exports/${projectId}`
+	}
 
 	switch (method) {
 		case 'POST':

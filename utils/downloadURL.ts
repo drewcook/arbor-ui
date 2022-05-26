@@ -1,6 +1,7 @@
 import axios from 'axios'
 import fs from 'fs'
 import archiver from 'archiver'
+import logger from './logger'
 
 /**
  * Reads the data from an external URL as a stream, pipes it into a write stream that writes to a file on disk
@@ -73,7 +74,9 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 	try {
 		if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
 		// fs.mkdirSync(outDir, { recursive: true })
-		console.log(__dirname, sourceDir, outDir)
+		logger.blue(__dirname)
+		logger.yellow(sourceDir)
+		logger.magenta(outDir)
 		return Promise.resolve('')
 	} catch (e: any) {
 		console.error(e)
