@@ -15,15 +15,31 @@ interface ILogger {
 }
 
 class Logger implements ILogger {
+	// Styling
+	private sReset = '\x1b[0m'
+	private sBright = '\x1b[1m'
+	private sDim = '\x1b[2m'
+	private sUnderscore = '\x1b[4m'
+	private sBlink = '\x1b[5m'
+	private sReverse = '\x1b[7m'
+	private sHidden = '\x1b[8m'
 	// Colors
-	private fgBlack = '\x1b[30m%s\x1b[0m'
-	private fgRed = '\x1b[31m%s\x1b[0m'
-	private fgGreen = '\x1b[32m%s\x1b[0m'
-	private fgYellow = '\x1b[33m%s\x1b[0m'
-	private fgBlue = '\x1b[34m%s\x1b[0m'
-	private fgMagenta = '\x1b[35m%s\x1b[0m'
-	private fgCyan = '\x1b[36m%s\x1b[0m'
-	private fgWhite = '\x1b[37m%s\x1b[0m'
+	private fgBlack = `\x1b[30m%s${this.sReset}`
+	private fgRed = `\x1b[31m%s${this.sReset}`
+	private fgGreen = `\x1b[32m%s${this.sReset}`
+	private fgYellow = `\x1b[33m%s${this.sReset}`
+	private fgBlue = `\x1b[34m%s${this.sReset}`
+	private fgMagenta = `\x1b[35m%s${this.sReset}`
+	private fgCyan = `\x1b[36m%s${this.sReset}`
+	private fgWhite = `\x1b[37m%s${this.sReset}`
+	private bgBlack = '\x1b[40m'
+	private bgRed = '\x1b[41m'
+	private bgGreen = '\x1b[42m'
+	private bgYellow = '\x1b[43m'
+	private bgBlue = '\x1b[44m'
+	private bgMagenta = '\x1b[45m'
+	private bgCyan = '\x1b[46m'
+	private bgWhite = '\x1b[47m'
 
 	// Loggers
 	public black = (logData: any): void => {
