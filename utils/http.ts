@@ -2,10 +2,10 @@ import axios, { AxiosInstance } from 'axios'
 import _cloneDeep from 'lodash/cloneDeep'
 
 // Create Axios instance using the hostname for baseurl
-const instance: AxiosInstance =
-	process.env.CLIENT_HOST === 'test' // We store this for Vercel Preview builds
-		? axios.create() // Use Vercel preview ephemeral URLs for base url
-		: axios.create({ baseURL: process.env.CLIENT_HOST }) // Use env vars stored
+const instance: AxiosInstance = axios.create() // try with no baseURL
+	// process.env.CLIENT_HOST === 'test' // We store this for Vercel Preview builds
+	// 	? axios.create() // Use Vercel preview ephemeral URLs for base url
+	// 	: axios.create({ baseURL: process.env.CLIENT_HOST }) // Use env vars stored
 
 /**
  * A generic GET request wrapper to ease use within React
