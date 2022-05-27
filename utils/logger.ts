@@ -42,36 +42,36 @@ class Logger implements ILogger {
 	private bgWhite = '\x1b[47m'
 
 	// Loggers
-	public black = (logData: any): void => {
-		console.log(this.fgBlack, logData)
+	public black = (...logData: any[]): void => {
+		console.log(this.fgBlack, ...logData)
 	}
 
-	public red = (logData: any): void => {
-		console.log(this.fgRed, logData)
+	public red = (...logData: any[]): void => {
+		console.log(this.fgRed, ...logData)
 	}
 
-	public green = (logData: any): void => {
-		console.log(this.fgGreen, logData)
+	public green = (...logData: any[]): void => {
+		console.log(this.fgGreen, ...logData)
 	}
 
-	public yellow = (logData: any): void => {
-		console.log(this.fgYellow, logData)
+	public yellow = (...logData: any[]): void => {
+		console.log(this.fgYellow, ...logData)
 	}
 
-	public blue = (logData: any): void => {
-		console.log(this.fgBlue, logData)
+	public blue = (...logData: any[]): void => {
+		console.log(this.fgBlue, ...logData)
 	}
 
-	public magenta = (logData: any): void => {
-		console.log(this.fgMagenta, logData)
+	public magenta = (...logData: any[]): void => {
+		console.log(this.fgMagenta, ...logData)
 	}
 
-	public cyan = (logData: any): void => {
-		console.log(this.fgCyan, logData)
+	public cyan = (...logData: any[]): void => {
+		console.log(this.fgCyan, ...logData)
 	}
 
-	public white = (logData: any): void => {
-		console.log(this.fgWhite, logData)
+	public white = (...logData: any[]): void => {
+		console.log(this.fgWhite, ...logData)
 	}
 }
 
