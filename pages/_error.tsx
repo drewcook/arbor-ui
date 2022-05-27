@@ -2,7 +2,15 @@ import NextErrorComponent from 'next/error'
 
 import * as Sentry from '@sentry/nextjs'
 
-const MyError = ({ statusCode, hasGetInitialPropsRun, err }) => {
+interface ErrorPageProps {
+	statusCode: number
+	hasGetInitialPropsRun: boolean
+	err: any
+}
+
+const MyError = (props: ErrorPageProps): JSX.Element => {
+	const { statusCode, hasGetInitialPropsRun, err } = props
+
 	if (!hasGetInitialPropsRun && err) {
 		// getInitialProps is not called in case of
 		// https://github.com/vercel/next.js/issues/8592. As a workaround, we pass
@@ -21,6 +29,7 @@ MyError.getInitialProps = async context => {
 
 	// Workaround for https://github.com/vercel/next.js/issues/8592, mark when
 	// getInitialProps has run
+	// @ts-ignore
 	errorInitialProps.hasGetInitialPropsRun = true
 
 	// Returning early because we don't want to log 404 errors to Sentry.
