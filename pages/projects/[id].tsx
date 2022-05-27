@@ -369,6 +369,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				console.log('res.data', res.data)
 				let downloadPath: string
 				if (process.env.NODE_ENV === 'production') {
+					console.log(__dirname, process.env.HOME)
 					downloadPath = res.data
 				} else {
 					downloadPath = `/${res.data.split('public/').pop()}`
