@@ -10,6 +10,7 @@ import logger from '../../../../utils/logger'
  * @param req.body.url - An IPFS CID that represent an individual stem
  * @returns res.data - A file to write to
  */
+// TODO: Put a much longer timeout for this handler as downloading/zipping files could take a bit of time
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
 	const projectId: string = body.projectId
@@ -22,6 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		// use build static dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/downloads/${projectId}`
 		zipDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/exports/${projectId}`
+		logger.cyan('HOME', process.env.HOME)
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
 		)
