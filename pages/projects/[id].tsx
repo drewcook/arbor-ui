@@ -366,7 +366,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!downloading) setDownloading(true)
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 				// Create a temp anchor element to download from this url, then remove it
-				const downloadPath = `/${res.data.split('public/').pop()}`
+				console.log('res.data', res.data)
+				let downloadPath: string
+				if (process.env.NODE_ENV === 'production') {
+					downloadPath = res.data
+				} else {
+					downloadPath = `/${res.data.split('public/').pop()}`
+				}
 				const anchor = document.createElement('a')
 				anchor.href = downloadPath
 				// Give it a good name for local downloading
