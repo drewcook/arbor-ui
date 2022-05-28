@@ -26,10 +26,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		console.log('HOME', process.env.HOME)
 		console.log('dirname', __dirname)
 		fs.readdir(process.env.HOME ?? '/app', {}, (err, files) => {
-			console.log('app files', files)
+			console.log('app files')
+			files.forEach(console.log)
 		})
 		fs.readdir(__dirname, {}, (err, files) => {
-			console.log('dirname files', files)
+			console.log('dirname files')
+			files.forEach(console.log)
 		})
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
