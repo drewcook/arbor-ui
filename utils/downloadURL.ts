@@ -67,10 +67,6 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 		// Create archiver to compress with zlib
 		// A higher level will result in better compression, but will take longer to complete. A lower level will result in less compression, but will be much faster. Level 5 is a good balance.s
 		const archive = archiver('zip', { zlib: { level: 5 } })
-		// Delete directory and start fresh each time if exists
-		if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
-		fs.mkdirSync(outDir, { recursive: true })
-
 		// Test log
 		fs.readdir(outDir, {}, (err, files) => {
 			console.log(files)
@@ -82,6 +78,10 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 				console.log('can execute')
 			}
 		})
+
+		// Delete directory and start fresh each time if exists
+		if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
+		fs.mkdirSync(outDir, { recursive: true })
 
 		// Create write stream
 		const writer = fs.createWriteStream(`${outDir}/${filename}`)
