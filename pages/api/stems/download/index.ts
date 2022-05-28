@@ -22,9 +22,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (process.env.NODE_ENV === 'production') {
 		// use build static dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/downloads/${projectId}`
-		zipDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/exports/${projectId}`
+		zipDownloadsDir = path.resolve(process.env.HOME ?? '/app', '/tmp/') + `/exports/${projectId}`
 		console.log('HOME', process.env.HOME)
 		console.log('dirname', __dirname)
+		fs.readdir(process.env.HOME ?? '/app', {}, (err, files) => {
+			console.log('app files', files)
+		})
+		fs.readdir(__dirname, {}, (err, files) => {
+			console.log('dirname files', files)
+		})
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
 		)
