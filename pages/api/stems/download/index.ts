@@ -23,7 +23,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		// use build static dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/downloads/${projectId}`
 		zipDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/exports/${projectId}`
-		logger.cyan('HOME', process.env.HOME)
+		console.log('HOME', process.env.HOME)
+		console.log('dirname', __dirname)
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
 		)
