@@ -24,10 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		// use build static dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/downloads/${projectId}`
 		zipDownloadsDir = path.resolve(home, '/public/') + `/exports/${projectId}`
-
-		console.log('dirname', __dirname)
 		fs.readdir(home + '/public', {}, (err, files) => {
-			console.log('app files')
 			files.forEach(console.log)
 		})
 		logger.blue(

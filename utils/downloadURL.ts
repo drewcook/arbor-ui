@@ -71,6 +71,18 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 		if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
 		fs.mkdirSync(outDir, { recursive: true })
 
+		// Test log
+		fs.readdir(outDir, {}, (err, files) => {
+			console.log(files)
+		})
+		fs.access(outDir, fs.constants.W_OK, (err) => {
+			if (err) {
+				console.log("doesn't exist")
+			} else {
+				console.log('can execute')
+			}
+		})
+
 		// Create write stream
 		const writer = fs.createWriteStream(`${outDir}/${filename}`)
 
@@ -78,7 +90,7 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 			// Use Archiver to compress directory and pipe it into the write stream
 			archive
 				.directory(sourceDir, false)
-				// .on('progress', ({ entries, fs }) => console.log('progress', { entries, fs }))
+				.on('progress', ({ entries, fs }) => logger.magenta('progress', { entries, fs }))
 				.on('warning', err => {
 					if (err.code === 'ENOENT') {
 						// log warning
