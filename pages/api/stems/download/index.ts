@@ -20,17 +20,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	let baseDownloadsDir
 	let zipDownloadsDir
 	if (process.env.NODE_ENV === 'production') {
+		const home = process.env.HOME ?? '/app'
 		// use build static dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../tmp/') + `/downloads/${projectId}`
-		zipDownloadsDir = path.resolve(process.env.HOME ?? '/app', '/tmp/') + `/exports/${projectId}`
-		console.log('HOME', process.env.HOME)
+		zipDownloadsDir = path.resolve(home, '/public/') + `/exports/${projectId}`
+
 		console.log('dirname', __dirname)
-		fs.readdir(process.env.HOME ?? '/app', {}, (err, files) => {
+		fs.readdir(home + '/public', {}, (err, files) => {
 			console.log('app files')
-			files.forEach(console.log)
-		})
-		fs.readdir(__dirname, {}, (err, files) => {
-			console.log('dirname files')
 			files.forEach(console.log)
 		})
 		logger.blue(
