@@ -68,9 +68,15 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 		// A higher level will result in better compression, but will take longer to complete. A lower level will result in less compression, but will be much faster. Level 5 is a good balance.s
 		const archive = archiver('zip', { zlib: { level: 5 } })
 		// Test log
-		// fs.readdir(outDir, {}, (err, files) => {
-		// 	console.log(files)
-		// })
+		const home = process.env.HOME ?? '/app'
+		fs.readdir(`${home}/public`, {}, (err, files) => {
+			console.log('PUBLIC FILES')
+			console.log(files)
+		})
+		fs.readdir(outDir, {}, (err, files) => {
+			console.log('ZIP DIR FILES')
+			console.log(files)
+		})
 		fs.access(outDir, fs.constants.W_OK, (err) => {
 			if (err) {
 				console.log("doesn't exist")
