@@ -379,6 +379,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// Give it a good name for local downloading
 				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
 				document.body.appendChild(anchor)
+				console.log(anchor, { anchor })
 				anchor.click()
 				document.body.removeChild(anchor)
 				// Completed saving them
