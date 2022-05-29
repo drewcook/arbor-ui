@@ -38,12 +38,12 @@ const web3Onboard = Onboard({
 		],
 	},
 	chains: [
-		{
-			id: '0x13881', // chain ID must be in hexadecimal
-			token: 'MATIC', // main chain token
-			label: 'Polygon Testnet',
-			rpcUrl: rpcPolygonTestnet, // rpcURL required for wallet balances
-		},
+		// {
+		// 	id: '0x13881', // chain ID must be in hexadecimal
+		// 	token: 'MATIC', // main chain token
+		// 	label: 'Polygon Testnet',
+		// 	rpcUrl: rpcPolygonTestnet, // rpcURL required for wallet balances
+		// },
 		// {
 		// 	id: '0x89',
 		//   token: 'MATIC',
