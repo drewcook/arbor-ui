@@ -335,8 +335,16 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// const chainId = 42
 
 	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	const chainId = 80001
+	// const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
+	// const chainId = 80001
+
+	// Kardiachain Main - https://explorer.kardiachain.io/address/
+	// const contractAddress = ''
+	// const chainId = 24
+
+	// Kardiachain Testnet - https://explorer-dev.kardiachain.io/address/0x39996f35a16578b05A6bb86519451851e4473cC2
+	const contractAddress = '0x39996f35a16578b05A6bb86519451851e4473cC2'
+	const chainId = 242
 
 	let txData = null
 	let metaData = null
