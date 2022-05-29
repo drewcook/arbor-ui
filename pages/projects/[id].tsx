@@ -374,6 +374,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				}
 				window.open(downloadPath, '_blank');
 				// const anchor = document.createElement('a')
+				// anchor.style.display = 'none'
 				// anchor.href = downloadPath
 				// Give it a good name for local downloading
 				// anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
