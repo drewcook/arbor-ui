@@ -143,7 +143,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (process.env.NODE_ENV === 'production') {
 					downloadPath = '/' + res.data.split('app/').pop()
 				} else {
-					downloadPath = '/' + res.data.split('app/').pop()
+					downloadPath = '/' + res.data.split('public/').pop()
 				}
 				// window.open(downloadPath, '_blank')
 				const anchor = document.createElement('a')
@@ -151,8 +151,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				anchor.href = downloadPath
 				// Give it a good name for local downloading
 				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
+				console.log('clicking download link', anchor)
 				document.body.appendChild(anchor)
-				console.log(anchor, { anchor })
 				anchor.click()
 				document.body.removeChild(anchor)
 				// Completed saving them
