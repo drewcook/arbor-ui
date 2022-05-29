@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	const chainId = 242
 
 	// Get's token balance
-	https: const balRes = await fetch(
+	const balRes = await fetch(
 		`https://api.covalenthq.com/v1/${chainId}/address/${contractAddress}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`,
 	)
 	const balJson = balRes.ok ? await balRes.json() : null
