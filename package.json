@@ -10,7 +10,8 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "prepare": "husky install",
-		"test:contracts": "cd web3 && truffle test"
+		"contracts:test": "cd web3 && truffle test",
+		"contracts:compile": "cd web3 && truffle compile"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
