@@ -6,32 +6,7 @@ import PropTypes from 'prop-types'
 import ProjectCard from '../../components/ProjectCard'
 import { IProjectDoc } from '../../models/project.model'
 import { get } from '../../utils/http'
-
-const styles = {
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 800,
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		mb: 2,
-	},
-	subtitle: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textAlign: 'center',
-		mb: 7,
-	},
-	noProjects: {
-		textAlign: 'center',
-	},
-	noProjectsMsg: {
-		fontSize: '1.5rem',
-		color: '#555',
-		mb: 3,
-	},
-}
+import { indexStyles as styles } from '../../styles/Projects.styles'
 
 const propTypes = {
 	data: PropTypes.arrayOf(
