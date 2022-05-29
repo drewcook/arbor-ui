@@ -1,10 +1,10 @@
-const NFTContract = artifacts.require('PolyEchoNFT')
+const NFTContract = artifacts.require('PolyechoNFT')
 
 // Quick helpers
 const toEth = wei => web3.utils.fromWei(`${wei}`, 'ether')
 const toWei = eth => web3.utils.toWei(`${eth}`, 'ether')
 
-contract('PolyEchoNFT: deployment', () => {
+contract('PolyechoNFT: deployment', () => {
 	let contract
 
 	beforeEach(async () => {
@@ -12,7 +12,7 @@ contract('PolyEchoNFT: deployment', () => {
 	})
 
 	it('has been deployed', async () => {
-		assert(contract, 'PolyEchoNFT contract was not deployed')
+		assert(contract, 'PolyechoNFT contract was not deployed')
 		assert.notEqual(contract, undefined)
 	})
 
@@ -33,44 +33,59 @@ contract('PolyEchoNFT: deployment', () => {
 		const symbol = await contract.symbol()
 		assert.equal(symbol, 'ECHO')
 	})
+
+	it('Should have a collection name', async () => {
+		const name = await contract.collectionName()
+		assert.equal(name, 'Polyecho Trees')
+	})
 })
 
-contract('PolyEchoNFT: state properties', accounts => {
+contract('PolyechoNFT: state properties', accounts => {
 	let contract
-	const owner = accounts[0]
 
 	beforeEach(async () => {
 		contract = await NFTContract.deployed()
 	})
 
-	it('Should have a display name', async () => {
-		const displayName = await contract.displayName()
-		assert.equal(displayName, 'PolyEcho Audio NFT')
+	it('Should have a static mint price', async () => {
+		const actualMintPrice = await contract.mintPrice()
+		const expectedMintPrice = toWei(0.01)
+		assert.equal(actualMintPrice, expectedMintPrice)
 	})
 
-	it('Should have a company name', async () => {
-		const companyName = await contract.companyName()
-		assert.equal(companyName, 'PolyEcho')
-	})
+	describe('editing collectionName', () => {
+		const owner = accounts[0]
+		const nonOwner = accounts[1]
 
-	describe('editing displayName', () => {
-		it('Should be able to update the display name', async () => {
-			const displayName = await contract.displayName()
-			assert.equal(displayName, 'PolyEcho Audio NFT')
+		it('Should prevent non-owners from updating the collection name', async () => {
+			try {
+				await contract.updateCollectionName('Polyecho Branches', {
+					from: nonOwner,
+				})
+			} catch (err) {
+				assert.equal(err.reason, 'Ownable: caller is not the owner')
+			}
 		})
 
-		it('should emit the NameUpdated event', async () => {
-			const tx = await contract.updateDisplayName('Genesis Collection', {
+		it('Should allow owners to be able to update the collection name', async () => {
+			const tx = await contract.updateCollectionName('Polyecho Branches', { from: owner })
+			const expectedValue = 'Polyecho Branches'
+			const actualValue = tx.logs[0].args.name
+			assert.equal(actualValue, expectedValue, 'events should match')
+		})
+
+		it('should emit the CollectionNameUpdated event', async () => {
+			const tx = await contract.updateCollectionName('Genesis Collection', {
 				from: owner,
 			})
-			const expectedEvent = 'NameUpdated'
+			const expectedEvent = 'CollectionNameUpdated'
 			const actualEvent = tx.logs[0].event
 			assert.equal(actualEvent, expectedEvent, 'events should match')
 		})
 	})
 })
 
-contract('PolyEchoNFT: minting an NFT', accts => {
+contract('PolyechoNFT: minting an NFT', accts => {
 	const accounts = accts.map(a => a.toLowerCase())
 	let contract
 	const owner = accounts[0]
@@ -83,12 +98,6 @@ contract('PolyEchoNFT: minting an NFT', accts => {
 		contract = await NFTContract.deployed()
 	})
 
-	it('Should have a static mint price', async () => {
-		const actualMintPrice = await contract.mintPrice()
-		const expectedMintPrice = toWei(0.01)
-		assert.equal(actualMintPrice, expectedMintPrice)
-	})
-
 	it('Throws an error if sender sends less than the mint price', async () => {
 		try {
 			await contract.mintAndBuy(minter, metadataURI1, contributors)
@@ -99,7 +108,7 @@ contract('PolyEchoNFT: minting an NFT', accts => {
 		}
 	})
 
-	// Tests for NFT minting function of PolyEchoNFT contract using tokenID of the minted NFT
+	// Tests for NFT minting function of PolyechoNFT contract using tokenID of the minted NFT
 	it('Should be able to mint a token with proper metadata', async () => {
 		// Mint a token
 		const mintPrice = await contract.mintPrice()
@@ -141,7 +150,7 @@ contract('PolyEchoNFT: minting an NFT', accts => {
 	// })
 })
 
-contract('PolyEchoNFT: listing and un-listing an NFT', async accts => {
+contract('PolyechoNFT: listing and un-listing an NFT', async accts => {
 	const accounts = accts.map(a => a.toLowerCase())
 	let contract
 	let tokenId
@@ -196,12 +205,19 @@ contract('PolyEchoNFT: listing and un-listing an NFT', async accts => {
 			}
 		})
 
-		// TODO: emit an event when listed successfully and test against it
 		it('Should allow an owner to list it for sale', async () => {
 			const tx = await contract.allowBuy(tokenId, salePrice1, {
 				from: minter,
 			})
-			assert.equal(tx.receipt.from.toLowerCase(), minter.toLowerCase(), 'minter not tied to transaction')
+			const actualLog = tx.logs[0]
+			assert.equal(
+				tx.receipt.from.toLowerCase(),
+				minter.toLowerCase(),
+				'minter not tied to transaction',
+			)
+			assert.equal(actualLog.event, 'ListedForSale', 'event names should match')
+			assert.equal(actualLog.args._tokenId, tokenId, 'event tokenId should match')
+			assert.equal(actualLog.args._price, salePrice1, 'event price should match')
 			// assert.equal(await contract.tokenIdToPrice(1), salePrice1, 'should update state with sale price for token')
 		})
 
@@ -231,12 +247,15 @@ contract('PolyEchoNFT: listing and un-listing an NFT', async accts => {
 			}
 		})
 
-		// TODO: emit an event when listed successfully and test against it
 		it('Should allow an owner to un-list it for sale', async () => {
 			const tx = await contract.disallowBuy(tokenId, {
 				from: minter,
 			})
+			const actualLog = tx.logs[0]
 			assert.equal(tx.receipt.from.toLowerCase(), minter, 'minter not tied to transaction')
+			assert.equal(actualLog.event, 'RemovedForSale', 'event names should match')
+			assert.equal(actualLog.args._lister.toLowerCase(), minter, 'event lister should match')
+			assert.equal(actualLog.args._tokenId, tokenId, 'event price should match')
 			// assert.equal(await contract.tokenIdToPrice(1), undefined, 'should remove from state of tokens listed')
 		})
 	})
@@ -295,8 +314,16 @@ contract('PolyEchoNFT: listing and un-listing an NFT', async accts => {
 
 			// Test event arguments
 			const actualEventArgs = tx.logs.map(l => l.args)
-			assert.equal(actualEventArgs[4]._price, salePrice1 * 0.9, 'seller should receive 90% take from sale')
-			assert.equal(actualEventArgs[5]._price, salePrice1 * 0.1, 'contributors should receive 10% take from sale')
+			assert.equal(
+				actualEventArgs[4]._price,
+				salePrice1 * 0.9,
+				'seller should receive 90% take from sale',
+			)
+			assert.equal(
+				actualEventArgs[5]._price,
+				salePrice1 * 0.1,
+				'contributors should receive 10% take from sale',
+			)
 			// console.log(actualEventArgs[5]._contributors.map(c => c.toLowerCase()) === contributors)
 			// assert.equal(
 			// 	actualEventArgs[5]._contributors.map(c => c.toLowerCase()),
