@@ -211,9 +211,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								<Typography component="span" sx={styles.metadataKey}>
 									ID:
 								</Typography>
-								<Link
-									href={`${baseUrl}/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
-								>
+								<Link href={`${baseUrl}/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}>
 									{details.token.id.toString()}
 								</Link>
 							</Typography>
@@ -221,17 +219,13 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								<Typography component="span" sx={styles.metadataKey}>
 									Collection:{' '}
 								</Typography>
-								<Link href={`${baseUrl}/token/0xbd0136694e9382127602abfa5aa0679752ead313`}>
-									View On Explorer
-								</Link>
+								<Link href={`${baseUrl}/token/0xbd0136694e9382127602abfa5aa0679752ead313`}>View On Explorer</Link>
 							</Typography>
 							<Typography sx={styles.metadata}>
 								<Typography component="span" sx={styles.metadataKey}>
 									Mint Tx Hash:{' '}
 								</Typography>
-								<Link href={`${baseUrl}/tx/${details.token.data.transactionHash}`}>
-									View On Explorer
-								</Link>
+								<Link href={`${baseUrl}/tx/${details.token.data.transactionHash}`}>View On Explorer</Link>
 							</Typography>
 							<Typography sx={styles.metadata}>
 								<Typography component="span" sx={styles.metadataKey}>

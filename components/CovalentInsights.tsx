@@ -78,16 +78,8 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 					{tokensData.items.map((token, idx) => (
 						<Box sx={styles.tokenRow} key={idx}>
 							<Typography variant="h6">Token #{token.token_id}</Typography>
-							<Link
-								href={`${baseUrl}/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
-								passHref
-							>
-								<Button
-									variant="contained"
-									size="small"
-									color="secondary"
-									endIcon={<ArrowForwardIos />}
-								>
+							<Link href={`${baseUrl}/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`} passHref>
+								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
 									View NFT
 								</Button>
 							</Link>
