@@ -205,16 +205,19 @@ contract('PolyechoNFT: listing and un-listing an NFT', async accts => {
 			}
 		})
 
-		// TODO: emit an event when listed successfully and test against it
 		it('Should allow an owner to list it for sale', async () => {
 			const tx = await contract.allowBuy(tokenId, salePrice1, {
 				from: minter,
 			})
+			const actualLog = tx.logs[0]
 			assert.equal(
 				tx.receipt.from.toLowerCase(),
 				minter.toLowerCase(),
 				'minter not tied to transaction',
 			)
+			assert.equal(actualLog.event, 'ListedForSale', 'event names should match')
+			assert.equal(actualLog.args._tokenId, tokenId, 'event tokenId should match')
+			assert.equal(actualLog.args._price, salePrice1, 'event price should match')
 			// assert.equal(await contract.tokenIdToPrice(1), salePrice1, 'should update state with sale price for token')
 		})
 
@@ -244,12 +247,15 @@ contract('PolyechoNFT: listing and un-listing an NFT', async accts => {
 			}
 		})
 
-		// TODO: emit an event when listed successfully and test against it
 		it('Should allow an owner to un-list it for sale', async () => {
 			const tx = await contract.disallowBuy(tokenId, {
 				from: minter,
 			})
+			const actualLog = tx.logs[0]
 			assert.equal(tx.receipt.from.toLowerCase(), minter, 'minter not tied to transaction')
+			assert.equal(actualLog.event, 'RemovedForSale', 'event names should match')
+			assert.equal(actualLog.args._lister.toLowerCase(), minter, 'event lister should match')
+			assert.equal(actualLog.args._tokenId, tokenId, 'event price should match')
 			// assert.equal(await contract.tokenIdToPrice(1), undefined, 'should remove from state of tokens listed')
 		})
 	})

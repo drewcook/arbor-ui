@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+		"test:contracts": "cd web3 && truffle test"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
