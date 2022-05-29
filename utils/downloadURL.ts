@@ -69,15 +69,15 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 		const archive = archiver('zip', { zlib: { level: 5 } })
 		// Test log
 		const home = process.env.HOME ?? '/app'
-		fs.readdir(`${home}/public`, {}, (err, files) => {
-			console.log('PUBLIC FILES')
-			console.log(files)
-		})
-		fs.readdir(outDir, {}, (err, files) => {
-			console.log('ZIP DIR FILES')
-			console.log(files)
-		})
-		fs.access(outDir, fs.constants.W_OK, (err) => {
+		console.log({outDir})
+		// fs.access(outDir, fs.constants.W_OK, (err) => {
+		// 	if (err) {
+		// 		console.log("doesn't exist")
+		// 	} else {
+		// 		console.log('can execute')
+		// 	}
+		// })
+		fs.access(`${home}/public`, fs.constants.W_OK, (err) => {
 			if (err) {
 				console.log("doesn't exist")
 			} else {
