@@ -19,9 +19,9 @@ contract PolyechoNFT is ERC721, Ownable {
 		// Events
     event CollectionNameUpdated(string name);
     event TokenCreated(uint256 _tokenId, string _tokenURI);
-		event NftBought(uint256 _tokenId, address _seller, address _buyer, uint256 _price);
 		event ListedForSale(address _lister, uint256 _tokenId, uint256 _price);
 		event RemovedForSale(address _lister, uint256 _tokenId);
+		event NftBought(uint256 _tokenId, address _seller, address _buyer, uint256 _price);
 		event SellerPaid(uint256 _tokenId, uint256 _price);
 		event RoyaltiesPaid(uint256 _tokenId, uint256 _price, address[] _contributors);
 
