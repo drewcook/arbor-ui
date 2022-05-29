@@ -27,7 +27,7 @@ type Web3ProviderProps = {
 
 // Supported network: Polygon Testnet
 // Onboard takes hexadecimal values
-const POLYGON_TESTNET_CHAIN_ID = '0x13881'
+const PREFERRED_NETWORK_ID = '0x89'
 
 // Create context
 // @ts-ignore
@@ -63,7 +63,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			if (web3Onboard.state.get().wallets[0]) {
 				// If wallet was selected successfully, but not on a supported chain, prompt to switch to a supported one
 				let switchedToSupportedChain: boolean
-				switchedToSupportedChain = await web3Onboard.setChain({ chainId: POLYGON_TESTNET_CHAIN_ID })
+				switchedToSupportedChain = await web3Onboard.setChain({ chainId: PREFERRED_NETWORK_ID })
 				if (!switchedToSupportedChain) {
 					// If rejecting, disconnect and exit
 					handleDisconnectWallet()
@@ -91,7 +91,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
 					const newAccount = newAccounts[0]
 					// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that we're connected to the right network before attempting to find or create the new user
-					if (web3Onboard.state.get().wallets[0]?.chains[0].id === POLYGON_TESTNET_CHAIN_ID) {
+					if (web3Onboard.state.get().wallets[0]?.chains[0].id === PREFERRED_NETWORK_ID) {
 						console.info(`Switching wallet accounts to ${newAccount}`)
 						await findOrCreateUser(newAccount)
 					}
@@ -111,7 +111,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 							console.warn(
 								`Switching wallet networks: Network ID ${chainId} is not supported. Please switch back to the Polygon Testnet in your wallet for full support.`,
 							)
-							switchedToSupportedChain = await web3Onboard.setChain({ chainId: POLYGON_TESTNET_CHAIN_ID })
+							switchedToSupportedChain = await web3Onboard.setChain({ chainId: PREFERRED_NETWORK_ID })
 							// If rejecting, disconnect and exit
 							if (!switchedToSupportedChain) {
 								handleDisconnectWallet()
