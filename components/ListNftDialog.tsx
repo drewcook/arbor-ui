@@ -165,7 +165,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 							min="0"
 							max="10000"
 							onChange={e => setListPrice(parseFloat(e.target.value))}
-							endAdornment={<InputAdornment position="end">MATIC</InputAdornment>}
+							endAdornment={<InputAdornment position="end">KAI</InputAdornment>}
 							fullWidth
 						/>
 					</FormControl>
