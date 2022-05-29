@@ -37,7 +37,7 @@ import { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, post } from '../../utils/http'
+import { get, post, remove } from '../../utils/http'
 
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
@@ -356,21 +356,41 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			setDownloading(true)
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
-				data?.stems.forEach(async (stem: IStemDoc) => {
-					const res = await get(`/stems/download`, {
-						url: stem.audioUrl,
-						projectId,
-						filename: stem.filename,
-					})
-
-					if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
-
-					// Notify success
-					setDownloading(false)
-					setDownloadingMsg('')
-					setSuccessOpen(true)
-					setSuccessMsg(`Stem(s) exported, please check your Downloads folder`)
+				const stemData = data?.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
+				const res = await post(`/stems/download`, {
+					projectId,
+					stemData,
 				})
+				if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+				// Notify success
+				if (!downloading) setDownloading(true)
+				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
+				// Create a temp anchor element to download from this url, then remove it
+				let downloadPath: string
+				if (process.env.NODE_ENV === 'production') {
+					downloadPath = '/' + res.data.split('app/').pop()
+				} else {
+					downloadPath = '/' + res.data.split('app/').pop()
+				}
+				// window.open(downloadPath, '_blank')
+				const anchor = document.createElement('a')
+				anchor.style.display = 'none'
+				anchor.href = downloadPath
+				// Give it a good name for local downloading
+				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
+				document.body.appendChild(anchor)
+				console.log(anchor, { anchor })
+				anchor.click()
+				document.body.removeChild(anchor)
+				// Completed saving them
+				setDownloading(false)
+				setDownloadingMsg('')
+				setSuccessOpen(true)
+				setSuccessMsg(`Stem(s) downloaded succussfully`)
+				// Clean up the tmp directories and remove files after user saves them to disk, 30s later just in case
+				setTimeout(() => {
+					remove('/stems/download', { projectId })
+				}, 30000)
 			}
 		} catch (e: any) {
 			console.error(e.message)

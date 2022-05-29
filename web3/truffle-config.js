@@ -1,4 +1,4 @@
-// Truffle config <http://truffleframework.com/docs/advanced/configuration>
+ // Truffle config <http://truffleframework.com/docs/advanced/configuration>
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
@@ -18,7 +18,9 @@ const getInfuraNetworkConfig = networkName => {
 	return {
 		provider: () =>
 			new HDWalletProvider({
-				mnemonic: process.env.MNEMONIC,
+				mnemonic: {
+					phrase: process.env.MNEMONIC,
+				},
 				providerOrUrl: `https://${networkName}.infura.io/v3/${process.env.INFURA_KEY}`,
 			}),
 		network_id: networkIds[networkName],
@@ -48,11 +50,10 @@ module.exports = {
 		kovan: getInfuraNetworkConfig('kovan'),
 		// Polygon testnet
 		matic: {
-			provider: () =>
-				new HDWalletProvider(
-					process.env.MNEMONIC,
-					`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
-				),
+			provider: () => new HDWalletProvider({
+				mnemonic: process.env.MNEMONIC,
+				providerOrUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
+			}),
 			network_id: 80001,
 		},
 		// Polygon mainnet
