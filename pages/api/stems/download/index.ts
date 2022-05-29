@@ -3,20 +3,35 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import path from 'path'
 import fs from 'fs'
 import downloadURL, { zipDirectory } from '../../../../utils/downloadURL'
+import logger from '../../../../utils/logger'
 
 /**
  * Takes in a URL to download from and writes the file to a stream
  * @param req.body.url - An IPFS CID that represent an individual stem
  * @returns res.data - A file to write to
  */
+// TODO: Put a much longer timeout for this handler as downloading/zipping files could take a bit of time
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
 	const projectId: string = body.projectId
 	const stemData: { url: string; filename: string }[] = body.stemData
 
 	// Download files into a tmp directory in /public and then download it with an anchor tag
-	const baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
-	const zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/exports/${projectId}`
+	let baseDownloadsDir
+	let zipDownloadsDir
+	if (process.env.NODE_ENV === 'production') {
+		const home = process.env.HOME ?? '/app'
+		// use build static dir
+		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
+		zipDownloadsDir = `${home}/public/tmp/exports/${projectId}`
+		logger.blue(
+			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
+		)
+	} else {
+		// local dev, use public dir
+		baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
+		zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/exports/${projectId}`
+	}
 
 	switch (method) {
 		case 'POST':

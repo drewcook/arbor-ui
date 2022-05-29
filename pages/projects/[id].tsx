@@ -366,16 +366,21 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!downloading) setDownloading(true)
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 				// Create a temp anchor element to download from this url, then remove it
-				const downloadPath = `/${res.data.split('public/').pop()}`
+				let downloadPath: string
+				if (process.env.NODE_ENV === 'production') {
+					downloadPath = `/${res.data.split('public/').pop()}`
+				} else {
+					downloadPath = `/${res.data.split('public/').pop()}`
+				}
 				const anchor = document.createElement('a')
 				anchor.href = downloadPath
 				// Give it a good name for local downloading
 				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
 				document.body.appendChild(anchor)
-				anchor.click()
-				document.body.removeChild(anchor)
+				// anchor.click()
+				// document.body.removeChild(anchor)
 				// Clean up the tmp directories and remove files after user saves them to disk
-				await remove('/stems/download', { projectId })
+				// await remove('/stems/download', { projectId })
 				// Completed saving them
 				setDownloading(false)
 				setDownloadingMsg('')
