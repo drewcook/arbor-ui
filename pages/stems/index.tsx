@@ -5,32 +5,7 @@ import PropTypes from 'prop-types'
 import StemCard from '../../components/StemCard'
 import type { IStemDoc } from '../../models/stem.model'
 import { get } from '../../utils/http'
-
-const styles = {
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 800,
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		mb: 2,
-	},
-	subtitle: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textAlign: 'center',
-		mb: 7,
-	},
-	noProjects: {
-		textAlign: 'center',
-	},
-	noProjectsMsg: {
-		fontSize: '1.5rem',
-		color: '#555',
-		mb: 3,
-	},
-}
+import { indexStyles as styles } from '../../styles/Stems.styles'
 
 const propTypes = {
 	data: PropTypes.arrayOf(
@@ -57,8 +32,8 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 					</Typography>
 					<Container maxWidth="sm">
 						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
-							with them.
+							Explore the marketplace for unique music stems, upload your own, or grab a few and
+							start a new project with them.
 						</Typography>
 					</Container>
 					{data.length > 0 ? (
