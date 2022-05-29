@@ -30,7 +30,7 @@ contract PolyechoNFT is ERC721, Ownable {
     mapping(uint256 => address[]) public tokenIdToContributors;
     mapping (uint256 => uint256) public tokenIdToPrice;
 
-    constructor() ERC721("PolyEcho", "ECHO") {}
+    constructor() ERC721("Polyecho", "ECHO") {}
 
     function updateCollectionName(string calldata _name) external onlyOwner {
         collectionName = _name;
