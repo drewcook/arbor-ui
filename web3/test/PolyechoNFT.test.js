@@ -26,7 +26,7 @@ contract('PolyechoNFT: deployment', () => {
 
 	it('Should have a name', async () => {
 		const name = await contract.name()
-		assert.equal(name, 'PolyEcho')
+		assert.equal(name, 'Polyecho')
 	})
 
 	it('Should have a symbol', async () => {
