@@ -372,7 +372,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				} else {
 					downloadPath = `/${res.data.split('public/').pop()}`
 				}
-				window.open(downloadPath, '_blank');
+				window.open(downloadPath, '_blank')
 				// const anchor = document.createElement('a')
 				// anchor.style.display = 'none'
 				// anchor.href = downloadPath
