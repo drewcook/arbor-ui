@@ -379,13 +379,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				document.body.appendChild(anchor)
 				anchor.click()
 				document.body.removeChild(anchor)
-				// Clean up the tmp directories and remove files after user saves them to disk
-				await remove('/stems/download', { projectId })
 				// Completed saving them
 				setDownloading(false)
 				setDownloadingMsg('')
 				setSuccessOpen(true)
 				setSuccessMsg(`Stem(s) downloaded succussfully`)
+				// Clean up the tmp directories and remove files after user saves them to disk, 30s later just in case
+				setTimeout(() => {
+					remove('/stems/download', { projectId })
+				}, 30000)
 			}
 		} catch (e: any) {
 			console.error(e.message)
