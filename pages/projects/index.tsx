@@ -33,8 +33,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 					</Typography>
 					<Container maxWidth="sm">
 						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the ecosystem for unique music, collaborate and build with others, create
-							something one of a kind.
+							Explore the ecosystem for unique music, collaborate and build with others, create something one of a kind.
 						</Typography>
 					</Container>
 					{data.length > 0 ? (

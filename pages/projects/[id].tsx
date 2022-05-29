@@ -42,7 +42,6 @@ import { detailsStyles as styles } from '../../styles/Projects.styles'
 
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
-
 const propTypes = {
 	projectId: PropTypes.string.isRequired,
 	data: PropTypes.shape({

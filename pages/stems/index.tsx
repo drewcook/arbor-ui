@@ -32,8 +32,8 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 					</Typography>
 					<Container maxWidth="sm">
 						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the marketplace for unique music stems, upload your own, or grab a few and
-							start a new project with them.
+							Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
+							with them.
 						</Typography>
 					</Container>
 					{data.length > 0 ? (
