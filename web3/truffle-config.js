@@ -65,5 +65,6 @@ module.exports = {
 		// 		),
 		// 	network_id: 137,
 		// },
+		// Kardiachain Testnet and Mainnet deployed via Remix IDE
 	},
 }
