@@ -7,39 +7,7 @@ import { useEffect, useState } from 'react'
 import ImageOptimized from './ImageOptimized'
 import Link from 'next/link'
 import _debounce from 'lodash/debounce'
-
-const styles = {
-	footer: {
-		backgroundColor: '#fff',
-		color: '#111',
-		display: 'flex',
-		flex: 1,
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		px: 2,
-		pb: 2,
-		'&.stuck': {
-			position: 'fixed',
-			bottom: 0,
-			width: '100%',
-		},
-	},
-	social: {
-		my: 4,
-	},
-	socialIcon: {
-		display: 'inline-block',
-		mx: 1,
-		cursor: 'pointer',
-		'&:hover': {
-			opacity: 0.5,
-		},
-	},
-	copy: {
-		textAlign: 'center',
-	},
-}
+import styles from './AppFooter.styles'
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
