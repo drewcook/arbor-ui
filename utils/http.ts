@@ -14,6 +14,7 @@ const instance: AxiosInstance =
  * @returns - Resources from our database
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
+	console.assert(process.env)
 	try {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
