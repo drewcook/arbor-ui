@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		const home = process.env.HOME ?? '/app'
 		// use build static dir
 		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
-		zipDownloadsDir =  `${home}/public/tmp/exports/${projectId}`
+		zipDownloadsDir = `${home}/public/tmp/exports/${projectId}`
 		// fs.readdir(home + '/public', {}, (err, files) => {
 		// 	files.forEach(console.log)
 		// })
