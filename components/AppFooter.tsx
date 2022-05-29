@@ -22,13 +22,15 @@ const AppFooter = (): JSX.Element => {
 		const main: HTMLElement | null = document.getElementById('app-main')
 		const footer: HTMLElement | null = document.getElementById('app-footer')
 		if (header && main && footer) {
-			const shouldStick: boolean = windowHeight > header.offsetHeight + main.offsetHeight + footer.offsetHeight
+			const shouldStick: boolean =
+				windowHeight > header.offsetHeight + main.offsetHeight + footer.offsetHeight
 			setStuck(shouldStick)
 		}
 	}
 
 	// Debounce setting state based off window height for better performance
 	const updateWindowHeight = _debounce(() => setWindowHeight(window.innerHeight), 500)
+	const updateStickFromScroll = _debounce(handleCheckSticky, 500)
 
 	// When local state changes, determine if footer should stick
 	useEffect(() => {
@@ -39,8 +41,10 @@ const AppFooter = (): JSX.Element => {
 	useEffect(() => {
 		updateWindowHeight()
 		window.addEventListener('resize', updateWindowHeight)
+		window.addEventListener('scroll', updateStickFromScroll)
 		return () => {
 			window.removeEventListener('resize', updateWindowHeight)
+			window.removeEventListener('scroll', updateStickFromScroll)
 		}
 	}, [])
 
