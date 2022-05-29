@@ -115,7 +115,12 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 				console.error('ARCHIVER ERROR', err)
 				reject(err)
 			})
-			writer.on('close', () => console.log(`File downloaded. Total of ${archive.pointer()} bytes transferred.`))
+			writer.on('close', () => {
+				console.log(`File downloaded. Total of ${archive.pointer()} bytes transferred.`)
+				fs.readdir(outDir, {}, (err, files) => {
+					files.forEach(console.log)
+				})
+			})
 			// https://www.archiverjs.com/docs/archiver/#finalize
 			archive.finalize()
 		})

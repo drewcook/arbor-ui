@@ -24,9 +24,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		// use build static dir
 		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
 		zipDownloadsDir = `${home}/public/tmp/exports/${projectId}`
-		// fs.readdir(home + '/public', {}, (err, files) => {
-		// 	files.forEach(console.log)
-		// })
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
 		)
