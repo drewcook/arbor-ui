@@ -11,6 +11,7 @@ import logger from '../../../../utils/logger'
  * @returns res.data - A file to write to
  */
 // TODO: Put a much longer timeout for this handler as downloading/zipping files could take a bit of time
+// i.e. https://github.com/expressjs/timeout
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
 	const projectId: string = body.projectId
