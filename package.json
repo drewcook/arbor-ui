@@ -10,6 +10,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "prepare": "husky install",
+		"test": "echo \"All good, no tests to run right now\"",
     "contracts:test": "cd web3 && truffle test",
     "contracts:compile": "cd web3 && truffle compile"
   },
