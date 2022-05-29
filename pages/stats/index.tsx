@@ -40,7 +40,7 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 			</Container>
 			<Divider sx={styles.divider} />
 			{/* @ts-ignore */}
-			<CovalentInsights balData={balData} tokensData={tokensData} />
+			{balData && tokensData && <CovalentInsights balData={balData} tokensData={tokensData} />}
 		</>
 	)
 }
@@ -71,18 +71,19 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	const contractAddress = '0x39996f35a16578b05A6bb86519451851e4473cC2'
 	const chainId = 242
 
+	// TODO: Use the explorer or another api to get data
 	// Get's token balance
-	const balRes = await fetch(
-		`https://api.covalenthq.com/v1/${chainId}/address/${contractAddress}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`,
-	)
-	const balJson = balRes.ok ? await balRes.json() : null
-	const balData = balJson?.data
+	// const balRes = await fetch(
+	// 	`https://api.covalenthq.com/v1/${chainId}/address/${contractAddress}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`,
+	// )
+	// const balJson = balRes.ok ? await balRes.json() : null
+	// const balData = balJson?.data
 
 	// Gets all Tokens in collection
-	const tokensUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
-	const tokensRes = await fetch(tokensUrl)
-	const tokensJson = tokensRes.ok ? await tokensRes.json() : null
-	const tokensData = tokensJson?.data
+	// const tokensUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
+	// const tokensRes = await fetch(tokensUrl)
+	// const tokensJson = tokensRes.ok ? await tokensRes.json() : null
+	// const tokensData = tokensJson?.data
 
 	// TODO: Get metadata and tx history for each of the tokens in the collection and aggregate together for display
 	// Warning: This could get slow with lots of tokens
@@ -98,8 +99,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	return {
 		props: {
 			data: {
-				balData,
-				tokensData,
+				balData: null,
+				tokensData: null,
 			},
 		},
 	}

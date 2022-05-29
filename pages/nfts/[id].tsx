@@ -341,21 +341,22 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const contractAddress = '0x39996f35a16578b05A6bb86519451851e4473cC2'
 	const chainId = 242
 
-	let txData = null
-	let metaData = null
-	if (data && data.token.id !== null) {
-		// Txs
-		const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-		const txRes = await fetch(txUrl)
-		const txJson = txRes.ok ? await txRes.json() : null
-		txData = txJson.data
+	// TODO: Use the explorer or another api to get data
+	const txData = null
+	const metaData = null
+	// if (data && data.token.id !== null) {
+	// Txs
+	// const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	// const txRes = await fetch(txUrl)
+	// const txJson = txRes.ok ? await txRes.json() : null
+	// txData = txJson.data
 
-		// Metadata
-		const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-		const metaRes = await fetch(metaUrl)
-		const metaJson = metaRes.ok ? await metaRes.json() : null
-		metaData = metaJson.data
-	}
+	// // Metadata
+	// const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	// const metaRes = await fetch(metaUrl)
+	// const metaJson = metaRes.ok ? await metaRes.json() : null
+	// metaData = metaJson.data
+	// }
 
 	return {
 		props: {
