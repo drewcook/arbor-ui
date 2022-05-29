@@ -50,6 +50,18 @@ const web3Onboard = Onboard({
 		//   label: 'Matic Mainnet',
 		//   rpcUrl: 'https://matic-mainnet.chainstacklabs.com'
 		// },
+		{
+			id: '0xF2',
+			token: 'KAI',
+			label: 'Kardiachain Testnet',
+			rpcUrl: 'https://dev.kardiachain.io',
+		},
+		// {
+		// 	id: '0x18',
+		// 	token: 'KAI',
+		// 	label: 'Kardiachain Mainnet',
+		// 	rpcUrl: 'https://rpc.kardiachain.io',
+		// },
 		// {
 		// 	id: '0x1',
 		//   token: 'ETH',
@@ -164,7 +176,7 @@ walletsSubscriber.subscribe(wallets => {
 const chainsSubscriber = web3Onboard.state.select('chains')
 chainsSubscriber.subscribe(chains => {
 	const connectedChains = chains.map(({ label }) => label)
-	console.log('Chain changed to', connectedChains[0])
+	console.log('Chain changed to', connectedChains)
 })
 
 export default web3Onboard
