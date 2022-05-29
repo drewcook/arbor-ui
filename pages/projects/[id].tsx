@@ -35,7 +35,7 @@ import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
-import PolygonIcon from '../../public/polygon_logo_black.png'
+import MaticIcon from '../../public/matic_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post, remove } from '../../utils/http'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
@@ -384,7 +384,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 										{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
 									</Button>
 									<Box sx={styles.price}>
-										<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+										<ImageOptimized src={MaticIcon} width={50} height={50} alt="Polygon" />
 										<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 											0.01{' '}
 											<Typography sx={styles.eth} component="span">
