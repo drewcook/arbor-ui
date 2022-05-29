@@ -25,8 +25,9 @@ type Web3ProviderProps = {
 	children: ReactNode
 }
 
-// Supported network
-const POLYGON_TESTNET_CHAIN_ID = '0x13881' // Onboard takes hexadecimal values
+// Supported network: Polygon Testnet
+// Onboard takes hexadecimal values
+const POLYGON_TESTNET_CHAIN_ID = '0x13881'
 
 // Create context
 // @ts-ignore
