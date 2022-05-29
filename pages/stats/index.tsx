@@ -60,8 +60,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	// const chainId = 42
 
 	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	const chainId = 80001
+	// const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
+	// const chainId = 80001
+
+	// Polygon Mainnet - https://polygonscan.com/address/
+	const contractAddress = ''
+	const chainId = 137
 
 	// Get's token balance
 	const balRes = await fetch(
