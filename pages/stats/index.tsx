@@ -35,7 +35,7 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 				</Typography>
 				<Typography variant="overline" sx={styles.text}>
 					All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked against
-					the <Link href="https://mumbai.polygonscan.com/">Polygon Mumbai testnet.</Link>
+					<Link href="https://explorer-dev.kardiachain.io">Kardiachain Testnet.</Link>
 				</Typography>
 			</Container>
 			<Divider sx={styles.divider} />

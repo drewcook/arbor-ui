@@ -32,9 +32,9 @@ const propTypes = {
 }
 
 type CovalentInsightsProps = PropTypes.InferProps<typeof propTypes>
-
 const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 	const { balData, tokensData, txData, metaData } = props
+	const baseUrl = 'https://explorer-dev.kardiachain.io' //address/0x39996f35a16578b05A6bb86519451851e4473cC2'
 
 	return (
 		<>
@@ -44,7 +44,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						NFT Collection Stats
 					</Typography>
 					<Typography gutterBottom variant="body1">
-						<Link href={`https://mumbai.polygonscan.com/address/${balData.address}`} passHref>
+						<Link href={`${baseUrl}/address/${balData.address}`} passHref>
 							<Button color="secondary" size="small" variant="contained" sx={styles.covalentBtn}>
 								View Contract Address
 							</Button>
@@ -79,10 +79,15 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<Box sx={styles.tokenRow} key={idx}>
 							<Typography variant="h6">Token #{token.token_id}</Typography>
 							<Link
-								href={`https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
+								href={`${baseUrl}/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
 								passHref
 							>
-								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
+								<Button
+									variant="contained"
+									size="small"
+									color="secondary"
+									endIcon={<ArrowForwardIos />}
+								>
 									View NFT
 								</Button>
 							</Link>
@@ -133,7 +138,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 									<Grid item xs={12} sm={6}>
 										<Typography>Price: {amount} MATIC</Typography>
 										<Typography>
-											Hash: <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>{formatAddress(hash)}</Link>
+											Hash: <Link href={`${baseUrl}/tx/${hash}`}>{formatAddress(hash)}</Link>
 										</Typography>
 									</Grid>
 									<Grid item xs={12} sm={6}>

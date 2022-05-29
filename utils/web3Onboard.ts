@@ -20,7 +20,7 @@ const walletConnect = walletConnectModule({
 })
 
 // Alchemy RPC URL - Polygon Testnet
-const rpcPolygonTestnet = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`
+// const rpcPolygonTestnet = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`
 // ...We can add other RPC URLs for other chains where contract is deployed to, as Onboard supports multiple wallets on multiple chains :)
 
 // Initialize Onboard
