@@ -372,15 +372,15 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				} else {
 					downloadPath = `/${res.data.split('public/').pop()}`
 				}
-				window.open(downloadPath, '_blank')
-				// const anchor = document.createElement('a')
-				// anchor.style.display = 'none'
-				// anchor.href = downloadPath
+				// window.open(downloadPath, '_blank')
+				const anchor = document.createElement('a')
+				anchor.style.display = 'none'
+				anchor.href = downloadPath
 				// Give it a good name for local downloading
-				// anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
-				// document.body.appendChild(anchor)
-				// anchor.click()
-				// document.body.removeChild(anchor)
+				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
+				document.body.appendChild(anchor)
+				anchor.click()
+				document.body.removeChild(anchor)
 				// Completed saving them
 				setDownloading(false)
 				setDownloadingMsg('')

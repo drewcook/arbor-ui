@@ -14,8 +14,9 @@ const downloadURL = async (url: string, downloadDir: string, downloadPath: strin
 	// TODO: Figure out how to check if file exists already in directory and re-use, fs.access is synchronous
 	try {
 		// Delete directory and start fresh each time if exists
-		if (fs.existsSync(downloadDir)) fs.rmdirSync(downloadDir, { recursive: true })
+		if (fs.existsSync(downloadDir)) fs.rmSync(downloadDir, { recursive: true })
 		fs.mkdirSync(downloadDir, { recursive: true })
+
 		// Create write stream
 		const writer = fs.createWriteStream(downloadPath)
 
@@ -67,23 +68,6 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 		// Create archiver to compress with zlib
 		// A higher level will result in better compression, but will take longer to complete. A lower level will result in less compression, but will be much faster. Level 5 is a good balance.s
 		const archive = archiver('zip', { zlib: { level: 5 } })
-		// Test log
-		const home = process.env.HOME ?? '/app'
-		console.log({outDir})
-		// fs.access(outDir, fs.constants.W_OK, (err) => {
-		// 	if (err) {
-		// 		console.log("doesn't exist")
-		// 	} else {
-		// 		console.log('can execute')
-		// 	}
-		// })
-		fs.access(`${home}/public`, fs.constants.W_OK, (err) => {
-			if (err) {
-				console.log("doesn't exist")
-			} else {
-				console.log('can execute')
-			}
-		})
 
 		// Delete directory and start fresh each time if exists
 		if (fs.existsSync(outDir)) fs.rmdirSync(outDir, { recursive: true })
@@ -117,7 +101,12 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 			})
 			writer.on('close', () => {
 				console.log(`File downloaded. Total of ${archive.pointer()} bytes transferred.`)
+				fs.readdir(sourceDir, {}, (err, files) => {
+					console.log('SOURCE DIR')
+					files.forEach(console.log)
+				})
 				fs.readdir(outDir, {}, (err, files) => {
+					console.log('OUT DIR')
 					files.forEach(console.log)
 				})
 			})

@@ -23,8 +23,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (process.env.NODE_ENV === 'production') {
 		const home = process.env.HOME ?? '/app'
 		// use build static dir
-		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
-		zipDownloadsDir = `${home}/public/tmp/exports/${projectId}`
+		baseDownloadsDir = `${home}/tmp/downloads/${projectId}`
+		zipDownloadsDir = `${home}/tmp/exports/${projectId}`
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
 		)
@@ -66,8 +66,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			}
 		case 'DELETE':
 			try {
-				if (fs.existsSync(baseDownloadsDir)) fs.rmdirSync(baseDownloadsDir, { recursive: true })
-				if (fs.existsSync(zipDownloadsDir)) fs.rmdirSync(zipDownloadsDir, { recursive: true })
+				if (fs.existsSync(baseDownloadsDir)) fs.rmSync(baseDownloadsDir, { recursive: true })
+				if (fs.existsSync(zipDownloadsDir)) fs.rmSync(zipDownloadsDir, { recursive: true })
 				return res.status(200).json({ success: true, data: 'ok' })
 			} catch (e: any) {
 				console.error('Error deleting stems', e)
