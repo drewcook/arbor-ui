@@ -38,236 +38,9 @@ import type { IStemDoc } from '../../models/stem.model'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post, remove } from '../../utils/http'
+import { detailsStyles as styles } from '../../styles/Projects.styles'
 
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
-
-const styles = {
-	error: {
-		textAlign: 'center',
-		marginY: 4,
-	},
-	limitReachedChip: {
-		backgroundColor: '#ff399f',
-		color: '#fff',
-		ml: 1,
-		fontSize: '.8rem',
-		height: '1.75rem',
-		textShadow: 'none',
-		mb: 1,
-	},
-	headingWrap: {
-		position: 'relative',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'flex-start',
-	},
-	createdBy: {
-		color: '#a8a8a8',
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textTransform: 'uppercase',
-	},
-	title: {
-		mb: 1,
-		fontSize: '54px',
-	},
-	playAllWrap: {
-		mr: 2,
-		height: '100%',
-		width: '96px',
-		'&::before': {
-			content: '""',
-			display: 'block',
-			backgroundColor: '#000',
-			width: '3px',
-			height: '100%',
-			position: 'absolute',
-			bottom: '0',
-			left: '43px',
-		},
-	},
-	playAllBtn: {
-		position: 'absolute',
-		borderRadius: '10px',
-		top: 0,
-		width: '90px',
-		height: '90px',
-		backgroundColor: '#000',
-		color: '#fff',
-		boxShadow: 'none',
-		'&:hover, &.Mui-disabled': {
-			backgroundColor: '#444',
-			color: '#fff',
-		},
-		'&.Mui-disabled': {
-			cursor: 'not-allowed',
-			pointerEvents: 'none',
-		},
-	},
-	playAllIcon: {
-		fontSize: '4rem',
-	},
-	metadataWrap: {
-		mb: 1,
-	},
-	metadata: {
-		display: 'inline-block',
-		mr: 5,
-	},
-	metadataKey: {
-		mr: 0.5,
-		display: 'inline-block',
-		color: '#a8a8a8',
-	},
-	desc: {
-		color: '#777',
-		fontSize: '18px',
-		mb: 2,
-		fontWeight: 300,
-	},
-	tag: {
-		m: 1,
-		fontWeight: 400,
-	},
-	mintAndBuy: {
-		mt: 3,
-		display: 'flex',
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	mintAndBuyBtn: {
-		fontWeight: 800,
-		fontStyle: 'italic',
-		fontSize: '2rem',
-		letterSpacing: '.5px',
-		color: '#111',
-		width: '225px',
-	},
-	price: {
-		display: 'flex',
-		alignItems: 'center',
-		pl: 3,
-	},
-	eth: {
-		color: '#aaa',
-		fontSize: '1rem',
-	},
-	divider: {
-		my: 3,
-		borderColor: '#ccc',
-	},
-	imgWrapper: {
-		border: '3px solid #000',
-		borderRadius: '10px',
-		overflow: 'clip',
-		maxHeight: '300px',
-		maxWidth: '300px',
-		m: 'auto',
-		'@media (min-width: 600px)': {
-			mr: 0,
-		},
-	},
-	stemsHeader: {
-		borderTopLeftRadius: '10px',
-		borderTopRightRadius: '10px',
-		backgroundColor: '#000',
-		color: '#fff',
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		px: 3,
-		py: 5,
-		mt: '60px',
-		position: 'relative',
-		'&::before': {
-			content: '""',
-			display: 'block',
-			backgroundColor: '#000',
-			width: '3px',
-			height: '60px',
-			position: 'absolute',
-			top: '-60px',
-			left: '43px',
-		},
-		'.MuiAvatar-root': {
-			cursor: 'pointer',
-			'&:hover': {
-				backgroundColor: '#aaa',
-			},
-		},
-	},
-	stemsTitle: {
-		display: 'inline-block',
-		fontSize: '2rem',
-		fontStyle: 'italic',
-		fontWeight: 600,
-		textTransform: 'uppercase',
-	},
-	stemsMeta: {
-		display: 'flex',
-		alignItems: 'center',
-		fontStyle: 'italic',
-		textTransform: 'uppercase',
-	},
-	avatarGroup: {
-		ml: 2,
-	},
-	exportStemsBtn: {
-		fontStyle: 'italic',
-		fontWeight: 800,
-		textTransform: 'uppercase',
-		color: '#fff',
-		'&:hover': {
-			color: '#4CE79D',
-		},
-	},
-	playSection: {
-		p: 2,
-		border: '3px solid #000',
-		// borderRight: '3px solid #000',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	playStopBtn: {
-		color: '#000',
-	},
-	playTracker: {
-		flexGrow: 1,
-		backgroundColor: '#eaeaea',
-		ml: 2,
-		p: 2,
-		textAlign: 'center',
-	},
-	noStemsMsg: {
-		textAlign: 'center',
-		py: 3,
-		px: 2,
-		border: '3px solid #000',
-		borderBottomLeftRadius: '10px',
-		borderBottomRightRadius: '10px',
-	},
-	addStemBtn: {
-		borderWidth: '3px',
-		borderColor: '#111',
-		borderRadius: '5px',
-		fontWeight: 800,
-		mt: 4,
-		'&:hover': {
-			borderWidth: '3px',
-		},
-		'&::before': {
-			content: '""',
-			display: 'block',
-			backgroundColor: '#000',
-			width: '3px',
-			height: '35px', // margin top + 2px border
-			position: 'absolute',
-			top: '-35px',
-			left: '43px',
-		},
-	},
-}
 
 const propTypes = {
 	projectId: PropTypes.string.isRequired,
@@ -366,27 +139,31 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!downloading) setDownloading(true)
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 				// Create a temp anchor element to download from this url, then remove it
-				console.log('res.data', res.data)
 				let downloadPath: string
 				if (process.env.NODE_ENV === 'production') {
-					downloadPath = res.data
+					downloadPath = '/' + res.data.split('app/').pop()
 				} else {
-					downloadPath = `/${res.data.split('public/').pop()}`
+					downloadPath = '/' + res.data.split('public/').pop()
 				}
+				// window.open(downloadPath, '_blank')
 				const anchor = document.createElement('a')
+				anchor.style.display = 'none'
 				anchor.href = downloadPath
 				// Give it a good name for local downloading
 				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
+				console.log('clicking download link', anchor)
 				document.body.appendChild(anchor)
 				anchor.click()
 				document.body.removeChild(anchor)
-				// Clean up the tmp directories and remove files after user saves them to disk
-				await remove('/stems/download', { projectId })
 				// Completed saving them
 				setDownloading(false)
 				setDownloadingMsg('')
 				setSuccessOpen(true)
 				setSuccessMsg(`Stem(s) downloaded succussfully`)
+				// Clean up the tmp directories and remove files after user saves them to disk, 30s later just in case
+				setTimeout(() => {
+					remove('/stems/download', { projectId })
+				}, 30000)
 			}
 		} catch (e: any) {
 			console.error(e.message)

@@ -7,39 +7,7 @@ import { useEffect, useState } from 'react'
 import ImageOptimized from './ImageOptimized'
 import Link from 'next/link'
 import _debounce from 'lodash/debounce'
-
-const styles = {
-	footer: {
-		backgroundColor: '#fff',
-		color: '#111',
-		display: 'flex',
-		flex: 1,
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		px: 2,
-		pb: 2,
-		'&.stuck': {
-			position: 'fixed',
-			bottom: 0,
-			width: '100%',
-		},
-	},
-	social: {
-		my: 4,
-	},
-	socialIcon: {
-		display: 'inline-block',
-		mx: 1,
-		cursor: 'pointer',
-		'&:hover': {
-			opacity: 0.5,
-		},
-	},
-	copy: {
-		textAlign: 'center',
-	},
-}
+import styles from './AppFooter.styles'
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -61,6 +29,7 @@ const AppFooter = (): JSX.Element => {
 
 	// Debounce setting state based off window height for better performance
 	const updateWindowHeight = _debounce(() => setWindowHeight(window.innerHeight), 500)
+	const updateStickFromScroll = _debounce(handleCheckSticky, 500)
 
 	// When local state changes, determine if footer should stick
 	useEffect(() => {
@@ -71,8 +40,10 @@ const AppFooter = (): JSX.Element => {
 	useEffect(() => {
 		updateWindowHeight()
 		window.addEventListener('resize', updateWindowHeight)
+		window.addEventListener('scroll', updateStickFromScroll)
 		return () => {
 			window.removeEventListener('resize', updateWindowHeight)
+			window.removeEventListener('scroll', updateStickFromScroll)
 		}
 	}, [])
 

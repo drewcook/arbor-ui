@@ -4,6 +4,7 @@ const { withSentryConfig } = require('@sentry/nextjs')
 const nextConfig = {
 	reactStrictMode: true,
 	env: {
+		HOME: process.env.HOME,
 		CLIENT_HOST: process.env.CLIENT_HOST,
 		MONGODB_URI: process.env.MONGODB_URI,
 		WALLETCONNECT_ID: process.env.WALLETCONNECT_ID,
