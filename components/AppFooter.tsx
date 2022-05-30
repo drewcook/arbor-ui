@@ -22,8 +22,7 @@ const AppFooter = (): JSX.Element => {
 		const main: HTMLElement | null = document.getElementById('app-main')
 		const footer: HTMLElement | null = document.getElementById('app-footer')
 		if (header && main && footer) {
-			const shouldStick: boolean =
-				windowHeight > header.offsetHeight + main.offsetHeight + footer.offsetHeight
+			const shouldStick: boolean = windowHeight > header.offsetHeight + main.offsetHeight + footer.offsetHeight
 			setStuck(shouldStick)
 		}
 	}
