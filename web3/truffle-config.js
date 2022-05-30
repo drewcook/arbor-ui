@@ -6,7 +6,7 @@ const HDWalletProvider = require('@truffle/hdwallet-provider')
 require('dotenv').config()
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-const networkIds = {
+const infuraNetworkIds = {
 	mainnet: 1,
 	ropsten: 3,
 	rinkeby: 4,
@@ -23,7 +23,7 @@ const getInfuraNetworkConfig = networkName => {
 				},
 				providerOrUrl: `https://${networkName}.infura.io/v3/${process.env.INFURA_KEY}`,
 			}),
-		network_id: networkIds[networkName],
+		network_id: infuraNetworkIds[networkName],
 	}
 }
 
@@ -49,21 +49,22 @@ module.exports = {
 		rinkeby: getInfuraNetworkConfig('rinkeby'),
 		kovan: getInfuraNetworkConfig('kovan'),
 		// Polygon testnet
-		matic: {
-			provider: () => new HDWalletProvider({
-				mnemonic: process.env.MNEMONIC,
-				providerOrUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
-			}),
-			network_id: 80001,
-		},
-		// Polygon mainnet
 		// matic: {
 		// 	provider: () =>
-		// 		new HDWalletProvider(
-		// 			process.env.MNEMONIC,
-		// 			`https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
-		// 		),
-		// 	network_id: 137,
+		// 		new HDWalletProvider({
+		// 			mnemonic: process.env.MNEMONIC,
+		// 			providerOrUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
+		// 		}),
+		// 	network_id: 80001,
 		// },
+		// Polygon mainnet
+		matic: {
+			provider: () =>
+				new HDWalletProvider({
+					mnemonic: process.env.MNEMONIC,
+					providerOrUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+				}),
+			network_id: 137,
+		},
 	},
 }
