@@ -6,27 +6,6 @@ const HDWalletProvider = require('@truffle/hdwallet-provider')
 require('dotenv').config()
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-const infuraNetworkIds = {
-	mainnet: 1,
-	ropsten: 3,
-	rinkeby: 4,
-	goerli: 5,
-	kovan: 42,
-}
-
-const getInfuraNetworkConfig = networkName => {
-	return {
-		provider: () =>
-			new HDWalletProvider({
-				mnemonic: {
-					phrase: process.env.MNEMONIC,
-				},
-				providerOrUrl: `https://${networkName}.infura.io/v3/${process.env.INFURA_KEY}`,
-			}),
-		network_id: infuraNetworkIds[networkName],
-	}
-}
-
 module.exports = {
 	compilers: {
 		solc: {
@@ -43,11 +22,6 @@ module.exports = {
 			port: 8545,
 			network_id: 1337,
 		},
-		// Mainnet
-		// mainnet: getInfuraNetworkConfig('mainnet'),
-		// Rinkeby
-		rinkeby: getInfuraNetworkConfig('rinkeby'),
-		kovan: getInfuraNetworkConfig('kovan'),
 		// Polygon testnet
 		// matic: {
 		// 	provider: () =>
