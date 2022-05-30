@@ -2,7 +2,7 @@ import type { NFTStorage } from 'nft.storage'
 import type { OnboardAPI, WalletState } from '@web3-onboard/core'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-import NFTContract from '../contracts/PolyEchoNFT.json'
+import NFTContract from '../contracts/PolyechoNFT.json'
 import { IUser } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
 import { get, post } from '../utils/http'
@@ -78,7 +78,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
 				setWeb3(web3Instance)
 
-				// Set PolyEchoNFT smart contract based off network ABI
+				// Set PolyechoNFT smart contract based off network ABI
 				const networkId = await web3Instance.eth.net.getId()
 				const deployedNetwork = NFTContract.networks[networkId]
 				const nftContract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
