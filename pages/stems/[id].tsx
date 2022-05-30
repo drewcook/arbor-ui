@@ -92,11 +92,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 								sx={styles.playBtn}
 								title={isPlaying ? 'Pause the stem' : 'Play the stem'}
 							>
-								{isPlaying ? (
-									<PauseRounded sx={styles.playIcon} />
-								) : (
-									<PlayArrowRounded sx={styles.playIcon} />
-								)}
+								{isPlaying ? <PauseRounded sx={styles.playIcon} /> : <PlayArrowRounded sx={styles.playIcon} />}
 							</Fab>
 							{/* <Fab
 								size="large"
@@ -119,8 +115,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 							{data && (
 								<>
 									<Typography sx={styles.desc}>
-										This is a Polyecho stem that has been uploaded through our platform and is
-										stored using NFT.storage.
+										This is a Polyecho stem that has been uploaded through our platform and is stored using NFT.storage.
 									</Typography>
 									<Box sx={styles.metadataWrap}>
 										<Typography sx={styles.metadata}>
@@ -148,16 +143,14 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 					</Box>
 				</Grid>
 				<Grid item xs={12} sm={4}>
-					<Box sx={styles.avWrap}>
-						<AudioVisual
-							audio={{
-								url: data?.audioUrl,
-								href: data?.audioHref,
-							}}
-							size={150}
-							onClick={handlePlayPause}
-						/>
-					</Box>
+					<AudioVisual
+						audio={{
+							url: data?.audioUrl,
+							href: data?.audioHref,
+						}}
+						size={150}
+						onClick={handlePlayPause}
+					/>
 				</Grid>
 			</Grid>
 			<Divider light sx={styles.divider} />
