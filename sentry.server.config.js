@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/nextjs';
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 Sentry.init({
-  dsn: SENTRY_DSN || 'https://81d3b27107a943f681c38bdfdb6110ba@o1264089.ingest.sentry.io/6446377',
+  dsn: SENTRY_DSN,
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1.0,
   // ...

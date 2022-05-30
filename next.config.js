@@ -13,6 +13,7 @@ const nextConfig = {
 		COVALENT_API_KEY: process.env.COVALENT_API_KEY,
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
+		SENTRY_DSN: process.env.SENTRY_DSN,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
