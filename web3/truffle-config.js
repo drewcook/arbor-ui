@@ -39,6 +39,7 @@ module.exports = {
 					providerOrUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
 				}),
 			network_id: 137,
+			gasPrice: 5000000000, // 50 gWei
 		},
 	},
 }
