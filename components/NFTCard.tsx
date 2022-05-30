@@ -5,6 +5,7 @@ import PolygonIcon from '../public/polygon_logo_black.png'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
+import AudioVisual from './AudioVisual'
 import styles from './NFTCard.styles'
 
 type NFTCardProps = {
@@ -19,15 +20,13 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 			<Card sx={styles.card} elevation={2}>
 				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
 				<CardContent>
-					<Box className="nft-card-media">
-						<ImageOptimized
-							src="/polyecho_logo_square.png"
-							alt="Polyecho Token Image"
-							width={400}
-							height={400}
-							title="Polyecho Token Image"
-						/>
-					</Box>
+					<AudioVisual
+						audio={{
+							url: details.audioUrl,
+							href: details.audioHref,
+						}}
+						size={230}
+					/>
 					<Typography variant="h5" gutterBottom>
 						{details.name ?? 'Project Name'}
 						<IconButton sx={styles.projectIconLink} color="secondary">

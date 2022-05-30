@@ -1,5 +1,5 @@
 import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import { Box, Divider, Fab, Typography } from '@mui/material'
+import { Box, Divider, Fab, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -8,10 +8,12 @@ import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { IStemDoc } from '../../models/stem.model'
+import AudioVisual from '../../components/AudioVisual'
 import formatDate from '../../utils/formatDate'
 import formatStemName from '../../utils/formatStemName'
 import { get } from '../../utils/http'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
+import { playAudioVisual } from '../../utils/frequencyUtils'
 
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
@@ -21,6 +23,8 @@ const propTypes = {
 		filename: PropTypes.string.isRequired,
 		filetype: PropTypes.string.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
+		audioHref: PropTypes.string.isRequired,
+		audioUrl: PropTypes.string.isRequired,
 	}),
 }
 
@@ -34,9 +38,13 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 
 	const onWavesInit = (idx: number, ws: any) => setWaves(ws)
 
-	const handlePlayPauseStems = () => {
+	const handlePlayPause = () => {
 		// Play or pause the stem audio from wavesurfer
-		if (waves) waves.playPause()
+		if (waves) {
+			waves.playPause()
+			waves.setVolume(0)
+		}
+		playAudioVisual(data?.audioHref)
 		// Toggle state
 		setIsPlaying(!isPlaying)
 	}
@@ -73,18 +81,20 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 			<Head>
 				<title>Polyecho | Stem Details</title>
 			</Head>
-			<Box sx={styles.headingWrap}>
-				<Box sx={styles.playWrap}>
-					<Fab
-						size="large"
-						onClick={handlePlayPauseStems}
-						/* @ts-ignore */
-						sx={styles.playBtn}
-						title={isPlaying ? 'Pause the stem' : 'Play the stem'}
-					>
-						{isPlaying ? <PauseRounded sx={styles.playIcon} /> : <PlayArrowRounded sx={styles.playIcon} />}
-					</Fab>
-					{/* <Fab
+			<Grid container spacing={4}>
+				<Grid item xs={12} sm={8}>
+					<Box sx={styles.headingWrap}>
+						<Box sx={styles.playWrap}>
+							<Fab
+								size="large"
+								onClick={handlePlayPause}
+								/* @ts-ignore */
+								sx={styles.playBtn}
+								title={isPlaying ? 'Pause the stem' : 'Play the stem'}
+							>
+								{isPlaying ? <PauseRounded sx={styles.playIcon} /> : <PlayArrowRounded sx={styles.playIcon} />}
+							</Fab>
+							{/* <Fab
 								size="large"
 								onClick={() => setIsLooping(!isLooping)}
 								// @ts-ignore
@@ -94,43 +104,55 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 							>
 								<Loop sx={styles.loopIcon} />
 							</Fab> */}
-				</Box>
-				<Box>
-					<Typography variant="body1" component="h3" sx={styles.eyebrow}>
-						Stem Details
-					</Typography>
-					<Typography variant="h4" component="h2" sx={styles.title}>
-						{data ? formatStemName(data.filename) : 'Polyecho Stem'}
-					</Typography>
-					{data && (
-						<>
-							<Typography sx={styles.desc}>
-								This is a Polyecho stem that has been uploaded through our platform and is stored using NFT.storage.
+						</Box>
+						<Box sx={styles.metadataWrap}>
+							<Typography variant="body1" component="h3" sx={styles.eyebrow}>
+								Stem Details
 							</Typography>
-							<Box sx={styles.metadataWrap}>
-								<Typography sx={styles.metadata}>
-									<Typography component="span" sx={styles.metadataKey}>
-										File Type:
+							<Typography variant="h4" component="h2" sx={styles.title}>
+								{data ? formatStemName(data.filename) : 'Polyecho Stem'}
+							</Typography>
+							{data && (
+								<>
+									<Typography sx={styles.desc}>
+										This is a Polyecho stem that has been uploaded through our platform and is stored using NFT.storage.
 									</Typography>
-									{data.filetype}
-								</Typography>
-								<Typography sx={styles.metadata}>
-									<Typography component="span" sx={styles.metadataKey}>
-										Stored At:
-									</Typography>
-									<Link href={data.metadataUrl}>View on IPFS</Link>
-								</Typography>
-								<Typography sx={styles.metadata}>
-									<Typography component="span" sx={styles.metadataKey}>
-										Created On:
-									</Typography>
-									{formatDate(data.createdAt)}
-								</Typography>
-							</Box>
-						</>
-					)}
-				</Box>
-			</Box>
+									<Box sx={styles.metadataWrap}>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												File Type:
+											</Typography>
+											{data.filetype}
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Stored At:
+											</Typography>
+											<Link href={data.metadataUrl}>View on IPFS</Link>
+										</Typography>
+										<Typography sx={styles.metadata}>
+											<Typography component="span" sx={styles.metadataKey}>
+												Created On:
+											</Typography>
+											{formatDate(data.createdAt)}
+										</Typography>
+									</Box>
+								</>
+							)}
+						</Box>
+					</Box>
+				</Grid>
+				<Grid item xs={12} sm={4}>
+					<AudioVisual
+						audio={{
+							url: data?.audioUrl,
+							href: data?.audioHref,
+						}}
+						size={150}
+						onClick={handlePlayPause}
+					/>
+				</Grid>
+			</Grid>
 			<Divider light sx={styles.divider} />
 			{data ? (
 				<StemPlayer

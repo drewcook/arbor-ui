@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import AppFooter from './AppFooter'
 import AppHeader from './AppHeader'
 import { Container } from '@mui/material'

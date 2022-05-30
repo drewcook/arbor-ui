@@ -246,6 +246,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 								onChange={e => setStemName(e.target.value)}
 								value={stemName}
 								sx={{ mb: 1 }}
+								disabled={disableUpload}
 							/>
 							<FormControl fullWidth sx={{ mb: 1 }}>
 								<InputLabel id="upload-stem-type-label">Stem Type</InputLabel>
@@ -256,6 +257,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 									label="Stem Type"
 									onChange={e => setStemType(e.target.value)}
 									placeholder="Hello"
+									disabled={disableUpload}
 								>
 									{stemTypes.map(type => (
 										<MenuItem key={type.key} value={type.key} sx={styles.listItem}>
