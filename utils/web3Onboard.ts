@@ -176,7 +176,7 @@ walletsSubscriber.subscribe(wallets => {
 const chainsSubscriber = web3Onboard.state.select('chains')
 chainsSubscriber.subscribe(chains => {
 	const connectedChains = chains.map(({ label }) => label)
-	console.log('Chain changed to', connectedChains)
+	console.log('Chain changed to', connectedChains[0])
 })
 
 export default web3Onboard

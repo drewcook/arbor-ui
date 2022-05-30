@@ -3,6 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
+import KardiaClient from 'kardia-js-sdk';
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
@@ -11,9 +12,10 @@ import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
+import { get } from '../../utils/http'
+import logger from '../../utils/logger'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
-import { get } from '../../utils/http'
 import styles from '../../styles/UserProfile.styles'
 
 const propTypes = {
@@ -67,6 +69,14 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 		}
 	}
 
+	const handleTestSDK = async () => {
+		// Account module
+		const kardiaClient = new KardiaClient({ endpoint: 'https://dev.kardiachain.io/' });
+		const contract = kardiaClient.contract
+		// Get balance
+		logger.cyan('contract', contract)
+	}
+
 	return (
 		<>
 			<Head>
@@ -95,8 +105,8 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 									</Typography>
 									{isCurrentUserDetails && (
 										<Box sx={styles.editProfileWrap}>
-											<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-												Edit Profile
+											<Button variant="outlined" color="secondary" onClick={handleTestSDK}>
+												Test JS SDK
 											</Button>
 										</Box>
 									)}
