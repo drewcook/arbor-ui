@@ -40,6 +40,24 @@ export const detailsStyles = {
 		backgroundColor: '#ff5200',
 		color: '#fff',
 	},
+	detailsWrap: {
+		display: 'flex',
+		alignItems: 'flex-start',
+		flexDirection: 'column',
+		'@media (min-width: 600px)': {
+			flexDirection: 'row',
+			alignItems: 'center',
+		},
+	},
+	avWrap: {
+		textAlign: 'center',
+		'@media (min-width: 600px)': {
+			mr: 3,
+		},
+	},
+	detailsMetaWrap: {
+		flexGrow: 1,
+	},
 	metadata: {
 		my: 2,
 	},

@@ -180,8 +180,29 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								</Box>
 							))}
 					</Box>
-					<Grid container spacing={4}>
-						<Grid item xs={12} md={5}>
+
+					<Box sx={styles.detailsWrap}>
+						<Box sx={styles.avWrap}>
+							<AudioVisual
+								audio={{
+									url: details.audioUrl || `ipfs://${details.audioHref.replace('https://nftstorage.link/ipfs/', '')}`,
+									href: details.audioHref,
+								}}
+								size={270}
+							/>
+							<Typography variant="caption">Click the image to play/pause the NFT</Typography>
+						</Box>
+						<Box sx={styles.detailsMetaWrap}>
+							<Typography sx={styles.metadata}>
+								<Typography component="span" sx={styles.metadataKey}>
+									ID:
+								</Typography>
+								<Link
+									href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
+								>
+									{details.token.id.toString()}
+								</Link>
+							</Typography>
 							<Typography sx={styles.metadata}>
 								<Typography component="span" sx={styles.metadataKey}>
 									Name:
@@ -208,16 +229,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 							</Typography>
 							<Typography sx={styles.metadata}>
 								<Typography component="span" sx={styles.metadataKey}>
-									ID:
-								</Typography>
-								<Link
-									href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
-								>
-									{details.token.id.toString()}
-								</Link>
-							</Typography>
-							<Typography sx={styles.metadata}>
-								<Typography component="span" sx={styles.metadataKey}>
 									Collection:{' '}
 								</Typography>
 								<Link href="https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
@@ -238,19 +249,8 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								</Typography>
 								<Link href={`/projects/${details.projectId}`}>{details.projectId}</Link>
 							</Typography>
-						</Grid>
-						<Grid item xs={12} md={7}>
-							<Box sx={styles.avWrap}>
-								<AudioVisual
-									audio={{
-										url: details.audioUrl || `ipfs://${details.audioHref.replace('https://nftstorage.link/ipfs/', '')}`,
-										href: details.audioHref,
-									}}
-									size={360}
-								/>
-							</Box>
-						</Grid>
-					</Grid>
+						</Box>
+					</Box>
 					<Divider light sx={styles.divider} />
 					<Typography variant="h4" gutterBottom>
 						Collaborators
