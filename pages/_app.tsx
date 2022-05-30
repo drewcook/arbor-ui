@@ -6,7 +6,7 @@ import { Web3Provider } from '../components/Web3Provider'
 import '../styles/globals.css'
 
 // Allow New Relic APM
-require('../lib/newrelic')
+require('../newrelic')
 
 function PolyechoApp({ Component, pageProps }: AppProps) {
 	return (
