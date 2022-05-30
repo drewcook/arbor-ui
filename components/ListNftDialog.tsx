@@ -172,10 +172,10 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 					{/* </DialogContentText> */}
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="info">
+					<Button onClick={handleClose} color="primary">
 						Cancel
 					</Button>
-					<Button onClick={handleList} variant="contained" color="info" disabled={loading}>
+					<Button onClick={handleList} variant="contained" color="primary" disabled={loading}>
 						{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Yes, List It'}
 					</Button>
 				</DialogActions>
@@ -189,10 +189,10 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 					</Typography>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="info" disabled={loading}>
+					<Button onClick={handleClose} color="primary" disabled={loading}>
 						Cancel
 					</Button>
-					<Button onClick={handleUnlist} variant="contained" color="info" disabled={loading}>
+					<Button onClick={handleUnlist} variant="contained" color="primary" disabled={loading}>
 						{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Yes, Unlist'}
 					</Button>
 				</DialogActions>

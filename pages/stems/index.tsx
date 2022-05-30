@@ -5,32 +5,7 @@ import PropTypes from 'prop-types'
 import StemCard from '../../components/StemCard'
 import type { IStemDoc } from '../../models/stem.model'
 import { get } from '../../utils/http'
-
-const styles = {
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 800,
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		mb: 2,
-	},
-	subtitle: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textAlign: 'center',
-		mb: 7,
-	},
-	noProjects: {
-		textAlign: 'center',
-	},
-	noProjectsMsg: {
-		fontSize: '1.5rem',
-		color: '#555',
-		mb: 3,
-	},
-}
+import { indexStyles as styles } from '../../styles/Stems.styles'
 
 const propTypes = {
 	data: PropTypes.arrayOf(

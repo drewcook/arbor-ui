@@ -8,35 +8,7 @@ import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
 import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
-
-const styles = {
-	title: {
-		textTransform: 'uppercase',
-		fontStyle: 'italic',
-		fontWeight: 800,
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		mb: 2,
-	},
-	subtitle: {
-		fontStyle: 'italic',
-		fontWeight: 300,
-		textAlign: 'center',
-		mb: 4,
-	},
-	text: {
-		textAlign: 'center',
-		mb: 2,
-		fontWeight: 300,
-		color: '#000',
-		fontSize: '1.1rem',
-	},
-	submitBtn: {
-		marginTop: 2,
-		color: '#fff',
-	},
-}
+import { newProjectStyles as styles } from '../../styles/Projects.styles'
 
 const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState<string>('')
