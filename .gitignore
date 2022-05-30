@@ -41,3 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 
 .sentryclirc
+
+# local scripts
+scripts/*.sh
