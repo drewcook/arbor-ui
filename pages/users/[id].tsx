@@ -3,7 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import KardiaClient from 'kardia-js-sdk';
+import KardiaClient from 'kardia-js-sdk'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'
@@ -71,7 +71,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 
 	const handleTestSDK = async () => {
 		// Account module
-		const kardiaClient = new KardiaClient({ endpoint: 'https://dev.kardiachain.io/' });
+		const kardiaClient = new KardiaClient({ endpoint: 'https://dev.kardiachain.io/' })
 		const contract = kardiaClient.contract
 		// Get balance
 		logger.cyan('contract', contract)
