@@ -24,7 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		const home = process.env.HOME ?? '/app' // Heroku's fs
 		fs.readdir(`${home}/public`, {}, (err, files) => {
 			console.log('PUBLIC DIR')
-			files.forEach(console.log)
+			console.log(files)
 		})
 		// use build static dir
 		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
