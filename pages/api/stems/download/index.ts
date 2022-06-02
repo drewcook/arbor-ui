@@ -22,6 +22,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	let zipDownloadsDir
 	if (process.env.NODE_ENV === 'production') {
 		const home = process.env.HOME ?? '/app' // Heroku's fs
+		fs.readdir(`${home}/public`, {}, (err, files) => {
+			console.log('PUBLIC DIR')
+			files.forEach(console.log)
+		})
 		// use build static dir
 		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
 		zipDownloadsDir = `${home}/public/tmp/exports/${projectId}`
