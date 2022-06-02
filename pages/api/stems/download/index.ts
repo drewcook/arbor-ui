@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	let baseDownloadsDir
 	let zipDownloadsDir
 	if (process.env.NODE_ENV === 'production') {
-		const home = process.env.HOME ?? '/app'
+		const home = process.env.HOME ?? '/app' // Heroku's fs
 		// use build static dir
 		baseDownloadsDir = `${home}/tmp/downloads/${projectId}`
 		zipDownloadsDir = `${home}/tmp/exports/${projectId}`
@@ -32,8 +32,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		// local dev, use public dir
 		baseDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/downloads/${projectId}`
 		zipDownloadsDir = path.resolve(__dirname, '../../../../../public/') + `/tmp/exports/${projectId}`
-		console.log({ baseDownloadsDir, zipDownloadsDir })
 	}
+
+	console.log({ baseDownloadsDir, zipDownloadsDir })
 
 	switch (method) {
 		case 'POST':

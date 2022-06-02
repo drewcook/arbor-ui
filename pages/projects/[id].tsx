@@ -160,10 +160,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setDownloadingMsg('')
 				setSuccessOpen(true)
 				setSuccessMsg(`Stem(s) downloaded succussfully`)
-				// Clean up the tmp directories and remove files after user saves them to disk, 30s later just in case
+				// Clean up the tmp directories and remove files after user saves them to disk
 				setTimeout(() => {
 					remove('/stems/download', { projectId })
-				}, 30000)
+				}, 300000) // 5 minutes
 			}
 		} catch (e: any) {
 			console.error(e.message)
