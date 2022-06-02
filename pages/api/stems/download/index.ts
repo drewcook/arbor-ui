@@ -23,8 +23,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (process.env.NODE_ENV === 'production') {
 		const home = process.env.HOME ?? '/app' // Heroku's fs
 		// use build static dir
-		baseDownloadsDir = `${home}/tmp/downloads/${projectId}`
-		zipDownloadsDir = `${home}/tmp/exports/${projectId}`
+		baseDownloadsDir = `${home}/public/tmp/downloads/${projectId}`
+		zipDownloadsDir = `${home}/public/tmp/exports/${projectId}`
 		logger.blue(
 			`NODE_ENV is ${process.env.NODE_ENV} - downloading into ${baseDownloadsDir} - zipping into ${zipDownloadsDir}`,
 		)

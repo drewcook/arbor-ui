@@ -141,7 +141,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// Create a temp anchor element to download from this url, then remove it
 				let downloadPath: string
 				if (process.env.NODE_ENV === 'production') {
-					downloadPath = '/' + res.data.split('app/').pop()
+					downloadPath = '/' + res.data.split('app/public/').pop()
 				} else {
 					downloadPath = '/' + res.data.split('public/').pop()
 				}
