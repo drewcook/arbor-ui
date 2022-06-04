@@ -4,56 +4,17 @@ import archiver from 'archiver'
 import logger from './logger'
 
 /**
- * Reads the data from an external URL as a stream, pipes it into a write stream that writes to a file on disk
- * @param url - The external URL to download data from, a Blob of File
- * @param downloadDir - The dirname in public/ to download to, which will be temporary to hold the files streamed in, then deleted after a user downloads them to the computer.
- * @param downloadPath - The downloads path to download the file to
- * @returns - Promise
+ * Given a stem URL, downloads and returns the binary data of the stem.
+ * @param stemURL - The URL of a stem to be downloaded.
+ * @returns Promise<Blob>
  */
-const downloadURL = async (url: string, downloadDir: string, downloadPath: string): Promise<string> => {
-	// TODO: Figure out how to check if file exists already in directory and re-use, fs.access is synchronous
+
+export const downloadStem = async (stemURL: string): Promise<Blob> => {
 	try {
-		// Delete directory and start fresh each time if exists
-		if (fs.existsSync(downloadDir)) fs.rmSync(downloadDir, { recursive: true })
-		fs.mkdirSync(downloadDir, { recursive: true })
-
-		// Create write stream
-		const writer = fs.createWriteStream(downloadPath)
-
-		// Create read stream with axios
-		const response = await axios({
-			url,
-			method: 'GET',
-			responseType: 'stream',
-		})
-
-		// Pipe read stream into the write stream
-		response.data.pipe(writer)
-
-		// Resolve when finished streaming, reject if any error
-		return new Promise((resolve, reject) => {
-			writer.on('finish', () => {
-				return resolve(downloadPath)
-			})
-			writer.on('error', reject)
-		})
-
-		// ====== FOR REFERENCE ONLY ======
-		// Alternatively, Use NFT.storage API to download
-		// const nftStorage = axios.create({
-		// 	baseURL: 'https://api.nft.storage',
-		// 	responseType: 'arraybuffer',
-		// 	headers: {
-		// 		authorization: `Bearer ${process.env.NFT_STORAGE_KEY}`,
-		// 	},
-		// })
-		// cid = cid.replace('ipfs://', '').split('/')[0]
-		// console.log({ cid })
-		// const response = await nftStorage.get(`/${cid}`)
-		// const buffer = Buffer.from(response.data, 'utf-8') // same as response.data
+		return await (await fetch(stemURL)).blob()
 	} catch (e: any) {
-		console.error('Error downloading URL', e)
-		return Promise.reject(e)
+		console.log(`Error downloading stem: ${e}`)
+		return Promise.reject()
 	}
 }
 
@@ -65,6 +26,7 @@ const downloadURL = async (url: string, downloadDir: string, downloadPath: strin
  */
 export const zipDirectory = (sourceDir: string, outDir: string, filename: string): Promise<string> => {
 	try {
+		// TODO: Noah - Rewrite this function to the data as binary / blobs files and not depend on filesystem
 		// Create archiver to compress with zlib
 		// A higher level will result in better compression, but will take longer to complete. A lower level will result in less compression, but will be much faster. Level 5 is a good balance.s
 		const archive = archiver('zip', { zlib: { level: 5 } })
@@ -119,4 +81,4 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 	}
 }
 
-export default downloadURL
+export default downloadStem
