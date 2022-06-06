@@ -137,7 +137,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 					await new Promise(r => setTimeout(r, 500))
 				}
 				files.forEach((data: Blob, filename: string) => {
-					zip.file(filename, data)
+					zip.file(filename + '.wav', data)
 				})
 				const content = await zip.generateAsync({ type: 'blob' })
 				// Notify success
@@ -189,9 +189,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				for (let i = 0; i < files.length; i++) {
+				for (let i = 0; i < files.size; i++) {
 					formData.append(`files`, files[i])
 				}
+				files.forEach(data => formData.append(`files`, data))
 				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
 				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
