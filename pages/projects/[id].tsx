@@ -27,6 +27,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { Fragment, useState } from 'react'
+import { saveAs } from 'file-saver'
+import JSZip from 'jszip'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
@@ -39,6 +41,7 @@ import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
 import { get, post, remove } from '../../utils/http'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
+import arDZ from 'date-fns/esm/locale/ar-DZ/index.js'
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
 const propTypes = {
@@ -62,7 +65,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	// Project details
 	const [details, setDetails] = useState(data)
-	const [files, setFiles] = useState<Array<Blob>>([])
+	const [files, setFiles] = useState<Map<string, Blob>>(new Map())
 
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -129,23 +132,19 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
 				const stemData = data?.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
-				console.log('Stem data:')
-				console.log(stemData)
-				// Noah - this should respond with the zip as response content 
-				// Mime type of:
-				// .zip    application/zip, application/octet-stream, application/x-zip-compressed, multipart/x-zip
-				const res = await post(`/stems/download`, {
-				projectId,
-				stemData,
+				const zip = new JSZip()
+				while (stemData.length != files.size) {
+					await new Promise(r => setTimeout(r, 500))
+				}
+				files.forEach((data: Blob, filename: string) => {
+					zip.file(filename, data)
 				})
-				if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+				const content = await zip.generateAsync({ type: 'blob' })
 				// Notify success
 				if (!downloading) setDownloading(true)
-
-
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 				// After the stems zip is downloaded, we should prompt the user to chose a save file location
-
+				saveAs(content, 'stems.zip')
 				setDownloading(false)
 				setDownloadingMsg('')
 				setSuccessOpen(true)
@@ -175,12 +174,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		handleUploadStemClose()
 	}
 
-	const onNewFile = (newFile: Blob) => {
-		if (!files) {
-			setFiles(() => [newFile])
-		} else {
-			setFiles(files => [...files, newFile])
-		}
+	const onNewFile = (filename: string, newFile: Blob) => {
+		setFiles(files => new Map(files.set(filename, newFile)))
 	}
 
 	// TODO: Keep track of minted versions and how many mints a project has undergone
@@ -522,6 +517,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const projectId = context.query.id
 	const res = await get(`/projects/${projectId}`)
 	const data: IProjectDoc | null = res.success ? res.data : null
+
 	return {
 		props: {
 			data,

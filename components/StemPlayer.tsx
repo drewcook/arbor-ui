@@ -18,7 +18,7 @@ type StemPlayerProps = {
 	onSolo?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: () => any
-	onNewFile?: (newFile: Blob) => void
+	onNewFile?: (newFileName: string, newFile: Blob) => void
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
@@ -28,7 +28,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 	const [blob, setBlob] = useState<Blob>()
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
-
 	useEffect(() => {
 		if (!blob) {
 			if (!loadingBlob) {
@@ -36,7 +35,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				fetch(details.audioHref).then(resp => {
 					resp.blob().then(b => {
 						setBlob(b)
-						if (onNewFile) onNewFile(b)
+						if (onNewFile) onNewFile(details.name, b)
 					})
 				})
 				setLoadingBlob(false)
