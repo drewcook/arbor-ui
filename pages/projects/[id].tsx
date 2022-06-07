@@ -143,7 +143,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				if (!downloading) setDownloading(true)
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 				// After the stems zip is downloaded, prompt the user to chose a save file location
-				saveAs(content, 'stems.zip')
+				saveAs(content, `PEStems_${details.name}_${Date.now()}.zip`)
 				setDownloading(false)
 				setDownloadingMsg('')
 				setSuccessOpen(true)
@@ -400,7 +400,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						</Box>
 						<Box>
 							{/* @ts-ignore */}
-							<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
+							<Button
+								sx={styles.exportStemsBtn}
+								onClick={handleDownloadAll}
+								endIcon={<Download />}
+								disabled={data?.stems.length !== files.size}
+							>
 								Export Stems
 							</Button>
 						</Box>
