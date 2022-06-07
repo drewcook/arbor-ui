@@ -142,13 +142,13 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// Notify success
 				if (!downloading) setDownloading(true)
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
-				// After the stems zip is downloaded, we should prompt the user to chose a save file location
+				// After the stems zip is downloaded, prompt the user to chose a save file location
 				saveAs(content, 'stems.zip')
 				setDownloading(false)
 				setDownloadingMsg('')
 				setSuccessOpen(true)
+				// TODO: Await until they confirm the selection from the saveAs window
 				setSuccessMsg(`Stem(s) downloaded succussfully`)
-				// Clean up the tmp directories and remove files after user saves them to disk, 30s later just in case
 			}
 		} catch (e: any) {
 			console.error(e.message)
