@@ -27,6 +27,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { Fragment, useState } from 'react'
+import { saveAs } from 'file-saver'
+import JSZip from 'jszip'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
@@ -37,9 +39,8 @@ import { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import formatAddress from '../../utils/formatAddress'
-import { get, post, remove } from '../../utils/http'
+import { get, post } from '../../utils/http'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
-
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
 const propTypes = {
@@ -63,7 +64,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 	const { data, projectId } = props
 	// Project details
 	const [details, setDetails] = useState(data)
-	const [files, setFiles] = useState<Array<Blob>>([])
+	const [files, setFiles] = useState<Map<string, Blob>>(new Map())
 
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -130,40 +131,24 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			if (details) {
 				const stemData = data?.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
-				const res = await post(`/stems/download`, {
-					projectId,
-					stemData,
+				const zip = new JSZip()
+				while (stemData.length != files.size) {
+					await new Promise(r => setTimeout(r, 500))
+				}
+				files.forEach((data: Blob, filename: string) => {
+					zip.file(filename + '.wav', data)
 				})
-				if (!res.success) throw new Error(`Failed to download stem - ${res.error}`)
+				const content = await zip.generateAsync({ type: 'blob' })
 				// Notify success
 				if (!downloading) setDownloading(true)
 				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
-				// Create a temp anchor element to download from this url, then remove it
-				let downloadPath: string
-				if (process.env.NODE_ENV === 'production') {
-					downloadPath = '/' + res.data.split('app/public/').pop()
-				} else {
-					downloadPath = '/' + res.data.split('public/').pop()
-				}
-				// window.open(downloadPath, '_blank')
-				const anchor = document.createElement('a')
-				anchor.style.display = 'none'
-				anchor.href = downloadPath
-				// Give it a good name for local downloading
-				anchor.download = `PEStems_${details.name}_${Date.now()}.zip`
-				console.log('clicking download link', anchor)
-				document.body.appendChild(anchor)
-				anchor.click()
-				document.body.removeChild(anchor)
-				// Completed saving them
+				// After the stems zip is downloaded, prompt the user to chose a save file location
+				saveAs(content, `PEStems_${details.name}_${Date.now()}.zip`)
 				setDownloading(false)
 				setDownloadingMsg('')
 				setSuccessOpen(true)
+				// TODO: Await until they confirm the selection from the saveAs window
 				setSuccessMsg(`Stem(s) downloaded succussfully`)
-				// Clean up the tmp directories and remove files after user saves them to disk
-				setTimeout(() => {
-					remove('/stems/download', { projectId })
-				}, 300000) // 5 minutes
 			}
 		} catch (e: any) {
 			console.error(e.message)
@@ -188,12 +173,8 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		handleUploadStemClose()
 	}
 
-	const onNewFile = (newFile: Blob) => {
-		if (!files) {
-			setFiles(() => [newFile])
-		} else {
-			setFiles(files => [...files, newFile])
-		}
+	const onNewFile = (filename: string, newFile: Blob) => {
+		setFiles(files => new Map(files.set(filename, newFile)))
 	}
 
 	// TODO: Keep track of minted versions and how many mints a project has undergone
@@ -207,9 +188,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				for (let i = 0; i < files.length; i++) {
+				for (let i = 0; i < files.size; i++) {
 					formData.append(`files`, files[i])
 				}
+				files.forEach(data => formData.append(`files`, data))
 				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
 				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
@@ -418,7 +400,12 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 						</Box>
 						<Box>
 							{/* @ts-ignore */}
-							<Button sx={styles.exportStemsBtn} onClick={handleDownloadAll} endIcon={<Download />}>
+							<Button
+								sx={styles.exportStemsBtn}
+								onClick={handleDownloadAll}
+								endIcon={<Download />}
+								disabled={data?.stems.length !== files.size}
+							>
 								Export Stems
 							</Button>
 						</Box>
@@ -535,6 +522,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const projectId = context.query.id
 	const res = await get(`/projects/${projectId}`)
 	const data: IProjectDoc | null = res.success ? res.data : null
+
 	return {
 		props: {
 			data,
