@@ -32,7 +32,7 @@ const AppHeader = (): JSX.Element => {
 						{/* @ts-ignore */}
 						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
 							Polyecho
-							<Chip label="Staging" size="small" color="secondary" sx={styles.alphaChip} />
+							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 						</Typography>
 					</Link>
 
