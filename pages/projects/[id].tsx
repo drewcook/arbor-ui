@@ -141,7 +141,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				// Create a temp anchor element to download from this url, then remove it
 				let downloadPath: string
 				if (process.env.NODE_ENV === 'production') {
-					downloadPath = '/' + res.data.split('app/').pop()
+					downloadPath = '/' + res.data.split('app/public/').pop()
 				} else {
 					downloadPath = '/' + res.data.split('public/').pop()
 				}
@@ -160,10 +160,10 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 				setDownloadingMsg('')
 				setSuccessOpen(true)
 				setSuccessMsg(`Stem(s) downloaded succussfully`)
-				// Clean up the tmp directories and remove files after user saves them to disk, 30s later just in case
+				// Clean up the tmp directories and remove files after user saves them to disk
 				setTimeout(() => {
 					remove('/stems/download', { projectId })
-				}, 30000)
+				}, 300000) // 5 minutes
 			}
 		} catch (e: any) {
 			console.error(e.message)

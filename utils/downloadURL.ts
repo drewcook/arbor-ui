@@ -101,6 +101,14 @@ export const zipDirectory = (sourceDir: string, outDir: string, filename: string
 			})
 			writer.on('close', () => {
 				console.log(`File downloaded. Total of ${archive.pointer()} bytes transferred.`)
+				fs.readdir(`/app/public`, {}, (err, files) => {
+					console.log('PUBLIC DIR')
+					console.log(files)
+				})
+				fs.readdir(`/app/public/tmp`, {}, (err, files) => {
+					console.log('PUBLIC TMP DIR')
+					console.log(files)
+				})
 				fs.readdir(sourceDir, {}, (err, files) => {
 					console.log('SOURCE DIR')
 					files.forEach(console.log)
