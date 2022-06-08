@@ -182,19 +182,18 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 		try {
 			if (details && currentUser) {
 				setMinting(true)
-
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				for (let i = 0; i < files.size; i++) {
-					formData.append(`files`, files[i])
-				}
-				files.forEach(data => formData.append(`files`, data))
-				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				files.forEach((data: Blob, filename: string) => {
+					formData.append('files', data)
+				})
+
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
 				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
+				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
 				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
 					method: 'POST',
 					body: formData,
