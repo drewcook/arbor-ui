@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
-import CovalentInsights from '../../components/CovalentInsights'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
@@ -19,10 +18,6 @@ import { get, update } from '../../utils/http'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 
 const propTypes = {
-	covalentData: PropTypes.shape({
-		txData: PropTypes.shape({}),
-		metaData: PropTypes.shape({}),
-	}).isRequired,
 	data: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		token: PropTypes.shape({
@@ -55,7 +50,7 @@ const propTypes = {
 type NftDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
-	const { covalentData, data } = props
+	const { data } = props
 	const [details, setDetails] = useState<any>(data)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -287,19 +282,6 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					Sorry, no details were found for this NFT.
 				</Typography>
 			)}
-			<Divider light sx={styles.divider} />
-			{covalentData && (
-				<Grid container spacing={3}>
-					<Grid item xs={12} sm={6} md={7}>
-						{/* @ts-ignore */}
-						<CovalentInsights metaData={covalentData.metaData} />
-					</Grid>
-					<Grid item xs={12} sm={6} md={5}>
-						{/* @ts-ignore */}
-						<CovalentInsights txData={covalentData.txData} />
-					</Grid>
-				</Grid>
-			)}
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
 			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
@@ -318,52 +300,8 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const res = await get(`/nfts/${nftId}`)
 	const data: any | null = res.success ? res.data : null
 
-	// Get data via Covalent API per network for token collection address
-	// TODO: Get current network id and do lookup in hashmap
-
-	// Rinkeby
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-	// const chainId = 4
-
-	// Kovan
-	// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-	// const chainId = 42
-
-	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	// const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	// const chainId = 80001
-
-	// Kardiachain Main - https://explorer.kardiachain.io/address/
-	// const contractAddress = ''
-	// const chainId = 24
-
-	// Kardiachain Testnet - https://explorer-dev.kardiachain.io/address/0x39996f35a16578b05A6bb86519451851e4473cC2
-	const contractAddress = '0x39996f35a16578b05A6bb86519451851e4473cC2'
-	const chainId = 242
-
-	// TODO: Use the explorer or another api to get data
-	const txData = null
-	const metaData = null
-	// if (data && data.token.id !== null) {
-	// Txs
-	// const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-	// const txRes = await fetch(txUrl)
-	// const txJson = txRes.ok ? await txRes.json() : null
-	// txData = txJson.data
-
-	// // Metadata
-	// const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-	// const metaRes = await fetch(metaUrl)
-	// const metaJson = metaRes.ok ? await metaRes.json() : null
-	// metaData = metaJson.data
-	// }
-
 	return {
 		props: {
-			covalentData: {
-				txData,
-				metaData,
-			},
 			data,
 		},
 	}

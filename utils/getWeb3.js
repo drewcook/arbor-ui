@@ -4,7 +4,7 @@ import Web3 from 'web3'
 const getWeb3 = async () => {
 	const provider = await detectEthereumProvider()
 
-	// First, check for use of Kardiachain wallet extension
+	// First, check for use of KardiaChain wallet extension
 	if (window.kardiachain) {
 		await window.kardiachain.enable()
 		const web3 = new Web3(window.kardiachain)

@@ -25,7 +25,7 @@ type Web3ProviderProps = {
 	children: ReactNode
 }
 
-// Supported network: Kardiachain Testnet
+// Supported network: KardiaChain Testnet
 // Onboard takes hexadecimal values
 const PREFERRED_NETWORK_ID = '0xF2'
 
