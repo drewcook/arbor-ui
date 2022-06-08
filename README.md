@@ -2,7 +2,7 @@
 
 Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
-**LIVE DEMO**: <https://polyecho.xyz>
+**LIVE DEMO**: <https://kc.polyecho.xyz>
 
 ---
 
