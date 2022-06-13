@@ -42,5 +42,5 @@ yarn-error.log*
 
 .sentryclirc
 
-# local scripts
-scripts/*.sh
+# specific local scripts
+scripts/connectToAPM.sh
