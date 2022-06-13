@@ -2,8 +2,8 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { AppBar, Box, Button, Chip, Container, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useState } from 'react'
-import ConnectedAccount from './ConnectedAccount'
 import styles from './AppHeader.styles'
+import ConnectedAccount from './ConnectedAccount'
 
 const pages = [
 	{ href: '/projects/new', title: 'Create' },

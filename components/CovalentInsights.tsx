@@ -1,11 +1,11 @@
+import { ArrowForwardIos } from '@mui/icons-material'
 import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
+import web3 from 'web3'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import prettyPrintJson from '../utils/prettyPrintJson'
-import web3 from 'web3'
-import { ArrowForwardIos } from '@mui/icons-material'
 import styles from './CovalentInsights.styles'
 
 const propTypes = {

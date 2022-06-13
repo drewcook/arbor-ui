@@ -1,5 +1,5 @@
-import { Avatar, Box, Button, Chip, CircularProgress, Divider, Grid, Typography } from '@mui/material'
 import { Person } from '@mui/icons-material'
+import { Avatar, Box, Button, Chip, CircularProgress, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -13,10 +13,10 @@ import Notification from '../../components/Notification'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import PolygonIcon from '../../public/polygon_logo_black.png'
+import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get, update } from '../../utils/http'
-import { detailsStyles as styles } from '../../styles/NFTs.styles'
 
 const propTypes = {
 	covalentData: PropTypes.shape({

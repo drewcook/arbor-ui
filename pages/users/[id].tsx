@@ -11,10 +11,10 @@ import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
+import styles from '../../styles/UserProfile.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get } from '../../utils/http'
-import styles from '../../styles/UserProfile.styles'
 
 const propTypes = {
 	data: PropTypes.shape({

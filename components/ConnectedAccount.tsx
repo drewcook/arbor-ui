@@ -2,8 +2,8 @@ import { Avatar, Box, Button, IconButton, Menu, MenuItem, Typography } from '@mu
 import Link from 'next/link'
 import { useState } from 'react'
 import formatAddress from '../utils/formatAddress'
-import { useWeb3 } from './Web3Provider'
 import styles from './ConnectedAccount.styles'
+import { useWeb3 } from './Web3Provider'
 
 const ConnectedAccount = (): JSX.Element => {
 	const [anchorEl, setAnchorEl] = useState(null)

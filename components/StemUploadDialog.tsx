@@ -26,8 +26,8 @@ import { post, update } from '../utils/http'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
 import StemDropzone from './StemDropzone'
-import { useWeb3 } from './Web3Provider'
 import styles from './StemUploadDialog.styles'
+import { useWeb3 } from './Web3Provider'
 
 const stemTypes = [
 	{

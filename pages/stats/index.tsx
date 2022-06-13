@@ -1,9 +1,9 @@
-import type { GetServerSideProps, NextPage } from 'next'
 import { Container, Divider, Typography } from '@mui/material'
-import CovalentInsights from '../../components/CovalentInsights'
-import PropTypes from 'prop-types'
+import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import PropTypes from 'prop-types'
+import CovalentInsights from '../../components/CovalentInsights'
 import styles from '../../styles/Stats.styles'
 
 const propTypes = {

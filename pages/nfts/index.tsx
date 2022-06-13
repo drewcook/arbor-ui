@@ -4,8 +4,8 @@ import Head from 'next/head'
 import PropTypes from 'prop-types'
 import NFTCard from '../../components/NFTCard'
 import type { INftDoc } from '../../models/nft.model'
-import { get } from '../../utils/http'
 import { indexStyles as styles } from '../../styles/Stems.styles'
+import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.arrayOf(

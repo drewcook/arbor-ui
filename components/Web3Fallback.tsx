@@ -10,6 +10,8 @@ import {
 	ListItemText,
 	Typography,
 } from '@mui/material'
+import NextLink from 'next/link'
+import PropTypes from 'prop-types'
 import CoinbaseIcon from '../public/coinbasewallet_icon.png'
 import EthereumIcon from '../public/ethereum_icon.png'
 import MetaMaskIcon from '../public/metamask_icon.png'
@@ -17,8 +19,6 @@ import PortisIcon from '../public/portis_icon.png'
 import TallyIcon from '../public/tally_icon.svg'
 import TorusIcon from '../public/torus_icon.svg'
 import ImageOptimized from './ImageOptimized'
-import NextLink from 'next/link'
-import PropTypes from 'prop-types'
 import styles from './Web3Fallback.styles'
 
 const Web3Fallback = ({ onBtnClick }): JSX.Element => (

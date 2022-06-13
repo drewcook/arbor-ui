@@ -1,5 +1,5 @@
-import type { NFTStorage } from 'nft.storage'
 import type { OnboardAPI, WalletState } from '@web3-onboard/core'
+import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
 import NFTContract from '../contracts/PolyechoNFT.json'
