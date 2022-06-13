@@ -31,6 +31,7 @@ const propTypes = {
 
 type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
+// TODO: Show projects that a user has also collaborated on, not just ones they've created
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
 	const [details, setDetails] = useState<any | null>(null)
@@ -150,9 +151,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						</Typography>
 					</Typography>
 					<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
-					<Typography sx={styles.sectionMeta}>
-						<strong>TODO:</strong> Show projects that a user has collaborated on as well
-					</Typography>
 					<Grid container spacing={4}>
 						{details.projects.length > 0 ? (
 							details.projects.map((project: IProjectDoc) => (
