@@ -403,7 +403,7 @@ const ProjectPage: NextPage<ProjectPageProps> = props => {
 								sx={styles.exportStemsBtn}
 								onClick={handleDownloadAll}
 								endIcon={<Download />}
-								disabled={data?.stems.length !== files.size}
+								disabled={data?.stems.length !== files.size || data?.stems.length === 0}
 							>
 								Export Stems
 							</Button>
