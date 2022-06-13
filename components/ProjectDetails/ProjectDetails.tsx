@@ -1,4 +1,3 @@
-import { IProjectDoc } from '../../models/project.model'
 import {
 	AddCircleOutline,
 	Download,
@@ -6,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square,
+	Square
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -18,37 +17,40 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography,
+	Typography
 } from '@mui/material'
+import { saveAs } from 'file-saver'
+import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
-import { saveAs } from 'file-saver'
-import JSZip from 'jszip'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
+import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import PolygonIcon from '../../public/polygon_logo_black.png'
+import { detailsStyles as styles } from '../../styles/Projects.styles'
 import formatAddress from '../../utils/formatAddress'
 import { post } from '../../utils/http'
-import { detailsStyles as styles } from '../../styles/Projects.styles'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 
 type ProjectDetailsProps = {
-	data: IProjectDoc
+	details: IProjectDoc
+	uploadStemOpen: boolean
+	handleUploadStemOpen: () => void
+	handleUploadStemClose: () => void
+	onStemUploadSuccess: (project: IProjectDoc) => void
 }
 
 const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
-	// Details state
-	const { data } = props
-	const [details, setDetails] = useState<IProjectDoc>(data)
+	const { details, handleUploadStemOpen, handleUploadStemClose, uploadStemOpen, onStemUploadSuccess } = props
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -62,7 +64,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [mintingMsg, setMintingMsg] = useState<string>('')
 	// Stems
 	const [files, setFiles] = useState<Map<string, Blob>>(new Map())
-	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
 	// Play/Pause
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
@@ -115,48 +116,30 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 		try {
 			setDownloading(true)
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
-			if (details) {
-				const stemData = data?.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
-				const zip = new JSZip()
-				while (stemData.length != files.size) {
-					await new Promise(r => setTimeout(r, 500))
-				}
-				files.forEach((data: Blob, filename: string) => {
-					zip.file(filename + '.wav', data)
-				})
-				const content = await zip.generateAsync({ type: 'blob' })
-				// Notify success
-				if (!downloading) setDownloading(true)
-				setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
-				// After the stems zip is downloaded, prompt the user to chose a save file location
-				saveAs(content, `PEStems_${details.name}_${Date.now()}.zip`)
-				setDownloading(false)
-				setDownloadingMsg('')
-				setSuccessOpen(true)
-				// TODO: Await until they confirm the selection from the saveAs window
-				setSuccessMsg(`Stem(s) downloaded succussfully`)
+			const stemData = details.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
+			const zip = new JSZip()
+			while (stemData.length != files.size) {
+				await new Promise(r => setTimeout(r, 500))
 			}
+			files.forEach((data: Blob, filename: string) => {
+				zip.file(filename + '.wav', data)
+			})
+			const content = await zip.generateAsync({ type: 'blob' })
+			// Notify success
+			if (!downloading) setDownloading(true)
+			setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
+			// After the stems zip is downloaded, prompt the user to chose a save file location
+			saveAs(content, `PEStems_${details.name}_${Date.now()}.zip`)
+			setDownloading(false)
+			setDownloadingMsg('')
+			setSuccessOpen(true)
+			// TODO: Await until they confirm the selection from the saveAs window
+			setSuccessMsg(`Stem(s) downloaded succussfully`)
 		} catch (e: any) {
 			console.error(e.message)
 			setErrorOpen(true)
 			setErrorMsg('Failed to download all stems')
 		}
-	}
-
-	const handleUploadStemOpen = () => {
-		setUploadStemOpen(true)
-	}
-
-	const handleUploadStemClose = () => {
-		setUploadStemOpen(false)
-	}
-
-	const onStemUploadSuccess = (projectData: IProjectDoc) => {
-		// Refresh UI
-		setDetails(projectData)
-		setSuccessOpen(true)
-		setSuccessMsg("Success! You've uploaded a new stem to this project and become a contributor.")
-		handleUploadStemClose()
 	}
 
 	const onNewFile = (filename: string, newFile: Blob) => {
@@ -385,7 +368,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						sx={styles.exportStemsBtn}
 						onClick={handleDownloadAll}
 						endIcon={<Download />}
-						disabled={data?.stems.length !== files.size}
+						disabled={details.stems.length !== files.size}
 					>
 						Export Stems
 					</Button>
