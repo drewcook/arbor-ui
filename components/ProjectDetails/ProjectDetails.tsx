@@ -368,7 +368,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						sx={styles.exportStemsBtn}
 						onClick={handleDownloadAll}
 						endIcon={<Download />}
-						disabled={details.stems.length !== files.size}
+						disabled={details.stems.length !== files.size || details.stems.length === 0}
 					>
 						Export Stems
 					</Button>
