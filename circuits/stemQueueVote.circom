@@ -3,8 +3,8 @@ pragma circom 2.0.0;
 include "../node_modules/circomlib/circuits/comparators.circom";
 
 template StemQueueVote() {
-    signal input voterAddress;
-    signal input projectContributorAddresses;
+    signal input voter;
+    signal input contributors;
 		signal input stemId;
 		signal input queuedStemIds;
 		signal output isValidVote;
