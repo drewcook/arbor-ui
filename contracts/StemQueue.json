@@ -1,0 +1,356 @@
+{
+  "contractName": "StemQueue",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.1+commit.df193b15\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/StemQueue.sol\":\"StemQueue\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/StemQueue.sol\":{\"keccak256\":\"0xde827c446f63835f4aaa7c8a82ffd56cbb2e449b295ea2a2a568c12c84f913be\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c7e98b6ffea43845194f6751099332c29d9cb61a16a1984b49cb82b0ff81c8b8\",\"dweb:/ipfs/QmYDk9G5RZXTTVzi9yMTxCzaYfNebw6pqNmZ4tDYSvDByb\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220cfaec621d3048de3fb9640a12bd1a53aa1b6e567ac9aa93402e63c3dd255336164736f6c63430008010033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220cfaec621d3048de3fb9640a12bd1a53aa1b6e567ac9aa93402e63c3dd255336164736f6c63430008010033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "248:376:13:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "248:376:13:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.8.0;\n\n// TODO: this should be the proof generated from ZK\ninterface Proof {}\n\n\t// TODO: this should extend another implementation, likely the SparseMerkleTree from zk-kit\ncontract MerkleTree {}\n\n\ncontract StemQueue {\n\n\t// Mapping of project IDs to their Merkle trees which represent the state of stems in the queue and votes tallied against them\n  mapping(uint256 => MerkleTree) projectStemQueues;\n\n\tfunction castVote(Proof _validityProof, uint256 _projectId, uint256 _stemId, uint256 _userKey) internal returns (uint) {\n\t\t// TODO: flesh this function out\n\t\treturn 1;\n\t}\n}\n",
+  "sourcePath": "/Users/shaula/Documents/repos/polyecho-web/web3/contracts/StemQueue.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/StemQueue.sol",
+    "exportedSymbols": {
+      "MerkleTree": [
+        2534
+      ],
+      "Proof": [
+        2533
+      ],
+      "StemQueue": [
+        2557
+      ]
+    },
+    "id": 2558,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2532,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:24:13"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": true,
+        "id": 2533,
+        "linearizedBaseContracts": [
+          2533
+        ],
+        "name": "Proof",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 2558,
+        "src": "110:18:13"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 2534,
+        "linearizedBaseContracts": [
+          2534
+        ],
+        "name": "MerkleTree",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 2558,
+        "src": "223:22:13"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 2557,
+        "linearizedBaseContracts": [
+          2557
+        ],
+        "name": "StemQueue",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 2539,
+            "mutability": "mutable",
+            "name": "projectStemQueues",
+            "nodeType": "VariableDeclaration",
+            "scope": 2557,
+            "src": "400:48:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_contract$_MerkleTree_$2534_$",
+              "typeString": "mapping(uint256 => contract MerkleTree)"
+            },
+            "typeName": {
+              "id": 2538,
+              "keyType": {
+                "id": 2535,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "408:7:13",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "400:30:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_contract$_MerkleTree_$2534_$",
+                "typeString": "mapping(uint256 => contract MerkleTree)"
+              },
+              "valueType": {
+                "id": 2537,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 2536,
+                  "name": "MerkleTree",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 2534,
+                  "src": "419:10:13"
+                },
+                "referencedDeclaration": 2534,
+                "src": "419:10:13",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_contract$_MerkleTree_$2534",
+                  "typeString": "contract MerkleTree"
+                }
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2555,
+              "nodeType": "Block",
+              "src": "571:51:13",
+              "statements": [
+                {
+                  "expression": {
+                    "hexValue": "31",
+                    "id": 2553,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "617:1:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_1_by_1",
+                      "typeString": "int_const 1"
+                    },
+                    "value": "1"
+                  },
+                  "functionReturnParameters": 2552,
+                  "id": 2554,
+                  "nodeType": "Return",
+                  "src": "610:8:13"
+                }
+              ]
+            },
+            "id": 2556,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "castVote",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2549,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2542,
+                  "mutability": "mutable",
+                  "name": "_validityProof",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2556,
+                  "src": "470:20:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_Proof_$2533",
+                    "typeString": "contract Proof"
+                  },
+                  "typeName": {
+                    "id": 2541,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 2540,
+                      "name": "Proof",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 2533,
+                      "src": "470:5:13"
+                    },
+                    "referencedDeclaration": 2533,
+                    "src": "470:5:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Proof_$2533",
+                      "typeString": "contract Proof"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2544,
+                  "mutability": "mutable",
+                  "name": "_projectId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2556,
+                  "src": "492:18:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2543,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "492:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2546,
+                  "mutability": "mutable",
+                  "name": "_stemId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2556,
+                  "src": "512:15:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2545,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "512:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2548,
+                  "mutability": "mutable",
+                  "name": "_userKey",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2556,
+                  "src": "529:16:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2547,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "529:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "469:77:13"
+            },
+            "returnParameters": {
+              "id": 2552,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2551,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2556,
+                  "src": "565:4:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2550,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "565:4:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "564:6:13"
+            },
+            "scope": 2557,
+            "src": "452:170:13",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 2558,
+        "src": "248:376:13"
+      }
+    ],
+    "src": "32:593:13"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.1+commit.df193b15.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2022-06-14T04:46:00.243Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

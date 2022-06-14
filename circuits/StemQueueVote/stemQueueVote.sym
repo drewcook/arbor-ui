@@ -1,5 +1,5 @@
 1,1,0,main.isValidVote
-2,-1,0,main.voterAddress
-3,-1,0,main.projectContributorAddresses
+2,-1,0,main.voter
+3,-1,0,main.contributors
 4,-1,0,main.stemId
 5,-1,0,main.queuedStemIds

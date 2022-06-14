@@ -75,10 +75,8 @@ const web3Onboard = Onboard({
 							'Connecting your wallet is like “logging in” to Web3. Select your wallet from the options to get started.',
 					},
 					recommendedWalletsPart1: 'Polyecho only supports',
-					recommendedWalletsPart2:
-						'on this platform. Please use or install one of the supported wallets to continue',
-					installWallet:
-						'You do not have any wallets installed that Polyecho supports, please use a supported wallet',
+					recommendedWalletsPart2: 'on this platform. Please use or install one of the supported wallets to continue',
+					installWallet: 'You do not have any wallets installed that Polyecho supports, please use a supported wallet',
 					agreement: {
 						agree: 'I agree to the',
 						terms: 'Terms & Conditions',
@@ -87,12 +85,10 @@ const web3Onboard = Onboard({
 					},
 				},
 				connectingWallet: {
-					header:
-						'{connectionRejected, select, false {Connecting to {wallet}...} other {Connection Rejected}}',
+					header: '{connectionRejected, select, false {Connecting to {wallet}...} other {Connection Rejected}}',
 					sidebar: {
 						subheading: 'Approve Connection',
-						paragraph:
-							'Please approve the connection in your wallet and authorize access to continue.',
+						paragraph: 'Please approve the connection in your wallet and authorize access to continue.',
 					},
 					mainText: 'Connecting...',
 					paragraph: 'Make sure to select all accounts that you want to grant access to.',
@@ -118,8 +114,7 @@ const web3Onboard = Onboard({
 				},
 				switchChain: {
 					heading: 'Switch Chain',
-					paragraph1:
-						'Polyecho requires that you switch your wallet to the {nextNetworkName} network to continue.',
+					paragraph1: 'Polyecho requires that you switch your wallet to the {nextNetworkName} network to continue.',
 					paragraph2:
 						'*Some wallets may not support changing networks. If you can not change networks in your wallet you may consider switching to a different wallet.',
 				},

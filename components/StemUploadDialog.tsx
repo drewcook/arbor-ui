@@ -19,9 +19,9 @@ import {
 	Toolbar,
 	Typography,
 } from '@mui/material'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 import logoBinary from '../lib/logoBinary'
+import type { IProjectDoc } from '../models/project.model'
 import { post, update } from '../utils/http'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
@@ -67,17 +67,13 @@ const stemTypes = [
 	},
 ]
 
-const propTypes = {
-	open: PropTypes.bool.isRequired,
-	onClose: PropTypes.func.isRequired,
-	onSuccess: PropTypes.func.isRequired,
-	projectDetails: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
-		collaborators: PropTypes.array.isRequired,
-	}),
+type StemUploadDialogProps = {
+	// PropTypes.InferProps<typeof propTypes>
+	open: boolean
+	onClose: () => void
+	onSuccess: (project: IProjectDoc) => void
+	projectDetails: IProjectDoc
 }
-
-type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
 
 const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	const { open, onClose, projectDetails, onSuccess } = props
@@ -295,7 +291,5 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 		</>
 	)
 }
-
-StemUploadDialog.propTypes = propTypes
 
 export default StemUploadDialog

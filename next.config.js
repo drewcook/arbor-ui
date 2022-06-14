@@ -10,7 +10,6 @@ const nextConfig = {
 		NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY,
 		COVALENT_API_KEY: process.env.COVALENT_API_KEY,
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
-		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -23,6 +22,19 @@ const nextConfig = {
 			'robohash.org', // User avatars
 		],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+	},
+	webpack: (config, options) => {
+		if (!options.isServer) {
+			config.resolve.fallback.fs = false
+		}
+		return {
+			...config,
+			// WASM support
+			experiments: {
+				asyncWebAssembly: true,
+				layers: true,
+			},
+		}
 	},
 }
 
