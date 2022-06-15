@@ -2041,10 +2041,10 @@
   dependencies:
     web-streams-polyfill "^3.1.1"
 
-"@web3-onboard/common@^2.0.0", "@web3-onboard/common@^2.0.2", "@web3-onboard/common@^2.0.7":
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/@web3-onboard/common/-/common-2.0.7.tgz#b66f188d7b0310606a7aa1ddbea41948c355e43d"
-  integrity sha512-IxBaY2STKffYUXZq0iHueqdUMETMOLjVWfipDAaU0Fyplwkl9z1OkphhNxix8kuUelO7OUNC5Info/nLZXelxg==
+"@web3-onboard/common@^2.0.0", "@web3-onboard/common@^2.0.2", "@web3-onboard/common@^2.0.7", "@web3-onboard/common@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@web3-onboard/common/-/common-2.1.1.tgz#84cde2ad39581131a912aae064f0f41ef4f6843e"
+  integrity sha512-vkuBzW+0M+3a/2sP1m4P8BzzlPj9s5+I3wcccx8kIBW8TwQ6LejHR+k/i9pYHzQcBFHersyTWis6NeKwfOggyw==
   dependencies:
     "@ethereumjs/common" "2.6.2"
     ethers "5.5.4"
@@ -2076,10 +2076,10 @@
     joi "^17.4.2"
     lodash.uniqby "^4.7.0"
 
-"@web3-onboard/ledger@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@web3-onboard/ledger/-/ledger-2.0.4.tgz#306952ddce5b17c25de3e9643465083d28281218"
-  integrity sha512-eRh9C9/+c7Kkgk6TsSMNz1n31X5SLIn8Ip4cnxo8/z2/jS1I/KRpiKsUPXRF2X0EL0A3yhk0aCeiJR9+70sFqQ==
+"@web3-onboard/ledger@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@web3-onboard/ledger/-/ledger-2.1.1.tgz#3b8e6a70f7b1417ec698f16eefd910e92626c880"
+  integrity sha512-qlmjPmE6DCeMQ27bvwUjjm4roPOp1zZthfsinID62CICd42dPZgb4LKW5NSk8g9eBHD8Jk5htPYKdPHCkvOuMw==
   dependencies:
     "@ethereumjs/tx" "^3.4.0"
     "@ethersproject/providers" "^5.5.0"
@@ -2087,7 +2087,7 @@
     "@ledgerhq/hw-transport-u2f" "^5.36.0-deprecated"
     "@ledgerhq/hw-transport-webusb" "^6.19.0"
     "@metamask/eth-sig-util" "^4.0.0"
-    "@web3-onboard/common" "^2.0.7"
+    "@web3-onboard/common" "^2.1.1"
     buffer "^6.0.3"
     ethereumjs-util "^7.1.3"
 
