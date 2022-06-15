@@ -25,6 +25,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 	// Set StemQueue smart contract based off network ABI
 	const initializeContract = async () => {
+		if (!web3) return
 		const networkId = await web3.eth.net.getId()
 		const deployedNetwork = StemQueueContract.networks[networkId]
 		const merkleTreeContract = new web3.eth.Contract(StemQueueContract.abi, deployedNetwork && deployedNetwork.address)
@@ -59,9 +60,10 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		}
 	}
 
-	const handleTestCircuit = () => {
+	const handleTestCircuit = async () => {
 		logger.green('Calculating the proof...')
-		calculateProof()
+		await initializeContract()
+		await calculateProof()
 	}
 
 	useEffect(() => {

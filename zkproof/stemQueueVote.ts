@@ -17,8 +17,7 @@ const stemQueueVoteCalldata = async (
 	try {
 		dataResult = await exportCallDataGroth16(input, '/zkproof/stemQueueVote.wasm', '/zkproof/stemQueueVote_final.zkey')
 	} catch (error) {
-		// console.log(error);
-		window.alert('Wrong answer')
+		console.error(error)
 	}
 
 	return dataResult

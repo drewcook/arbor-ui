@@ -1,8 +1,12 @@
-import { groth16 } from 'snarkjs'
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { groth16 } = require('snarkjs')
 
 export async function exportCallDataGroth16(input, wasmPath, zkeyPath) {
+	// Generate the proof with the given input
 	const { proof: _proof, publicSignals: _publicSignals } = await groth16.fullProve(input, wasmPath, zkeyPath)
+	console.log(_proof, _publicSignals)
 
+	// Export solidity calldata
 	const calldata = await groth16.exportSolidityCallData(_proof, _publicSignals)
 
 	const argv = calldata

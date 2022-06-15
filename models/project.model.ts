@@ -2,6 +2,11 @@ import mongoose, { Document } from 'mongoose'
 import type { IStemDoc } from './stem.model'
 import { stemSchema } from './stem.model'
 
+export interface IQueuedStem {
+	stem: IStemDoc
+	votes: number
+}
+
 export interface IProject {
 	createdBy: string
 	collaborators: string[]
@@ -11,6 +16,7 @@ export interface IProject {
 	trackLimit: number
 	tags: string[]
 	stems: IStemDoc[]
+	queue: IQueuedStem[]
 }
 
 export interface IProjectDoc extends Document, IProject {}
@@ -58,6 +64,11 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 		},
 		stems: {
 			type: [stemSchema],
+			required: false,
+			default: [],
+		},
+		queue: {
+			type: [{ stem: stemSchema, votes: Number }],
 			required: false,
 			default: [],
 		},
