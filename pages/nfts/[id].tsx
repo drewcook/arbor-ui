@@ -12,7 +12,7 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import PolygonIcon from '../../public/polygon_logo_black.png'
+import MaticIcon from '../../public/matic_icon.png'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
 import { get, update } from '../../utils/http'
@@ -148,7 +148,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 								</Button>
 								<Box sx={styles.price}>
-									<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+									<ImageOptimized src={MaticIcon} width={50} height={50} alt="Polygon" />
 									<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 										{details.listPrice}{' '}
 										<Typography sx={styles.eth} component="span">
@@ -163,7 +163,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								<Box sx={styles.buyNowListing}>
 									<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
 									<Box sx={styles.price}>
-										<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+										<ImageOptimized src={MaticIcon} width={50} height={50} alt="Polygon" />
 										<Typography variant="h4" component="div">
 											{details.listPrice}{' '}
 											<Typography sx={styles.eth} component="span">
@@ -211,7 +211,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									ID:
 								</Typography>
 								<Link
-									href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
+									href={`https://polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
 								>
 									{details.token.id.toString()}
 								</Link>
@@ -220,7 +220,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								<Typography component="span" sx={styles.metadataKey}>
 									Collection:{' '}
 								</Typography>
-								<Link href="https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
+								<Link href="https://polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
 									View On Explorer
 								</Link>
 							</Typography>
@@ -228,9 +228,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								<Typography component="span" sx={styles.metadataKey}>
 									Mint Tx Hash:{' '}
 								</Typography>
-								<Link href={`https://mumbai.polygonscan.com/tx/${details.token.data.transactionHash}`}>
-									View On Explorer
-								</Link>
+								<Link href={`https://polygonscan.com/tx/${details.token.data.transactionHash}`}>View On Explorer</Link>
 							</Typography>
 							<Typography sx={styles.metadata}>
 								<Typography component="span" sx={styles.metadataKey}>
@@ -326,17 +324,9 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// Get data via Covalent API per network for token collection address
 	// TODO: Get current network id and do lookup in hashmap
 
-	// Rinkeby
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-	// const chainId = 4
-
-	// Kovan
-	// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-	// const chainId = 42
-
-	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	const chainId = 80001
+	// Polygon Mainnet - https://polygonscan.com/address/0xAb3a31d86819Bbd3C56DaBCBB926fe6e60824C23
+	const contractAddress = '0xAb3a31d86819Bbd3C56DaBCBB926fe6e60824C23'
+	const chainId = 137
 
 	let txData = null
 	let metaData = null

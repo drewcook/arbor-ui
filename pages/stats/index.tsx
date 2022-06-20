@@ -34,8 +34,8 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 					platform.
 				</Typography>
 				<Typography variant="overline" sx={styles.text}>
-					All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked against
-					the <Link href="https://mumbai.polygonscan.com/">Polygon Mumbai testnet.</Link>
+					All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked against{' '}
+					<Link href="https://polygonscan.com/">Polygon Mainnet.</Link>
 				</Typography>
 			</Container>
 			<Divider sx={styles.divider} />
@@ -51,17 +51,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	// Get data via Covalent API per network for token collection address
 	// TODO: Get current network id and do lookup in hashmap
 
-	// Rinkeby
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-	// const chainId = 4
-
-	// Kovan
-	// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-	// const chainId = 42
-
-	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	const chainId = 80001
+	// Polygon Mainnet - https://polygonscan.com/address/0xAb3a31d86819Bbd3C56DaBCBB926fe6e60824C23
+	const contractAddress = '0xAb3a31d86819Bbd3C56DaBCBB926fe6e60824C23'
+	const chainId = 137
 
 	// Get's token balance
 	const balRes = await fetch(

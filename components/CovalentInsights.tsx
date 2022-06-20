@@ -44,7 +44,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						NFT Collection Stats
 					</Typography>
 					<Typography gutterBottom variant="body1">
-						<Link href={`https://mumbai.polygonscan.com/address/${balData.address}`} passHref>
+						<Link href={`https://polygonscan.com/address/${balData.address}`} passHref>
 							<Button color="secondary" size="small" variant="contained" sx={styles.covalentBtn}>
 								View Contract Address
 							</Button>
@@ -79,7 +79,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<Box sx={styles.tokenRow} key={idx}>
 							<Typography variant="h6">Token #{token.token_id}</Typography>
 							<Link
-								href={`https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
+								href={`https://polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
 								passHref
 							>
 								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
@@ -133,7 +133,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 									<Grid item xs={12} sm={6}>
 										<Typography>Price: {amount} MATIC</Typography>
 										<Typography>
-											Hash: <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>{formatAddress(hash)}</Link>
+											Hash: <Link href={`https://polygonscan.com/tx/${hash}`}>{formatAddress(hash)}</Link>
 										</Typography>
 									</Grid>
 									<Grid item xs={12} sm={6}>

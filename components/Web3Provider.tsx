@@ -25,9 +25,9 @@ type Web3ProviderProps = {
 	children: ReactNode
 }
 
-// Supported network: Polygon Testnet
-// Onboard takes hexadecimal values
-const PREFERRED_NETWORK_ID = '0x13881'
+// Supported network: Polygon Mainnet
+// NOTE: Onboard takes hexadecimal values
+const PREFERRED_NETWORK_ID = '0x89'
 
 // Create context
 // @ts-ignore
@@ -109,7 +109,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 						// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that a wallet is connected, and then prompt to switch to a supported network (prevent them from switching to some degree)
 						if (web3Onboard.state.get().wallets[0]) {
 							console.warn(
-								`Switching wallet networks: Network ID ${chainId} is not supported. Please switch back to the Polygon Testnet in your wallet for full support.`,
+								`Switching wallet networks: Network ID ${chainId} is not supported. Please switch back to Polygon Mainnet in your wallet for full support.`,
 							)
 							switchedToSupportedChain = await web3Onboard.setChain({ chainId: PREFERRED_NETWORK_ID })
 							// If rejecting, disconnect and exit

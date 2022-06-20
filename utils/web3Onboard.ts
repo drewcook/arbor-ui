@@ -19,9 +19,9 @@ const walletConnect = walletConnectModule({
 	},
 })
 
-// Alchemy RPC URL - Polygon Testnet
-const rpcPolygonTestnet = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`
-// ...We can add other RPC URLs for other chains where contract is deployed to, as Onboard supports multiple wallets on multiple chains :)
+// We can add multiple RPC URLs for chains where contract is deployed to, as Onboard supports multiple wallets on multiple chains :)
+const polygonMainnetRPC = 'https://matic-mainnet.chainstacklabs.com'
+// const polygonTestnetRPC = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`
 
 // Initialize Onboard
 // See https://docs.blocknative.com/onboard/core#initialization
@@ -39,24 +39,11 @@ const web3Onboard = Onboard({
 	},
 	chains: [
 		{
-			id: '0x13881', // chain ID must be in hexadecimal
-			token: 'MATIC', // main chain token
-			label: 'Polygon Testnet',
-			rpcUrl: rpcPolygonTestnet, // rpcURL required for wallet balances
+			id: '0x89', // chain ID must be in hexadecimal
+			token: 'MATIC',
+			label: 'Polygon Mainnet',
+			rpcUrl: polygonMainnetRPC,
 		},
-		// {
-		// 	id: '0x89',
-		//   token: 'MATIC',
-		//   label: 'Matic Mainnet',
-		//   rpcUrl: 'https://matic-mainnet.chainstacklabs.com'
-		// },
-		// {
-		// 	id: '0x1',
-		//   token: 'ETH',
-		//   label: 'Ethereum Mainnet',
-		//   rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`
-		// },
-		// {
 	],
 	accountCenter: {
 		desktop: {
@@ -75,10 +62,8 @@ const web3Onboard = Onboard({
 							'Connecting your wallet is like “logging in” to Web3. Select your wallet from the options to get started.',
 					},
 					recommendedWalletsPart1: 'Polyecho only supports',
-					recommendedWalletsPart2:
-						'on this platform. Please use or install one of the supported wallets to continue',
-					installWallet:
-						'You do not have any wallets installed that Polyecho supports, please use a supported wallet',
+					recommendedWalletsPart2: 'on this platform. Please use or install one of the supported wallets to continue',
+					installWallet: 'You do not have any wallets installed that Polyecho supports, please use a supported wallet',
 					agreement: {
 						agree: 'I agree to the',
 						terms: 'Terms & Conditions',
@@ -87,12 +72,10 @@ const web3Onboard = Onboard({
 					},
 				},
 				connectingWallet: {
-					header:
-						'{connectionRejected, select, false {Connecting to {wallet}...} other {Connection Rejected}}',
+					header: '{connectionRejected, select, false {Connecting to {wallet}...} other {Connection Rejected}}',
 					sidebar: {
 						subheading: 'Approve Connection',
-						paragraph:
-							'Please approve the connection in your wallet and authorize access to continue.',
+						paragraph: 'Please approve the connection in your wallet and authorize access to continue.',
 					},
 					mainText: 'Connecting...',
 					paragraph: 'Make sure to select all accounts that you want to grant access to.',
@@ -118,8 +101,7 @@ const web3Onboard = Onboard({
 				},
 				switchChain: {
 					heading: 'Switch Chain',
-					paragraph1:
-						'Polyecho requires that you switch your wallet to the {nextNetworkName} network to continue.',
+					paragraph1: 'Polyecho requires that you switch your wallet to the {nextNetworkName} network to continue.',
 					paragraph2:
 						'*Some wallets may not support changing networks. If you can not change networks in your wallet you may consider switching to a different wallet.',
 				},
