@@ -1,13 +1,18 @@
 import { AddCircleOutline, Check } from '@mui/icons-material'
-import { Button, CircularProgress, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Button, CircularProgress, Divider, Typography } from '@mui/material'
+import dynamic from 'next/dynamic'
+import { Fragment, useEffect, useState } from 'react'
 import StemQueueContract from '../../contracts/StemQueue.json'
 import type { IProjectDoc } from '../../models/project.model'
+import { IStemDoc } from '../../models/stem.model'
+import { update } from '../../utils/http'
 import logger from '../../utils/logger'
 import stemQueueVoteCalldata from '../../zkproof/stemQueueVote'
 import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
+
+const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
 
 type StemQueueProps = {
 	details: IProjectDoc
@@ -21,7 +26,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const { details, handleUploadStemOpen, handleUploadStemClose, uploadStemOpen, onStemUploadSuccess } = props
 	const [contract, setContract] = useState<any>(null)
 	const [loading, setLoading] = useState<boolean>(false)
+	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const { currentUser, web3 } = useWeb3()
+
+	/*
+		Stem Player callbacks
+	*/
+	const onWavesInit = (idx: number, ws: any) => {
+		const tmp = new Map(details.queue.entries())
+		tmp.set(idx, ws)
+		setStems(tmp)
+	}
 
 	// Set StemQueue smart contract based off network ABI
 	const initializeContract = async () => {
@@ -60,10 +75,38 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		}
 	}
 
-	const handleTestCircuit = async () => {
+	const handleTestCircuit = async (): Promise<any> => {
 		logger.green('Calculating the proof...')
-		await initializeContract()
-		await calculateProof()
+		try {
+			await initializeContract()
+			const result = await calculateProof()
+			console.log({ result })
+			return result
+		} catch (e: any) {
+			console.log('uhh')
+			return null
+		}
+	}
+
+	const handleAccept = async (stem: IStemDoc) => {
+		console.log('accept', stem._id)
+		try {
+			// Test circuit
+			const circuitRes = await handleTestCircuit()
+			if (circuitRes) {
+				// If 'yes' votes are now majority of collaborators, add stem and collaborator to project
+				const updateRes = await update(`/projects/${details._id}`, { newStem: stem })
+				console.log({ updateRes })
+			} else {
+				// Not a valid vote..
+			}
+		} catch (e: any) {
+			console.log('uhh')
+		}
+	}
+
+	const handleReject = (stem: IStemDoc) => {
+		console.log('reject', stem._id)
 	}
 
 	useEffect(() => {
@@ -92,6 +135,32 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			>
 				{loading ? <CircularProgress /> : 'Test Circuit'}
 			</Button>
+			<Divider />
+			{details.queue.length === 0 ? (
+				<Typography>The stem queue is currently empty for this project</Typography>
+			) : (
+				details.queue.map((stem, idx) => (
+					<Fragment key={idx}>
+						<StemPlayer
+							idx={idx + 1}
+							details={stem.stem}
+							onWavesInit={onWavesInit}
+							// onFinish={() => setIsPlayingAll(false)}
+							// onSolo={handleSoloStem}
+							// onNewFile={onNewFile}
+						/>
+						<Typography>
+							<strong>Votes:</strong> {stem.votes}
+						</Typography>
+						<Button variant="contained" size="small" onClick={() => handleAccept(stem.stem)}>
+							Accept
+						</Button>
+						<Button variant="contained" size="small" onClick={() => handleReject(stem.stem)}>
+							Reject
+						</Button>
+					</Fragment>
+				))
+			)}
 			<StemUploadDialog
 				open={uploadStemOpen}
 				onClose={handleUploadStemClose}

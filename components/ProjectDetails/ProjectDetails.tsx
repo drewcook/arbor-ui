@@ -74,12 +74,22 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
 
+	/*
+		Stem Player callbacks
+	*/
 	const onWavesInit = (idx: number, ws: any) => {
 		const tmp = new Map(stems.entries())
 		tmp.set(idx, ws)
 		setStems(tmp)
 	}
 
+	const onNewFile = (filename: string, newFile: Blob) => {
+		setFiles(files => new Map(files.set(filename, newFile)))
+	}
+
+	/*
+		Playback handlers
+	*/
 	const handlePlayPauseStems = () => {
 		// Play or pause each stem audio from wavesurfer
 		stems.forEach(ws => {
@@ -140,10 +150,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 			setErrorOpen(true)
 			setErrorMsg('Failed to download all stems')
 		}
-	}
-
-	const onNewFile = (filename: string, newFile: Blob) => {
-		setFiles(files => new Map(files.set(filename, newFile)))
 	}
 
 	// TODO: Keep track of minted versions and how many mints a project has undergone
