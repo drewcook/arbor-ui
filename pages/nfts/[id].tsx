@@ -152,7 +152,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 										{details.listPrice}{' '}
 										<Typography sx={styles.eth} component="span">
-											KAI
+											MATIC
 										</Typography>
 									</Typography>
 								</Box>
@@ -167,7 +167,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										<Typography variant="h4" component="div">
 											{details.listPrice}{' '}
 											<Typography sx={styles.eth} component="span">
-												KAI
+												MATIC
 											</Typography>
 										</Typography>
 									</Box>
@@ -323,18 +323,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
 	// Get data via Covalent API per network for token collection address
 	// TODO: Get current network id and do lookup in hashmap
-
-	// Rinkeby
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-	// const chainId = 4
-
-	// Kovan
-	// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-	// const chainId = 42
-
-	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	// const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	// const chainId = 80001
 
 	// Polygon Mainnet - https://polygonscan.com/address/0xAb3a31d86819Bbd3C56DaBCBB926fe6e60824C23
 	const contractAddress = '0xAb3a31d86819Bbd3C56DaBCBB926fe6e60824C23'

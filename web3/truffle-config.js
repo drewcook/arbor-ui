@@ -1,4 +1,4 @@
- // Truffle config <http://truffleframework.com/docs/advanced/configuration>
+// Truffle config <http://truffleframework.com/docs/advanced/configuration>
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
@@ -22,16 +22,7 @@ module.exports = {
 			port: 8545,
 			network_id: 1337,
 		},
-		// Polygon testnet
-		// matic: {
-		// 	provider: () =>
-		// 		new HDWalletProvider({
-		// 			mnemonic: process.env.MNEMONIC,
-		// 			providerOrUrl: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
-		// 		}),
-		// 	network_id: 80001,
-		// },
-		// Polygon mainnet
+		// Polygon Mainnet
 		matic: {
 			provider: () =>
 				new HDWalletProvider({

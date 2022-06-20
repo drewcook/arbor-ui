@@ -26,7 +26,7 @@ type Web3ProviderProps = {
 }
 
 // Supported network: Polygon Mainnet
-// Onboard takes hexadecimal values
+// NOTE: Onboard takes hexadecimal values
 const PREFERRED_NETWORK_ID = '0x89'
 
 // Create context
