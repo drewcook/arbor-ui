@@ -11,7 +11,7 @@
     "lint:fix": "next lint --fix",
     "prepare": "husky install",
     "test": "echo \"All good, no tests to run right now\"",
-    "circuits:setup": "./scripts/compileCircuit.sh && ./scripts/generateWitness.sh && ./scripts/executePlonk.sh",
+    "circuits:setup": "./scripts/compileCircuit.sh && ./scripts/generateWitness.sh && ./scripts/executePlonk.sh && ./scripts/copyZkFiles.sh",
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
     "contracts:test": "cd web3 && truffle test",
     "contracts:compile": "cd web3 && truffle compile"

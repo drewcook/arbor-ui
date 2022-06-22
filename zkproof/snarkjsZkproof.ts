@@ -1,30 +1,19 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { groth16 } = require('snarkjs')
+const { plonk } = require('snarkjs')
 
-export async function exportCallDataGroth16(input, wasmPath, zkeyPath) {
+export async function exportCallDataPlonk(input, wasmPath, zkeyPath) {
 	// Generate the proof with the given input
-	const { proof: _proof, publicSignals: _publicSignals } = await groth16.fullProve(input, wasmPath, zkeyPath)
+	console.log({ input, wasmPath, zkeyPath })
+	const { proof: _proof, publicSignals: _publicSignals } = await plonk.fullProve(input, wasmPath, zkeyPath)
 	console.log(_proof, _publicSignals)
 
 	// Export solidity calldata
-	const calldata = await groth16.exportSolidityCallData(_proof, _publicSignals)
+	const calldata = await plonk.exportSolidityCallData(_proof, _publicSignals)
+	console.log('calldata', calldata)
 
-	const argv = calldata
-		.replace(/["[\]\s]/g, '')
-		.split(',')
-		.map(x => BigInt(x).toString())
-
-	const a = [argv[0], argv[1]]
-	const b = [
-		[argv[2], argv[3]],
-		[argv[4], argv[5]],
-	]
-	const c = [argv[6], argv[7]]
-	const Input: any[] = []
-
-	for (let i = 8; i < argv.length; i++) {
-		Input.push(argv[i])
-	}
-
-	return { a, b, c, Input }
+	// transform the calldata into readable values
+	const calldataSplit = calldata.split(',')
+	const [proof, ...rest] = calldataSplit
+	const publicSignals = JSON.parse(rest.join(',')).map(x => BigInt(x).toString())
+	return { proof, publicSignals }
 }

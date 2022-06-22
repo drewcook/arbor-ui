@@ -1,4 +1,4 @@
-import { exportCallDataGroth16 } from './snarkjsZkproof'
+import { exportCallDataPlonk } from './snarkjsZkproof'
 
 const stemQueueVoteCalldata = async (
 	voter: string,
@@ -13,9 +13,11 @@ const stemQueueVoteCalldata = async (
 		queueStemIds,
 	}
 
+	console.log(input)
+
 	let dataResult
 	try {
-		dataResult = await exportCallDataGroth16(input, '/zkproof/stemQueueVote.wasm', '/zkproof/stemQueueVote_final.zkey')
+		dataResult = await exportCallDataPlonk(input, '/zkproof/stemQueueVote.wasm', '/zkproof/stemQueueVote_final.zkey')
 	} catch (error) {
 		console.error(error)
 	}
