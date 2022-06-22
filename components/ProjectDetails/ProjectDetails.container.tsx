@@ -71,7 +71,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
-		setSuccessMsg("Success! You've uploaded a new stem to this project and become a contributor.")
+		setSuccessMsg("Success! You've uploaded a new stem to the project stem queue.")
 		handleUploadStemClose()
 	}
 
@@ -90,7 +90,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={currentTab} onChange={handleChange} aria-label="basic tabs example">
 					<Tab label="Details" {...a11yProps(0)} />
-					<Tab label="Stem Queue" {...a11yProps(1)} />
+					<Tab label={`Stem Queue (${data.queue.length})`} {...a11yProps(1)} />
 				</Tabs>
 			</Box>
 			<TabPanel value={currentTab} index={0}>
