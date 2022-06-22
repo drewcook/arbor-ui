@@ -1,0 +1,9 @@
+1,1,0,main.isValidVote
+2,2,0,main.vote
+3,3,0,main.contributors[0]
+4,4,0,main.contributors[1]
+5,5,0,main.contributors[2]
+6,6,0,main.queuedStemIds[0]
+7,7,0,main.queuedStemIds[1]
+8,8,0,main.queuedStemIds[2]
+9,-1,0,main.voter
