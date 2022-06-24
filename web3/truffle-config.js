@@ -7,7 +7,7 @@ require('dotenv').config()
 module.exports = {
 	compilers: {
 		solc: {
-			version: '0.8.1',
+			version: '0.8.4',
 			settings: {
 				// See the solidity docs for advice about optimization and evmVersion
 				optimizer: {
@@ -26,6 +26,14 @@ module.exports = {
 			host: '127.0.0.1',
 			port: 8545,
 			network_id: 1337,
+		},
+		harmonyDevnet: {
+			provider: () =>
+				new HDWalletProvider({
+					mnemonic: process.env.MNEMONIC,
+					providerOrUrl: 'https://api/s0.ps.hmny.io',
+				}),
+			network_id: 1666900000,
 		},
 		harmonyTestnet: {
 			provider: () =>

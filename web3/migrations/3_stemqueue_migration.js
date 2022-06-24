@@ -1,5 +1,5 @@
-const PolyechoNFTContract = artifacts.require('PolyechoNFT')
+const StemQueueContract = artifacts.require('StemQueue')
 
 module.exports = function (deployer) {
-	deployer.deploy(PolyechoNFTContract)
+	deployer.deploy(StemQueueContract)
 }
