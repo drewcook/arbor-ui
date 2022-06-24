@@ -5,6 +5,7 @@ import Onboard from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
 import ledgerModule from '@web3-onboard/ledger'
 import walletConnectModule from '@web3-onboard/walletconnect'
+import { NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
 
 // See https://docs.blocknative.com/onboard/injected-wallets
 const injectedWallets = injectedModule()
@@ -19,9 +20,13 @@ const walletConnect = walletConnectModule({
 	},
 })
 
-// Alchemy RPC URL - Polygon Testnet
-const rpcPolygonTestnet = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`
-// ...We can add other RPC URLs for other chains where contract is deployed to, as Onboard supports multiple wallets on multiple chains :)
+// Our one and only chain we want to support, for now
+const CHAIN = {
+	id: NETWORK_HEX,
+	token: 'ONE',
+	label: NETWORK_NAME,
+	rpcUrl: NETWORK_RPC,
+}
 
 // Initialize Onboard
 // See https://docs.blocknative.com/onboard/core#initialization
@@ -37,27 +42,7 @@ const web3Onboard = Onboard({
 			{ name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
 		],
 	},
-	chains: [
-		{
-			id: '0x13881', // chain ID must be in hexadecimal
-			token: 'MATIC', // main chain token
-			label: 'Polygon Testnet',
-			rpcUrl: rpcPolygonTestnet, // rpcURL required for wallet balances
-		},
-		// {
-		// 	id: '0x89',
-		//   token: 'MATIC',
-		//   label: 'Matic Mainnet',
-		//   rpcUrl: 'https://matic-mainnet.chainstacklabs.com'
-		// },
-		// {
-		// 	id: '0x1',
-		//   token: 'ETH',
-		//   label: 'Ethereum Mainnet',
-		//   rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`
-		// },
-		// {
-	],
+	chains: [CHAIN],
 	accountCenter: {
 		desktop: {
 			enabled: false, // Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
