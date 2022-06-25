@@ -15,7 +15,6 @@ export interface IProject {
 	bpm: number
 	trackLimit: number
 	tags: string[]
-	group: any
 	stems: IStemDoc[]
 	queue: IQueuedStem[]
 }
@@ -62,11 +61,6 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 			type: [String],
 			required: false,
 			default: [],
-		},
-		group: {
-			type: Object,
-			required: true,
-			default: {},
 		},
 		stems: {
 			type: [stemSchema],

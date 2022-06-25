@@ -5,6 +5,7 @@ import type { IStemDoc } from './stem.model'
 
 export interface IUser {
 	address: string
+	identity: string
 	displayName: string
 	avatarUrl: string
 	nftIds: string[]
@@ -28,6 +29,12 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			type: String,
 			required: true,
 			// validate it is an ethereum-like address (Joi?)
+			unique: true,
+		},
+		// Semaphore identity
+		identity: {
+			type: String,
+			required: true,
 			unique: true,
 		},
 		displayName: {

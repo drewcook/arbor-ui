@@ -12,6 +12,8 @@ import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
 import web3Onboard from '../utils/web3Onboard'
 
+const Identity = require('@semaphore-protocol/identity').Identity
+
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
 type Web3ContextProps = {
@@ -97,6 +99,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				// Listen for account changes from browser wallet UI
 				web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
 					const newAccount = newAccounts[0]
+					localStorage.removeItem('identityCommitment')
 					// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that we're connected to the right network before attempting to find or create the new user
 					if (web3Onboard.state.get().wallets[0]?.chains[0].id === NETWORK_HEX) {
 						console.info(`Switching wallet accounts to ${newAccount}`)
@@ -193,6 +196,8 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			} else {
 				const createRes = await post('/users', {
 					address: account.toLowerCase(),
+					// Create a Semaphore identity for the user
+					identity: new Identity().toString(),
 				})
 				setCurrentUser(createRes.data)
 			}

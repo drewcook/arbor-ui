@@ -4,7 +4,7 @@ const styles = {
 		borderColor: '#111',
 		borderRadius: '5px',
 		fontWeight: 800,
-		mt: 4,
+		my: 4,
 		'&:hover': {
 			borderWidth: '3px',
 		},
