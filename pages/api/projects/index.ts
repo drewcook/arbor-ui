@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
+import getWeb3 from '../../../utils/getWeb3'
 import { update } from '../../../utils/http'
 
 export type CreateProjectPayload = {
@@ -11,7 +12,6 @@ export type CreateProjectPayload = {
 	bpm: number
 	trackLimit: number
 	tags: string[]
-	group: any
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,6 +30,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
+				// Get contract address, create instance
+				// TODO: Use ethers to get contract with address
+				const web3Instance = await getWeb3()
+				console.log(web3Instance)
+				// const networkId = await web3Instance.eth.net.getId()
+				// const deployedNetwork = StemQueueContract.networks[networkId]
+				// const contract = new web3Instance.eth.Contract(
+				// 	StemQueueContract.abi,
+				// 	deployedNetwork && deployedNetwork.address,
+				// )
+				// console.log(contract.methods)
+
+				// Create DB entry
 				const payload: CreateProjectPayload = {
 					createdBy: req.body.createdBy,
 					collaborators: req.body.collaborators,
@@ -38,9 +51,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					bpm: req.body.bpm,
 					trackLimit: req.body.trackLimit,
 					tags: req.body.tags,
-					group: req.body.group,
 				}
-				/* create a new model in the database */
 				const project: IProjectDoc = await Project.create(payload)
 
 				// Add new project to creator's user details
@@ -48,6 +59,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
+
+				// TODO: Create new Semaphore group for given project
+				// const response = await contract.methods
+				// 	.createProjectGroup(project._id, 20, BigInt(0), req.body.createdBy)
+				// 	.send({ from: req.body.createdBy })
+				// console.log(response)
 
 				res.status(201).json({ success: true, data: project })
 			} catch (e) {

@@ -25,7 +25,7 @@ const NewProjectPage: NextPage = () => {
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const router = useRouter()
-	const { currentUser, web3 } = useWeb3()
+	const { currentUser } = useWeb3()
 
 	// Form Field Handlers
 	const handleSetBpm = (e: any) => {
@@ -61,22 +61,6 @@ const NewProjectPage: NextPage = () => {
 				return
 			}
 			setLoading(true)
-			// Create new Semaphore group for the project
-			// Default parameters: treeDepth = 20, zeroValue = BigInt(0).
-			const group = new Group()
-
-			// Create an identity commitment for the project creator
-			const signature = await web3?.eth.personal.sign(
-				'Sign this message to create your anonymous identity with Semaphore. This will allow you to vote and approve stems onto your project.',
-				currentUser.address,
-				'testPassword',
-			)
-			const identity = new Identity(signature)
-			const identityCommitment = identity.generateCommitment()
-
-			// Add identity commitment to the new group
-			group.addMember(identityCommitment)
-
 			// Submit to backend
 			const payload: CreateProjectPayload = {
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
@@ -86,7 +70,6 @@ const NewProjectPage: NextPage = () => {
 				bpm,
 				trackLimit,
 				tags,
-				group,
 			}
 			const res = await post('/projects', payload)
 			if (res.success) {
