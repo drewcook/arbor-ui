@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const { plonk } = require('snarkjs')
 
 export async function exportCallDataPlonk(input, wasmPath, zkeyPath) {

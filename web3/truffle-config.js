@@ -1,5 +1,4 @@
 // Truffle config <http://truffleframework.com/docs/advanced/configuration>
-/* eslint-disable @typescript-eslint/no-var-requires */
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 const path = require('path')
 require('dotenv').config()
