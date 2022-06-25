@@ -11,6 +11,7 @@ export type CreateProjectPayload = {
 	bpm: number
 	trackLimit: number
 	tags: string[]
+	group: any
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -37,6 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					bpm: req.body.bpm,
 					trackLimit: req.body.trackLimit,
 					tags: req.body.tags,
+					group: req.body.group,
 				}
 				/* create a new model in the database */
 				const project: IProjectDoc = await Project.create(payload)

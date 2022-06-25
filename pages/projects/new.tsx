@@ -1,4 +1,4 @@
-import { Button, Container, TextField, Typography } from '@mui/material'
+import { Button, CircularProgress, Container, TextField, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -10,18 +10,22 @@ import { newProjectStyles as styles } from '../../styles/Projects.styles'
 import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
+const Group = require('@semaphore-protocol/group').Group
+const Identity = require('@semaphore-protocol/identity').Identity
+
 const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState<string>('')
 	const [description, setDescription] = useState<string>('')
 	const [bpm, setBpm] = useState<number>(120)
 	const [trackLimit, setTrackLimit] = useState<number>(10)
 	const [tags, setTags] = useState<string[]>([])
+	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const router = useRouter()
-	const { currentUser } = useWeb3()
+	const { currentUser, web3 } = useWeb3()
 
 	// Form Field Handlers
 	const handleSetBpm = (e: any) => {
@@ -47,9 +51,33 @@ const NewProjectPage: NextPage = () => {
 		try {
 			if (!currentUser) {
 				setErrorOpen(true)
-				setErrorMsg('You must have a connected Web3 wallet to create a project')
+				setErrorMsg('Please connect your Web3 wallet')
 				return
 			}
+
+			if (!description || !name || !bpm || !trackLimit) {
+				setErrorOpen(true)
+				setErrorMsg('Please enter in the required fields')
+				return
+			}
+			setLoading(true)
+			// Create new Semaphore group for the project
+			// Default parameters: treeDepth = 20, zeroValue = BigInt(0).
+			const group = new Group()
+
+			// Create an identity commitment for the project creator
+			const signature = await web3?.eth.personal.sign(
+				'Sign this message to create your anonymous identity with Semaphore. This will allow you to vote and approve stems onto your project.',
+				currentUser.address,
+				'testPassword',
+			)
+			const identity = new Identity(signature)
+			const identityCommitment = identity.generateCommitment()
+
+			// Add identity commitment to the new group
+			group.addMember(identityCommitment)
+
+			// Submit to backend
 			const payload: CreateProjectPayload = {
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 				collaborators: [currentUser.address], // start as only collaborator
@@ -58,10 +86,10 @@ const NewProjectPage: NextPage = () => {
 				bpm,
 				trackLimit,
 				tags,
+				group,
 			}
 			const res = await post('/projects', payload)
 			if (res.success) {
-				setSuccessOpen(true)
 				setSuccessMsg('Successfully created project, redirecting...')
 				resetForm()
 				// Redirect to project page
@@ -70,8 +98,10 @@ const NewProjectPage: NextPage = () => {
 				setErrorOpen(true)
 				setErrorMsg('An error occurred creating the project')
 			}
-		} catch (e) {
-			console.error('Project creation failed')
+			setLoading(false)
+		} catch (e: any) {
+			setLoading(false)
+			console.error('Project creation failed', e.message)
 		}
 	}
 
@@ -115,6 +145,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={e => setName(e.target.value)}
 					placeholder="Give it a catchy name!"
 					fullWidth
+					required
 				/>
 				<TextField
 					label="Project Description"
@@ -124,6 +155,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={e => setDescription(e.target.value)}
 					placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
 					fullWidth
+					required
 				/>
 				<TextField
 					label="Project BPM"
@@ -134,6 +166,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={handleSetBpm}
 					placeholder="What BPM is this project targetting?"
 					fullWidth
+					required
 				/>
 				<TextField
 					label="Track Limit"
@@ -144,6 +177,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={handleSetTrackLimit}
 					placeholder="Set a maximum limit of tracks that can be uploaded to this project."
 					fullWidth
+					required
 				/>
 				<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />
 				<Button
@@ -153,8 +187,9 @@ const NewProjectPage: NextPage = () => {
 					onClick={handleSubmit}
 					fullWidth
 					sx={styles.submitBtn}
+					disabled={loading}
 				>
-					Create Project
+					{loading ? <CircularProgress /> : 'Create Project'}
 				</Button>
 			</Container>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
