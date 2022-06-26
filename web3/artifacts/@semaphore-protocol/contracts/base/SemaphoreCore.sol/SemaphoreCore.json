@@ -1,0 +1,24 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SemaphoreCore",
+  "sourceName": "@semaphore-protocol/contracts/base/SemaphoreCore.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "nullifierHash",
+          "type": "uint256"
+        }
+      ],
+      "name": "NullifierHashAdded",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220f5d4981922d1fff5347578f5e8140be1eb08c7db5e4d84409e5cb255919d4a3164736f6c63430008040033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220f5d4981922d1fff5347578f5e8140be1eb08c7db5e4d84409e5cb255919d4a3164736f6c63430008040033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

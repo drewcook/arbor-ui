@@ -2,14 +2,14 @@
 pragma solidity >=0.8.0;
 
 import "@semaphore-protocol/contracts/interfaces/IVerifier.sol";
-import "@semaphore-protocol/contracts/Semaphore.sol";
+import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 import "@semaphore-protocol/contracts/base/SemaphoreCore.sol";
 import "@semaphore-protocol/contracts/base/SemaphoreGroups.sol";
 
 /// @title StemQueue contract.
 /// @dev The following code is just a example to show how Semaphore con be used.
 /// @dev StemQueue holds the votes around the stems within each project's stem queue
-abstract contract StemQueue is Semaphore {
+contract StemQueue is SemaphoreCore, SemaphoreGroups {
     // A new vote is published every time a user's proof is validated.
     event NewVote(bytes32 vote);
 
@@ -20,17 +20,34 @@ abstract contract StemQueue is Semaphore {
     // The external verifier used to verify Semaphore proofs.
     IVerifier public verifier;
 
+		/// @dev Gets a group id and returns the group admin address.
+    mapping(uint256 => address) public groupAdmins;
+
+		/// @dev Emitted when an admin is assigned to a group.
+    /// @param groupId: Id of the group.
+    /// @param oldAdmin: Old admin of the group.
+    /// @param newAdmin: New admin of the group.
+    event GroupAdminUpdated(uint256 indexed groupId, address indexed oldAdmin, address indexed newAdmin);
+
+		/// @dev Checks if the group admin is the transaction sender.
+    /// @param groupId: Id of the group.
+    modifier onlyGroupAdmin(uint256 groupId) {
+        require(groupAdmins[groupId] == _msgSender(), "Semaphore: caller is not the group admin");
+        _;
+    }
+
     constructor(uint256 _voters, address _verifier) {
         voters = _voters;
         verifier = IVerifier(_verifier);
     }
 
+		/// @dev Allow anyone to create a new group
 		function createProjectGroup(
         uint256 groupId,
         uint8 depth,
         uint256 zeroValue,
         address admin
-    ) external  {
+    ) external {
         _createGroup(groupId, depth, zeroValue);
 
         groupAdmins[groupId] = admin;
@@ -38,16 +55,18 @@ abstract contract StemQueue is Semaphore {
         emit GroupAdminUpdated(groupId, address(0), admin);
     }
 
-    function addMemberToProjectGroup(uint256 groupId, uint256 identityCommitment) external  {
+		/// @dev Allow anyone to add themselves to ta group
+    function addMemberToProjectGroup(uint256 groupId, uint256 identityCommitment) external {
         _addMember(groupId, identityCommitment);
     }
 
+		/// @dev Allow only group admin to remove
     function removeMemberFromProjectGroup(
         uint256 groupId,
         uint256 identityCommitment,
         uint256[] calldata proofSiblings,
         uint8[] calldata proofPathIndices
-    ) external  onlyGroupAdmin(groupId) {
+    ) external onlyGroupAdmin(groupId) {
         _removeMember(groupId, identityCommitment, proofSiblings, proofPathIndices);
     }
 

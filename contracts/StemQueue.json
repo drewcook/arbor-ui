@@ -2235,7 +2235,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-06-25T18:16:54.042Z",
+  "updatedAt": "2022-06-25T19:17:16.768Z",
   "devdoc": {
     "details": "The following code is just a example to show how Semaphore con be used.StemQueue holds the votes around the stems within each project's stem queue",
     "kind": "dev",
