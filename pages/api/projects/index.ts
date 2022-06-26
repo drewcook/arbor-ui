@@ -12,6 +12,7 @@ export type CreateProjectPayload = {
 	bpm: number
 	trackLimit: number
 	tags: string[]
+	votingGroupId: number
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,30 +31,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
-				// Create DB entry
-				const payload: CreateProjectPayload = {
-					createdBy: req.body.createdBy,
-					collaborators: req.body.collaborators,
-					name: req.body.name,
-					description: req.body.description,
-					bpm: req.body.bpm,
-					trackLimit: req.body.trackLimit,
-					tags: req.body.tags,
-				}
-				// TODO: Do not save any of these records just yet... wait until after we create the Semaphore group successfully, so we don't end up with bad data across multiple collections
-				const project: IProjectDoc = await Project.create(payload)
-
-				// Add new project to creator's user details
-				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
-				if (!userUpdated) {
-					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
-				}
-
 				/*
 					Increment the global voting group counter, and use this as the ID for the new Semaphore group
 					- Call PUT /api/voting-groups to increment the value
 					- Get the returned data, inspect the new totalGroupCount value
 					- Use this as the new groupId for the on-chain group
+					- Use this as the groupId value for the new project record as well
+					- TODO: revert this, or decrement if any of the following requests fail
 				*/
 				const votingGroupRes = await update('/voting-groups')
 				if (!votingGroupRes || !votingGroupRes.success) {
@@ -75,6 +59,31 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						.json({ success: false, error: 'Failed to create on-chain Semaphore group for given project' })
 				}
 				// console.info(contractRes)
+
+				/*
+					Create the new project record
+					- Should reference the off-chain groupId which maps to the Semaphore group we just created on-chain
+				*/
+				const payload: CreateProjectPayload = {
+					createdBy: req.body.createdBy,
+					collaborators: req.body.collaborators,
+					name: req.body.name,
+					description: req.body.description,
+					bpm: req.body.bpm,
+					trackLimit: req.body.trackLimit,
+					tags: req.body.tags,
+					votingGroupId: votingGroupRes.data.totalGroupCount,
+				}
+				// TODO: Do not save any of these records just yet... wait until after we create the Semaphore group successfully, so we don't end up with bad data across multiple collections
+				const project: IProjectDoc = await Project.create(payload)
+
+				/*
+					Add new project to creator's user details
+				*/
+				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
+				if (!userUpdated) {
+					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
+				}
 
 				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })
