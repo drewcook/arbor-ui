@@ -46,10 +46,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				// Increment the group count for the singular record
-				const votingGroup = votingGroups[0]
 				const updated = await VotingGroup.findOneAndUpdate(
 					{
-						id: votingGroup._id,
+						id: votingGroups[0]._id,
 					},
 					{
 						$inc: { totalGroupCount: 1 },

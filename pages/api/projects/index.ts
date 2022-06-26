@@ -40,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					trackLimit: req.body.trackLimit,
 					tags: req.body.tags,
 				}
-				// TODO: Do not save this record just yet... wait until after we create the Semaphore group successfully
+				// TODO: Do not save any of these records just yet... wait until after we create the Semaphore group successfully, so we don't end up with bad data across multiple collections
 				const project: IProjectDoc = await Project.create(payload)
 
 				// Add new project to creator's user details
@@ -50,16 +50,36 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				/*
+					Increment the global voting group counter, and use this as the ID for the new Semaphore group
+					- Call PUT /api/voting-groups to increment the value
+					- Get the returned data, inspect the new totalGroupCount value
+					- Use this as the new groupId for the on-chain group
+				*/
+				const votingGroupRes = await update('/voting-groups')
+				if (!votingGroupRes || !votingGroupRes.success) {
+					return res.status(400).json({ success: false, error: 'Failed to increment voting group count' })
+				}
+
+				/*
 					Create new Semaphore group for given project
 					- Create new group with project creator as group admin
-					- Do not add in the project creator as a voting member
+					- Do not add in the project creator as a voting member (yet)
 					- Future users will register to vote, which will add them in as group members
 				*/
 				// Get contract address, create instance
-				await stemQueueContract.createProjectGroup(20, BigInt(0), req.body.createdBy)
+				const groupId = BigInt(votingGroupRes.data.totalGroupCount)
+				const contractRes = await stemQueueContract.createProjectGroup(groupId, 20, BigInt(0), req.body.createdBy)
+				if (!contractRes) {
+					return res
+						.status(400)
+						.json({ success: false, error: 'Failed to create on-chain Semaphore group for given project' })
+				}
+				// console.info(contractRes)
 
+				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })
-			} catch (e) {
+			} catch (e: any) {
+				console.error(e.message)
 				res.status(400).json({ success: false, error: e })
 			}
 			break
