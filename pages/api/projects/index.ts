@@ -1,7 +1,8 @@
+import { utils } from 'ethers'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { stemQueueContract } from '../../../constants/contracts'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
-import getWeb3 from '../../../utils/getWeb3'
 import { update } from '../../../utils/http'
 
 export type CreateProjectPayload = {
@@ -30,18 +31,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
-				// Get contract address, create instance
-				// TODO: Use ethers to get contract with address
-				const web3Instance = await getWeb3()
-				console.log(web3Instance)
-				// const networkId = await web3Instance.eth.net.getId()
-				// const deployedNetwork = StemQueueContract.networks[networkId]
-				// const contract = new web3Instance.eth.Contract(
-				// 	StemQueueContract.abi,
-				// 	deployedNetwork && deployedNetwork.address,
-				// )
-				// console.log(contract.methods)
-
 				// Create DB entry
 				const payload: CreateProjectPayload = {
 					createdBy: req.body.createdBy,
@@ -52,6 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					trackLimit: req.body.trackLimit,
 					tags: req.body.tags,
 				}
+				// TODO: Do not save this record just yet... wait until after we create the Semaphore group successfully
 				const project: IProjectDoc = await Project.create(payload)
 
 				// Add new project to creator's user details
@@ -60,11 +50,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
 
-				// TODO: Create new Semaphore group for given project
-				// const response = await contract.methods
-				// 	.createProjectGroup(project._id, 20, BigInt(0), req.body.createdBy)
-				// 	.send({ from: req.body.createdBy })
-				// console.log(response)
+				/*
+					Create new Semaphore group for given project
+					- Create new group with project creator as group admin
+					- Do not add in the project creator as a voting member
+					- Future users will register to vote, which will add them in as group members
+				*/
+				// Get contract address, create instance
+				await stemQueueContract.createProjectGroup(
+					utils.formatBytes32String(project._id),
+					20,
+					BigInt(0),
+					// TODO: This is currently not ideal, as there can only one group per unique owner address with Semaphore... but why??
+					req.body.createdBy,
+				)
 
 				res.status(201).json({ success: true, data: project })
 			} catch (e) {
