@@ -5,11 +5,19 @@ import "@semaphore-protocol/contracts/interfaces/IVerifier.sol";
 import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 import "@semaphore-protocol/contracts/base/SemaphoreCore.sol";
 import "@semaphore-protocol/contracts/base/SemaphoreGroups.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /// @title StemQueue contract.
 /// @dev The following code is just a example to show how Semaphore con be used.
 /// @dev StemQueue holds the votes around the stems within each project's stem queue
 contract StemQueue is SemaphoreCore, SemaphoreGroups {
+		using SafeMath for uint256;
+		using Counters for Counters.Counter;
+
+		// Local counter to keep track of groups
+		Counters.Counter private _currentGroupId;
+
     // A new vote is published every time a user's proof is validated.
     event NewVote(bytes32 vote);
 
@@ -43,16 +51,15 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 
 		/// @dev Allow anyone to create a new group
 		function createProjectGroup(
-        uint256 groupId,
         uint8 depth,
         uint256 zeroValue,
         address admin
     ) external {
-        _createGroup(groupId, depth, zeroValue);
-
-        groupAdmins[groupId] = admin;
-
-        emit GroupAdminUpdated(groupId, address(0), admin);
+			  // Use current group ID and then increment
+        _createGroup(_currentGroupId.current(), depth, zeroValue);
+        groupAdmins[_currentGroupId.current()] = admin;
+        emit GroupAdminUpdated(_currentGroupId.current(), address(0), admin);
+				_currentGroupId.increment();
     }
 
 		/// @dev Allow anyone to add themselves to ta group

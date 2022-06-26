@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { stemQueueContract } from '../../../constants/contracts'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
@@ -57,13 +56,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					- Future users will register to vote, which will add them in as group members
 				*/
 				// Get contract address, create instance
-				await stemQueueContract.createProjectGroup(
-					utils.formatBytes32String(project._id),
-					20,
-					BigInt(0),
-					// TODO: This is currently not ideal, as there can only one group per unique owner address with Semaphore... but why??
-					req.body.createdBy,
-				)
+				await stemQueueContract.createProjectGroup(20, BigInt(0), req.body.createdBy)
 
 				res.status(201).json({ success: true, data: project })
 			} catch (e) {
