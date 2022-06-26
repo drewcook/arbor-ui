@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { IVotingGroup } from '../../models/votingGroup.model'
+import type { IVotingGroupDoc } from '../../models/votingGroup.model'
 import { VotingGroup } from '../../models/votingGroup.model'
 import dbConnect from '../../utils/db'
 
@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// We get only the first records, since this collection is designed to have only one.
 				// This first record is seen as the source of truth for the platform, and holds a counter.
-				const votingGroups: IVotingGroup[] = await VotingGroup.find({})
+				const votingGroups: IVotingGroupDoc[] = await VotingGroup.find({})
 				if (votingGroups.length === 0) {
 					res.status(200).json({ success: true, data: [] })
 				} else {
@@ -26,12 +26,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				// This is designed to only create one record and nothing more.
-				const votingGroups: IVotingGroup[] = await VotingGroup.find({})
+				const votingGroups: IVotingGroupDoc[] = await VotingGroup.find({})
 				if (votingGroups.length > 0) {
 					throw new Error('There can only be one voting group record in the collection')
 				}
 				// Create the new record with zero total groups
-				const votingGroup: IVotingGroup = await VotingGroup.create({ totalGroupCount: 0 })
+				const votingGroup: IVotingGroupDoc = await VotingGroup.create({ totalGroupCount: 0 })
 				res.status(201).json({ success: true, data: votingGroup })
 			} catch (e: any) {
 				res.status(400).json({ success: false, error: e.message })
@@ -40,16 +40,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'PUT':
 			try {
-				const votingGroups: IVotingGroup[] = await VotingGroup.find({})
+				const votingGroups: IVotingGroupDoc[] = await VotingGroup.find({})
 				if (votingGroups.length === 0) {
 					throw new Error('The singular voting group does not exist yet')
 				}
 
 				// Increment the group count for the singular record
-				const votingGroup: IVotingGroup = votingGroups[0]
-				const updated = await votingGroup.updateOne({
-					$inc: { totalGroupCount: 1 },
-				})
+				const votingGroup = votingGroups[0]
+				const updated = await VotingGroup.findOneAndUpdate(
+					{
+						id: votingGroup._id,
+					},
+					{
+						$inc: { totalGroupCount: 1 },
+					},
+					{
+						new: true,
+						runValidators: true,
+					},
+				)
 
 				// Catch error
 				if (!updated) {
