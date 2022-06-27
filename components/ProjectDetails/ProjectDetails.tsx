@@ -5,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square,
+	Square
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -17,7 +17,7 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography,
+	Typography
 } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
@@ -25,10 +25,12 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
+import web3 from 'web3'
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
+import { nftContract } from '../../constants/contracts'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
@@ -69,7 +71,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	// Hooks
 	const router = useRouter()
-	const { NFTStore, connected, nftContract, currentUser, handleConnectWallet, web3 } = useWeb3()
+	const { NFTStore, connected, currentUser, handleConnectWallet } = useWeb3()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -206,9 +208,12 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
 				const amount = web3.utils.toWei('0.01', 'ether')
-				const mintRes: any = await nftContract.methods
-					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators)
-					.send({ from: currentUser.address, value: amount, gas: 650000 })
+				const mintRes: any = await nftContract
+					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
+						value: amount,
+					})
+					.wait()
+				console.log({ mintRes })
 
 				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
@@ -219,6 +224,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					isListed: false,
 					listPrice: 0,
 					token: {
+						// TODO: Parse the correct arguments from the event receipt
 						id: parseInt(
 							mintRes.events.TokenCreated.returnValues.newTokenId ||
 								mintRes.events.TokenCreated.returnValues.tokenId ||

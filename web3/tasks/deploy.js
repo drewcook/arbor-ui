@@ -1,9 +1,15 @@
 const { Group } = require('@semaphore-protocol/group')
 const { task, types } = require('hardhat/config')
 
-task('deploy', 'Deploy the StemQueue contract')
+task('deploy', 'Deploy the entire suite of smart contracts')
 	.addOptionalParam('logs', 'Print the logs', true, types.boolean)
 	.setAction(async ({ logs }, { ethers }) => {
+		// Deploy PolyechoNFT
+		const PolyechoNFTContract = await ethers.getContractFactory('PolyechoNFT')
+		const nft = await PolyechoNFTContract.deploy()
+		await nft.deployed()
+		logs && console.log(`PolyechoNFT contract has been deployed to: ${nft.address}`)
+
 		// Deploy Verifier
 		const VerifierContract = await ethers.getContractFactory('Verifier20')
 		const verifier = await VerifierContract.deploy()
@@ -22,21 +28,27 @@ task('deploy', 'Deploy the StemQueue contract')
 				PoseidonT3: hash.address,
 			},
 		})
-		const incrementalBinaryTree = await IncrementalBinaryTree.deploy()
-		await incrementalBinaryTree.deployed()
-		logs && console.log(`IncrementalBinaryTree contract has been deployed to: ${incrementalBinaryTree.address}`)
+		const tree = await IncrementalBinaryTree.deploy()
+		await tree.deployed()
+		logs && console.log(`IncrementalBinaryTree contract has been deployed to: ${tree.address}`)
 
 		// Deploy StemQueue
 		const StemQueueContract = await ethers.getContractFactory('StemQueue', {
 			libraries: {
-				IncrementalBinaryTree: incrementalBinaryTree.address,
+				IncrementalBinaryTree: tree.address,
 			},
 		})
-		const tree = new Group() // Create empty group for constructor usage
-		const stemQueue = await StemQueueContract.deploy(tree.root, verifier.address)
+		const group = new Group() // Create empty group for constructor usage
+		const stemQueue = await StemQueueContract.deploy(group.root, verifier.address)
 		await stemQueue.deployed()
 		logs && console.log(`StemQueue contract has been deployed to: ${stemQueue.address}`)
 
-		// Return our StemQueue
-		return stemQueue
+		// Return our contracts
+		return {
+			nft,
+			verifier,
+			hash,
+			tree,
+			stemQueue,
+		}
 	})

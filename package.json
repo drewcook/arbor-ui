@@ -62,7 +62,6 @@
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@semaphore-protocol/contracts": "^2.0.0",
-    "@truffle/hdwallet-provider": "^2.0.5",
     "@types/archiver": "^5.3.1",
     "@types/jest": "^28.1.1",
     "@types/lodash": "^4.14.182",

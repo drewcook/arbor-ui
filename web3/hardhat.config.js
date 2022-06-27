@@ -3,6 +3,8 @@ require('@nomiclabs/hardhat-ethers')
 require('@nomiclabs/hardhat-waffle')
 require('hardhat-dependency-compiler')
 require('hardhat-gas-reporter')
+
+// Deploy our smart contracts
 require('./tasks/deploy')
 
 // You need to export an object to set up your config

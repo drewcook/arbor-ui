@@ -2,10 +2,7 @@ import type { OnboardAPI, WalletState } from '@web3-onboard/core'
 import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-import type Web3 from 'web3'
 import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
-import NFTContract from '../contracts/PolyechoNFT.json'
-import StemQueueContract from '../contracts/StemQueue.json'
 import type { IUserDoc } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
 import { get, post } from '../utils/http'
@@ -17,11 +14,8 @@ const Identity = require('@semaphore-protocol/identity').Identity
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
 type Web3ContextProps = {
-	web3: any // web3.js instance for easy use
 	NFTStore: any
 	onboard: any // Blocknative Onboard instance for easy use
-	nftContract: any // PolyechoNFT.sol
-	stemQueueContract: any // StemQueue.sol
 	connected: boolean
 	handleConnectWallet: any
 	handleDisconnectWallet: any
@@ -38,9 +32,6 @@ const Web3Context = createContext<Web3ContextProps>({})
 
 // Context provider
 export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
-	const [web3, setWeb3] = useState<Web3 | null>(null)
-	const [nftContract, setNftContract] = useState(null)
-	const [stemQueueContract, setStemQueueContract] = useState(null)
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
 	const [onboard, setOnboard] = useState<OnboardAPI | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
@@ -77,21 +68,9 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				// Set onboard instance state
 				setOnboard(web3Onboard)
 
-				// Set Web3 instance based off browser support
+				// Get Web3 instance based off browser support
 				const web3Instance = await getWeb3()
 				if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
-				setWeb3(web3Instance)
-
-				// Set PolyechoNFT smart contract based off network ABI
-				const networkId = await web3Instance.eth.net.getId()
-				let deployedNetwork = NFTContract.networks[networkId]
-				let contract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
-				setNftContract(contract)
-
-				// Set StemQueue smart contract based off network ABI
-				deployedNetwork = StemQueueContract.networks[networkId]
-				contract = new web3Instance.eth.Contract(StemQueueContract.abi, deployedNetwork && deployedNetwork.address)
-				setStemQueueContract(contract)
 
 				// Connect to NFT.storage
 				await connectNFTStorage()
@@ -129,10 +108,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 						}
 					} else {
 						console.info(`Switching wallet networks: Network ID ${chainId} is supported`)
-						// TODO: Set the new contract instance to interact with after switching to a supported network
-						// const deployedNetwork = NFTContract.networks[networkId]
-						// const nftContract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
-						// setContract(nftContract)
 					}
 				})
 
@@ -226,9 +201,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	return (
 		<Web3Context.Provider
 			value={{
-				web3,
-				nftContract,
-				stemQueueContract,
 				NFTStore,
 				onboard,
 				connected,
