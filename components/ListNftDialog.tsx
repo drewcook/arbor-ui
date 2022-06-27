@@ -43,7 +43,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-	const { contract, currentUser, web3 } = useWeb3()
+	const { nftContract, currentUser, web3 } = useWeb3()
 
 	const handleClose = () => {
 		if (onClose) onClose()
@@ -59,7 +59,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			if (currentUser) {
 				// Allow it to be bought on chain
 				const amount = web3.utils.toWei(listPrice?.toString(), 'ether')
-				const scRes: any = await contract.methods
+				const scRes: any = await nftContract.methods
 					.allowBuy(nft.token.id, amount)
 					.send({ from: currentUser.address, gas: 650000 })
 				if (!scRes) throw new Error('Failed to list the NFT for sale')
@@ -95,7 +95,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		try {
 			if (currentUser) {
 				// Disallow it to be bought on chain
-				const scRes: any = await contract.methods
+				const scRes: any = await nftContract.methods
 					.disallowBuy(nft.token.id)
 					.send({ from: currentUser.address, gas: 650000 })
 				if (!scRes) throw new Error('Failed to remove the listing for the NFT on-chain')

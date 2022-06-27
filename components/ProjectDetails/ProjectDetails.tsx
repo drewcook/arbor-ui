@@ -69,7 +69,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	// Hooks
 	const router = useRouter()
-	const { NFTStore, connected, contract, currentUser, handleConnectWallet, web3 } = useWeb3()
+	const { NFTStore, connected, nftContract, currentUser, handleConnectWallet, web3 } = useWeb3()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -206,7 +206,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
 				const amount = web3.utils.toWei('0.01', 'ether')
-				const mintRes: any = await contract.methods
+				const mintRes: any = await nftContract.methods
 					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators)
 					.send({ from: currentUser.address, value: amount, gas: 650000 })
 

@@ -21,7 +21,7 @@ const config = {
 			chainId: 31337,
 		},
 		harmonyDevnet: {
-			url: 'https://api/s0.ps.hmny.io',
+			url: 'https://s0.ps.hmny.io',
 			accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
 		},
 	},

@@ -6,7 +6,7 @@ import type Web3 from 'web3'
 import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
 import NFTContract from '../contracts/PolyechoNFT.json'
 import StemQueueContract from '../contracts/StemQueue.json'
-import { IUser } from '../models/user.model'
+import type { IUserDoc } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
 import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
@@ -25,7 +25,7 @@ type Web3ContextProps = {
 	connected: boolean
 	handleConnectWallet: any
 	handleDisconnectWallet: any
-	currentUser: IUser | null
+	currentUser: IUserDoc | null
 }
 
 type Web3ProviderProps = {
@@ -44,7 +44,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
 	const [onboard, setOnboard] = useState<OnboardAPI | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
-	const [currentUser, setCurrentUser] = useState<IUser | null>(null)
+	const [currentUser, setCurrentUser] = useState<IUserDoc | null>(null)
 
 	const loadWeb3 = async (): Promise<any> => {
 		try {
@@ -99,7 +99,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				// Listen for account changes from browser wallet UI
 				web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
 					const newAccount = newAccounts[0]
-					localStorage.removeItem('identityCommitment')
 					// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that we're connected to the right network before attempting to find or create the new user
 					if (web3Onboard.state.get().wallets[0]?.chains[0].id === NETWORK_HEX) {
 						console.info(`Switching wallet accounts to ${newAccount}`)

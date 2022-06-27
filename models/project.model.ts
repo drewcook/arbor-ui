@@ -18,6 +18,7 @@ export interface IProject {
 	stems: IStemDoc[]
 	queue: IQueuedStem[]
 	votingGroupId: number
+	registeredVoterIdentities: string[]
 }
 
 export interface IProjectDoc extends Document, IProject {}
@@ -77,6 +78,11 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 			type: Number,
 			required: true,
 			min: 1,
+		},
+		registeredVoterIdentities: {
+			type: [String],
+			required: true,
+			default: [],
 		},
 	},
 	{ timestamps: true },

@@ -1,9 +1,12 @@
-import { AddCircleOutline, Check } from '@mui/icons-material'
-import { Box, Button, CircularProgress, Divider, Typography } from '@mui/material'
+import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
+import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
+import { stemQueueContract } from '../../constants/contracts'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
+import { update } from '../../utils/http'
 import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
@@ -25,10 +28,15 @@ type StemQueueProps = {
 
 const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const { details, handleUploadStemOpen, handleUploadStemClose, uploadStemOpen, onStemUploadSuccess } = props
+
+	// const [projectDetails, setProjectDetails] = useState<IProjectDoc>(details)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
-	const { currentUser, connected, handleConnectWallet, stemQueueContract } = useWeb3()
-	const web3Provider = useWeb3().web3
+
+	const { currentUser } = useWeb3()
+	const userIsRegistered: boolean = currentUser?.registeredGroupIds.includes(details.votingGroupId) ?? false
+	const userIsCollaborator: boolean = currentUser ? details.collaborators.includes(currentUser.address) : false
+	console.log({ userIsRegistered, userIsCollaborator })
 
 	/*
 		Stem Player callbacks
@@ -44,95 +52,99 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	*/
 	const handleRegister = async () => {
 		try {
+			// Preliminary requirement to be connected
+			if (!currentUser) return
+			setLoading(true)
+			/*
+				TODO: This isn't the right approach.
+				- We're currently able to register multiple times to a group with the same user.
+				- The commitment is different each time due to new random nullifier and trapdoor values.
+				- Consider storing nullifier and trapdoor values to the user record and reuse them.
+			*/
 			const identity = new Identity(currentUser?.identity)
 			const commitment = identity.generateCommitment()
-			console.log(identity, commitment)
-			// TODO: Add the user's identity commitment to the on-chain group
-			// const res = await stemQueueContract.methods.addMember().send({ from: currentUser?.address })
+
+			// Add the user's identity commitment to the on-chain group
+			const contractRes = await stemQueueContract.addMemberToProjectGroup(details.votingGroupId, commitment)
+			if (!contractRes) {
+				console.error("Failed to register the user for the project's voting group")
+			}
+
+			/*
+				Add the identity to the list of project's registered identities
+				- This is so we can generate an off-chain group to submit an off-chain proof of
+				- NOTE: There's not an easy way to translate the on-chain groups[groupId] as an off-chain Group object
+			*/
+			const projectRes = await update(`/projects/${details._id}`, {
+				...details,
+				registeredVoterIdentities: [...details.registeredVoterIdentities, currentUser?.identity],
+			})
+			if (!projectRes) {
+				console.error('Failed to add the identity to the project record')
+			}
+			console.log({ projectRes })
+
+			/*
+				Add the group ID to the current user record
+				- This will help to show the appropriate UI
+			*/
+			const userRes = await update(`/users/${currentUser?.address}`, {
+				...currentUser,
+				registeredGroupIds: [...currentUser.registeredGroupIds, details.votingGroupId],
+			})
+			if (!userRes) {
+				console.error('Failed to add the group ID to the user record')
+			}
 		} catch (e: any) {
 			console.error(e.message)
 		}
+		setLoading(false)
 	}
 
-	// const calculateProof = async (stemId: string) => {
-	// 	setLoading(true)
-	// 	const voter = currentUser?.address || '0x0'
-	// 	const contributors = details.collaborators
-	// 	const queuedStemIds: string[] = details.queue.map(q => q.stem._id)
-	// 	const calldata = await stemQueueVoteCalldata(voter, stemId, contributors, queuedStemIds)
-	// 	console.log('calldata', calldata)
-
-	// 	if (!calldata) {
-	// 		setLoading(false)
-	// 		return 'Invalid inputs to generate witness.'
-	// 	}
-
-	// 	try {
-	// 		// Call verify the proof
-	// 		const result = await contract.verifySudoku(calldata.a, calldata.b, calldata.c, calldata.Input)
-	// 		console.log('result', result)
-	// 		setLoading(false)
-	// 		alert('Successfully verified')
-	// 	} catch (error) {
-	// 		setLoading(false)
-	// 		console.log(error)
-	// 		alert('Not verified to perform this action')
-	// 	}
-	// }
-
-	// TODO:
 	const handleVote = async (stem: IStemDoc) => {
 		console.log('accept', stem._id)
 		try {
-			// // Preliminary requirement to be connected
-			// if (!currentUser || !connected) return handleConnectWallet()
-			// setLoading(true)
-			// // Preliminary requirement to be connected
-			// if (!currentUser || !connected) return handleConnectWallet()
-			// // Get signature and create identity from it deterministically
-			// // const signature = await web3Provider?.eth.personal.sign(
-			// // 	'Sign this message to create your anonymous identity with Semaphore.',
-			// // 	currentUser.address,
-			// // 	'mock-password',
-			// // )
-			// // if (signature) {
-			// const identity = new Identity(currentUser?.identity)
-			// const newIdentityCommitment = identity.generateCommitment()
-			// // const backup = identity.toString()
-			// // Get existing commitments from other contributors
-			// const existingCommitments = details.collaborators.map(c => c.identity)
-			// // Create a new group instance exact of project's group
-			// console.log({ dg: details.group, group })
-			// // Add the new identity commitment to project voter's group
-			// group.addMembers([...existingCommitments, newIdentityCommitment])
-			// // This group should be rewritten to backend database
-			// const { proof, publicSignals } = await generateProof(identity, group, group.root, stem._id, {
-			// 	wasmFilePath: '/zkproof/semaphore.wasm',
-			// 	zkeyFilePath: '/zkproof/semaphore.zkey',
-			// })
-			// const solidityProof = packToSolidityProof(proof)
-			// const stemId = utils.formatBytes32String(stem._id)
-			// console.log(stemId)
-			// const res = await stemQueueContract.methods
-			// 	.vote(stemId, publicSignals.nullifierHash, solidityProof)
-			// 	.send({ from: currentUser?.address })
-			// console.log({ res })
-			// }
-			// Call circuit
-			// logger.green('Calculating the proof...')
-			// const circuitRes = await calculateProof(stem._id)
-			// console.log({ circuitRes })
-			// if (circuitRes) {
-			// 	// If 'yes' votes are now majority of collaborators, add stem and collaborator to project
-			// 	const updateRes = await update(`/projects/${details._id}`, { newStem: stem })
-			// 	console.log({ updateRes })
-			// } else {
-			// 	// Not a valid vote..
-			// }
+			// Preliminary requirement to be connected
+			if (!currentUser) return
+			setLoading(true)
+			/* THIS IS AN ATTEMPTED WORKAROUND TO MIMIC THE ONCHAIN GROUP WITH AN OFFCHAIN ONE TO CREATE AN OFFCHAIN PROOF
+				Prep for submitting the on-chain vote
+				- Create a new Identity object for the current user's identity
+				- Add a new Group object and add registered members registered members of the project to it
+				- Get the on-chain group and root
+				- Create the signal for the stem ID
+				- Generate the proof
+				- Invoke the on-chain vote method with the proof and signal
+			*/
+			const voterIdentity = new Identity(currentUser?.identity)
+			const group = new Group()
+			group.addMember(voterIdentity.generateCommitment())
+			for (const identity of details.registeredVoterIdentities) {
+				const registeredIdentity = new Identity(identity)
+				group.addMember(registeredIdentity.generateCommitment())
+			}
+			const externalNullifier = group.root
+			// Create a unique signal based off of the stemId + modulus of a large prime
+			const signal = utils.formatBytes32String(stem._id.toString())
+			const { proof, publicSignals } = await generateProof(
+				voterIdentity,
+				group,
+				externalNullifier,
+				stem._id.toString(),
+				{
+					wasmFilePath: '/zkproof/semaphore.wasm',
+					zkeyFilePath: '/zkproof/semaphore.zkey',
+				},
+			)
+			console.log({ proof, publicSignals })
+			const solidityProof = packToSolidityProof(proof)
+			console.log({ solidityProof })
+			const voteRes = await stemQueueContract.vote(signal, publicSignals.nullifierHash, solidityProof)
+			console.log({ voteRes })
 		} catch (e: any) {
-			setLoading(false)
-			console.error(e.message)
+			console.error(e)
 		}
+		setLoading(false)
 	}
 
 	return (
@@ -142,7 +154,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				variant="outlined"
 				size="large"
 				onClick={handleUploadStemOpen}
-				sx={styles.addStemBtn}
+				sx={styles.actionBtn}
 				startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
 			>
 				Add Stem
@@ -151,18 +163,23 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				variant="outlined"
 				size="large"
 				onClick={handleRegister}
-				sx={styles.addStemBtn}
-				startIcon={<Check sx={{ fontSize: '32px' }} />}
-				disabled={loading}
+				sx={styles.actionBtn}
+				startIcon={userIsRegistered ? <Check sx={{ fontSize: '32px' }} /> : <HowToReg sx={{ fontSize: '32px' }} />}
+				disabled={loading || userIsRegistered || !currentUser}
 			>
-				{loading ? <CircularProgress /> : 'Register to Vote'}
+				{loading ? (
+					<CircularProgress size={20} sx={styles.loadingIcon} />
+				) : userIsRegistered ? (
+					'Currently Registered'
+				) : (
+					'Register to Vote'
+				)}
 			</Button>
-			<Divider />
 			{details.queue.length === 0 ? (
-				<Typography>The stem queue is currently empty for this project</Typography>
+				<Typography sx={styles.noStemsMsg}>The stem queue is currently empty for this project</Typography>
 			) : (
 				details.queue.map((stem, idx) => (
-					<Box key={idx} sx={{ mb: 3 }}>
+					<Box key={idx} sx={styles.stemWrapper}>
 						<StemPlayer
 							idx={idx + 1}
 							details={stem.stem}
@@ -174,8 +191,13 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						<Typography>
 							<strong>Votes:</strong> {stem.votes}
 						</Typography>
-						<Button variant="contained" size="small" onClick={() => handleVote(stem.stem)}>
-							{loading ? <CircularProgress color="inherit" /> : 'Cast Vote'}
+						<Button
+							variant="contained"
+							size="small"
+							onClick={() => handleVote(stem.stem)}
+							disabled={loading || !userIsRegistered || !currentUser}
+						>
+							{loading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
 						</Button>
 					</Box>
 				))

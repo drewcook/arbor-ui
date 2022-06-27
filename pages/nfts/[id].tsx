@@ -62,7 +62,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-	const { connected, handleConnectWallet, currentUser, contract, web3 } = useWeb3()
+	const { connected, handleConnectWallet, currentUser, nftContract, web3 } = useWeb3()
 	const router = useRouter()
 
 	const handleBuyNft = async () => {
@@ -71,7 +71,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			if (currentUser) {
 				// Call smart contract to make transfer
 				const amount = web3.utils.toWei(details.listPrice.toString(), 'ether')
-				const scRes: any = await contract.methods
+				const scRes: any = await nftContract.methods
 					.buy(details.token.id)
 					.send({ from: currentUser.address, value: amount, gas: 650000 })
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')

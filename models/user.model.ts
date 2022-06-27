@@ -13,6 +13,7 @@ export interface IUser {
 	stemIds: string[]
 	createdAt: string
 	updatedAt: string
+	registeredGroupIds: number[]
 }
 
 export interface IUserFull extends IUser {
@@ -61,6 +62,11 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 		},
 		stemIds: {
 			type: [String],
+			required: false,
+			default: [],
+		},
+		registeredGroupIds: {
+			type: [Number],
 			required: false,
 			default: [],
 		},
