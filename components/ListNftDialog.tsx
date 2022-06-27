@@ -9,7 +9,7 @@ import {
 	InputAdornment,
 	InputLabel,
 	OutlinedInput,
-	Typography
+	Typography,
 } from '@mui/material'
 import PropTypes from 'prop-types'
 import { useState } from 'react'

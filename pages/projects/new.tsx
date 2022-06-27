@@ -10,9 +10,6 @@ import { newProjectStyles as styles } from '../../styles/Projects.styles'
 import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
-const Group = require('@semaphore-protocol/group').Group
-const Identity = require('@semaphore-protocol/identity').Identity
-
 const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState<string>('')
 	const [description, setDescription] = useState<string>('')
