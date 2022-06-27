@@ -10,7 +10,9 @@ import StemQueue from '../contracts/StemQueue.json'
 */
 
 // Create our Provider instance
-const provider = new providers.JsonRpcProvider('http://localhost:8545')
+const provider = new providers.JsonRpcProvider(
+	process.env.NODE_ENV === 'development' ? 'http://localhost:8545' : 'https://api/s0.ps.hmny.io',
+)
 
 // PolyechoNFT contract
 const localAddress_nft = '0x4C4a2f8c81640e47606d3fd77B353E87Ba015584'
