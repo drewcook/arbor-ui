@@ -29,7 +29,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				const accountAddress = req.body.address.toLowerCase()
-				console.log('identity', req.body.identity)
 				// Genearate a Robohash.org avatar - https://robohash.org
 				const baseURL = 'https://robohash.org/'
 				let avatarUrl = baseURL

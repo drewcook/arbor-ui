@@ -50,7 +50,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					- Do not add in the project creator as a voting member (yet)
 					- Future users will register to vote, which will add them in as group members
 				*/
-				// Get contract address, create instance
 				const groupId = BigInt(votingGroupRes.data.totalGroupCount)
 				const contractRes = await stemQueueContract.createProjectGroup(groupId, 20, BigInt(0), req.body.createdBy)
 				if (!contractRes) {
@@ -58,7 +57,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						.status(400)
 						.json({ success: false, error: 'Failed to create on-chain Semaphore group for given project' })
 				}
-				// console.info(contractRes)
 
 				/*
 					Create the new project record
