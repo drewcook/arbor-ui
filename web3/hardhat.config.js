@@ -4,6 +4,16 @@ require('@nomiclabs/hardhat-waffle')
 require('hardhat-dependency-compiler')
 require('hardhat-gas-reporter')
 
+// This is a sample Hardhat task. To learn how to create your own go to
+// https://hardhat.org/guides/create-task.html
+task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
+	const accounts = await hre.ethers.getSigners()
+
+	for (const account of accounts) {
+		console.log(account.address)
+	}
+})
+
 // Deploy our smart contracts
 require('./tasks/deploy')
 
@@ -13,7 +23,15 @@ require('./tasks/deploy')
  * @type import('hardhat/config').HardhatUserConfig
  */
 const config = {
-	solidity: '0.8.4',
+	solidity: {
+		version: '0.8.4',
+		settings: {
+			optimizer: {
+				enabled: true,
+				runs: 200,
+			},
+		},
+	},
 	dependencyCompiler: {
 		paths: ['@semaphore-protocol/contracts/verifiers/Verifier20.sol'],
 	},
@@ -23,8 +41,16 @@ const config = {
 			chainId: 31337,
 		},
 		harmonyDevnet: {
-			url: 'https://s0.ps.hmny.io',
+			url: 'https://api.s0.ps.hmny.io',
 			accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+		},
+		harmonyTestnet: {
+			url: 'https://api.s0.b.hmny.io',
+			accounts: [process.env.PRIVATE_KEY],
+		},
+		harmonyMainnet: {
+			url: 'https://api.harmony.one',
+			accounts: [process.env.PRIVATE_KEY],
 		},
 	},
 	gasReporter: {
