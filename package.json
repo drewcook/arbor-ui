@@ -12,12 +12,10 @@
     "prepare": "husky install",
     "circuits:setup": "./scripts/compileCircuit.sh && ./scripts/generateWitness.sh && ./scripts/executePlonk.sh && ./scripts/copyZkFiles.sh",
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
-    "contracts:test": "cd web3 && truffle test",
-    "contracts:compile": "cd web3 && truffle compile",
     "hardhat:node": "cd web3 && hardhat node",
-    "compile": "cd web3 && hardhat compile",
-    "deploy": "cd web3 && hardhat deploy",
-    "test": "cd web3 && hardhat test",
+    "contracts:test": "cd web3 && hardhat test",
+    "contracts:compile": "cd web3 && hardhat compile",
+    "contracts:deploy": "cd web3 && hardhat deploy",
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "dependencies": {
