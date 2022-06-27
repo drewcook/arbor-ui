@@ -1,6 +1,6 @@
 import { Contract, providers } from 'ethers'
-import PolyechoNFT from '../web3/artifacts/contracts/PolyechoNFT.sol/PolyechoNFT.json'
-import StemQueue from '../web3/artifacts/contracts/StemQueue.sol/StemQueue.json'
+import PolyechoNFT from '../contracts/PolyechoNFT.json'
+import StemQueue from '../contracts/StemQueue.json'
 
 /*
 	NOTE: Update these to be production values after launching them on any network

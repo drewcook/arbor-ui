@@ -12,7 +12,7 @@ export type CreateProjectPayload = {
 	bpm: number
 	trackLimit: number
 	tags: string[]
-	votingGroupId: number
+	votingGroupId?: number // Added upon creation
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
