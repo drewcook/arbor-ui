@@ -1,9 +1,9 @@
+import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
-import { utils } from 'ethers'
+import { ethers, utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { stemQueueContract } from '../../constants/contracts'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { update } from '../../utils/http'
@@ -11,10 +11,12 @@ import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
 
-const Group = require('@semaphore-protocol/group').Group
-const Identity = require('@semaphore-protocol/identity').Identity
-const generateProof = require('@semaphore-protocol/proof').generateProof
-const packToSolidityProof = require('@semaphore-protocol/proof').packToSolidityProof
+const createIdentity = require('@interep/identity')
+const createProof = require('@interep/proof')
+// const Group = require('@semaphore-protocol/group').Group
+// const Identity = require('@semaphore-protocol/identity').Identity
+// const generateProof = require('@semaphore-protocol/proof').generateProof
+// const packToSolidityProof = require('@semaphore-protocol/proof').packToSolidityProof
 
 const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
 
@@ -54,20 +56,31 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
 			setLoading(true)
+
 			/*
-				TODO: This isn't the right approach.
-				- We're currently able to register multiple times to a group with the same user.
-				- The commitment is different each time due to new random nullifier and trapdoor values.
-				- Consider storing nullifier and trapdoor values to the user record and reuse them.
+				Create a user identity based off signing a message
+				- @interep/identity
 			*/
-			const identity = new Identity(currentUser?.identity)
-			const commitment = identity.generateCommitment()
+			const ethereumProvider = (await detectEthereumProvider()) as any
+			const provider = new ethers.providers.Web3Provider(ethereumProvider)
+			const signer = provider.getSigner()
+			const identity = await createIdentity(message => signer.signMessage(message), 'Polyecho')
+			console.log({ identity })
+
+			/* TODO: Delete this
+				We're currently able to register multiple times to a group with the same user.
+				- Is this supposed to be allowed?
+				- The commitment does not seem to be different, since we re-use the existing identity
+				- Consider storing nullifier and trapdoor values to the user record and reuse them maybe?
+			*/
+			// const identity = new Identity(currentUser?.identity)
+			// const commitment = identity.generateCommitment()
 
 			// Add the user's identity commitment to the on-chain group
-			const contractRes = await stemQueueContract.addMemberToProjectGroup(details.votingGroupId, commitment)
-			if (!contractRes) {
-				console.error("Failed to register the user for the project's voting group")
-			}
+			// const contractRes = await stemQueueContract.addMemberToProjectGroup(details.votingGroupId, commitment)
+			// if (!contractRes) {
+			// 	console.error("Failed to register the user for the project's voting group")
+			// }
 
 			/*
 				Add the identity to the list of project's registered identities
@@ -76,7 +89,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
-				registeredVoterIdentities: [...details.registeredVoterIdentities, currentUser?.identity],
+				registeredVoterIdentities: [...details.registeredVoterIdentities, identity],
 			})
 			if (!projectRes) {
 				console.error('Failed to add the identity to the project record')
@@ -84,11 +97,14 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ projectRes })
 
 			/*
-				Add the group ID to the current user record
-				- This will help to show the appropriate UI
+				Update the user record
+				- Add in the new identity for the user
+				- Add in the group Id
+				- NOTE: This will help to show the appropriate UI elements/state
 			*/
 			const userRes = await update(`/users/${currentUser?.address}`, {
 				...currentUser,
+				identity: identity.toString(),
 				registeredGroupIds: [...currentUser.registeredGroupIds, details.votingGroupId],
 			})
 			if (!userRes) {
@@ -115,31 +131,51 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				- Generate the proof
 				- Invoke the on-chain vote method with the proof and signal
 			*/
-			const voterIdentity = new Identity(currentUser?.identity)
-			const group = new Group()
-			group.addMember(voterIdentity.generateCommitment())
-			for (const identity of details.registeredVoterIdentities) {
-				const registeredIdentity = new Identity(identity)
-				group.addMember(registeredIdentity.generateCommitment())
-			}
-			const externalNullifier = group.root
+			// const voterIdentity = new Identity(currentUser?.identity)
+			// const group = new Group()
+			// group.addMember(voterIdentity.generateCommitment())
+			// for (const identity of details.registeredVoterIdentities) {
+			// 	const registeredIdentity = new Identity(identity)
+			// 	group.addMember(registeredIdentity.generateCommitment())
+			// }
+			// const externalNullifier = group.root
 			// Create a unique signal based off of the stemId + modulus of a large prime
 			const signal = utils.formatBytes32String(stem._id.toString())
-			const { proof, publicSignals } = await generateProof(
-				voterIdentity,
-				group,
-				externalNullifier,
-				stem._id.toString(),
-				{
-					wasmFilePath: '/zkproof/semaphore.wasm',
-					zkeyFilePath: '/zkproof/semaphore.zkey',
-				},
-			)
-			console.log({ proof, publicSignals })
-			const solidityProof = packToSolidityProof(proof)
-			console.log({ solidityProof })
-			const voteRes = await stemQueueContract.vote(signal, publicSignals.nullifierHash, solidityProof)
-			console.log({ voteRes })
+			/*
+				Generate an off-chain proof to submit to submit to the backend contracts for signalling and verification
+			*/
+			// const { proof, publicSignals } = await generateProof(
+			// 	voterIdentity,
+			// 	group,
+			// 	externalNullifier,
+			// 	stem._id.toString(),
+			// 	{
+			// 		wasmFilePath: '/zkproof/semaphore.wasm',
+			// 		zkeyFilePath: '/zkproof/semaphore.zkey',
+			// 	},
+			// )
+			// const solidityProof = packToSolidityProof(proof)
+			// console.log({ proof, publicSignals, solidityProof })
+
+			/*
+				Create the off-chain proof
+				- @interep/proof
+			*/
+			const identity = currentUser.identity
+			const groupId = { provider: 'polyecho', name: 'polyecho' }
+			const externalNullifier = 1
+			const zkFiles = {
+				wasmFilePath: '/zkproof/semaphore.wasm',
+				zkeyFilePath: '/zkproof/semaphore.zkey',
+			}
+			const response = await createProof(identity, groupId, externalNullifier, signal, zkFiles)
+			console.log({ response })
+
+			/*
+				Submit the vote signal and proof to the smart contract
+			*/
+			// const voteRes = await stemQueueContract.vote(signal, publicSignals.nullifierHash, solidityProof)
+			// console.log({ voteRes })
 		} catch (e: any) {
 			console.error(e)
 		}

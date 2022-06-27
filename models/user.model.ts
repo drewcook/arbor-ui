@@ -32,10 +32,10 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			// validate it is an ethereum-like address (Joi?)
 			unique: true,
 		},
-		// Semaphore identity
+		// Interep Semaphore identity
 		identity: {
 			type: String,
-			required: true,
+			required: false,
 			unique: true,
 		},
 		displayName: {

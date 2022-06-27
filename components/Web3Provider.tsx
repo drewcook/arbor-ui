@@ -170,8 +170,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			} else {
 				const createRes = await post('/users', {
 					address: account.toLowerCase(),
-					// Create a Semaphore identity for the user
-					identity: new Identity().toString(),
 				})
 				setCurrentUser(createRes.data)
 			}
