@@ -36,7 +36,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const { currentUser } = useWeb3()
 	const userIsRegistered: boolean = currentUser?.registeredGroupIds.includes(details.votingGroupId) ?? false
 	const userIsCollaborator: boolean = currentUser ? details.collaborators.includes(currentUser.address) : false
-	console.log({ userIsRegistered, userIsCollaborator })
 
 	/*
 		Stem Player callbacks
