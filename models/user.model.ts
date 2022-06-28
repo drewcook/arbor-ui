@@ -3,9 +3,19 @@ import type { INftDoc } from './nft.model'
 import type { IProjectDoc } from './project.model'
 import type { IStemDoc } from './stem.model'
 
+type BigNumber = number | bigint | string
+
+export interface IUserIdentity {
+	commitment: BigNumber
+	nullifier: BigNumber
+	secret: BigNumber
+	trapdoor: BigNumber
+	serialized: string
+}
+
 export interface IUser {
 	address: string
-	identity: string
+	identity: IUserIdentity
 	displayName: string
 	avatarUrl: string
 	nftIds: string[]
@@ -34,9 +44,8 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 		},
 		// Interep Semaphore identity
 		identity: {
-			type: String,
+			type: Object,
 			required: false,
-			unique: true,
 		},
 		displayName: {
 			type: String,

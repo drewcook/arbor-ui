@@ -9,7 +9,7 @@ export interface IVotingGroup {
 
 export interface IVotingGroupDoc extends Document, IVotingGroup {}
 
-export const votingGroupSchema = new mongoose.Schema<IVotingGroup>(
+export const votingGroupSchema = new mongoose.Schema<IVotingGroupDoc>(
 	{
 		totalGroupCount: {
 			type: Number,
@@ -22,4 +22,4 @@ export const votingGroupSchema = new mongoose.Schema<IVotingGroup>(
 )
 
 export const VotingGroup =
-	mongoose.models.votingGroupSchema || mongoose.model<IVotingGroup>('voting-group', votingGroupSchema)
+	mongoose.models['voting-group'] || mongoose.model<IVotingGroupDoc>('voting-group', votingGroupSchema)

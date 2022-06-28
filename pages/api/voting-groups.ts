@@ -40,7 +40,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'PUT':
 			try {
-				// TODO: error is occurring - OverwriteModelError: Cannot overwrite `voting-group` model once compiled.
 				const votingGroups: IVotingGroupDoc[] = await VotingGroup.find({})
 				if (votingGroups.length === 0) {
 					throw new Error('The singular voting group does not exist yet')
@@ -64,7 +63,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!updated) {
 					throw new Error('Failed to increment the totalGroupCount for the VotingGroup')
 				}
-
 				res.status(200).json({ success: true, data: updated })
 			} catch (e: any) {
 				res.status(400).json({ success: false, error: e.message })

@@ -1,6 +1,7 @@
 import mongoose, { Document } from 'mongoose'
 import type { IStemDoc } from './stem.model'
 import { stemSchema } from './stem.model'
+import { IUserIdentity } from './user.model'
 
 export interface IQueuedStem {
 	stem: IStemDoc
@@ -18,7 +19,7 @@ export interface IProject {
 	stems: IStemDoc[]
 	queue: IQueuedStem[]
 	votingGroupId: number
-	registeredVoterIdentities: string[]
+	registeredVoterIdentities: IUserIdentity[]
 }
 
 export interface IProjectDoc extends Document, IProject {}
@@ -80,7 +81,7 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 			min: 1,
 		},
 		registeredVoterIdentities: {
-			type: [String],
+			type: [Object],
 			required: true,
 			default: [],
 		},
