@@ -2,27 +2,22 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
+import { Strategy, ZkIdentity } from '@zk-kit/identity'
 import { ethers, utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { stemQueueContract } from '../../constants/contracts'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
-import { IUserIdentity } from '../../models/user.model'
 import { update } from '../../utils/http'
 import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
 
-const createIdentity = require('@interep/identity')
-const createProof = require('@interep/proof').default
-
-// const Group = require('@semaphore-protocol/group').Group
-// const Identity = require('@semaphore-protocol/identity').Identity
-const generateProof = require('@semaphore-protocol/proof').generateProof
-const packToSolidityProof = require('@semaphore-protocol/proof').packToSolidityProof
-
 const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
+
+const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
+const Semaphore = require('@zk-kit/protocols').Semaphore
 
 type StemQueueProps = {
 	details: IProjectDoc
@@ -40,11 +35,10 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 
 	const { currentUser } = useWeb3()
-	const userIsRegistered: boolean = currentUser?.registeredGroupIds.includes(details.votingGroupId) ?? false
+	const userIsRegistered: boolean =
+		details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment).length >
+		0
 	const userIsCollaborator: boolean = currentUser ? details.collaborators.includes(currentUser.address) : false
-	const projectContainsIdentity: boolean =
-		details.registeredVoterIdentities.filter(identity => identity.commitment === currentUser?.identity.commitment)
-			.length > 0
 
 	/*
 		Stem Player callbacks
@@ -66,18 +60,16 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			/*
 				Create a user identity based off signing a message
-				- @interep/identity
+				- @zk-kit/identity
 			*/
 			const ethereumProvider = (await detectEthereumProvider()) as any
 			const provider = new ethers.providers.Web3Provider(ethereumProvider)
 			const signer = provider.getSigner()
-			const identity = await createIdentity(message => signer.signMessage(message), 'Polyecho')
-			const commitment = await identity.genIdentityCommitment()
-			const nullifier = await identity.getNullifier()
-			const secret = await identity.getSecret()
-			const trapdoor = await identity.getTrapdoor()
-			const serialized = await identity.serializeIdentity()
-			const userIdentity: IUserIdentity = { commitment, nullifier, secret, trapdoor, serialized }
+			const message = await signer.signMessage(
+				"Sign this message to register for this Polyecho project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
+			)
+			const identity = new ZkIdentity(Strategy.MESSAGE, message)
+			const commitment: string = await identity.genIdentityCommitment().toString()
 
 			/*
 				Add the user's identity commitment to the on-chain group
@@ -94,7 +86,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
-				registeredVoterIdentities: [...details.registeredVoterIdentities, userIdentity],
+				voterIdentityCommitments: [...details.voterIdentityCommitments, commitment],
 			})
 			if (!projectRes) {
 				console.error('Failed to add the identity to the project record')
@@ -106,9 +98,10 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				- Add in the group ID for user's registered groups
 				- NOTE: This will help to show the appropriate UI elements/state
 			*/
+			// TODO: Only store maybe the commitment
 			const userRes = await update(`/users/${currentUser?.address}`, {
 				...currentUser,
-				identity: userIdentity,
+				voterIdentityCommitment: commitment,
 				registeredGroupIds: [...currentUser.registeredGroupIds, details.votingGroupId],
 			})
 			if (!userRes) {
@@ -121,70 +114,70 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	}
 
 	const handleVote = async (stem: IStemDoc) => {
-		console.log('accept', stem._id)
-		console.log({ createProof })
 		try {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
 			setLoading(true)
 
-			// Create a unique signal based off of the stemId + modulus of a large prime
-			const signal = utils.formatBytes32String(stem._id.toString())
-
-			/* THIS IS AN ATTEMPTED WORKAROUND TO MIMIC THE ONCHAIN GROUP WITH AN OFFCHAIN ONE TO CREATE AN OFFCHAIN PROOF
-				Prep for submitting the on-chain vote
-				- Create a new Identity object for the current user's identity
-				- Add a new Group object and add registered members registered members of the project to it
-				- Get the on-chain group and root
-				- Create the signal for the stem ID
-				- Generate the proof
-				- Invoke the on-chain vote method with the proof and signal
-			*/
-			// const voterIdentity = new Identity(currentUser?.identity)
-			// const group = new Group()
-			// group.addMember(voterIdentity.generateCommitment())
-			// for (const identity of details.registeredVoterIdentities) {
-			// 	const registeredIdentity = new Identity(identity)
-			// 	group.addMember(registeredIdentity.generateCommitment())
-			// }
-			// const externalNullifier = group.root
+			// Signal will be the MongoDB ObjectId for the stem record being voted on
+			const stemId: string = stem._id.toString()
 
 			/*
 				Generate an off-chain proof to submit to the backend contracts for signalling and verification
-				- @semaphore-protocol/proof
+					Using @semaphore-protocol/proof
+					1. Re-instantiate a new ZKIdentity using the user's identity commitment from the previously signed message via EOA wallet
+					2. Get all identity commitments of the semaphore group so that we can calculate the Merkle root
+					3. Generate the Merkle proof given the above two pieces of data
+					4. Create the full proof
+					5. Call the smart contract to verify the proof that this user is part of the group
 			*/
-			const { proof, publicSignals } = await generateProof(
-				currentUser.identity.commitment,
-				details.votingGroupId,
-				1,
-				stem._id.toString(),
-				{
-					wasmFilePath: '/zkproof/semaphore.wasm',
-					zkeyFilePath: '/zkproof/semaphore.zkey',
-				},
+
+			// Re-create the identity
+			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, currentUser?.voterIdentityCommitment)
+			console.log({ voterIdentity })
+
+			// Get the other group members' identities
+			const identityCommitments: bigint[] = []
+			for (const commitment of details.voterIdentityCommitments) {
+				console.log(commitment, BigInt(commitment))
+				identityCommitments.push(BigInt(commitment))
+			}
+			console.log({ identityCommitments })
+
+			// Generate the Merkle proof
+			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, currentUser?.voterIdentityCommitment)
+			console.log({ merkleProof })
+
+			// Generate the witness
+			const witness = Semaphore.genWitness(
+				voterIdentity.getTrapdoor(),
+				voterIdentity.getNullifier(),
+				merkleProof,
+				merkleProof.root,
+				stemId,
 			)
-			const solidityProof = packToSolidityProof(proof)
+			console.log({ witness })
+
+			// Generate the proofs
+			const { proof, publicSignals } = await Semaphore.genProof(
+				witness,
+				'/zkproof/semaphore.wasm',
+				'/zkproof/semaphore.zkey',
+			)
+			const solidityProof = Semaphore.packToSolidityProof(proof)
 			console.log({ proof, publicSignals, solidityProof })
 
-			/*
-				Create the off-chain proof
-				- @interep/proof
-			*/
-			const identity: IUserIdentity = currentUser.identity
-			// const groupId = { provider: 'polyecho', name: 'polyecho' }
-			const externalNullifier = 1
-			const zkFiles = {
-				wasmFilePath: '/zkproof/semaphore.wasm',
-				zkeyFilePath: '/zkproof/semaphore.zkey',
-			}
-			const proofRes = await createProof(identity, details.votingGroupId, externalNullifier, signal, zkFiles)
-			console.log({ proofRes })
+			// Submit the vote signal and proof to the smart contract
+			const voteRes = await stemQueueContract.vote(
+				utils.formatBytes32String(stemId),
+				publicSignals.nullifierHash,
+				solidityProof,
+			)
+			console.log({ voteRes })
 
-			/*
-				Submit the vote signal and proof to the smart contract
-			*/
-			// const voteRes = await stemQueueContract.vote(signal, publicSignals.nullifierHash, solidityProof)
-			// console.log({ voteRes })
+			// Get the receipt
+			const receipt = await voteRes.wait()
+			console.log({ receipt })
 		} catch (e: any) {
 			console.error(e)
 		}

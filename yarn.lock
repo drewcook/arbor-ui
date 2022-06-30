@@ -3510,7 +3510,7 @@
   resolved "https://registry.yarnpkg.com/@zk-kit/incremental-merkle-tree/-/incremental-merkle-tree-0.4.3.tgz#197f72102d35dd9c546a6a432896d6d6f6de05f4"
   integrity sha512-2qHfrJXtPx8/UmF0wFAUr4VqCLr3J/P859fk/e3fwKLUnf3baeIUAO6inY4wrh0NGy4bzpKUWYjDph0yTbPz6A==
 
-"@zk-kit/protocols@^1.11.0":
+"@zk-kit/protocols@^1.11.0", "@zk-kit/protocols@^1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@zk-kit/protocols/-/protocols-1.11.1.tgz#e70942097e6bd6759afd72c6b22c358ae1588d86"
   integrity sha512-fjjrYwZCcbKMJb3+xVdLwV6kUpRMTI9PVdC6M1zHfqEqcDebmfGmMjduoL/oFwq3wZTBNV1zQvRc96WZ0Nvrnw==

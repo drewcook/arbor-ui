@@ -3,19 +3,8 @@ import type { INftDoc } from './nft.model'
 import type { IProjectDoc } from './project.model'
 import type { IStemDoc } from './stem.model'
 
-type BigNumber = number | bigint | string
-
-export interface IUserIdentity {
-	commitment: BigNumber
-	nullifier: BigNumber
-	secret: BigNumber
-	trapdoor: BigNumber
-	serialized: string
-}
-
 export interface IUser {
 	address: string
-	identity: IUserIdentity
 	displayName: string
 	avatarUrl: string
 	nftIds: string[]
@@ -23,6 +12,7 @@ export interface IUser {
 	stemIds: string[]
 	createdAt: string
 	updatedAt: string
+	voterIdentityCommitment: string
 	registeredGroupIds: number[]
 }
 
@@ -42,9 +32,9 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			// validate it is an ethereum-like address (Joi?)
 			unique: true,
 		},
-		// Interep Semaphore identity
-		identity: {
-			type: Object,
+		// Semaphore identity commitment
+		voterIdentityCommitment: {
+			type: String,
 			required: false,
 		},
 		displayName: {
