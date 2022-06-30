@@ -1744,39 +1744,6 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
-"@interep/api@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@interep/api/-/api-0.7.0.tgz#0c0eb1ce15bb552cc2082afd0db7754f4098619c"
-  integrity sha512-XsH8H6mm/awDXfo9yoUXDYkBvLSs5tl0NRaj3SpJ9NXTMrefhaUZ37yrBAntX1P38UPT1Yuo38ampQShwTGg6Q==
-  dependencies:
-    "@interep/reputation" "^0.1.0"
-    axios "^0.23.0"
-
-"@interep/identity@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@interep/identity/-/identity-0.1.1.tgz#06254fe4baf4f2ed5b7ee299869a8486774d4021"
-  integrity sha512-UVW9B+zBqvPaQB8euEtXlk0g2U3BGYeLLRcLwEuTm0wLb6IT5WjX2PYK4HuuEBQ31O5BVGwLaWec71K0bER3Nw==
-  dependencies:
-    "@zk-kit/identity" "^1.4.1"
-
-"@interep/proof@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@interep/proof/-/proof-0.5.0.tgz#0105765e59d37fa5a79da8227ade335d03de7205"
-  integrity sha512-Z+r2VIx5uUKwmq8tLamzg6/Np0tQcuW0qtA64mjBMkAIn12BpmiFJOdIX3+tvi5Y2lqi/Mwq4GscvcMSD+NVzA==
-  dependencies:
-    "@ethersproject/solidity" "^5.5.0"
-    "@ethersproject/strings" "^5.5.0"
-    "@interep/api" "^0.7.0"
-    "@zk-kit/identity" "^1.4.1"
-    "@zk-kit/incremental-merkle-tree" "^0.4.3"
-    "@zk-kit/protocols" "^1.11.0"
-    circomlibjs "0.0.8"
-
-"@interep/reputation@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.1.0.tgz#b771898537d375a9920950c81ff93e3c862174ec"
-  integrity sha512-bSK8S1ZetMzYyirec57S1lDVRoaS6gysy5ZuSHqvuL9NGdjgSH4I/EWk9gsQ1RdnUOyqSzkULF3oomeDp3VY1w==
-
 "@ipld/car@^3.0.1", "@ipld/car@^3.2.3":
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@ipld/car/-/car-3.2.4.tgz#115951ba2255ec51d865773a074e422c169fb01c"
@@ -2571,7 +2538,7 @@
     "@zk-kit/incremental-merkle-tree" "0.4.3"
     circomlibjs "0.0.8"
 
-"@semaphore-protocol/identity@2.0.0", "@semaphore-protocol/identity@^2.0.0":
+"@semaphore-protocol/identity@2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@semaphore-protocol/identity/-/identity-2.0.0.tgz#45d9dc98978217102e887d070b48cc125e2c3c42"
   integrity sha512-S67x+7CBYWZVDvmfO3OX7H1M8s7ZGVjTH5ipaFsLbQsm/1AM31OurEY11wR2b8tDociMTOCjRtO9BsHvHU3O/A==
@@ -3510,7 +3477,7 @@
   resolved "https://registry.yarnpkg.com/@zk-kit/incremental-merkle-tree/-/incremental-merkle-tree-0.4.3.tgz#197f72102d35dd9c546a6a432896d6d6f6de05f4"
   integrity sha512-2qHfrJXtPx8/UmF0wFAUr4VqCLr3J/P859fk/e3fwKLUnf3baeIUAO6inY4wrh0NGy4bzpKUWYjDph0yTbPz6A==
 
-"@zk-kit/protocols@^1.11.0", "@zk-kit/protocols@^1.11.1":
+"@zk-kit/protocols@^1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@zk-kit/protocols/-/protocols-1.11.1.tgz#e70942097e6bd6759afd72c6b22c358ae1588d86"
   integrity sha512-fjjrYwZCcbKMJb3+xVdLwV6kUpRMTI9PVdC6M1zHfqEqcDebmfGmMjduoL/oFwq3wZTBNV1zQvRc96WZ0Nvrnw==
@@ -4012,13 +3979,6 @@ axe-core@^4.3.5:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.4.1.tgz#7dbdc25989298f9ad006645cd396782443757413"
   integrity sha512-gd1kmb21kwNuWr6BQz8fv6GNECPBnUasepcoLbekws23NVBLODdsClRZ+bQ8+9Uomf3Sm3+Vwn0oYG9NvwnJCw==
-
-axios@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.23.0.tgz#b0fa5d0948a8d1d75e3d5635238b6c4625b05149"
-  integrity sha512-NmvAE4i0YAv5cKq8zlDoPd1VLKAqX5oLuZKs8xkJa4qi6RGn0uhCYFjWtHHC9EM/MwOwYWOs53W+V0aqEXq1sg==
-  dependencies:
-    follow-redirects "^1.14.4"
 
 axios@^0.26.0, axios@^0.26.1:
   version "0.26.1"
@@ -7645,7 +7605,7 @@ fnv-plus@^1.3.1:
   resolved "https://registry.yarnpkg.com/fnv-plus/-/fnv-plus-1.3.1.tgz#c34cb4572565434acb08ba257e4044ce2b006d67"
   integrity sha512-Gz1EvfOneuFfk4yG458dJ3TLJ7gV19q3OM/vVvvHf7eT02Hm1DleB4edsia6ahbKgAYxO9gvyQ1ioWZR+a00Yw==
 
-follow-redirects@^1.12.1, follow-redirects@^1.14.4:
+follow-redirects@^1.12.1:
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
   integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==

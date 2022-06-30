@@ -9,8 +9,6 @@ import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
 import web3Onboard from '../utils/web3Onboard'
 
-const Identity = require('@semaphore-protocol/identity').Identity
-
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
 type Web3ContextProps = {

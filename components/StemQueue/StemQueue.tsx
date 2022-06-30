@@ -1,4 +1,3 @@
-// import createProof from '@interep/proof'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
