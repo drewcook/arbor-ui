@@ -32,11 +32,6 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			// validate it is an ethereum-like address (Joi?)
 			unique: true,
 		},
-		// Semaphore identity commitment
-		voterIdentityCommitment: {
-			type: String,
-			required: false,
-		},
 		displayName: {
 			type: String,
 			required: false,
@@ -63,6 +58,11 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			type: [String],
 			required: false,
 			default: [],
+		},
+		// Semaphore identity commitment
+		voterIdentityCommitment: {
+			type: String,
+			required: false,
 		},
 		registeredGroupIds: {
 			type: [Number],

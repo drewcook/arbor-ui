@@ -4,7 +4,6 @@ import dbConnect from '../../../utils/db'
 
 export type CreateUserPayload = {
 	address: string
-	identity: string
 	displayName: string
 	avatarUrl: string
 	projectIds: string[]
@@ -38,7 +37,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				avatarUrl += '&size=300x300' // Make 300x300 size
 				const payload: CreateUserPayload = {
 					address: accountAddress,
-					identity: req.body.identity,
 					displayName: accountAddress,
 					avatarUrl,
 					projectIds: [],
