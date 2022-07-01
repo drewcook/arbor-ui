@@ -1,5 +1,4 @@
 import { Contract, providers } from 'ethers'
-import { useWeb3 } from '../components/Web3Provider'
 import PolyechoNFT from '../contracts/PolyechoNFT.json'
 import StemQueue from '../contracts/StemQueue.json'
 /*
@@ -13,8 +12,7 @@ import StemQueue from '../contracts/StemQueue.json'
 export const provider = new providers.JsonRpcProvider(
 	process.env.NODE_ENV === 'development' ? 'http://localhost:8545' : 'https://api.s0.ps.hmny.io',
 )
-const { currentUser } = useWeb3()
-export const signer = provider.getSigner(currentUser?.address)
+export const signer = provider.getSigner()
 
 
 // PolyechoNFT contract
