@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { stemQueueContract } from '../../../constants/contracts'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
@@ -44,6 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!votingGroupRes || !votingGroupRes.success) {
 					return res.status(400).json({ success: false, error: 'Failed to increment voting group count' })
 				}
+				console.log({votingGroupRes})
 
 				/*
 					Create new Semaphore group for given project
@@ -52,12 +52,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					- Future users will register to vote, which will add them in as group members
 				*/
 				const groupId = votingGroupRes.data.totalGroupCount
-				const contractRes = await stemQueueContract.createProjectGroup(groupId, 20, BigInt(0), 	utils.formatBytes32String(req.body.createdBy))
+				const contractRes = await stemQueueContract.createProjectGroup(groupId, 20, BigInt(0), 	req.body.createdBy)
 				if (!contractRes) {
 					return res
 						.status(400)
 						.json({ success: false, error: 'Failed to create on-chain Semaphore group for given project' })
 				}
+				console.log({contractRes})
 
 				/*
 					Create the new project record
@@ -75,7 +76,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 				// TODO: Do not save any of these records just yet... wait until after we create the Semaphore group successfully, so we don't end up with bad data across multiple collections
 				const project: IProjectDoc = await Project.create(payload)
-
+				console.log({project})
 				/*
 					Add new project to creator's user details
 				*/
@@ -83,6 +84,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
+				console.log({userUpdated})
 
 				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })

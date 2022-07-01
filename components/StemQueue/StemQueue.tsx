@@ -61,6 +61,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				Create a user identity based off signing a message
 				- @zk-kit/identity
 			*/
+			// TODO: Use signer from `contracts.ts' util file
 			const ethereumProvider = (await detectEthereumProvider()) as any
 			const provider = new ethers.providers.Web3Provider(ethereumProvider)
 			const signer = provider.getSigner()
