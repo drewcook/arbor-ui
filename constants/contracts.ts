@@ -16,7 +16,7 @@ const provider = new providers.JsonRpcProvider(
 
 // PolyechoNFT contract
 const localAddress_nft = '0x4C4a2f8c81640e47606d3fd77B353E87Ba015584'
-const devnetAddress_nft = '0x5663E41c235025fA3AE8B02d8a5082FB985eB791'
+const devnetAddress_nft = '0x7810D24738405b6B38ee8a6150E438Bc57595029'
 const polyechoNft = new Contract(
 	process.env.NODE_ENV === 'development' ? localAddress_nft : devnetAddress_nft,
 	PolyechoNFT.abi,
@@ -25,7 +25,7 @@ export const nftContract = polyechoNft.connect(provider.getSigner())
 
 // StemQueue contract
 const localAddress_queue = '0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD'
-const devnetAddress_queue = '0x6F6f53296049149a02373E3458fb105171481268'
+const devnetAddress_queue = '0x6785A60AdEb945C0597fF6E7ea4F1649662b2673'
 const stemQueue = new Contract(
 	process.env.NODE_ENV === 'development' ? localAddress_queue : devnetAddress_queue,
 	StemQueue.abi,
