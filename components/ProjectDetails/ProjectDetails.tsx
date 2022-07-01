@@ -5,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square
+	Square,
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -17,7 +17,7 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography
+	Typography,
 } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
