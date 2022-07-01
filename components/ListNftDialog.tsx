@@ -9,7 +9,7 @@ import {
 	InputAdornment,
 	InputLabel,
 	OutlinedInput,
-	Typography,
+	Typography
 } from '@mui/material'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
@@ -61,7 +61,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			if (currentUser) {
 				// Allow it to be bought on chain
 				const amount = web3.utils.toWei(listPrice?.toString(), 'ether')
-				const scRes: any = await nftContract.allowBuy(nft.token.id, amount)
+				const scRes: any = await nftContract.allowBuy(nft.token.id, amount).send({ from: currentUser.address })
 				if (!scRes) throw new Error('Failed to list the NFT for sale')
 
 				// Make PUT request
@@ -95,7 +95,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		try {
 			if (currentUser) {
 				// Disallow it to be bought on chain
-				const scRes: any = await nftContract.disallowBuy(nft.token.id)
+				const scRes: any = await nftContract.disallowBuy(nft.token.id).send({ from: currentUser.address })
 				if (!scRes) throw new Error('Failed to remove the listing for the NFT on-chain')
 
 				// Make PUT request

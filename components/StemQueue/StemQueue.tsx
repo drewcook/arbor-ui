@@ -74,7 +74,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			/*
 				Add the user's identity commitment to the on-chain group
 			*/
-			const contractRes = await stemQueueContract.addMemberToProjectGroup(details.votingGroupId, commitment)
+			const contractRes = await stemQueueContract.addMemberToProjectGroup(details.votingGroupId, commitment).send({ from: currentUser.address })
 			if (!contractRes) {
 				console.error("Failed to register the user for the project's voting group")
 			}
@@ -172,7 +172,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				utils.formatBytes32String(stemId),
 				publicSignals.nullifierHash,
 				solidityProof,
-			)
+			).send({ from: currentUser.address })
 			console.log({ voteRes })
 
 			// Get the receipt
