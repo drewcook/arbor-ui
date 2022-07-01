@@ -52,7 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					- Future users will register to vote, which will add them in as group members
 				*/
 				const groupId = votingGroupRes.data.totalGroupCount
-				const contractRes = await stemQueueContract.createProjectGroup(groupId, 20, BigInt(0), 	req.body.createdBy)
+				const contractRes = await stemQueueContract.createProjectGroup(groupId, 20, BigInt(0), 	req.body.createdBy).send({from: req.body.createdBy})
 				if (!contractRes) {
 					return res
 						.status(400)
