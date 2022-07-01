@@ -10,7 +10,7 @@ const networks = {
 		networkId: 1666900000,
 		networkHex: '0x635AE020',
 		displayName: 'Harmony Devnet',
-		rpc: 'https://api/s0.ps.hmny.io',
+		rpc: 'https://api.s0.ps.hmny.io',
 	},
 }
 
