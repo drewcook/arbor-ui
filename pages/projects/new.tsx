@@ -22,7 +22,7 @@ const NewProjectPage: NextPage = () => {
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const router = useRouter()
-	const { currentUser } = useWeb3()
+	const { contracts, currentUser } = useWeb3()
 
 	// Form Field Handlers
 	const handleSetBpm = (e: any) => {
@@ -72,6 +72,21 @@ const NewProjectPage: NextPage = () => {
 			if (res.success) {
 				setSuccessMsg('Successfully created project, redirecting...')
 				resetForm()
+
+				/*
+					Create new Semaphore group for given project
+					- Create new group with project creator as group admin
+					- Do not add in the project creator as a voting member (yet)
+					- Future users will register to vote, which will add them in as group members
+				*/
+				const groupId = res.data.votingGroupId
+				const contractRes = await contracts.stemQueue.createProjectGroup(groupId, 20, BigInt(0), currentUser.address, {
+					from: currentUser.address,
+				})
+				console.log({ contractRes })
+
+				if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+
 				// Redirect to project page
 				router.push(`/projects/${res.data._id}`)
 			} else {

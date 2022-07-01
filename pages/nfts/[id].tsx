@@ -13,7 +13,6 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import { nftContract } from '../../constants/contracts'
 import PolygonIcon from '../../public/polygon_logo_black.png'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
@@ -64,7 +63,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-	const { connected, handleConnectWallet, currentUser } = useWeb3()
+	const { connected, handleConnectWallet, currentUser, contracts } = useWeb3()
 	const router = useRouter()
 
 	const handleBuyNft = async () => {
@@ -73,9 +72,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			if (currentUser) {
 				// Call smart contract to make transfer
 				const amount = web3.utils.toWei(details.listPrice.toString(), 'ether')
-				const scRes: any = await nftContract
-					.buy(details.token.id, { value: amount })
-					.send({ from: currentUser.address })
+				const scRes: any = await contracts.nft.buy(details.token.id, { value: amount, from: currentUser.address })
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 
 				// Make PUT request to change ownership

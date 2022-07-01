@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { stemQueueContract } from '../../../constants/contracts'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
@@ -36,6 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					- Call PUT /api/voting-groups to increment the value
 					- Get the returned data, inspect the new totalGroupCount value
 					- Use this as the new groupId for the on-chain group
+					  - This will need to be done on the client-side, so we'll get this from the response
 					- Use this as the groupId value for the new project record as well
 					- TODO: revert this, or decrement if any of the following requests fail
 				*/
@@ -44,23 +44,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					return res.status(400).json({ success: false, error: 'Failed to increment voting group count' })
 				}
 				console.log({ votingGroupRes })
-
-				/*
-					Create new Semaphore group for given project
-					- Create new group with project creator as group admin
-					- Do not add in the project creator as a voting member (yet)
-					- Future users will register to vote, which will add them in as group members
-				*/
-				const groupId = votingGroupRes.data.totalGroupCount
-				const contractRes = await stemQueueContract
-					.createProjectGroup(groupId, 20, BigInt(0), req.body.createdBy)
-					.send({ from: req.body.createdBy })
-				if (!contractRes) {
-					return res
-						.status(400)
-						.json({ success: false, error: 'Failed to create on-chain Semaphore group for given project' })
-				}
-				console.log({ contractRes })
 
 				/*
 					Create the new project record

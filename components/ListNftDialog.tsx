@@ -14,7 +14,6 @@ import {
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import web3 from 'web3'
-import { nftContract } from '../constants/contracts'
 import { update } from '../utils/http'
 import Notification from './Notification'
 import { useWeb3 } from './Web3Provider'
@@ -45,7 +44,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-	const { currentUser } = useWeb3()
+	const { contracts, currentUser } = useWeb3()
 
 	const handleClose = () => {
 		if (onClose) onClose()
@@ -61,7 +60,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 			if (currentUser) {
 				// Allow it to be bought on chain
 				const amount = web3.utils.toWei(listPrice?.toString(), 'ether')
-				const scRes: any = await nftContract.allowBuy(nft.token.id, amount).send({ from: currentUser.address })
+				const scRes: any = await contracts.nft.allowBuy(nft.token.id, amount)
 				if (!scRes) throw new Error('Failed to list the NFT for sale')
 
 				// Make PUT request
@@ -95,7 +94,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		try {
 			if (currentUser) {
 				// Disallow it to be bought on chain
-				const scRes: any = await nftContract.disallowBuy(nft.token.id).send({ from: currentUser.address })
+				const scRes: any = await contracts.nft.disallowBuy(nft.token.id)
 				if (!scRes) throw new Error('Failed to remove the listing for the NFT on-chain')
 
 				// Make PUT request

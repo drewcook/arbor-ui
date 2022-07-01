@@ -30,7 +30,6 @@ import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
-import { nftContract } from '../../constants/contracts'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
@@ -71,7 +70,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	// Hooks
 	const router = useRouter()
-	const { NFTStore, connected, currentUser, handleConnectWallet } = useWeb3()
+	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -208,11 +207,10 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
 				const amount = web3.utils.toWei('0.01', 'ether')
-				const mintRes: any = await nftContract
+				const mintRes: any = await contracts.nft
 					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 						value: amount,
 					})
-					.send({ from: currentUser.address })
 					.wait()
 				console.log({ mintRes })
 

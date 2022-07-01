@@ -2,10 +2,9 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { Strategy, ZkIdentity } from '@zk-kit/identity'
-import { ethers, utils } from 'ethers'
+import { providers, utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { stemQueueContract } from '../../constants/contracts'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { update } from '../../utils/http'
@@ -33,7 +32,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const [loading, setLoading] = useState<boolean>(false)
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 
-	const { currentUser } = useWeb3()
+	const { contracts, currentUser } = useWeb3()
 	const userIsRegistered: boolean =
 		details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment).length >
 		0
@@ -63,7 +62,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			// TODO: Use signer from `contracts.ts' util file
 			const ethereumProvider = (await detectEthereumProvider()) as any
-			const provider = new ethers.providers.Web3Provider(ethereumProvider)
+			const provider = new providers.Web3Provider(ethereumProvider)
 			const signer = provider.getSigner()
 			const message = await signer.signMessage(
 				"Sign this message to register for this Polyecho project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
@@ -74,9 +73,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			/*
 				Add the user's identity commitment to the on-chain group
 			*/
-			const contractRes = await stemQueueContract
-				.addMemberToProjectGroup(details.votingGroupId, commitment)
-				.send({ from: currentUser.address })
+			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
+				from: currentUser.address,
+			})
 			if (!contractRes) {
 				console.error("Failed to register the user for the project's voting group")
 			}
@@ -170,9 +169,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ proof, publicSignals, solidityProof })
 
 			// Submit the vote signal and proof to the smart contract
-			const voteRes = await stemQueueContract
-				.vote(utils.formatBytes32String(stemId), publicSignals.nullifierHash, solidityProof)
-				.send({ from: currentUser.address })
+			const voteRes = await contracts.stemQueue.vote(
+				utils.formatBytes32String(stemId),
+				publicSignals.nullifierHash,
+				solidityProof,
+				{ from: currentUser.address },
+			)
 			console.log({ voteRes })
 
 			// Get the receipt
