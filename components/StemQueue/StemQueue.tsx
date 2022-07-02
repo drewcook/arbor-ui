@@ -209,7 +209,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	 * The user who uploaded the stem will become a collaborator
 	 * @param {IStemDoc} stem - The stem to be added onto the project
 	 */
-	const handleApprove = async (stem: IStemDoc): void => {
+	const handleApprove = async (stem: IStemDoc) => {
 		try {
 			// User must be a collaborator
 			if (!userIsCollaborator) return
