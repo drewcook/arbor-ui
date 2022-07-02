@@ -16,9 +16,8 @@ const getWeb3 = async () => {
 			// Accounts now exposed
 			const ethersProvider = new providers.StaticJsonRpcProvider(NETWORK_RPC)
 			const signer = ethersProvider.getSigner()
-			const signerAddress = await signer.getAddress()
-			console.log({ ethersProvider, signer, signerAddress, provider })
-			return { provider, signer, signerAddress }
+			// const signerAddress = await signer.getAddress()
+			return { provider, signer }
 		} catch (error) {
 			console.error('Please install a Web3 wallet.', error)
 			return false

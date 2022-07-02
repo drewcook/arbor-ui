@@ -78,8 +78,10 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				setOnboard(web3Onboard)
 
 				// Get Web3 instance based off browser support
-				const { provider, signer, signerAddress } = await getWeb3()
+				const { provider, signer } = await getWeb3()
 				if (!provider || !signer) throw new Error('Must be in a Web3 supported browser')
+				console.log({ provider, signer })
+				// const signerAddress = await signer.getAddress()
 
 				// Setup contracts with signer of connected address
 				// const signer = web3Instance.getSigner(wallet.accounts[0].address)
@@ -129,7 +131,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 
 				// Set connected state after all the above has succeeded
 				setConnected(true)
-				return { connectedAccount: signerAddress }
+				return { connectedAccount: wallet.accounts[0].address }
 			} else {
 				return { connectedAccount: null }
 			}
