@@ -69,25 +69,23 @@ const NewProjectPage: NextPage = () => {
 				tags,
 			}
 			const res = await post('/projects', payload)
+			console.log({ res })
 			if (res.success) {
-				setSuccessMsg('Successfully created project, redirecting...')
-				resetForm()
+				// /*
+				// 	Create new Semaphore group for given project
+				// 	- Create new group with project creator as group admin
+				// 	- Do not add in the project creator as a voting member (yet)
+				// 	- Future users will register to vote, which will add them in as group members
+				// */
+				// const groupId = res.data.votingGroupId
+				// const contractRes = await contracts.stemQueue.createProjectGroup(groupId, 20, BigInt(0), currentUser.address)
+				// console.log({ contractRes })
 
-				/*
-					Create new Semaphore group for given project
-					- Create new group with project creator as group admin
-					- Do not add in the project creator as a voting member (yet)
-					- Future users will register to vote, which will add them in as group members
-				*/
-				const groupId = res.data.votingGroupId
-				const contractRes = await contracts.stemQueue.createProjectGroup(groupId, 20, BigInt(0), currentUser.address, {
-					from: currentUser.address,
-				})
-				console.log({ contractRes })
-
-				if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+				// if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
 
 				// Redirect to project page
+				setSuccessMsg('Successfully created project, redirecting...')
+				resetForm()
 				router.push(`/projects/${res.data._id}`)
 			} else {
 				setErrorOpen(true)

@@ -1,17 +1,24 @@
 import detectEthereumProvider from '@metamask/detect-provider'
+import { providers } from 'ethers'
 import Web3 from 'web3'
+import { NETWORK_RPC } from '../constants/networks'
 
 const getWeb3 = async () => {
 	const provider = await detectEthereumProvider()
+
 	// Modern dapp browsers...
 	if (provider) {
 		// provider === window.ethereum
-		const web3 = new Web3(provider)
+		// const web3 = new Web3(provider)
 		try {
 			// Request account access if needed
 			await provider.request({ method: 'eth_requestAccounts' })
 			// Accounts now exposed
-			return web3
+			const ethersProvider = new providers.StaticJsonRpcProvider(NETWORK_RPC)
+			const signer = ethersProvider.getSigner()
+			const signerAddress = await signer.getAddress()
+			console.log({ ethersProvider, signer, signerAddress, provider })
+			return { provider, signer, signerAddress }
 		} catch (error) {
 			console.error('Please install a Web3 wallet.', error)
 			return false

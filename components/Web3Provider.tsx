@@ -3,7 +3,7 @@ import { Contract } from 'ethers'
 import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-import { polyechoNftContract, provider, stemQueueContract } from '../constants/contracts'
+import { polyechoNftContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
 import type { IUserDoc } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
@@ -78,12 +78,12 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				setOnboard(web3Onboard)
 
 				// Get Web3 instance based off browser support
-				const web3Instance = await getWeb3()
-				if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
+				const { provider, signer, signerAddress } = await getWeb3()
+				if (!provider || !signer) throw new Error('Must be in a Web3 supported browser')
 
 				// Setup contracts with signer of connected address
-				const signer = provider.getSigner(wallet.accounts[0].address)
-				console.log(signer)
+				// const signer = web3Instance.getSigner(wallet.accounts[0].address)
+				// console.log(signer)
 				const nft = polyechoNftContract.connect(signer)
 				const stemQueue = stemQueueContract.connect(signer)
 				setContracts({ nft, stemQueue })
@@ -92,7 +92,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				await connectNFTStorage()
 
 				// Listen for account changes from browser wallet UI
-				web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
+				provider.on('accountsChanged', async (newAccounts: string[]) => {
 					const newAccount = newAccounts[0]
 					// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that we're connected to the right network before attempting to find or create the new user
 					if (wallet.chains[0].id === NETWORK_HEX) {
@@ -102,13 +102,13 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				})
 
 				// Listen for chain changes from browser wallet UI
-				web3Instance.currentProvider.on('chainChanged', async (chainId: string) => {
+				provider.on('chainChanged', async (chainId: string) => {
 					// Check if the new chain is supported
 					if (
 						!web3Onboard.state
 							.get()
-							.chains.map(chain => chain.id)
-							.includes(web3Instance.utils.toHex(chainId))
+							.chains.map(chain => chain.id.toUpperCase())
+							.includes(chainId.toUpperCase())
 					) {
 						// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that a wallet is connected, and then prompt to switch to a supported network (prevent them from switching to some degree)
 						if (web3Onboard.state.get().wallets[0]) {
@@ -129,13 +129,10 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 
 				// Set connected state after all the above has succeeded
 				setConnected(true)
+				return { connectedAccount: signerAddress }
 			} else {
 				return { connectedAccount: null }
 			}
-
-			// We have a connected account on a supported chain and have switched to that network...
-			// Set the currently connected account to the most recently connected one that was chosen if so
-			return { connectedAccount: walletState[0].accounts[0].address }
 		} catch (e: any) {
 			// Catch any errors for any of the above operations.
 			console.error(e.message)
