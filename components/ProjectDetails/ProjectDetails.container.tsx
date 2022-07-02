@@ -1,10 +1,10 @@
 import { Box, Tab, Tabs } from '@mui/material'
-import type { ReactNode, SyntheticEvent } from 'react'
-import { useState } from 'react'
+import { ReactNode, SyntheticEvent, useEffect, useState } from 'react'
 import Notification from '../../components/Notification'
 import ProjectDetails from '../../components/ProjectDetails/ProjectDetails'
 import StemQueue from '../../components/StemQueue/StemQueue'
 import type { IProjectDoc } from '../../models/project.model'
+import { useWeb3 } from '../Web3Provider'
 
 type ProjectDetailsContainerProps = {
 	data: IProjectDoc
@@ -42,10 +42,30 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 
+	const { currentUser } = useWeb3()
+
+	const [userIsRegisteredVoter, setUserRegistration] = useState<boolean>(
+		details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment).length >
+			0,
+	)
+	const [userIsCollaborator, setUserCollaborator] = useState<boolean>(
+		currentUser ? details.collaborators.includes(currentUser.address) : false,
+	)
+
+	// Update user registration and collaborator status if details update or current user updates
+	useEffect(() => {
+		const isRegisteredVoter =
+			details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment)
+				.length > 0
+		const isCollaborator = currentUser ? details.collaborators.includes(currentUser.address) : false
+		setUserRegistration(isRegisteredVoter)
+		setUserCollaborator(isCollaborator)
+	}, [details, currentUser])
+
 	////////////////////////////////////////////////////////////////////////
 	// Changing Tabs
 	////////////////////////////////////////////////////////////////////////
-	const handleChange = (event: SyntheticEvent, newValue: number) => {
+	const handleTabChange = (event: SyntheticEvent, newValue: number) => {
 		setCurrentTab(newValue)
 	}
 
@@ -76,7 +96,26 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	}
 
 	////////////////////////////////////////////////////////////////////////
-	// Stem Uploads
+	// Stem Queue Voting
+	////////////////////////////////////////////////////////////////////////
+	const onVoteSuccess = (stemName: string): void => {
+		// Refresh UI
+		setSuccessOpen(true)
+		setSuccessMsg(`Success! You've anonymously voted for '${stemName}' to be included on the project.`)
+	}
+
+	////////////////////////////////////////////////////////////////////////
+	// Stem Queue Approval
+	////////////////////////////////////////////////////////////////////////
+	const onApprovedSuccess = (stemName: string): void => {
+		// Refresh UI
+		setSuccessOpen(true)
+		setSuccessMsg(`Success! The stem '${stemName}' has been approved and added to the project.`)
+		setCurrentTab(0)
+	}
+
+	////////////////////////////////////////////////////////////////////////
+	// Notification Close
 	////////////////////////////////////////////////////////////////////////
 	const onNotificationClose = () => {
 		setSuccessOpen(false)
@@ -88,9 +127,9 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	return (
 		<>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-				<Tabs value={currentTab} onChange={handleChange} aria-label="basic tabs example">
+				<Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
 					<Tab label="Details" {...a11yProps(0)} />
-					<Tab label={`Stem Queue (${data.queue.length})`} {...a11yProps(1)} />
+					<Tab label={`Stem Queue (${details.queue.length})`} {...a11yProps(1)} />
 				</Tabs>
 			</Box>
 			<TabPanel value={currentTab} index={0}>
@@ -109,6 +148,10 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 					handleUploadStemOpen={handleUploadStemOpen}
 					handleUploadStemClose={handleUploadStemClose}
 					onStemUploadSuccess={onStemUploadSuccess}
+					userIsRegisteredVoter={userIsRegisteredVoter}
+					userIsCollaborator={userIsCollaborator}
+					onVoteSuccess={onVoteSuccess}
+					onApprovedSuccess={onApprovedSuccess}
 				/>
 			</TabPanel>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}

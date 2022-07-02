@@ -35,7 +35,7 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
     // mapping(uint256 => uint256[]) public groupStems;
 
 		// /// @dev Gets a stem id and returns the number of votes it has.
-    // mapping(bytes32 => Counters.Counter) public stemVoteCounts;
+    mapping(bytes32 => Counters.Counter) public stemVoteCounts;
 
 		/// @dev Emitted when an admin is assigned to a group.
     /// @param groupId: Id of the group.
@@ -114,7 +114,7 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 
 				// Update the vote count for the given stem
 				// This would be 0 for a non-existant key in the mapping
-				// stemVoteCounts[_vote].increment();
+				stemVoteCounts[_vote].increment();
 
         emit NewVote(_vote);
     }

@@ -19,24 +19,36 @@ const Semaphore = require('@zk-kit/protocols').Semaphore
 
 type StemQueueProps = {
 	details: IProjectDoc
+	userIsCollaborator: boolean
+	userIsRegisteredVoter: boolean
 	uploadStemOpen: boolean
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
 	onStemUploadSuccess: (project: IProjectDoc) => void
+	onVoteSuccess: (stemName: string) => void
+	onApprovedSuccess: (stemName: string) => void
 }
 
 const StemQueue = (props: StemQueueProps): JSX.Element => {
-	const { details, handleUploadStemOpen, handleUploadStemClose, uploadStemOpen, onStemUploadSuccess } = props
+	const {
+		details,
+		userIsCollaborator,
+		userIsRegisteredVoter,
+		handleUploadStemOpen,
+		handleUploadStemClose,
+		uploadStemOpen,
+		onStemUploadSuccess,
+		onVoteSuccess,
+		onApprovedSuccess,
+	} = props
+	const [registerLoading, setRegisterLoading] = useState<boolean>(false)
+	const [voteLoading, setVoteLoading] = useState<boolean>(false)
+	const [approveLoading, setApproveLoading] = useState<boolean>(false)
 
-	// const [projectDetails, setProjectDetails] = useState<IProjectDoc>(details)
-	const [loading, setLoading] = useState<boolean>(false)
+	// TODO: implement playback with these queued stems
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 
 	const { contracts, currentUser } = useWeb3()
-	const userIsRegistered: boolean =
-		details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment).length >
-		0
-	const userIsCollaborator: boolean = currentUser ? details.collaborators.includes(currentUser.address) : false
 
 	/*
 		Stem Player callbacks
@@ -54,7 +66,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		try {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
-			setLoading(true)
+			setRegisterLoading(true)
 
 			/*
 				Create a user identity based off signing a message
@@ -111,14 +123,14 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		} catch (e: any) {
 			console.error(e.message)
 		}
-		setLoading(false)
+		setRegisterLoading(false)
 	}
 
 	const handleVote = async (stem: IStemDoc) => {
 		try {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
-			setLoading(true)
+			setVoteLoading(true)
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
 			const stemId: string = stem._id.toString()
@@ -180,10 +192,78 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Get the receipt
 			const receipt = await voteRes.wait()
 			console.log({ receipt })
+
+			// TODO: Update the project record vote count for the queued stem
+
+			// Invoke the callback
+			onVoteSuccess(stem.name)
 		} catch (e: any) {
 			console.error(e)
 		}
-		setLoading(false)
+		setVoteLoading(false)
+	}
+
+	/**
+	 * This allows a collaborator to approve a stem that has at least one vote onto the project
+	 * The stem will move from the queue to the list of project stems
+	 * The user who uploaded the stem will become a collaborator
+	 * @param {IStemDoc} stem - The stem to be added onto the project
+	 */
+	const handleApprove = async (stem: IStemDoc): void => {
+		try {
+			// User must be a collaborator
+			if (!userIsCollaborator) return
+
+			// Stem must be in the queue
+			if (details.queue.filter(q => q.stem._id === stem._id).length === 0) {
+				console.error("The stem must be in the project's stem queue")
+				return
+			}
+
+			// TODO:
+			// Stem must have at least one vote
+			// if (details.queue.filter(q => q.stem._id === stem._id)[0].votes === 0) {
+			// 	console.error('The stem must have at least one vote')
+			// 	return
+			// }
+
+			setApproveLoading(true)
+
+			/*
+				Remove the queued stem from the list, add it to project stems
+			*/
+			const projectRes = await update(`/projects/${details._id}`, {
+				...details,
+				queue: details.queue.filter(q => q.stem._id !== stem._id),
+				stems: [...details.stems, stem],
+			})
+			console.log({ projectRes })
+			if (!projectRes) {
+				console.error('Failed to add the identity to the project record')
+			}
+
+			/*
+				Update the user record
+				- Add in the new identity for the user
+				- Add in the group ID for user's registered groups
+				- NOTE: This will help to show the appropriate UI elements/state
+			*/
+			// TODO: Only store maybe the commitment
+			// const userRes = await update(`/users/${currentUser?.address}`, {
+			// 	...currentUser,
+			// 	voterIdentityCommitment: commitment,
+			// 	registeredGroupIds: [...currentUser.registeredGroupIds, details.votingGroupId],
+			// })
+			// if (!userRes) {
+			// 	console.error('Failed to add the group ID to the user record')
+			// }
+
+			// Invoke callback
+			onApprovedSuccess(stem.name)
+		} catch (e: any) {
+			console.error(e)
+		}
+		setApproveLoading(false)
 	}
 
 	return (
@@ -203,12 +283,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				size="large"
 				onClick={handleRegister}
 				sx={styles.actionBtn}
-				startIcon={userIsRegistered ? <Check sx={{ fontSize: '32px' }} /> : <HowToReg sx={{ fontSize: '32px' }} />}
-				disabled={loading || userIsRegistered || !currentUser}
+				startIcon={userIsRegisteredVoter ? <Check sx={{ fontSize: '32px' }} /> : <HowToReg sx={{ fontSize: '32px' }} />}
+				disabled={registerLoading || userIsRegisteredVoter || !currentUser}
 			>
-				{loading ? (
+				{registerLoading ? (
 					<CircularProgress size={20} sx={styles.loadingIcon} />
-				) : userIsRegistered ? (
+				) : userIsRegisteredVoter ? (
 					'Currently Registered'
 				) : (
 					'Register to Vote'
@@ -228,16 +308,29 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 							// onNewFile={onNewFile}
 						/>
 						<Typography>
+							{/* TODO: read vote counts from on-chain contract */}
 							<strong>Votes:</strong> {stem.votes}
 						</Typography>
 						<Button
 							variant="contained"
 							size="small"
 							onClick={() => handleVote(stem.stem)}
-							disabled={loading || !userIsRegistered || !currentUser}
+							disabled={voteLoading || !userIsRegisteredVoter || !currentUser}
+							sx={{ mr: 1 }}
 						>
-							{loading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
+							{voteLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
 						</Button>
+						{userIsCollaborator && (
+							<Button
+								variant="outlined"
+								size="small"
+								onClick={() => handleApprove(stem.stem)}
+								disabled={approveLoading}
+								// TODO: disabled={approveLoading || stem.votes === 0}
+							>
+								{approveLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Approve'}
+							</Button>
+						)}
 					</Box>
 				))
 			)}

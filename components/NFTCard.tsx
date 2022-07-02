@@ -1,7 +1,8 @@
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
-import PolygonIcon from '../public/polygon_logo_black.png'
+import { NETWORK_CURRENCY } from '../constants/networks'
+import OneIcon from '../public/harmony_icon.svg'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import ImageOptimized from './ImageOptimized'
@@ -48,11 +49,11 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					{details.isListed ? (
 						<Box sx={styles.buyNowPrice}>
 							<Box sx={styles.price}>
-								<ImageOptimized src={PolygonIcon} width={28} height={28} alt="Polygon" />
+								<ImageOptimized src={OneIcon} width={20} height={20} alt="ONE" />
 								<Typography variant="h5" component="div" sx={{ ml: 0.75 }}>
 									{details.listPrice}{' '}
 									<Typography sx={styles.eth} component="span">
-										MATIC
+										{NETWORK_CURRENCY}
 									</Typography>
 								</Typography>
 							</Box>

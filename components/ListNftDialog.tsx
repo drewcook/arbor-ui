@@ -14,6 +14,7 @@ import {
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import web3 from 'web3'
+import { NETWORK_CURRENCY } from '../constants/networks'
 import { update } from '../utils/http'
 import Notification from './Notification'
 import { useWeb3 } from './Web3Provider'
@@ -162,7 +163,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 							min="0"
 							max="10000"
 							onChange={e => setListPrice(parseFloat(e.target.value))}
-							endAdornment={<InputAdornment position="end">MATIC</InputAdornment>}
+							endAdornment={<InputAdornment position="end">{NETWORK_CURRENCY}</InputAdornment>}
 							fullWidth
 						/>
 					</FormControl>

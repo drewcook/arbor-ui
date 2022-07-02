@@ -30,11 +30,12 @@ import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
+import { NETWORK_CURRENCY } from '../../constants/networks'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
-import PolygonIcon from '../../public/polygon_logo_black.png'
+import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
 import formatAddress from '../../utils/formatAddress'
 import { post } from '../../utils/http'
@@ -199,6 +200,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						stems: details.stems.map((s: any) => s.metadataUrl),
 					},
 				})
+				console.log({ nftsRes })
 
 				// Check for data
 				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
@@ -207,12 +209,12 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Minting the NFT. This could take a moment...')
 				const amount = web3.utils.toWei('0.01', 'ether')
-				const mintRes: any = await contracts.nft
-					.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
-						value: amount,
-					})
-					.wait()
+				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
+					value: amount,
+				})
 				console.log({ mintRes })
+				const receipt = await mintRes.wait()
+				console.log({ receipt })
 
 				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
@@ -225,20 +227,22 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					token: {
 						// TODO: Parse the correct arguments from the event receipt
 						id: parseInt(
-							mintRes.events.TokenCreated.returnValues.newTokenId ||
-								mintRes.events.TokenCreated.returnValues.tokenId ||
-								mintRes.events.TokenCreated.returnValues._tokenId,
+							receipt.events.TokenCreated?.returnValues.newTokenId ||
+								receipt.events.TokenCreated?.returnValues.tokenId ||
+								receipt.events.TokenCreated?.returnValues._tokenId ||
+								0, // default
 						),
 						tokenURI:
-							mintRes.events.TokenCreated.returnValues.newTokenURI ||
-							mintRes.events.TokenCreated.returnValues.tokenURI ||
-							mintRes.events.TokenCreated.returnValues._tokenURI,
+							receipt.events.TokenCreated?.returnValues.newTokenURI ||
+							receipt.events.TokenCreated?.returnValues.tokenURI ||
+							receipt.events.TokenCreated?.returnValues._tokenURI ||
+							'', // default
 						data: mintRes,
 					},
 					name: details.name,
 					metadataUrl: nftsRes.url,
 					audioHref: nftsRes.data.properties.audio,
-					projectId: details.id,
+					projectId: details._id.toString(),
 					collaborators: details.collaborators,
 					stems: details.stems, // Direct 1:1 deep clone
 				}
@@ -340,11 +344,11 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 								{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
 							</Button>
 							<Box sx={styles.price}>
-								<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+								<ImageOptimized src={OneIcon} width={30} height={30} alt="ONE" />
 								<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 									0.01{' '}
 									<Typography sx={styles.eth} component="span">
-										MATIC
+										{NETWORK_CURRENCY}
 									</Typography>
 								</Typography>
 							</Box>

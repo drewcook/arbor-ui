@@ -5,7 +5,7 @@ import Onboard from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
 import ledgerModule from '@web3-onboard/ledger'
 import walletConnectModule from '@web3-onboard/walletconnect'
-import { NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
+import { NETWORK_CURRENCY, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
 
 // See https://docs.blocknative.com/onboard/injected-wallets
 const injectedWallets = injectedModule()
@@ -23,7 +23,7 @@ const walletConnect = walletConnectModule({
 // Our one and only chain we want to support, for now
 const CHAIN = {
 	id: NETWORK_HEX,
-	token: 'ONE',
+	token: NETWORK_CURRENCY,
 	label: NETWORK_NAME,
 	rpcUrl: NETWORK_RPC,
 }

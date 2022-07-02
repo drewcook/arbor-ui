@@ -5,12 +5,14 @@ const networks = {
 		networkHex: '0x7A69',
 		displayName: 'Localhost',
 		rpc: 'http://127.0.0.1:8545/',
+		currency: 'LOCAL',
 	},
 	harmonyDevnet: {
 		networkId: 1666900000,
 		networkHex: '0x635AE020',
 		displayName: 'Harmony Devnet',
 		rpc: 'https://api.s0.ps.hmny.io',
+		currency: 'ONE',
 	},
 }
 
@@ -28,3 +30,5 @@ export const NETWORK_ID = networks[preferredNetwork].networkId
 export const NETWORK_NAME = networks[preferredNetwork].displayName
 
 export const NETWORK_RPC = networks[preferredNetwork].rpc
+
+export const NETWORK_CURRENCY = networks[preferredNetwork].currency

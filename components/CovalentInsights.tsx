@@ -3,6 +3,7 @@ import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import web3 from 'web3'
+import { NETWORK_CURRENCY } from '../constants/networks'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import prettyPrintJson from '../utils/prettyPrintJson'
@@ -131,7 +132,9 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 								<Typography variant="h6">Transaction #{txNumber}</Typography>
 								<Grid container spacing={1}>
 									<Grid item xs={12} sm={6}>
-										<Typography>Price: {amount} MATIC</Typography>
+										<Typography>
+											Price: {amount} {NETWORK_CURRENCY}
+										</Typography>
 										<Typography>
 											Hash: <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>{formatAddress(hash)}</Link>
 										</Typography>

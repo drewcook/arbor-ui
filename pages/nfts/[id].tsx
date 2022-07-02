@@ -13,7 +13,8 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import PolygonIcon from '../../public/polygon_logo_black.png'
+import { NETWORK_CURRENCY } from '../../constants/networks'
+import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
@@ -147,11 +148,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 								</Button>
 								<Box sx={styles.price}>
-									<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+									<ImageOptimized src={OneIcon} width={30} height={30} alt="ONE" />
 									<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 										{details.listPrice}{' '}
 										<Typography sx={styles.eth} component="span">
-											MATIC
+											{NETWORK_CURRENCY}
 										</Typography>
 									</Typography>
 								</Box>
@@ -162,11 +163,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 								<Box sx={styles.buyNowListing}>
 									<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
 									<Box sx={styles.price}>
-										<ImageOptimized src={PolygonIcon} width={50} height={50} alt="Polygon" />
+										<ImageOptimized src={OneIcon} width={30} height={30} alt="ONE" />
 										<Typography variant="h4" component="div">
 											{details.listPrice}{' '}
 											<Typography sx={styles.eth} component="span">
-												MATIC
+												{NETWORK_CURRENCY}
 											</Typography>
 										</Typography>
 									</Box>
@@ -291,18 +292,20 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 					Sorry, no details were found for this NFT.
 				</Typography>
 			)}
-			<Divider light sx={styles.divider} />
-			{covalentData && (
-				<Grid container spacing={3}>
-					<Grid item xs={12} sm={6} md={7}>
-						{/* @ts-ignore */}
-						<CovalentInsights metaData={covalentData.metaData} />
+			{covalentData.metaData && covalentData.txData && (
+				<>
+					<Divider light sx={styles.divider} />
+					<Grid container spacing={3}>
+						<Grid item xs={12} sm={6} md={7}>
+							{/* @ts-ignore */}
+							<CovalentInsights metaData={covalentData.metaData} />
+						</Grid>
+						<Grid item xs={12} sm={6} md={5}>
+							{/* @ts-ignore */}
+							<CovalentInsights txData={covalentData.txData} />
+						</Grid>
 					</Grid>
-					<Grid item xs={12} sm={6} md={5}>
-						{/* @ts-ignore */}
-						<CovalentInsights txData={covalentData.txData} />
-					</Grid>
-				</Grid>
+				</>
 			)}
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
 			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
@@ -325,33 +328,21 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// Get data via Covalent API per network for token collection address
 	// TODO: Get current network id and do lookup in hashmap
 
-	// Rinkeby
-	// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-	// const chainId = 4
+	const txData = null
+	const metaData = null
+	// if (data && data.token.id !== null) {
+	// 	// Txs
+	// 	const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	// 	const txRes = await fetch(txUrl)
+	// 	const txJson = txRes.ok ? await txRes.json() : null
+	// 	txData = txJson.data
 
-	// Kovan
-	// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-	// const chainId = 42
-
-	// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-	const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-	const chainId = 80001
-
-	let txData = null
-	let metaData = null
-	if (data && data.token.id !== null) {
-		// Txs
-		const txUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_transactions/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-		const txRes = await fetch(txUrl)
-		const txJson = txRes.ok ? await txRes.json() : null
-		txData = txJson.data
-
-		// Metadata
-		const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
-		const metaRes = await fetch(metaUrl)
-		const metaJson = metaRes.ok ? await metaRes.json() : null
-		metaData = metaJson.data
-	}
+	// 	// Metadata
+	// 	const metaUrl = `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${data.token.id}/?quote-currency=USD&format=JSON&key=${process.env.COVALENT_API_KEY}`
+	// 	const metaRes = await fetch(metaUrl)
+	// 	const metaJson = metaRes.ok ? await metaRes.json() : null
+	// 	metaData = metaJson.data
+	// }
 
 	return {
 		props: {
