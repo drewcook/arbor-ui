@@ -25,9 +25,9 @@ type StemQueueProps = {
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
 	onStemUploadSuccess: (project: IProjectDoc) => void
-	onRegisterSuccess: () => void
-	onVoteSuccess: (stemName: string) => void
-	onApprovedSuccess: (stemName: string) => void
+	onRegisterSuccess: (project: IProjectDoc) => void
+	onVoteSuccess: (project: IProjectDoc, stemName: string) => void
+	onApprovedSuccess: (project: IProjectDoc, stemName: string) => void
 	onFailure: (msg: string) => void
 }
 
@@ -123,12 +123,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				...details,
 				voterIdentityCommitments: [...details.voterIdentityCommitments, commitment],
 			})
-			if (!projectRes) {
+			if (!projectRes.success) {
 				console.error('Failed to add the identity to the project record')
 			}
 
 			// Invoke the callback
-			onRegisterSuccess()
+			onRegisterSuccess(projectRes.data)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed register for the voting group')
 			console.error(e.message)
@@ -203,10 +203,23 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const receipt = await voteRes.wait()
 			console.log({ receipt })
 
-			// TODO: Update the project record vote count for the queued stem
+			// Update the project record vote count for the queued stem
+			const projectRes = await update(`/projects/${details._id}`, {
+				...details,
+				queue: details.queue.map(q => {
+					return q.stem._id === stem._id
+						? {
+								stem: q.stem,
+								votes: q.votes + 1,
+						  }
+						: q
+				}),
+			})
+			console.log({ projectRes })
+			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
 
 			// Invoke the callback
-			onVoteSuccess(stem.name)
+			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to cast the vote')
 			console.error(e)
@@ -231,46 +244,29 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				return
 			}
 
-			// TODO:
 			// Stem must have at least one vote
-			// if (details.queue.filter(q => q.stem._id === stem._id)[0].votes === 0) {
-			// 	console.error('The stem must have at least one vote')
-			// 	return
-			// }
+			if (details.queue.filter(q => q.stem._id === stem._id)[0].votes === 0) {
+				console.error('The stem must have at least one vote')
+				return
+			}
 
 			setApproveLoading(true)
 
 			/*
 				Remove the queued stem from the list, add it to project stems
+				Add the user who uploaded it to the list of project collaborators
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
 				queue: details.queue.filter(q => q.stem._id !== stem._id),
 				stems: [...details.stems, stem],
+				collaborators: [...details.collaborators, stem.createdBy],
 			})
 			console.log({ projectRes })
-			if (!projectRes) {
-				console.error('Failed to add the identity to the project record')
-			}
-
-			/*
-				Update the user record
-				- Add in the new identity for the user
-				- Add in the group ID for user's registered groups
-				- NOTE: This will help to show the appropriate UI elements/state
-			*/
-			// TODO: Only store maybe the commitment
-			// const userRes = await update(`/users/${currentUser?.address}`, {
-			// 	...currentUser,
-			// 	voterIdentityCommitment: commitment,
-			// 	registeredGroupIds: [...currentUser.registeredGroupIds, details.votingGroupId],
-			// })
-			// if (!userRes) {
-			// 	console.error('Failed to add the group ID to the user record')
-			// }
+			if (!projectRes.success) throw new Error('Failed to update the project record')
 
 			// Invoke callback
-			onApprovedSuccess(stem.name)
+			onApprovedSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to approve the stem onto the project')
 			console.error(e)
