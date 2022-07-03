@@ -25,6 +25,7 @@ type StemQueueProps = {
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
 	onStemUploadSuccess: (project: IProjectDoc) => void
+	onRegisterSuccess: () => void
 	onVoteSuccess: (stemName: string) => void
 	onApprovedSuccess: (stemName: string) => void
 }
@@ -38,6 +39,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		handleUploadStemClose,
 		uploadStemOpen,
 		onStemUploadSuccess,
+		onRegisterSuccess,
 		onVoteSuccess,
 		onApprovedSuccess,
 	} = props
@@ -48,7 +50,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	// TODO: implement playback with these queued stems
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 
-	const { contracts, currentUser } = useWeb3()
+	const { contracts, currentUser, updateCurrentUser } = useWeb3()
 
 	/*
 		Stem Player callbacks
@@ -69,10 +71,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			setRegisterLoading(true)
 
 			/*
-				Create a user identity based off signing a message
-				- @zk-kit/identity
+				Create a user identity based off signing a message with the current signer
 			*/
-			// TODO: Use signer from `contracts.ts' util file
 			const ethereumProvider = (await detectEthereumProvider()) as any
 			const provider = new providers.Web3Provider(ethereumProvider)
 			const signer = provider.getSigner()
@@ -93,6 +93,26 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			}
 
 			/*
+				Update the user record
+				- Add in the new identity for the user if there isn't one already
+				- Add in the group ID for user's registered groups if it doesn't exist already
+				- NOTE: This will help to show the appropriate UI elements/state
+				TODO: Probably should allow multiple identities so a user can vote on multiple projects without error
+			*/
+			const userRes = await update(`/users/${currentUser?.address}`, {
+				...currentUser,
+				voterIdentityCommitment: !currentUser.voterIdentityCommitment
+					? commitment
+					: currentUser.voterIdentityCommitment,
+				registeredGroupIds: currentUser.registeredGroupIds.includes(details.votingGroupId)
+					? currentUser.registeredGroupIds
+					: [...currentUser.registeredGroupIds, details.votingGroupId],
+			})
+			if (!userRes.success) console.error('Failed to add the group ID to the user record')
+			// Update current user details
+			updateCurrentUser(userRes.data)
+
+			/*
 				Add the user identity to the list of project's registered identities
 				- This is so we can generate an off-chain group to submit an off-chain proof of
 				- NOTE: There's not an easy way to translate the on-chain groups[groupId] as an off-chain Group object
@@ -105,21 +125,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				console.error('Failed to add the identity to the project record')
 			}
 
-			/*
-				Update the user record
-				- Add in the new identity for the user
-				- Add in the group ID for user's registered groups
-				- NOTE: This will help to show the appropriate UI elements/state
-			*/
-			// TODO: Only store maybe the commitment
-			const userRes = await update(`/users/${currentUser?.address}`, {
-				...currentUser,
-				voterIdentityCommitment: commitment,
-				registeredGroupIds: [...currentUser.registeredGroupIds, details.votingGroupId],
-			})
-			if (!userRes) {
-				console.error('Failed to add the group ID to the user record')
-			}
+			// Invoke the callback
+			onRegisterSuccess()
 		} catch (e: any) {
 			console.error(e.message)
 		}

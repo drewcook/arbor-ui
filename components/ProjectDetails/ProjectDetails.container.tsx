@@ -52,15 +52,34 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		currentUser ? details.collaborators.includes(currentUser.address) : false,
 	)
 
-	// Update user registration and collaborator status if details update or current user updates
+	/*
+		Update user registration and collaborator status if details update or current user updates
+		- When details change, it will typically be when a collaborator has approved a stem onto the project
+		- When the user changes, check if they're collaborator or registered to vote to UI can update
+	*/
+
 	useEffect(() => {
+		console.log('project details have changed')
+		if (!currentUser) return
 		const isRegisteredVoter =
-			details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment)
-				.length > 0
-		const isCollaborator = currentUser ? details.collaborators.includes(currentUser.address) : false
+			details.voterIdentityCommitments.includes(currentUser.voterIdentityCommitment) ||
+			currentUser.registeredGroupIds.includes(details.votingGroupId)
+		const isCollaborator = details.collaborators.includes(currentUser.address)
 		setUserRegistration(isRegisteredVoter)
 		setUserCollaborator(isCollaborator)
-	}, [details, currentUser])
+	}, [details])
+
+	useEffect(() => {
+		console.log('current user has changed')
+		if (!currentUser) return
+		const isRegisteredVoter =
+			details.voterIdentityCommitments.includes(currentUser.voterIdentityCommitment) ||
+			currentUser.registeredGroupIds.includes(details.votingGroupId)
+		const isCollaborator = details.collaborators.includes(currentUser.address)
+		setUserRegistration(isRegisteredVoter)
+		setUserCollaborator(isCollaborator)
+		console.log({ isRegisteredVoter, isCollaborator })
+	}, [currentUser?.registeredGroupIds])
 
 	////////////////////////////////////////////////////////////////////////
 	// Changing Tabs
@@ -93,6 +112,15 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		setSuccessOpen(true)
 		setSuccessMsg("Success! You've uploaded a new stem to the project stem queue.")
 		handleUploadStemClose()
+	}
+
+	////////////////////////////////////////////////////////////////////////
+	// Stem Queue Voting Registration
+	////////////////////////////////////////////////////////////////////////
+	const onRegisterSuccess = (): void => {
+		// Refresh UI
+		setSuccessOpen(true)
+		setSuccessMsg(`Success! You've regstered to be a voting member for this project's stem queue.`)
 	}
 
 	////////////////////////////////////////////////////////////////////////
@@ -144,12 +172,13 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 			<TabPanel value={currentTab} index={1}>
 				<StemQueue
 					details={details}
+					userIsRegisteredVoter={userIsRegisteredVoter}
+					userIsCollaborator={userIsCollaborator}
 					uploadStemOpen={uploadStemOpen}
 					handleUploadStemOpen={handleUploadStemOpen}
 					handleUploadStemClose={handleUploadStemClose}
 					onStemUploadSuccess={onStemUploadSuccess}
-					userIsRegisteredVoter={userIsRegisteredVoter}
-					userIsCollaborator={userIsCollaborator}
+					onRegisterSuccess={onRegisterSuccess}
 					onVoteSuccess={onVoteSuccess}
 					onApprovedSuccess={onApprovedSuccess}
 				/>

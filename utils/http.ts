@@ -34,24 +34,19 @@ const instance: AxiosInstance = axios.create({
 				utils.isFile(data) ||
 				utils.isBlob(data)
 			) {
-				console.log('request data is: form data, array buffer, buffer, stream, file, or blob')
 				return data
 			}
 			if (utils.isArrayBufferView(data)) {
-				console.log('request data is: array buffer view')
 				return data.buffer
 			}
 			if (utils.isURLSearchParams(data)) {
-				console.log('request data is: URL search params')
 				setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8')
 				return data.toString()
 			}
 			if (utils.isObject(data)) {
-				console.log('request data is: object')
 				setContentTypeIfUnset(headers, 'application/json;charset=utf-8')
 				return JSONBI.stringify(data)
 			}
-			console.log('request data is: fallback')
 			return data
 		},
 	],
