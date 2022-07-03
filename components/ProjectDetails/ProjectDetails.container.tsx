@@ -152,6 +152,11 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		setErrorMsg('')
 	}
 
+	const onFailure = (msg: string): void => {
+		setErrorOpen(true)
+		setErrorMsg(msg)
+	}
+
 	return (
 		<>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -181,6 +186,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 					onRegisterSuccess={onRegisterSuccess}
 					onVoteSuccess={onVoteSuccess}
 					onApprovedSuccess={onApprovedSuccess}
+					onFailure={onFailure}
 				/>
 			</TabPanel>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}

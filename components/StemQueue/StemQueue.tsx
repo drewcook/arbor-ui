@@ -28,6 +28,7 @@ type StemQueueProps = {
 	onRegisterSuccess: () => void
 	onVoteSuccess: (stemName: string) => void
 	onApprovedSuccess: (stemName: string) => void
+	onFailure: (msg: string) => void
 }
 
 const StemQueue = (props: StemQueueProps): JSX.Element => {
@@ -42,6 +43,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		onRegisterSuccess,
 		onVoteSuccess,
 		onApprovedSuccess,
+		onFailure,
 	} = props
 	const [registerLoading, setRegisterLoading] = useState<boolean>(false)
 	const [voteLoading, setVoteLoading] = useState<boolean>(false)
@@ -128,6 +130,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Invoke the callback
 			onRegisterSuccess()
 		} catch (e: any) {
+			onFailure('Uh oh! Failed register for the voting group')
 			console.error(e.message)
 		}
 		setRegisterLoading(false)
@@ -192,7 +195,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				utils.formatBytes32String(stemId),
 				publicSignals.nullifierHash,
 				solidityProof,
-				{ from: currentUser.address },
+				{ from: currentUser.address, gasLimit: 650000 },
 			)
 			console.log({ voteRes })
 
@@ -205,6 +208,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Invoke the callback
 			onVoteSuccess(stem.name)
 		} catch (e: any) {
+			onFailure('Uh oh! Failed to cast the vote')
 			console.error(e)
 		}
 		setVoteLoading(false)
@@ -268,6 +272,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Invoke callback
 			onApprovedSuccess(stem.name)
 		} catch (e: any) {
+			onFailure('Uh oh! Failed to approve the stem onto the project')
 			console.error(e)
 		}
 		setApproveLoading(false)
