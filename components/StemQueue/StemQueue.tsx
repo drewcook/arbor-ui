@@ -162,7 +162,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Get the other group members' identities
 			const identityCommitments: bigint[] = []
 			for (const commitment of details.voterIdentityCommitments) {
-				console.log(commitment, BigInt(commitment))
 				identityCommitments.push(BigInt(commitment))
 			}
 			console.log({ identityCommitments })
