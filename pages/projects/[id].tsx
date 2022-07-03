@@ -1,3 +1,4 @@
+import { Container } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import ProjectDetailsContainer from '../../components/ProjectDetails/ProjectDetails.container'
@@ -16,7 +17,9 @@ const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
 			<Head>
 				<title>Polyecho | Project Details</title>
 			</Head>
-			{data && <ProjectDetailsContainer data={data} />}
+			<Container maxWidth="xl" className="content-container">
+				{data && <ProjectDetailsContainer data={data} />}
+			</Container>
 		</>
 	)
 }

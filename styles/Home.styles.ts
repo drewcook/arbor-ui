@@ -1,7 +1,4 @@
 const styles = {
-	negateMainPadding: {
-		m: '-5rem 0',
-	},
 	banner: {
 		py: '100px',
 		backgroundColor: '#111',
@@ -73,8 +70,7 @@ const styles = {
 			backgroundColor: '#FDFFA1',
 		},
 		'&[data-color="multi"]': {
-			background:
-				'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
+			background: 'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
 		},
 	},
 	about: {

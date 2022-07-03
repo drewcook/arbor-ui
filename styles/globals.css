@@ -151,12 +151,9 @@ button a:hover, button a:active {
 
 /* App */
 
-#app-main {
-  padding: 5rem 0;
-}
-
-#app-main.homepage {
-	padding: 0;
+.content-container {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
 }
 
 .dropzone-loading {

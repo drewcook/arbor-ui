@@ -8,18 +8,15 @@ import '../styles/globals.css'
 // Allow New Relic APM
 require('../newrelic')
 
-function PolyechoApp({ Component, pageProps }: AppProps) {
-	console.log(Component.name)
-	return (
-		<PolyechoThemeProvider>
-			<Web3Provider>
-				<NextNProgress color="#23F09A" />
-				<AppLayout isHome={Component.name === 'Home'}>
-					<Component {...pageProps} />
-				</AppLayout>
-			</Web3Provider>
-		</PolyechoThemeProvider>
-	)
-}
+const PolyechoApp = ({ Component, pageProps }: AppProps) => (
+	<PolyechoThemeProvider>
+		<Web3Provider>
+			<NextNProgress color="#23F09A" />
+			<AppLayout>
+				<Component {...pageProps} />
+			</AppLayout>
+		</Web3Provider>
+	</PolyechoThemeProvider>
+)
 
 export default PolyechoApp

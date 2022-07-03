@@ -26,38 +26,41 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 			<Head>
 				<title>Polyecho | Explore Music Projects</title>
 			</Head>
-			{data ? (
-				<>
-					<Typography variant="h4" component="h1" sx={styles.title}>
-						Polyecho Music Projects
-					</Typography>
-					<Container maxWidth="sm">
-						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the ecosystem for unique music, collaborate and build with others, create something one of a kind.
+			<Container maxWidth="xl" className="content-container">
+				{data ? (
+					<>
+						<Typography variant="h4" component="h1" sx={styles.title}>
+							Polyecho Music Projects
 						</Typography>
-					</Container>
-					{data.length > 0 ? (
-						<Grid container spacing={4}>
-							{data.map(project => (
-								<Grid item sm={6} md={4} key={project?._id}>
-									<ProjectCard details={project} />
-								</Grid>
-							))}
-						</Grid>
-					) : (
-						<Box sx={styles.noProjects}>
-							<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
-							<Link href="/projects/new" passHref>
-								<Button variant="contained" color="secondary">
-									Create Project
-								</Button>
-							</Link>
-						</Box>
-					)}
-				</>
-			) : (
-				<Typography sx={styles.noProjects}>Something went wrong</Typography>
-			)}
+						<Container maxWidth="sm">
+							<Typography variant="h5" sx={styles.subtitle}>
+								Explore the ecosystem for unique music, collaborate and build with others, create something one of a
+								kind.
+							</Typography>
+						</Container>
+						{data.length > 0 ? (
+							<Grid container spacing={4}>
+								{data.map(project => (
+									<Grid item sm={6} md={4} key={project?._id}>
+										<ProjectCard details={project} />
+									</Grid>
+								))}
+							</Grid>
+						) : (
+							<Box sx={styles.noProjects}>
+								<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
+								<Link href="/projects/new" passHref>
+									<Button variant="contained" color="secondary">
+										Create Project
+									</Button>
+								</Link>
+							</Box>
+						)}
+					</>
+				) : (
+					<Typography sx={styles.noProjects}>Something went wrong</Typography>
+				)}
+			</Container>
 		</>
 	)
 }
