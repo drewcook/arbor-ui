@@ -56,7 +56,6 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		Update user registration and collaborator status if the current user changes
 	*/
 	useEffect(() => {
-		console.log('current user has changed')
 		if (!currentUser) return
 		const isRegisteredVoter =
 			details.voterIdentityCommitments.includes(currentUser.voterIdentityCommitment) ||
@@ -64,7 +63,6 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		const isCollaborator = details.collaborators.includes(currentUser.address)
 		setUserRegistration(isRegisteredVoter)
 		setUserCollaborator(isCollaborator)
-		console.log({ isRegisteredVoter, isCollaborator })
 	}, [currentUser?.registeredGroupIds]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
 	////////////////////////////////////////////////////////////////////////

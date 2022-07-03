@@ -13,6 +13,8 @@ type ImageOptimizedProps = {
 const ImageOptimized = (props: ImageOptimizedProps): JSX.Element => {
 	const { src, alt, title, width, height } = props
 
+	const computedPlaceholder = width && height && width >= 40 && height >= 40 ? 'blur' : undefined
+
 	return (
 		<Image
 			src={src}
@@ -24,7 +26,7 @@ const ImageOptimized = (props: ImageOptimizedProps): JSX.Element => {
 			loading="eager"
 			objectFit="cover"
 			objectPosition="center"
-			placeholder="blur"
+			placeholder={computedPlaceholder}
 			blurDataURL={new Blob([src.toString()], {
 				type: 'image/*',
 			}).toString()}

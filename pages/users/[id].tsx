@@ -18,11 +18,9 @@ import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.shape({
-		_doc: PropTypes.shape({
-			_id: PropTypes.string.isRequired,
-			address: PropTypes.string.isRequired,
-			createdAt: PropTypes.string.isRequired,
-		}).isRequired,
+		_id: PropTypes.string.isRequired,
+		address: PropTypes.string.isRequired,
+		createdAt: PropTypes.string.isRequired,
 		nfts: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
@@ -41,7 +39,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	useEffect(() => {
 		// Update the details when changing the route directly
 		if (data) setDetails(data)
-		if (currentUser?.address === data?._doc.address) {
+		if (currentUser?.address === data?.address) {
 			setIsCurrentUserDetails(true)
 		} else {
 			setIsCurrentUserDetails(false)
@@ -50,7 +48,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 
 	useEffect(() => {
 		// Update details when switching accounts and when
-		if (currentUser?.address === data?._doc.address) {
+		if (currentUser?.address === data?.address) {
 			setIsCurrentUserDetails(true)
 		} else {
 			setIsCurrentUserDetails(false)
@@ -60,7 +58,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	// Refetch user details after successfully listing a card
 	const handleListSuccess = async () => {
 		try {
-			const res = await get(`/users/${data?._doc.address}`, { params: { fullDetails: true } })
+			const res = await get(`/users/${data?.address}`, { params: { fullDetails: true } })
 			const newDetails: IUserFull | null = res.success ? res.data : null
 			setDetails(newDetails)
 		} catch (e: any) {
@@ -87,13 +85,13 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											<Typography component="span" sx={styles.metadataKey}>
 												Display Name:
 											</Typography>
-											{formatAddress(details._doc.displayName)}
+											{formatAddress(details.displayName)}
 										</Typography>
 										<Typography sx={styles.metadata}>
 											<Typography component="span" sx={styles.metadataKey}>
 												Joined On:
 											</Typography>
-											{formatDate(details._doc.createdAt)}
+											{formatDate(details.createdAt)}
 										</Typography>
 										{isCurrentUserDetails && (
 											<Box sx={styles.editProfileWrap}>
@@ -108,7 +106,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							<Grid item xs={12} md={4}>
 								<Box className="avatar-wrap">
 									<Box sx={styles.avatar}>
-										<ImageOptimized src={details._doc.avatarUrl} alt="User Avatar" width={200} height={200} />
+										<ImageOptimized src={details.avatarUrl} alt="User Avatar" width={200} height={200} />
 									</Box>
 								</Box>
 							</Grid>
@@ -200,15 +198,47 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 UserDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
+	// Get user object
 	let userId = context.query.id
 	if (typeof userId === 'object') userId = userId[0].toLowerCase()
 	else userId = userId?.toLowerCase()
-	// Get full details
-	const res = await get(`/users/${userId}`, { params: { fullDetails: true } })
-	const data: IUserFull | null = res.success ? res.data : null
+	const res = await get(`/users/${userId}`)
+	const userData: IUserFull | null = res.success ? res.data : null
+
+	if (!userData) return { props: { data: userData } }
+
+	// Then get full details
+	const fullUser: IUserFull = {
+		...userData,
+		projects: [],
+		stems: [],
+		nfts: [],
+	}
+
+	// Get user's NFT details
+	for (const nftId of userData.nftIds) {
+		const nftRes = await get(`/nfts/${nftId}`)
+		if (nftRes.success) fullUser.nfts.push(nftRes.data)
+		else console.error(`Failed to find user NFT of ID - ${nftId}`)
+	}
+
+	// Get user's projects' details
+	for (const projectId of userData.projectIds) {
+		const projectRes = await get(`/projects/${projectId}`)
+		if (projectRes.success) fullUser.projects.push(projectRes.data)
+		else console.error(`Failed to find user project of ID - ${projectId}`)
+	}
+
+	// Get user's stems' details
+	for (const stemId of userData.stemIds) {
+		const stemRes = await get(`/stems/${stemId}`)
+		if (stemRes.success) fullUser.stems.push(stemRes.data)
+		else console.error(`Failed to find user stem of ID - ${stemId}`)
+	}
+
 	return {
 		props: {
-			data,
+			data: fullUser,
 		},
 	}
 }
