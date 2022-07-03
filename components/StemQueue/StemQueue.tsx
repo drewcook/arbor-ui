@@ -333,8 +333,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 								variant="outlined"
 								size="small"
 								onClick={() => handleApprove(stem.stem)}
-								disabled={approveLoading}
-								// TODO: disabled={approveLoading || stem.votes === 0}
+								disabled={approveLoading || stem.votes === 0}
 							>
 								{approveLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Approve'}
 							</Button>
