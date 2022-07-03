@@ -14,7 +14,7 @@ export const provider = new providers.JsonRpcProvider(
 )
 
 // PolyechoNFT contract
-const localAddress_nft = '0x4C4a2f8c81640e47606d3fd77B353E87Ba015584'
+const localAddress_nft = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 const devnetAddress_nft = '0x7810D24738405b6B38ee8a6150E438Bc57595029'
 
 export const polyechoNftContract = new Contract(
@@ -23,7 +23,7 @@ export const polyechoNftContract = new Contract(
 )
 
 // StemQueue contract
-const localAddress_queue = '0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD'
+const localAddress_queue = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'
 const devnetAddress_queue = '0x6785A60AdEb945C0597fF6E7ea4F1649662b2673'
 
 export const stemQueueContract = new Contract(

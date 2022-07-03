@@ -106,7 +106,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 					</Grid>
 					<Grid item xs={2} sx={{ textAlign: 'right' }}>
 						{/* @ts-ignore */}
-						<Button variant="outlined" size="small" sx={styles.forkBtn}>
+						<Button variant="outlined" size="small" sx={styles.forkBtn} disabled>
 							Fork
 						</Button>
 					</Grid>

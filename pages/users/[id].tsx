@@ -77,8 +77,8 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						<Grid container spacing={4}>
 							<Grid item xs={12} md={8}>
 								<Box>
-									<Typography variant="h5" gutterBottom>
-										User Details
+									<Typography variant="h4" gutterBottom>
+										{isCurrentUserDetails ? 'My Profile' : 'User Details'}
 									</Typography>
 									<Box sx={styles.metadataWrap}>
 										<Typography sx={styles.metadata}>
@@ -95,8 +95,13 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										</Typography>
 										{isCurrentUserDetails && (
 											<Box sx={styles.editProfileWrap}>
-												<Button variant="outlined" color="secondary" onClick={() => console.log('edit details')}>
-													Edit Profile
+												<Button
+													variant="outlined"
+													color="secondary"
+													onClick={() => console.log('edit details')}
+													disabled
+												>
+													Edit Details
 												</Button>
 											</Box>
 										)}

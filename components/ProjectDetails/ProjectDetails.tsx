@@ -215,6 +215,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					gasLimit: 650000,
 				})
 				console.log({ mintRes })
+
 				const receipt = await mintRes.wait()
 				console.log({ receipt })
 
@@ -251,8 +252,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const nftCreated = await post('/nfts', newNftPayload)
 				console.log({ nftCreated })
 				if (!nftCreated.success) throw new Error(nftCreated.error)
-
-				// Update user
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)
