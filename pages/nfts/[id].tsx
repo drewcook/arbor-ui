@@ -12,7 +12,8 @@ import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import { NETWORK_CURRENCY } from '../../constants/networks'
+import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
+import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../../constants/networks'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
@@ -210,9 +211,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Typography component="span" sx={styles.metadataKey}>
 										ID:
 									</Typography>
-									<Link
-										href={`https://mumbai.polygonscan.com/token/0xBd0136694e9382127602abFa5AA0679752eaD313?a=${details.token.id}`}
-									>
+									<Link href={`${NETWORK_EXPLORER}/address/${NFT_CONTRACT_ADDRESS}`}>
 										{details.token.id.toString()}
 									</Link>
 								</Typography>
@@ -220,17 +219,13 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Typography component="span" sx={styles.metadataKey}>
 										Collection:{' '}
 									</Typography>
-									<Link href="https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313">
-										View On Explorer
-									</Link>
+									<Link href={`${NETWORK_EXPLORER}/address/${NFT_CONTRACT_ADDRESS}`}>View On Explorer</Link>
 								</Typography>
 								<Typography sx={styles.metadata}>
 									<Typography component="span" sx={styles.metadataKey}>
 										Mint Tx Hash:{' '}
 									</Typography>
-									<Link href={`https://mumbai.polygonscan.com/tx/${details.token.data.transactionHash}`}>
-										View On Explorer
-									</Link>
+									<Link href={`${NETWORK_EXPLORER}/tx/${details.token.data.transactionHash}`}>View On Explorer</Link>
 								</Typography>
 								<Typography sx={styles.metadata}>
 									<Typography component="span" sx={styles.metadataKey}>

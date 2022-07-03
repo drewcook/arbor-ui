@@ -3,7 +3,8 @@ import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import web3 from 'web3'
-import { NETWORK_CURRENCY } from '../constants/networks'
+import { NFT_CONTRACT_ADDRESS } from '../constants/contracts'
+import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../constants/networks'
 import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import prettyPrintJson from '../utils/prettyPrintJson'
@@ -45,7 +46,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						NFT Collection Stats
 					</Typography>
 					<Typography gutterBottom variant="body1">
-						<Link href={`https://mumbai.polygonscan.com/address/${balData.address}`} passHref>
+						<Link href={`${NETWORK_EXPLORER}/address/${balData.address}`} passHref>
 							<Button color="secondary" size="small" variant="contained" sx={styles.covalentBtn}>
 								View Contract Address
 							</Button>
@@ -79,10 +80,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 					{tokensData.items.map((token, idx) => (
 						<Box sx={styles.tokenRow} key={idx}>
 							<Typography variant="h6">Token #{token.token_id}</Typography>
-							<Link
-								href={`https://mumbai.polygonscan.com/token/0xbd0136694e9382127602abfa5aa0679752ead313?a=${token.token_id}`}
-								passHref
-							>
+							<Link href={`${NETWORK_EXPLORER}/address/${NFT_CONTRACT_ADDRESS}?a=${token.token_id}`} passHref>
 								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
 									View NFT
 								</Button>
@@ -136,7 +134,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 											Price: {amount} {NETWORK_CURRENCY}
 										</Typography>
 										<Typography>
-											Hash: <Link href={`https://mumbai.polygonscan.com/tx/${hash}`}>{formatAddress(hash)}</Link>
+											Hash: <Link href={`${NETWORK_EXPLORER}/tx/${hash}`}>{formatAddress(hash)}</Link>
 										</Typography>
 									</Grid>
 									<Grid item xs={12} sm={6}>
