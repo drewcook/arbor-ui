@@ -7,7 +7,7 @@ import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
 import { newProjectStyles as styles } from '../../styles/Projects.styles'
-import { post } from '../../utils/http'
+import { post, update } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
 const NewProjectPage: NextPage = () => {
@@ -58,7 +58,40 @@ const NewProjectPage: NextPage = () => {
 				return
 			}
 			setLoading(true)
-			// Submit to backend
+
+			/*
+				Increment the global voting group counter, and use this as the ID for the new Semaphore group
+				- Call PUT /api/voting-groups to increment the value
+				- Get the returned data, inspect the new totalGroupCount value
+				- Use this as the new groupId for the on-chain group
+					- This will need to be done on the client-side, so we'll get this from the response
+				- Use this as the groupId value for the new project record as well
+				- TODO: revert this, or decrement if any of the following requests fail
+			*/
+			const votingGroupRes = await update('/voting-groups')
+			console.log({ votingGroupRes })
+			if (!votingGroupRes.success) throw new Error('Failed to increment voting group count')
+			const votingGroupId = votingGroupRes.data.totalGroupCount
+
+			/*
+				Create new Semaphore group for given project
+				- Create new group with project creator as group admin
+				- Do not add in the project creator as a voting member (yet)
+				- Future users will register to vote, which will add them in as group members
+			*/
+			const contractRes = await contracts.stemQueue.createProjectGroup(
+				votingGroupId,
+				20,
+				BigInt(0),
+				currentUser.address,
+				{
+					from: currentUser.address,
+				},
+			)
+			console.log({ contractRes })
+			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+
+			// POST new project record to backend
 			const payload: CreateProjectPayload = {
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 				collaborators: [currentUser.address], // start as only collaborator
@@ -67,26 +100,16 @@ const NewProjectPage: NextPage = () => {
 				bpm,
 				trackLimit,
 				tags,
+				votingGroupId,
 			}
-			const res = await post('/projects', payload)
-			console.log({ res })
-			if (res.success) {
-				// /*
-				// 	Create new Semaphore group for given project
-				// 	- Create new group with project creator as group admin
-				// 	- Do not add in the project creator as a voting member (yet)
-				// 	- Future users will register to vote, which will add them in as group members
-				// */
-				// const groupId = res.data.votingGroupId
-				// const contractRes = await contracts.stemQueue.createProjectGroup(groupId, 20, BigInt(0), currentUser.address)
-				// console.log({ contractRes })
+			const projectRes = await post('/projects', payload)
+			console.log({ projectRes })
 
-				// if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
-
+			if (projectRes.success) {
 				// Redirect to project page
 				setSuccessMsg('Successfully created project, redirecting...')
 				resetForm()
-				router.push(`/projects/${res.data._id}`)
+				router.push(`/projects/${projectRes.data._id}`)
 			} else {
 				setErrorOpen(true)
 				setErrorMsg('An error occurred creating the project')

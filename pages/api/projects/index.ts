@@ -1,7 +1,4 @@
-import { providers } from 'ethers'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { stemQueueContract } from '../../../constants/contracts'
-import { NETWORK_RPC } from '../../../constants/networks'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
@@ -33,61 +30,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
-				/*
-					Increment the global voting group counter, and use this as the ID for the new Semaphore group
-					- Call PUT /api/voting-groups to increment the value
-					- Get the returned data, inspect the new totalGroupCount value
-					- Use this as the new groupId for the on-chain group
-					  - This will need to be done on the client-side, so we'll get this from the response
-					- Use this as the groupId value for the new project record as well
-					- TODO: revert this, or decrement if any of the following requests fail
-				*/
-				const votingGroupRes = await update('/voting-groups')
-				if (!votingGroupRes || !votingGroupRes.success) {
-					return res.status(400).json({ success: false, error: 'Failed to increment voting group count' })
-				}
-				console.log({ votingGroupRes })
-
-				/*
-					Create new Semaphore group for given project
-					- Create new group with project creator as group admin
-					- Do not add in the project creator as a voting member (yet)
-					- Future users will register to vote, which will add them in as group members
-				*/
-				const groupId = votingGroupRes.data.totalGroupCount
-				const ethersProvider = new providers.StaticJsonRpcProvider(NETWORK_RPC)
-				const signer = ethersProvider.getSigner()
-				const contract = stemQueueContract.connect(signer)
-				const contractRes = await contract.createProjectGroup(groupId, 20, BigInt(0), req.body.createdBy, {
-					from: req.body.createdBy,
-				})
-				if (!contractRes) {
-					return res
-						.status(400)
-						.json({ success: false, error: 'Failed to create on-chain Semaphore group for given project' })
-				}
-				console.log({ contractRes })
-
-				/*
-					Create the new project record
-					- Should reference the off-chain groupId which maps to the Semaphore group we just created on-chain
-				*/
+				// Create the new project record
+				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = req.body
 				const payload: CreateProjectPayload = {
-					createdBy: req.body.createdBy,
-					collaborators: req.body.collaborators,
-					name: req.body.name,
-					description: req.body.description,
-					bpm: req.body.bpm,
-					trackLimit: req.body.trackLimit,
-					tags: req.body.tags,
-					votingGroupId: votingGroupRes.data.totalGroupCount,
+					createdBy,
+					collaborators,
+					name,
+					description,
+					bpm,
+					trackLimit,
+					tags,
+					votingGroupId,
 				}
-				// TODO: Do not save any of these records just yet... wait until after we create the Semaphore group successfully, so we don't end up with bad data across multiple collections
 				const project: IProjectDoc = await Project.create(payload)
 				console.log({ project })
-				/*
-					Add new project to creator's user details
-				*/
+
+				// Add new project to creator's user details
 				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
