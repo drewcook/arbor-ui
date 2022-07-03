@@ -28,8 +28,8 @@ type StemDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 	const { data } = props
-	const [waves, setWaves] = useState < any > null
-	const [isPlaying, setIsPlaying] = useState < boolean > false
+	const [waves, setWaves] = useState<any>(null)
+	const [isPlaying, setIsPlaying] = useState<boolean>(false)
 	// const [isLooping, setIsLooping] = useState<boolean>(false)
 
 	const onWavesInit = (idx: number, ws: any) => setWaves(ws)
