@@ -114,7 +114,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const nft = polyechoNftContract.connect(signer)
 			const stemQueue = stemQueueContract.connect(signer)
 			setContracts({ nft, stemQueue })
-			console.log('contracts connected:', { nft, stemQueue })
 
 			// Connect to NFT.storage
 			await connectNFTStorage()

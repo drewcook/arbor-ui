@@ -9,6 +9,7 @@ import '../styles/globals.css'
 require('../newrelic')
 
 function PolyechoApp({ Component, pageProps }: AppProps) {
+	console.log(Component.name)
 	return (
 		<PolyechoThemeProvider>
 			<Web3Provider>
