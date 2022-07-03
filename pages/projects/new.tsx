@@ -86,6 +86,7 @@ const NewProjectPage: NextPage = () => {
 				currentUser.address,
 				{
 					from: currentUser.address,
+					gasLimit: 650000,
 				},
 			)
 			console.log({ contractRes })

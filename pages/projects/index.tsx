@@ -58,7 +58,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 						)}
 					</>
 				) : (
-					<Typography sx={styles.noProjects}>Something went wrong</Typography>
+					<Typography sx={styles.noProjects}>Something went wrong. Try refreshing.</Typography>
 				)}
 			</Container>
 		</>

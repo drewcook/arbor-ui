@@ -52,7 +52,7 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 						)}
 					</>
 				) : (
-					<Typography sx={styles.noProjects}>Something went wrong</Typography>
+					<Typography sx={styles.noProjects}>Something went wrong. Try refreshing.</Typography>
 				)}
 			</Container>
 		</>

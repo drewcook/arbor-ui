@@ -211,6 +211,8 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const amount = web3.utils.toWei('0.01', 'ether')
 				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 					value: amount,
+					from: currentUser.address,
+					gasLimit: 650000,
 				})
 				console.log({ mintRes })
 				const receipt = await mintRes.wait()
@@ -247,7 +249,10 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					stems: details.stems, // Direct 1:1 deep clone
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
+				console.log({ nftCreated })
 				if (!nftCreated.success) throw new Error(nftCreated.error)
+
+				// Update user
 
 				// Notify success
 				if (!successOpen) setSuccessOpen(true)

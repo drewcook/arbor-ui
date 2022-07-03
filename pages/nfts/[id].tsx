@@ -68,7 +68,11 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			if (currentUser) {
 				// Call smart contract to make transfer
 				const amount = web3.utils.toWei(details.listPrice.toString(), 'ether')
-				const scRes: any = await contracts.nft.buy(details.token.id, { value: amount, from: currentUser.address })
+				const scRes: any = await contracts.nft.buy(details.token.id, {
+					value: amount,
+					from: currentUser.address,
+					gasLimit: 650000,
+				})
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 
 				// Make PUT request to change ownership
