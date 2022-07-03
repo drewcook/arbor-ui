@@ -200,8 +200,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ voteRes })
 
 			// Get the receipt
-			const receipt = await voteRes.wait()
-			console.log({ receipt })
+			// const receipt = await voteRes.wait()
+			// console.log({ receipt })
 
 			// Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
