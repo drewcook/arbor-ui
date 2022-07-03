@@ -161,10 +161,6 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			if (!res.success) throw new Error(res.error)
 			const stemCreated = res.data
 
-			// Add the current user as a collaborator if they aren't one already
-			// const collaborators = projectDetails.collaborators
-			// if (!projectDetails.collaborators.some((c: string) => c === currentUser.address))
-			// 	collaborators.push(currentUser.address)
 			// Add the new stem to the project and new collaborators list
 			res = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
 
@@ -177,8 +173,6 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				onSuccess(res.data)
 				handleClose()
 			}
-
-			// TODO: if added as a new collaborator, add this projectID to user's list of projects
 		} catch (e: any) {
 			console.error(e)
 			// Notify error

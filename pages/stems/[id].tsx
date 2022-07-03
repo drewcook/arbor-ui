@@ -57,7 +57,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 		if (waves) waves.seekTo(0)
 	}
 
-	const handleStop = () => {
+	const handleStop = (idx: number) => {
 		// Stop playing the track
 		if (waves) waves.stop()
 		// Toggle state

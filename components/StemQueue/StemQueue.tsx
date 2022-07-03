@@ -48,10 +48,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const [registerLoading, setRegisterLoading] = useState<boolean>(false)
 	const [voteLoading, setVoteLoading] = useState<boolean>(false)
 	const [approveLoading, setApproveLoading] = useState<boolean>(false)
-
-	// TODO: implement playback with these queued stems
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
-
 	const { contracts, currentUser, updateCurrentUser } = useWeb3()
 
 	/*
@@ -61,6 +58,18 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		const tmp = new Map(details.queue.entries())
 		tmp.set(idx, ws)
 		setStems(tmp)
+	}
+
+	// Play the wavesurfer file
+	const handlePlay = (id: number) => {
+		const stem = stems.get(id)
+		if (stem) stem.play()
+	}
+
+	// Stop playing the track
+	const handleStop = (id: number) => {
+		const stem = stems.get(id)
+		if (stem) stem.stop()
 	}
 
 	/*
@@ -255,6 +264,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			/*
 				Remove the queued stem from the list, add it to project stems
 				Add the user who uploaded it to the list of project collaborators
+				NOTE: We don't update the user's projects since they didn't create it
+				NOTE: In the future, we could have a list of projects a user has collaborated on tied to their record
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
@@ -265,7 +276,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ projectRes })
 			if (!projectRes.success) throw new Error('Failed to update the project record')
 
-			// Invoke callback
+			// Invoke the callback
 			onApprovedSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to approve the stem onto the project')
@@ -308,12 +319,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				details.queue.map((stem, idx) => (
 					<Box key={idx} sx={styles.stemWrapper}>
 						<StemPlayer
+							isQueued
 							idx={idx + 1}
 							details={stem.stem}
 							onWavesInit={onWavesInit}
-							// onFinish={() => setIsPlayingAll(false)}
-							// onSolo={handleSoloStem}
-							// onNewFile={onNewFile}
+							onPlay={handlePlay}
+							onStop={handleStop}
 						/>
 						<Typography>
 							{/* TODO: read vote counts from on-chain contract */}
