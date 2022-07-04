@@ -5,7 +5,7 @@ import Link from 'next/link'
 import PropTypes from 'prop-types'
 import CovalentInsights from '../../components/CovalentInsights'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
-import { NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME } from '../../constants/networks'
+import { NETWORK_EXPLORER, NETWORK_ID, NETWORK_NAME } from '../../constants/networks'
 import styles from '../../styles/Stats.styles'
 
 const propTypes = {
@@ -57,14 +57,14 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	if (process.env.NODE_ENV === 'development') return { props: { data: { balData: null, tokensData: null } } }
 
 	// Get's token balance
-	const balanceUrl = `https://api.covalenthq.com/v1/${NETWORK_HEX}/address/${NFT_CONTRACT_ADDRESS}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`
+	const balanceUrl = `https://api.covalenthq.com/v1/${NETWORK_ID}/address/${NFT_CONTRACT_ADDRESS}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`
 	const balRes = await fetch(balanceUrl)
 	console.log({ balRes })
 	const balJson = balRes.ok ? await balRes.json() : null
 	const balData = balJson?.data
 
 	// Gets all Tokens in collection
-	const tokensUrl = `https://api.covalenthq.com/v1/${NETWORK_HEX}/tokens/${NFT_CONTRACT_ADDRESS}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
+	const tokensUrl = `https://api.covalenthq.com/v1/${NETWORK_ID}/tokens/${NFT_CONTRACT_ADDRESS}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
 	const tokensRes = await fetch(tokensUrl)
 	console.log({ tokensRes })
 	const tokensJson = tokensRes.ok ? await tokensRes.json() : null
