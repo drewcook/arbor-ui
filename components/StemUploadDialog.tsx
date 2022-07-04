@@ -147,7 +147,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setUploadingMsg('Updating project details...')
 
 			// Create the new stem (and adds to user's stems)
-			let res = await post('/stems', {
+			const stemRes = await post('/stems', {
 				name: stemName,
 				type: stemType,
 				metadataUrl: nftsRes.url,
@@ -158,21 +158,22 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				filesize: file.size,
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 			})
-			if (!res.success) throw new Error(res.error)
-			const stemCreated = res.data
+			if (!stemRes.success) throw new Error(stemRes.error)
+			const stemCreated = stemRes.data
 
-			// Add the new stem to the project and new collaborators list
-			res = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
+			// Add new stem to user's stems' details
+			const userUpdated = await update(`/users/${currentUser.address}`, { newStem: stemCreated._id })
+			if (!userUpdated.success) throw new Error(userUpdated.error)
 
-			// Catch error or invoke success callback with new project data
-			if (!res.success) throw new Error(res.error)
-			else {
-				// Notify success
-				onNotificationClose()
-				setLoading(false)
-				onSuccess(res.data)
-				handleClose()
-			}
+			// Add the new stem to the project stem queue
+			const projectRes = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
+			if (!projectRes.success) throw new Error(projectRes.error)
+
+			// Notify success
+			onNotificationClose()
+			setLoading(false)
+			onSuccess(projectRes.data)
+			handleClose()
 		} catch (e: any) {
 			console.error(e)
 			// Notify error
