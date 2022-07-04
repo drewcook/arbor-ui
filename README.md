@@ -6,7 +6,21 @@ Polyecho is a schelling game where the objective is to publicly co-create songs 
 
 ---
 
-## Getting Started
+## Contracts
+
+This application is run on the Polygon Mainnet network.  All contracts are deployed at the follwing addresses:
+
+| Contract      | Address |
+| ----------- | ----------- |
+| PolyechoNFT | 0x6F6f53296049149a02373E3458fb105171481268 |
+| StemQueue | 0x16480B6d607952090fa4948EC75395659cC7D32A |
+| Verifier20 | 0x7810D24738405b6B38ee8a6150E438Bc57595029 |
+| PoseidonT3 | 0xe48fe3C863EDaD6c33EE9e4b51fcaFf5d48Ca9D3 |
+| IncrementalMerkleTree | 0x559975Ff0024FBfF2fb9c9E8553c7263F691515d |
+
+---
+
+## Local Development - Getting Started
 
 First, clone this repository to your local machine:
 
