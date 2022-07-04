@@ -29,13 +29,13 @@ const contracts = {
 		poseidonT3: '0xe48fe3C863EDaD6c33EE9e4b51fcaFf5d48Ca9D3',
 		incrementalBinaryTree: '0x559975Ff0024FBfF2fb9c9E8553c7263F691515d',
 	},
-	// Last deployed: 07/03/22
+	// Last deployed: 07/04/22
 	'Polygon Testnet': {
-		nft: '0x5121f4A8300e4Fda4Ff8FF695cA7873111C420ea',
-		stemQueue: '0x5616971539C1d6aCb632A997436f66eA35f66CBC',
-		verifier: '0xA6B0e5Bbd764d8DE2168B034cDbAB121eFDDce23',
-		poseidonT3: '0xf6c55e9fAeeaa214f4B23c92e0C88953D19e3dD0',
-		incrementalBinaryTree: '0x410c16A302d7672a9bEEBE6aF0E4c37122244E13',
+		nft: '0x9469c65fEe833d4a20092239d3D79563a287559e',
+		stemQueue: '0xB77940118b82c9874bBB6E7989C3B163f468ab2b',
+		verifier: '0xEF8a352614aB42f662FBeb870868Bb511491d90c',
+		poseidonT3: '0x29FfdD421F828dDcA54024cc86B8DEb2B627dD99',
+		incrementalBinaryTree: '0xB1Ce21D0a6325ea34E32d82a30B1067dE206e040',
 	},
 	// Last deployed: 07/03/22
 	'Harmony Devnet': {
