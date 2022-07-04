@@ -40,16 +40,24 @@ const config = {
 			url: 'http://127.0.0.1:8545',
 			chainId: 31337,
 		},
-		harmonyDevnet: {
-			url: 'https://api.s0.ps.hmny.io',
-			accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+		polygonMainnet: {
+			url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+			accounts: [process.env.PRIVATE_KEY],
+		},
+		polygonTestnet: {
+			url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
+			accounts: [process.env.PRIVATE_KEY],
+		},
+		harmonyMainnet: {
+			url: 'https://api.s0.t.hmny.io', // or 'https://api.harmony.one'
+			accounts: [process.env.PRIVATE_KEY],
 		},
 		harmonyTestnet: {
 			url: 'https://api.s0.b.hmny.io',
 			accounts: [process.env.PRIVATE_KEY],
 		},
-		harmonyMainnet: {
-			url: 'https://api.harmony.one',
+		harmonyDevnet: {
+			url: 'https://api.s0.ps.hmny.io',
 			accounts: [process.env.PRIVATE_KEY],
 		},
 	},

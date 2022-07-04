@@ -9,17 +9,10 @@ import StemQueue from '../contracts/StemQueue.json'
 	- Update RPC-URL to https://api.s0.ps.hmny.io/
 */
 
-// Rinkeby
-// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-// const chainId = 4
-
-// Kovan
-// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-// const chainId = 42
-
-// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-// const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-// const chainId = 80001
+// PolyechoNFT deployments:
+// Rinkeby '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
+// Kovan '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
+// Polygon Testnet '0xBd0136694e9382127602abFa5AA0679752eaD313'
 
 // Create our Provider instance
 export const provider = new providers.JsonRpcProvider(

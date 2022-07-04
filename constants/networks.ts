@@ -1,24 +1,44 @@
-// Rinkeby
-// const contractAddress = '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
-// const chainId = 4
-
-// Kovan
-// const contractAddress = '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
-// const chainId = 42
-
-// Polygon Testnet - https://mumbai.polygonscan.com/address/0xBd0136694e9382127602abFa5AA0679752eaD313
-// const contractAddress = '0xBd0136694e9382127602abFa5AA0679752eaD313'
-// const chainId = 80001
-
 // Supported networks
 const networks = {
 	localhost: {
-		networkId: 31337, // Hardhat, otherwise 1337 for Ganache
+		networkId: 31337, // Local Hardhat node, otherwise 1337 for Truffle/Ganache
 		networkHex: '0x7A69',
 		displayName: 'Localhost',
 		rpc: 'http://127.0.0.1:8545/',
 		currency: 'LOCAL',
 		explorer: '',
+	},
+	polygonMainnet: {
+		networkId: 137,
+		networkHex: '0x89',
+		displayName: 'Polygon Mainnet',
+		rpc: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
+		currency: 'MATIC',
+		explorer: 'https://polygonscan.com',
+	},
+	polygonTestnet: {
+		networkId: 80001,
+		networkHex: '0x13881',
+		displayName: 'Polygon Testnet',
+		rpc: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
+		currency: 'MATIC',
+		explorer: 'https://mumbai.polygonscan.com',
+	},
+	harmonyMainnet: {
+		networkId: 1666600000,
+		networkHex: '0x63564C40',
+		displayName: 'Harmony Mainnet',
+		rpc: 'https://api.s0.t.hmny.io', // or 'https://api.harmony.one'
+		currency: 'ONE',
+		explorer: 'https://explorer.harmony.one',
+	},
+	harmonyTestnet: {
+		networkId: 1666700000,
+		networkHex: '0x6357D2E0',
+		displayName: 'Harmony Testnet',
+		rpc: 'https://api.s0.b.hmny.io',
+		currency: 'ONE',
+		explorer: 'https://explorer.pops.one',
 	},
 	harmonyDevnet: {
 		networkId: 1666900000,
@@ -33,7 +53,7 @@ const networks = {
 // Preferred network
 // Dev: localhost
 // Prod: Harmony Devnet
-const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'harmonyDevnet'
+const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'harmonyMainnet'
 
 // Onboard takes hexadecimal values
 export const NETWORK_HEX = networks[preferredNetwork].networkHex
