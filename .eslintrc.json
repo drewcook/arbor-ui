@@ -20,8 +20,18 @@
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-var-requires": "off",
     "react/react-in-jsx-scope": "off" // Next.js includes it by default
   },
+	"overrides": [
+		// Turn off prop type errors for Next.js pages, due to complexity with TS
+		{
+			"files": ["pages/**/*.tsx"],
+			"rules": {
+				"react/prop-types": "off"
+			}
+		}
+	],
   "settings": {
     "react": {
       "version": "detect"

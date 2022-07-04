@@ -12,6 +12,8 @@ export interface IUser {
 	stemIds: string[]
 	createdAt: string
 	updatedAt: string
+	voterIdentityCommitment: string
+	registeredGroupIds: number[]
 }
 
 export interface IUserFull extends IUser {
@@ -54,6 +56,16 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 		},
 		stemIds: {
 			type: [String],
+			required: false,
+			default: [],
+		},
+		// Semaphore identity commitment
+		voterIdentityCommitment: {
+			type: String,
+			required: false,
+		},
+		registeredGroupIds: {
+			type: [Number],
 			required: false,
 			default: [],
 		},

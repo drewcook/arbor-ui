@@ -2,16 +2,18 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { AppBar, Box, Button, Chip, Container, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useState } from 'react'
-import ConnectedAccount from './ConnectedAccount'
 import styles from './AppHeader.styles'
+import ConnectedAccount from './ConnectedAccount'
 
-const pages = [
+const basePages = [
 	{ href: '/projects/new', title: 'Create' },
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
 	{ href: '/nfts', title: 'Marketplace' },
-	{ href: '/stats', title: 'Stats' },
 ]
+
+// Add stats page for production environments
+const pages = process.env.NODE_ENV === 'development' ? basePages : [...basePages, { href: '/stats', title: 'Stats' }]
 
 const AppHeader = (): JSX.Element => {
 	const [anchorElNav, setAnchorElNav] = useState(null)

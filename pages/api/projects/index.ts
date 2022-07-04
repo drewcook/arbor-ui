@@ -11,6 +11,7 @@ export type CreateProjectPayload = {
 	bpm: number
 	trackLimit: number
 	tags: string[]
+	votingGroupId?: number // Added upon creation
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -29,26 +30,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
+				// Create the new project record
+				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = req.body
 				const payload: CreateProjectPayload = {
-					createdBy: req.body.createdBy,
-					collaborators: req.body.collaborators,
-					name: req.body.name,
-					description: req.body.description,
-					bpm: req.body.bpm,
-					trackLimit: req.body.trackLimit,
-					tags: req.body.tags,
+					createdBy,
+					collaborators,
+					name,
+					description,
+					bpm,
+					trackLimit,
+					tags,
+					votingGroupId,
 				}
-				/* create a new model in the database */
 				const project: IProjectDoc = await Project.create(payload)
+				console.log({ project })
 
 				// Add new project to creator's user details
 				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
+				console.log({ userUpdated })
 
+				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })
-			} catch (e) {
+			} catch (e: any) {
+				console.error(e.message)
 				res.status(400).json({ success: false, error: e })
 			}
 			break

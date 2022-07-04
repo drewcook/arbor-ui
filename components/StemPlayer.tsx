@@ -1,4 +1,4 @@
-import { SkipPrevious, Square } from '@mui/icons-material'
+import { PlayArrow, SkipPrevious, Square } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -15,14 +15,28 @@ type StemPlayerProps = {
 	onWavesInit: (idx: number, ws: any) => any
 	onFinish?: (idx: number, ws: any) => any
 	isStemDetails?: boolean
+	isQueued?: boolean
+	onPlay?: (idx: number) => any
 	onSolo?: (idx: number) => any
 	onSkipPrev?: () => any
-	onStop?: () => any
+	onStop?: (idx: number) => any
 	onNewFile?: (newFileName: string, newFile: Blob) => void
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
-	const { idx, details, onWavesInit, onFinish, isStemDetails, onSolo, onSkipPrev, onStop, onNewFile } = props
+	const {
+		idx,
+		details,
+		onWavesInit,
+		onFinish,
+		isStemDetails,
+		isQueued,
+		onPlay,
+		onSolo,
+		onSkipPrev,
+		onStop,
+		onNewFile,
+	} = props
 	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
@@ -106,7 +120,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 					</Grid>
 					<Grid item xs={2} sx={{ textAlign: 'right' }}>
 						{/* @ts-ignore */}
-						<Button variant="outlined" size="small" sx={styles.forkBtn}>
+						<Button variant="outlined" size="small" sx={styles.forkBtn} disabled>
 							Fork
 						</Button>
 					</Grid>
@@ -116,12 +130,19 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				<Grid container spacing={1}>
 					<Grid item xs={1} sx={styles.btnsWrap}>
 						<ButtonGroup sx={styles.btnGroup} orientation="vertical">
-							{isStemDetails ? (
+							{isStemDetails || isQueued ? (
 								<>
-									<Button size="small" onClick={onSkipPrev} title="Skip to beginning">
-										<SkipPrevious />
-									</Button>
-									<Button size="small" onClick={onStop} title="Stop stem">
+									{isQueued && (
+										<Button size="small" onClick={() => (onPlay ? onPlay(idx) : null)} title="Play stem">
+											<PlayArrow fontSize="small" />
+										</Button>
+									)}
+									{isStemDetails && (
+										<Button size="small" onClick={onSkipPrev} title="Skip to beginning">
+											<SkipPrevious />
+										</Button>
+									)}
+									<Button size="small" onClick={() => (onStop ? onStop(idx) : null)} title="Stop stem">
 										<Square fontSize="small" />
 									</Button>
 								</>
@@ -158,6 +179,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 
 StemPlayer.defaultProps = {
 	isStemDetails: false,
+	isQueued: false,
 }
 
 export default StemPlayer

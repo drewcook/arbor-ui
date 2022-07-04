@@ -1,13 +1,13 @@
+import { Box, Typography } from '@mui/material'
+import _debounce from 'lodash/debounce'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import DiscordIconSvg from '../public/discord_circle_black.svg'
 import GithubIconSvg from '../public/github_circle_black.svg'
 import TwitterIconSvg from '../public/twitter_circle_black.svg'
-import { Box, Typography } from '@mui/material'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import ImageOptimized from './ImageOptimized'
-import Link from 'next/link'
-import _debounce from 'lodash/debounce'
 import styles from './AppFooter.styles'
+import ImageOptimized from './ImageOptimized'
 
 /* eslint-disable react-hooks/exhaustive-deps */
 

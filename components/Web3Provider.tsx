@@ -1,33 +1,34 @@
+import detectEthereumProvider from '@metamask/detect-provider'
+import { Contract, providers } from 'ethers'
 import type { NFTStorage } from 'nft.storage'
-import type { OnboardAPI, WalletState } from '@web3-onboard/core'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-import NFTContract from '../contracts/PolyechoNFT.json'
-import { IUser } from '../models/user.model'
-import getWeb3 from '../utils/getWeb3'
+import { polyechoNftContract, stemQueueContract } from '../constants/contracts'
+import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
+import type { IUserDoc } from '../models/user.model'
 import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
-import web3Onboard from '../utils/web3Onboard'
 
 // Context types
+// NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
 type Web3ContextProps = {
-	web3: any // web3.js instance for easy use
+	contracts: any
 	NFTStore: any
-	onboard: any // Blocknative Onboard instance for easy use
-	contract: any // The smart contract deployed on the given selected network ID
 	connected: boolean
 	handleConnectWallet: any
 	handleDisconnectWallet: any
-	currentUser: IUser | null
+	currentUser: IUserDoc | null
+	updateCurrentUser: any
 }
 
 type Web3ProviderProps = {
 	children: ReactNode
 }
 
-// Supported network: Polygon Mainnet
-// NOTE: Onboard takes hexadecimal values
-const PREFERRED_NETWORK_ID = '0x89'
+type PolyechoContracts = {
+	nft: Contract
+	stemQueue: Contract
+}
 
 // Create context
 // @ts-ignore
@@ -35,107 +36,106 @@ const Web3Context = createContext<Web3ContextProps>({})
 
 // Context provider
 export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
-	const [web3, setWeb3] = useState(null)
-	const [contract, setContract] = useState(null)
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
-	const [onboard, setOnboard] = useState<OnboardAPI | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
-	const [currentUser, setCurrentUser] = useState<IUser | null>(null)
+	const [currentUser, setCurrentUser] = useState<IUserDoc | null>(null)
+	const [contracts, setContracts] = useState<PolyechoContracts>({ nft: {} as Contract, stemQueue: {} as Contract })
+
+	const checkForSupportedNetwork = async (provider: any) => {
+		const chainId = await provider.request({ method: 'eth_chainId' })
+
+		if (chainId.toUpperCase() !== NETWORK_HEX.toUpperCase()) {
+			try {
+				console.warn(
+					`Network ID ${chainId} is not supported. Please switch back to the ${NETWORK_NAME} in your wallet for full support.`,
+				)
+				// Prompt user to connect to the correct network
+				await provider.request({
+					method: 'wallet_switchEthereumChain',
+					params: [
+						{
+							chainId: NETWORK_HEX,
+						},
+					],
+				})
+			} catch (error: any) {
+				// This error code indicates that the chain has not been added to MetaMask
+				// if it is not, then install it into the user MetaMask
+				if (error.code === 4902) {
+					try {
+						await provider.request({
+							method: 'wallet_addEthereumChain',
+							params: [
+								{
+									chainId: NETWORK_HEX,
+									chainName: NETWORK_NAME,
+									nativeCurrency: {
+										name: NETWORK_CURRENCY,
+										symbol: NETWORK_CURRENCY,
+										decimals: 18,
+									},
+									rpcUrls: [NETWORK_RPC],
+									blockExplorerUrls: [NETWORK_EXPLORER],
+								},
+							],
+						})
+					} catch (addError) {
+						console.error(addError)
+					}
+				}
+				console.error(error)
+			}
+		} else {
+			console.info(`Network ID ${chainId} is supported`)
+		}
+	}
 
 	const loadWeb3 = async (): Promise<any> => {
 		try {
-			// Auto-select wallet by checking local storage
-			// See https://docs.blocknative.com/onboard/core#auto-selecting-a-wallet
-			// @ts-ignore
-			const previouslyConnectedWallets = JSON.parse(window.localStorage.getItem('connectedWallets'))
-			let walletState: WalletState[]
-			if (previouslyConnectedWallets && previouslyConnectedWallets.length > 0) {
-				// Auto connect "silently" and disable all onboard modals to avoid them flashing on page load
-				walletState = await web3Onboard.connectWallet({
-					autoSelect: { label: previouslyConnectedWallets[0], disableModals: true },
-				})
-			} else {
-				// Otherwise, connect a new wallet
-				walletState = await web3Onboard.connectWallet()
-			}
+			// Get Web3 instance based off browser support
+			const provider = (await detectEthereumProvider()) as any
+			if (!provider) return alert('Please make sure you have installed Metamask or another Web3 wallet.')
 
-			// If wallet was selected and connected to the app via the wallet UI, then do several more things...
-			if (web3Onboard.state.get().wallets[0]) {
-				// If wallet was selected successfully, but not on a supported chain, prompt to switch to a supported one
-				let switchedToSupportedChain: boolean
-				switchedToSupportedChain = await web3Onboard.setChain({ chainId: PREFERRED_NETWORK_ID })
-				if (!switchedToSupportedChain) {
-					// If rejecting, disconnect and exit
-					handleDisconnectWallet()
-					return { connectedAccount: null }
-				}
+			// Check that user is connected to the supported network
+			await checkForSupportedNetwork(provider)
 
-				// Set onboard instance state
-				setOnboard(web3Onboard)
+			// Request accounts to connect to dApp
+			await provider.request({ method: 'eth_requestAccounts' })
 
-				// Set Web3 instance based off browser support
-				const web3Instance = await getWeb3()
-				if (!web3Instance) throw new Error('Must be in a Web3 supported browser')
-				setWeb3(web3Instance)
+			// Get signer and provider
+			const ethersProvider = new providers.Web3Provider(provider)
+			const signer = ethersProvider.getSigner()
+			const signerAddress = await signer.getAddress()
+			console.log(`signer: ${signerAddress}`)
 
-				// Set PolyechoNFT smart contract based off network ABI
-				const networkId = await web3Instance.eth.net.getId()
-				const deployedNetwork = NFTContract.networks[networkId]
-				const nftContract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
-				setContract(nftContract)
+			// Check that we're on the supported network
 
-				// Connect to NFT.storage
-				await connectNFTStorage()
+			// Setup contracts with signer of connected address
+			const nft = polyechoNftContract.connect(signer)
+			const stemQueue = stemQueueContract.connect(signer)
+			setContracts({ nft, stemQueue })
 
-				// Listen for account changes from browser wallet UI
-				web3Instance.currentProvider.on('accountsChanged', async (newAccounts: string[]) => {
-					const newAccount = newAccounts[0]
-					// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that we're connected to the right network before attempting to find or create the new user
-					if (web3Onboard.state.get().wallets[0]?.chains[0].id === PREFERRED_NETWORK_ID) {
-						console.info(`Switching wallet accounts to ${newAccount}`)
-						await findOrCreateUser(newAccount)
-					}
-				})
+			// Connect to NFT.storage
+			await connectNFTStorage()
 
-				// Listen for chain changes from browser wallet UI
-				web3Instance.currentProvider.on('chainChanged', async (chainId: string) => {
-					// Check if the new chain is supported
-					if (
-						!web3Onboard.state
-							.get()
-							.chains.map(chain => chain.id)
-							.includes(web3Instance.utils.toHex(chainId))
-					) {
-						// Since this listener could be called after connecting then disconnecting and then switching accounts, unconnected to the app, check again that a wallet is connected, and then prompt to switch to a supported network (prevent them from switching to some degree)
-						if (web3Onboard.state.get().wallets[0]) {
-							console.warn(
-								`Switching wallet networks: Network ID ${chainId} is not supported. Please switch back to Polygon Mainnet in your wallet for full support.`,
-							)
-							switchedToSupportedChain = await web3Onboard.setChain({ chainId: PREFERRED_NETWORK_ID })
-							// If rejecting, disconnect and exit
-							if (!switchedToSupportedChain) {
-								handleDisconnectWallet()
-								return { connectedAccount: null }
-							}
-						}
-					} else {
-						console.info(`Switching wallet networks: Network ID ${chainId} is supported`)
-						// TODO: Set the new contract instance to interact with after switching to a supported network
-						// const deployedNetwork = NFTContract.networks[networkId]
-						// const nftContract = new web3Instance.eth.Contract(NFTContract.abi, deployedNetwork && deployedNetwork.address)
-						// setContract(nftContract)
-					}
-				})
+			// Listen for account changes from browser wallet UI
+			provider.on('accountsChanged', async (newAccounts: string[]) => {
+				const newAccount = newAccounts[0]
+				console.info(`Switching wallet accounts to ${newAccount}`)
+				await findOrCreateUser(newAccount)
+				// window.location.reload()
+			})
 
-				// Set connected state after all the above has succeeded
-				setConnected(true)
-			} else {
-				return { connectedAccount: null }
-			}
+			// Listen for chain changes from browser wallet UI
+			provider.on('chainChanged', async (chainId: string) => {
+				console.info(`Switching wallet networks to ${chainId}...`)
+				// Ensure the network is supported
+				checkForSupportedNetwork(provider)
+				// window.location.reload()
+			})
 
-			// We have a connected account on a supported chain and have switched to that network...
-			// Set the currently connected account to the most recently connected one that was chosen if so
-			return { connectedAccount: walletState[0].accounts[0].address }
+			setConnected(true)
+			return { connectedAccount: signerAddress }
 		} catch (e: any) {
 			// Catch any errors for any of the above operations.
 			console.error(e.message)
@@ -195,34 +195,37 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	}
 
 	/**
-	 * Allow for components to update connected status and sign out with Onboard.js
+	 * Allow for components to update connected status
 	 */
 	const handleDisconnectWallet = async () => {
 		try {
-			// Disconnect the first wallet in the wallets array
-			if (!onboard) return
-			const primaryWallet = onboard.state.get().wallets[0]
-			await onboard.disconnectWallet({ label: primaryWallet.label })
 			// Set provider local state
 			setConnected(false)
 			setCurrentUser(null)
 			console.info('Successfully disconnected wallet')
+			window.location.reload()
 		} catch (e: any) {
 			console.error(e.message)
 		}
 	}
 
+	/**
+	 * Utility handler for updating the global state of the current user so that UI's can respond
+	 */
+	const updateCurrentUser = (newUserData: IUserDoc) => {
+		setCurrentUser(newUserData)
+	}
+
 	return (
 		<Web3Context.Provider
 			value={{
-				web3,
-				contract,
+				contracts,
 				NFTStore,
-				onboard,
 				connected,
 				handleConnectWallet,
 				handleDisconnectWallet,
 				currentUser,
+				updateCurrentUser,
 			}}
 		>
 			{children}

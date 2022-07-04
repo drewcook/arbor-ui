@@ -19,15 +19,15 @@ import {
 	Toolbar,
 	Typography,
 } from '@mui/material'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 import logoBinary from '../lib/logoBinary'
+import type { IProjectDoc } from '../models/project.model'
 import { post, update } from '../utils/http'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
 import StemDropzone from './StemDropzone'
-import { useWeb3 } from './Web3Provider'
 import styles from './StemUploadDialog.styles'
+import { useWeb3 } from './Web3Provider'
 
 const stemTypes = [
 	{
@@ -67,17 +67,13 @@ const stemTypes = [
 	},
 ]
 
-const propTypes = {
-	open: PropTypes.bool.isRequired,
-	onClose: PropTypes.func.isRequired,
-	onSuccess: PropTypes.func.isRequired,
-	projectDetails: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
-		collaborators: PropTypes.array.isRequired,
-	}),
+type StemUploadDialogProps = {
+	// PropTypes.InferProps<typeof propTypes>
+	open: boolean
+	onClose: () => void
+	onSuccess: (project: IProjectDoc) => void
+	projectDetails: IProjectDoc
 }
-
-type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
 
 const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	const { open, onClose, projectDetails, onSuccess } = props
@@ -165,12 +161,8 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			if (!res.success) throw new Error(res.error)
 			const stemCreated = res.data
 
-			// Add the current user as a collaborator if they aren't one already
-			const collaborators = projectDetails.collaborators
-			if (!projectDetails.collaborators.some((c: string) => c === currentUser.address))
-				collaborators.push(currentUser.address)
 			// Add the new stem to the project and new collaborators list
-			res = await update(`/projects/${projectDetails._id}`, { newStem: stemCreated, collaborators })
+			res = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
 
 			// Catch error or invoke success callback with new project data
 			if (!res.success) throw new Error(res.error)
@@ -181,8 +173,6 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				onSuccess(res.data)
 				handleClose()
 			}
-
-			// TODO: if added as a new collaborator, add this projectID to user's list of projects
 		} catch (e: any) {
 			console.error(e)
 			// Notify error
@@ -295,7 +285,5 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 		</>
 	)
 }
-
-StemUploadDialog.propTypes = propTypes
 
 export default StemUploadDialog
