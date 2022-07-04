@@ -14,7 +14,7 @@ import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../../constants/networks'
-import OneIcon from '../../public/harmony_icon.svg'
+import PolygonIcon from '../../public/polygon_logo_black.png'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
@@ -149,7 +149,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 									</Button>
 									<Box sx={styles.price}>
-										<ImageOptimized src={OneIcon} width={30} height={30} alt="ONE" />
+										<ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} />
 										<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 											{details.listPrice}{' '}
 											<Typography sx={styles.eth} component="span">
@@ -164,7 +164,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Box sx={styles.buyNowListing}>
 										<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
 										<Box sx={styles.price}>
-											<ImageOptimized src={OneIcon} width={30} height={30} alt="ONE" />
+											<ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} />
 											<Typography variant="h4" component="div">
 												{details.listPrice}{' '}
 												<Typography sx={styles.eth} component="span">
