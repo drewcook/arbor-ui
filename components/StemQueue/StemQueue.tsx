@@ -50,6 +50,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const [approveLoading, setApproveLoading] = useState<boolean>(false)
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const { contracts, currentUser, updateCurrentUser } = useWeb3()
+	const [ident, setIdent] = useState<any>(null)
 
 	/*
 		Stem Player callbacks
@@ -92,6 +93,15 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			)
 			const identity = new ZkIdentity(Strategy.MESSAGE, message)
 			const commitment: string = await identity.genIdentityCommitment().toString()
+			const trapdoor = identity.getTrapdoor()
+			const nullifier = identity.getNullifier()
+			const voterIdentity = {
+				commitment,
+				nullifier,
+				trapdoor,
+			}
+			console.log({ voterIdentity })
+			setIdent(voterIdentity)
 
 			/*
 				Add the user's identity commitment to the on-chain group
@@ -149,7 +159,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const handleVote = async (stem: IStemDoc) => {
 		try {
 			// Preliminary requirement to be connected
-			if (!currentUser) return
+			if (!currentUser || !ident) return
 			setVoteLoading(true)
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
@@ -165,8 +175,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 
 			// Re-create the identity
-			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, currentUser?.voterIdentityCommitment)
-			console.log({ voterIdentity })
+			// const voterIdentity = new ZkIdentity(Strategy.MESSAGE, currentUser?.voterIdentityCommitment)
+			// console.log(ident, voterIdentity, ident === voterIdentity)
+			// console.log({ voterIdentity })
 
 			// Get the other group members' identities
 			const identityCommitments: bigint[] = []
@@ -176,17 +187,11 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ identityCommitments })
 
 			// Generate the Merkle proof
-			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, currentUser?.voterIdentityCommitment)
+			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, ident.commitment)
 			console.log({ merkleProof })
 
 			// Generate the witness
-			const witness = Semaphore.genWitness(
-				voterIdentity.getTrapdoor(),
-				voterIdentity.getNullifier(),
-				merkleProof,
-				merkleProof.root,
-				stemId,
-			)
+			const witness = Semaphore.genWitness(ident.trapdoor, ident.nullifier, merkleProof, merkleProof.root, stemId)
 			console.log({ witness })
 
 			// Generate the proofs

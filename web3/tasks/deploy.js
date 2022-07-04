@@ -5,10 +5,10 @@ task('deploy', 'Deploy the entire suite of smart contracts')
 	.addOptionalParam('logs', 'Print the logs', true, types.boolean)
 	.setAction(async ({ logs }, { ethers }) => {
 		// Deploy PolyechoNFT
-		const PolyechoNFTContract = await ethers.getContractFactory('PolyechoNFT')
-		const nft = await PolyechoNFTContract.deploy()
-		await nft.deployed()
-		logs && console.log(`PolyechoNFT contract has been deployed to: ${nft.address}`)
+		// const PolyechoNFTContract = await ethers.getContractFactory('PolyechoNFT')
+		// const nft = await PolyechoNFTContract.deploy()
+		// await nft.deployed()
+		// logs && console.log(`PolyechoNFT contract has been deployed to: ${nft.address}`)
 
 		// Deploy Verifier
 		const VerifierContract = await ethers.getContractFactory('Verifier20')
