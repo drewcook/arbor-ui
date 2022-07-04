@@ -20,6 +20,30 @@ This application is run on the Polygon Mainnet network.  All contracts are deplo
 
 ---
 
+## Zero Knowledge
+
+Polyecho uses zero knowledge technologies to incorporate anonymous voting on stems that are within a Project's Stem Queue.  It accomplishes this by using a series of zkSNARKs and relying on some of the packages to incorporate these into the dApp.
+
+| Library      | Use Case |
+| ----------- | ----------- |
+| @semaphore-protocol/group | To create the on-chain Semaphore voting group for a given Project |
+| @zk-kit/identity | To create the anonymous identity for the voter |
+| @zk-kit/protocols | To generate the off-chain proof and witness to submit to the on-chain verifier that a voter is a member of the Project's voting group |
+
+### ZK Workflow
+
+The workflow for the zkSNARK use with Semaphore groups within the dApp are as follows:
+
+1. A user creates a new project.  A new Semaphore group is created on chain and tied to a unique identifier for the project.
+2. A user uploads a stem onto a project.  The stem is put into the Stem Queue.
+3. With stems availabe in the queue, a user can register to be a voter for this project.  A message is signed and an identity commitment is created from the signature.  The commitment is then submitted to the on-chain group and stored in the Merkle tree for the given group that is tied to the given Project.
+4. Only registered users can cast votes on available stems within the Stem Queue.  When a user votes on a stem, the signal is the stem's unique identifier stored in MongoDB.  A Merkle proof is generated from the voter's identity along with all the other identities stored from other users within the voting group. A witness is generated from this proof and used to create a full proof with the WASM and verification key SNARK-based files initially created from the trusted setup. This full proof is then submitted along with the signal to the StemQueue.sol contract.  The contract function then verifies the proof.  If all is okay, the function will succeed and the vote is stored on-chain, anonymously.
+5. With stems having at least one vote, a collaborator of the Project can then approve the stem to be added on for the next slot.  This will remove the stem from the Stem Queue.
+6. The user who uploaded the approved stem will now become a collaborator on the Project and will gain approval permissions.
+7. Collaborators can register and vote within the Stem Queue as well, allowing them to remain anonymous and contribute to voting.
+
+---
+
 ## Local Development - Getting Started
 
 First, clone this repository to your local machine:

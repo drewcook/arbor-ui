@@ -157,7 +157,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			/*
 				Generate an off-chain proof to submit to the backend contracts for signalling and verification
-					Using @semaphore-protocol/proof
 					1. Re-instantiate a new ZKIdentity using the user's identity commitment from the previously signed message via EOA wallet
 					2. Get all identity commitments of the semaphore group so that we can calculate the Merkle root
 					3. Generate the Merkle proof given the above two pieces of data
