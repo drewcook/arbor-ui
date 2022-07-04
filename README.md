@@ -20,7 +20,7 @@ This application is run on the Polygon Mainnet network.  All contracts are deplo
 
 ---
 
-## Zero Knowledge
+## Zero-Knowledge SNARKs
 
 Polyecho uses zero knowledge technologies to incorporate anonymous voting on stems that are within a Project's Stem Queue.  It accomplishes this by using a series of zkSNARKs and relying on some of the packages to incorporate these into the dApp.
 
@@ -30,7 +30,7 @@ Polyecho uses zero knowledge technologies to incorporate anonymous voting on ste
 | @zk-kit/identity | To create the anonymous identity for the voter |
 | @zk-kit/protocols | To generate the off-chain proof and witness to submit to the on-chain verifier that a voter is a member of the Project's voting group |
 
-### ZK Workflow
+### Anonymous Voting Workflow
 
 The workflow for the zkSNARK use with Semaphore groups within the dApp are as follows:
 
