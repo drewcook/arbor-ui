@@ -28,7 +28,7 @@ const networks = {
 		networkId: 1666600000,
 		networkHex: '0x63564C40',
 		displayName: 'Harmony Mainnet',
-		rpc: 'https://api.s0.t.hmny.io', // or 'https://api.harmony.one'
+		rpc: 'https://api.s0.t.hmny.io',
 		currency: 'ONE',
 		explorer: 'https://explorer.harmony.one',
 	},

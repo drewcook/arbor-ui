@@ -50,7 +50,7 @@ const config = {
 			accounts: [process.env.PRIVATE_KEY],
 		},
 		harmonyMainnet: {
-			url: 'https://api.s0.t.hmny.io', // or 'https://api.harmony.one'
+			url: 'https://api.s0.t.hmny.io',
 			accounts: [process.env.PRIVATE_KEY],
 		},
 		harmonyTestnet: {

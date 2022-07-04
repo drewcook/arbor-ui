@@ -153,7 +153,6 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 	)
 }
 
-
 export const getServerSideProps: GetServerSideProps = async context => {
 	const stemId = context.query.id
 	const res = await get(`/stems/${stemId}`)
