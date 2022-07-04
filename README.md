@@ -2,21 +2,21 @@
 
 Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
-**LIVE DEMO**: <https://polyecho.xyz>
+**LIVE DEMO**: <https://stage.polyecho.xyz>
 
 ---
 
 ## Contracts
 
-This application is run on the Polygon Mainnet network.  All contracts are deployed at the follwing addresses:
+This application is run on the Polygon Testnet network.  All contracts are deployed at the follwing addresses:
 
 | Contract      | Address |
 | ----------- | ----------- |
-| PolyechoNFT | 0x6F6f53296049149a02373E3458fb105171481268 |
-| StemQueue | 0x16480B6d607952090fa4948EC75395659cC7D32A |
-| Verifier20 | 0x7810D24738405b6B38ee8a6150E438Bc57595029 |
-| PoseidonT3 | 0xe48fe3C863EDaD6c33EE9e4b51fcaFf5d48Ca9D3 |
-| IncrementalMerkleTree | 0x559975Ff0024FBfF2fb9c9E8553c7263F691515d |
+| PolyechoNFT | 0x5121f4A8300e4Fda4Ff8FF695cA7873111C420ea |
+| StemQueue | 0x5616971539C1d6aCb632A997436f66eA35f66CBC |
+| Verifier20 | 0xA6B0e5Bbd764d8DE2168B034cDbAB121eFDDce23 |
+| PoseidonT3 | 0xf6c55e9fAeeaa214f4B23c92e0C88953D19e3dD0 |
+| IncrementalMerkleTree | 0x410c16A302d7672a9bEEBE6aF0E4c37122244E13 |
 
 ---
 

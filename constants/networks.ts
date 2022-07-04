@@ -53,7 +53,7 @@ const networks = {
 // Preferred network
 // Dev: localhost
 // Prod: Polygon Mainnet
-const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'polygonMainnet'
+const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'polygonTestnet'
 
 // Onboard takes hexadecimal values
 export const NETWORK_HEX = networks[preferredNetwork].networkHex
