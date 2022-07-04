@@ -5,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square,
+	Square
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -17,7 +17,7 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography,
+	Typography
 } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
@@ -348,7 +348,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 								{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
 							</Button>
 							<Box sx={styles.price}>
-								<ImageOptimized src={OneIcon} width={30} height={30} alt="ONE" />
+								<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
 								<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 									0.01{' '}
 									<Typography sx={styles.eth} component="span">

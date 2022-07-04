@@ -49,7 +49,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 					{details.isListed ? (
 						<Box sx={styles.buyNowPrice}>
 							<Box sx={styles.price}>
-								<ImageOptimized src={OneIcon} width={20} height={20} alt="ONE" />
+								<ImageOptimized src={OneIcon} width={20} height={20} alt={NETWORK_CURRENCY} />
 								<Typography variant="h5" component="div" sx={{ ml: 0.75 }}>
 									{details.listPrice}{' '}
 									<Typography sx={styles.eth} component="span">
