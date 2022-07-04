@@ -4,7 +4,7 @@ import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
 import { polyechoNftContract, stemQueueContract } from '../constants/contracts'
-import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
+import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
 import type { IUserDoc } from '../models/user.model'
 import { get, post } from '../utils/http'
 import NFTStorageClient from '../utils/NFTStorageClient'
@@ -68,14 +68,14 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 							params: [
 								{
 									chainId: NETWORK_HEX,
-									chainName: 'Harmony Testnet',
+									chainName: NETWORK_NAME,
 									nativeCurrency: {
-										name: 'ONE',
-										symbol: 'ONE',
+										name: NETWORK_CURRENCY,
+										symbol: NETWORK_CURRENCY,
 										decimals: 18,
 									},
-									rpcUrls: ['https://api.s0.b.hmny.io'],
-									blockExplorerUrls: ['https://explorer.pops.one'],
+									rpcUrls: [NETWORK_RPC],
+									blockExplorerUrls: [NETWORK_EXPLORER],
 								},
 							],
 						})
