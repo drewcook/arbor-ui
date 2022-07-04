@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
+import { IUserIdentity } from '../../models/user.model'
 import { update } from '../../utils/http'
 import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
@@ -50,7 +51,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const [approveLoading, setApproveLoading] = useState<boolean>(false)
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const { contracts, currentUser, updateCurrentUser } = useWeb3()
-	const [ident, setIdent] = useState<any>(null)
 
 	/*
 		Stem Player callbacks
@@ -91,17 +91,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const message = await signer.signMessage(
 				"Sign this message to register for this Polyecho project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
 			)
-			const identity = new ZkIdentity(Strategy.MESSAGE, message)
-			const commitment: string = await identity.genIdentityCommitment().toString()
-			const trapdoor = identity.getTrapdoor()
-			const nullifier = identity.getNullifier()
-			const voterIdentity = {
+			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
+			const commitment: bigint = await identity.genIdentityCommitment()
+			const trapdoor: bigint = identity.getTrapdoor()
+			const nullifier: bigint = identity.getNullifier()
+			const voterIdentity: IUserIdentity = {
 				commitment,
 				nullifier,
 				trapdoor,
+				votingGroupId: details.votingGroupId,
 			}
 			console.log({ voterIdentity })
-			setIdent(voterIdentity)
 
 			/*
 				Add the user's identity commitment to the on-chain group
@@ -116,21 +116,22 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			/*
 				Update the user record
-				- Add in the new identity for the user if there isn't one already
+				- A couple preventative measures are in place...
+				- Add in the new identity for the user if there isn't one already for the given project
 				- Add in the group ID for user's registered groups if it doesn't exist already
 				- NOTE: This will help to show the appropriate UI elements/state
-				TODO: Probably should allow multiple identities so a user can vote on multiple projects without error
 			*/
-			const userRes = await update(`/users/${currentUser?.address}`, {
+			const userRes = await update(`/users/${currentUser.address}`, {
 				...currentUser,
-				voterIdentityCommitment: !currentUser.voterIdentityCommitment
-					? commitment
-					: currentUser.voterIdentityCommitment,
+				// TODO: Use MongoDB $addToSet on the backend, maybe?
+				voterIdentities: currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
+					? currentUser.voterIdentities
+					: [...currentUser.voterIdentities, voterIdentity],
 				registeredGroupIds: currentUser.registeredGroupIds.includes(details.votingGroupId)
 					? currentUser.registeredGroupIds
 					: [...currentUser.registeredGroupIds, details.votingGroupId],
 			})
-			if (!userRes.success) console.error('Failed to add the group ID to the user record')
+			if (!userRes.success) console.error('Failed to add the identity or group ID to the user record')
 			// Update current user details
 			updateCurrentUser(userRes.data)
 
@@ -141,7 +142,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
-				voterIdentityCommitments: [...details.voterIdentityCommitments, commitment],
+				voterIdentities: [...details.voterIdentities, voterIdentity],
 			})
 			if (!projectRes.success) {
 				console.error('Failed to add the identity to the project record')
@@ -159,7 +160,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const handleVote = async (stem: IStemDoc) => {
 		try {
 			// Preliminary requirement to be connected
-			if (!currentUser || !ident) return
+			if (!currentUser) return
 			setVoteLoading(true)
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
@@ -174,24 +175,28 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					5. Call the smart contract to verify the proof that this user is part of the group
 			*/
 
-			// Re-create the identity
-			// const voterIdentity = new ZkIdentity(Strategy.MESSAGE, currentUser?.voterIdentityCommitment)
-			// console.log(ident, voterIdentity, ident === voterIdentity)
-			// console.log({ voterIdentity })
+			const voterIdentity = currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
+			if (!voterIdentity) return
 
 			// Get the other group members' identities
 			const identityCommitments: bigint[] = []
-			for (const commitment of details.voterIdentityCommitments) {
-				identityCommitments.push(BigInt(commitment))
+			for (const identity of details.voterIdentities) {
+				identityCommitments.push(identity.commitment)
 			}
 			console.log({ identityCommitments })
 
 			// Generate the Merkle proof
-			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, ident.commitment)
+			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, voterIdentity.commitment)
 			console.log({ merkleProof })
 
 			// Generate the witness
-			const witness = Semaphore.genWitness(ident.trapdoor, ident.nullifier, merkleProof, merkleProof.root, stemId)
+			const witness = Semaphore.genWitness(
+				voterIdentity.trapdoor,
+				voterIdentity.nullifier,
+				merkleProof,
+				merkleProof.root,
+				stemId,
+			)
 			console.log({ witness })
 
 			// Generate the proofs
@@ -213,8 +218,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ voteRes })
 
 			// Get the receipt
-			// const receipt = await voteRes.wait()
-			// console.log({ receipt })
+			const receipt = await voteRes.wait()
+			console.log({ receipt })
 
 			// Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
