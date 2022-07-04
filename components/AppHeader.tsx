@@ -5,12 +5,15 @@ import { useState } from 'react'
 import styles from './AppHeader.styles'
 import ConnectedAccount from './ConnectedAccount'
 
-const pages = [
+const basePages = [
 	{ href: '/projects/new', title: 'Create' },
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
 	{ href: '/nfts', title: 'Marketplace' },
 ]
+
+// Add stats page for production environments
+const pages = process.env.NODE_ENV === 'development' ? basePages : [...basePages, { href: '/stats', title: 'Stats' }]
 
 const AppHeader = (): JSX.Element => {
 	const [anchorElNav, setAnchorElNav] = useState(null)

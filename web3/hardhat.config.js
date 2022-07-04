@@ -36,6 +36,7 @@ const config = {
 		paths: ['@semaphore-protocol/contracts/verifiers/Verifier20.sol'],
 	},
 	networks: {
+		// If needing to use Infura for Ethereum networks, use `https://${networkName}.infura.io/v3/${process.env.INFURA_KEY}
 		localhost: {
 			url: 'http://127.0.0.1:8545',
 			chainId: 31337,

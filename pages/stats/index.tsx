@@ -27,22 +27,24 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 			<Head>
 				<title>Polyecho | NFT Details</title>
 			</Head>
-			<Typography variant="h4" component="h1" sx={styles.title}>
-				Polyecho Music NFT On-Chain Stats
-			</Typography>
-			<Container maxWidth="md">
-				<Typography variant="h5" sx={styles.subtitle}>
-					Check out the statistics for our ERC721 Token that handles all the interaction with the NFTs created on our
-					platform.
+			<Container maxWidth="xl" className="content-container">
+				<Typography variant="h4" component="h1" sx={styles.title}>
+					Polyecho Music NFT On-Chain Stats
 				</Typography>
-				<Typography variant="overline" sx={styles.text}>
-					All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked against
-					the <Link href={NETWORK_EXPLORER}>{NETWORK_NAME}</Link>
-				</Typography>
+				<Container maxWidth="md">
+					<Typography variant="h5" sx={styles.subtitle}>
+						Check out the statistics for our ERC721 Token that handles all the interaction with the NFTs created on our
+						platform.
+					</Typography>
+					<Typography variant="overline" sx={styles.text}>
+						All statistics are powered by <Link href="https://www.covalenthq.com/">Covalent</Link> and are tracked
+						against the <Link href={NETWORK_EXPLORER}>{NETWORK_NAME}</Link>
+					</Typography>
+				</Container>
+				<Divider sx={styles.divider} />
+				{/* @ts-ignore */}
+				<CovalentInsights balData={balData} tokensData={tokensData} />
 			</Container>
-			<Divider sx={styles.divider} />
-			{/* @ts-ignore */}
-			<CovalentInsights balData={balData} tokensData={tokensData} />
 		</>
 	)
 }
@@ -51,6 +53,9 @@ NFTStatsPage.propTypes = propTypes
 
 // Get data via Covalent API per network for token collection address
 export const getServerSideProps: GetServerSideProps = async () => {
+	// Ignore fetching this data for local builds
+	if (process.env.NODE_ENV === 'development') return { props: { data: { balData: null, tokensData: null } } }
+
 	// Get's token balance
 	const balanceUrl = `https://api.covalenthq.com/v1/${NETWORK_HEX}/address/${NFT_CONTRACT_ADDRESS}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`
 	const balRes = await fetch(balanceUrl)

@@ -1,3 +1,7 @@
+////////////////////////////////////////////////////////////////////////////////////
+/// This is not being used but is kept for reference.
+///	This file implements Onboard.js in the mix of wallet and account management.
+////////////////////////////////////////////////////////////////////////////////////
 import type { OnboardAPI, WalletState } from '@web3-onboard/core'
 import { Contract } from 'ethers'
 import type { NFTStorage } from 'nft.storage'

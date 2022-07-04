@@ -142,7 +142,7 @@ const NewProjectPage: NextPage = () => {
 			<Head>
 				<title>Polyecho | Create A New Project</title>
 			</Head>
-			<Container maxWidth="md">
+			<Container maxWidth="md" className="content-container">
 				<Typography variant="h4" component="h1" sx={styles.title}>
 					Create A New Project
 				</Typography>

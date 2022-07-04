@@ -153,7 +153,6 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 	)
 }
 
-StemDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	const stemId = context.query.id
