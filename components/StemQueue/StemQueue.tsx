@@ -177,6 +177,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					5. Call the smart contract to verify the proof that this user is part of the group
 			*/
 
+			// Get the voter's identity stored in DB
 			const voterIdentity = currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
 			if (!voterIdentity) return
 
@@ -248,6 +249,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		setVoteLoading(false)
 	}
 
+	// Get the stem vote count for the relative stem
 	const handleGetStemVoteCount = async (stem: IStemDoc) => {
 		if (!currentUser) return
 		const stemId: string = stem._id.toString()
