@@ -248,6 +248,20 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		setVoteLoading(false)
 	}
 
+	const handleGetStemVoteCount = async (stem: IStemDoc) => {
+		if (!currentUser) return
+		const stemId: string = stem._id.toString()
+		const voteCountRes = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
+			from: currentUser.address,
+			gasLimit: 650000,
+		})
+		console.log({ voteCountRes })
+
+		// Get the receipt
+		const receipt = await voteCountRes.wait()
+		console.log({ receipt })
+	}
+
 	/**
 	 * This allows a collaborator to approve a stem that has at least one vote onto the project
 	 * The stem will move from the queue to the list of project stems
@@ -350,6 +364,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 							sx={{ mr: 1 }}
 						>
 							{voteLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
+						</Button>
+						<Button variant="outlined" size="small" onClick={() => handleGetStemVoteCount(stem.stem)} sx={{ mr: 1 }}>
+							Get Vote Count
 						</Button>
 						{userIsCollaborator && (
 							<Button

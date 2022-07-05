@@ -110,12 +110,12 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 
         // Prevent double-voting (nullifierHash = hash(root + identityNullifier)).
         // Every user can vote once.
-        // _saveNullifierHash(_nullifierHash);
+        _saveNullifierHash(_nullifierHash);
 
 				// Update the vote count for the given stem
 				// This would be 0 for a non-existant key in the mapping
-				// stemVoteCounts[_vote].increment();
+				stemVoteCounts[_vote].increment();
 
-        // emit NewVote(_vote);
+        emit NewVote(_vote);
     }
 }
