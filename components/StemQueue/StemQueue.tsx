@@ -113,6 +113,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			if (!contractRes) {
 				console.error("Failed to register the user for the project's voting group")
 			}
+			const receipt = await contractRes.wait()
+			console.log({ receipt })
 
 			/*
 				Update the user record
@@ -205,14 +207,15 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				'/zkproof/semaphore.wasm',
 				'/zkproof/semaphore.zkey',
 			)
-			const solidityProof = Semaphore.packToSolidityProof(proof)
-			console.log({ proof, publicSignals, solidityProof })
+			const solidityProof: string[] = Semaphore.packToSolidityProof(proof)
+			const solidityProofBigInts: bigint[] = solidityProof.map(p => BigInt(p))
+			console.log({ proof, publicSignals, solidityProof, solidityProofBigInts })
 
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
 				utils.formatBytes32String(stemId),
 				publicSignals.nullifierHash,
-				solidityProof,
+				solidityProofBigInts,
 				{ from: currentUser.address, gasLimit: 650000 },
 			)
 			console.log({ voteRes })

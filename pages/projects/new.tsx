@@ -91,6 +91,8 @@ const NewProjectPage: NextPage = () => {
 			)
 			console.log({ contractRes })
 			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+			const receipt = await contractRes.wait()
+			console.log({ receipt })
 
 			// POST new project record to backend
 			const payload: CreateProjectPayload = {
