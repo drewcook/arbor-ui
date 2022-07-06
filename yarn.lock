@@ -892,17 +892,10 @@
   dependencies:
     "@ethersproject/logger" "^5.5.0"
 
-"@ethersproject/bytes@5.6.1", "@ethersproject/bytes@>=5.0.0-beta.129", "@ethersproject/bytes@^5.5.0", "@ethersproject/bytes@^5.6.1":
+"@ethersproject/bytes@5.6.1", "@ethersproject/bytes@>=5.0.0-beta.129", "@ethersproject/bytes@^5.0.4", "@ethersproject/bytes@^5.5.0", "@ethersproject/bytes@^5.6.0", "@ethersproject/bytes@^5.6.1":
   version "5.6.1"
   resolved "https://registry.yarnpkg.com/@ethersproject/bytes/-/bytes-5.6.1.tgz#24f916e411f82a8a60412344bf4a813b917eefe7"
   integrity sha512-NwQt7cKn5+ZE4uDn+X5RAXLp46E1chXoaMmrxAyA0rblpxz8t58lVkrHXoRIn0lz1joQElQ8410GqhTqMOwc6g==
-  dependencies:
-    "@ethersproject/logger" "^5.6.0"
-
-"@ethersproject/bytes@^5.0.4", "@ethersproject/bytes@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@ethersproject/bytes/-/bytes-5.6.0.tgz#81652f2a0e04533575befadce555213c11d8aa20"
-  integrity sha512-3hJPlYemb9V4VLfJF5BfN0+55vltPZSHU3QKUyP9M3Y2TcajbiRrz65UG+xVHOzBereB1b9mn7r12o177xgN7w==
   dependencies:
     "@ethersproject/logger" "^5.6.0"
 
@@ -1432,22 +1425,13 @@
     "@ethersproject/constants" "^5.5.0"
     "@ethersproject/logger" "^5.5.0"
 
-"@ethersproject/strings@5.6.1", "@ethersproject/strings@>=5.0.0-beta.130", "@ethersproject/strings@^5.6.1":
+"@ethersproject/strings@5.6.1", "@ethersproject/strings@>=5.0.0-beta.130", "@ethersproject/strings@^5.0.4", "@ethersproject/strings@^5.5.0", "@ethersproject/strings@^5.6.0", "@ethersproject/strings@^5.6.1":
   version "5.6.1"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.6.1.tgz#dbc1b7f901db822b5cafd4ebf01ca93c373f8952"
   integrity sha512-2X1Lgk6Jyfg26MUnsHiT456U9ijxKUybz8IM1Vih+NJxYtXhmvKBcHOmvGqpFSVJ0nQ4ZCoIViR8XlRw1v/+Cw==
   dependencies:
     "@ethersproject/bytes" "^5.6.1"
     "@ethersproject/constants" "^5.6.1"
-    "@ethersproject/logger" "^5.6.0"
-
-"@ethersproject/strings@^5.0.4", "@ethersproject/strings@^5.5.0", "@ethersproject/strings@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.6.0.tgz#9891b26709153d996bf1303d39a7f4bc047878fd"
-  integrity sha512-uv10vTtLTZqrJuqBZR862ZQjTIa724wGPWQqZrofaPI/kUsf53TBG0I0D+hQ1qyNtllbNzaW+PDPHHUI6/65Mg==
-  dependencies:
-    "@ethersproject/bytes" "^5.6.0"
-    "@ethersproject/constants" "^5.6.0"
     "@ethersproject/logger" "^5.6.0"
 
 "@ethersproject/transactions@5.5.0":
@@ -2523,10 +2507,10 @@
     "@ethersproject/strings" "^5.6.1"
     circomlibjs "0.0.8"
 
-"@semaphore-protocol/proof@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@semaphore-protocol/proof/-/proof-2.0.1.tgz#b74b9d8ac8399c125b67ace8a8b3948402dac71a"
-  integrity sha512-ShtIlqeq9EIFoNdBuD3lZ6N5o6h73eIWWIhho/OoN0I8YzibAFHuBvkkIhrM4+q9VkWStbEF7mBBQQsA3KhkMQ==
+"@semaphore-protocol/proof@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@semaphore-protocol/proof/-/proof-2.1.0.tgz#24eed7f3f30e2c01c6c2db54a6ea878c164e1b4b"
+  integrity sha512-wYOsHswsi6NGZ6oEpakzyk8DSJkobfPSN8PXOEJPy0CCGqnGZ9tgIsXHfH+Zlz0tMnG1UfBad0OADS/vErZBhw==
   dependencies:
     "@ethersproject/bytes" "^5.5.0"
     "@ethersproject/solidity" "^5.5.0"
