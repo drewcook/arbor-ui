@@ -29,7 +29,7 @@
     "@web3-onboard/core": "^2.2.6",
     "@web3-onboard/injected-wallets": "^2.0.5",
     "@web3-onboard/ledger": "^2.1.4",
-    "@web3-onboard/walletconnect": "^2.0.1",
+    "@web3-onboard/walletconnect": "^2.0.5",
     "@zk-kit/identity": "^1.4.1",
     "@zk-kit/protocols": "^1.11.1",
     "axios": "^0.26.0",
