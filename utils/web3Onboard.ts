@@ -44,8 +44,12 @@ const web3Onboard = Onboard({
 	},
 	chains: [CHAIN],
 	accountCenter: {
+		// Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
 		desktop: {
-			enabled: false, // Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
+			enabled: false,
+		},
+		mobile: {
+			enabled: false,
 		},
 	},
 	i18n: {
