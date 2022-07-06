@@ -18,10 +18,10 @@
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "dependencies": {
-    "@emotion/react": "^11.9.0",
+    "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.6.0",
     "@metamask/detect-provider": "^1.2.0",
-    "@mui/icons-material": "^5.6.0",
+    "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.7",
     "@openzeppelin/contracts": "^4.4.1",
     "@semaphore-protocol/group": "^2.0.0",
