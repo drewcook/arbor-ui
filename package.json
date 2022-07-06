@@ -18,7 +18,7 @@
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "dependencies": {
-    "@emotion/react": "^11.9.0",
+    "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@metamask/detect-provider": "^1.2.0",
     "@mui/icons-material": "^5.8.4",
