@@ -222,7 +222,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// 	solidityProofBigInts,
 			// 	{ from: currentUser.address, gasLimit: 650000 },
 			// )
-			const voteRes = verifyProof(JSON.parse(verificationKey), proof)
+			const voteRes = verifyProof(verificationKey, proof)
 			console.log({ voteRes })
 
 			// Get the receipt
