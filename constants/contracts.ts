@@ -31,11 +31,11 @@ const contracts = {
 	},
 	// Last deployed: 07/04/22
 	'Polygon Testnet': {
-		nft: '0xd6389D557C2fF307f3F9e82Da1D7781dB0033189',
-		stemQueue: '0xA03Bde8DA1C00cc2FDcc31Ed20c66A5a18F89130',
-		verifier: '0x77571f70d2289089f6A5520Be0465c2331d5B4Ec',
-		poseidonT3: '0xCfe1c61eabBe8e1b4e690F1cf86471f57C8D15f1',
-		incrementalBinaryTree: '0x1D011F6A98605D63B36217308C6f640dBDbCF0e4',
+		nft: '0xC766c9697daA11BA610355D3F4Bf8483126B9331',
+		stemQueue: '0xeb2369a0076A836F18f32daB91Fe3400Edf003AE',
+		verifier: '0xe8D0D5F3D6099Bc075459591CDA8a453336162Dd',
+		poseidonT3: '0x5270a07403F1f3D85A860f20C255deFD424dA9E0',
+		incrementalBinaryTree: '0x653916193B0902452bF6cC84343DDF37178fc4E0',
 	},
 	// Last deployed: 07/03/22
 	'Harmony Devnet': {
