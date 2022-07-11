@@ -206,11 +206,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ witness })
 
 			// Generate the proofs
-			const { proof, publicSignals } = await Semaphore.genProof(
-				witness,
-				'/zkproof/semaphore.wasm',
-				'/zkproof/semaphore.zkey',
-			)
+			const fullProof = await Semaphore.genProof(witness, '/zkproof/semaphore.wasm', '/zkproof/semaphore.zkey')
+			const { proof, publicSignals } = fullProof
 			const solidityProof: string[] = Semaphore.packToSolidityProof(proof)
 			const solidityProofBigInts: bigint[] = solidityProof.map(p => BigInt(p))
 			console.log({ proof, publicSignals, solidityProof, solidityProofBigInts })
@@ -222,7 +219,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// 	solidityProofBigInts,
 			// 	{ from: currentUser.address, gasLimit: 650000 },
 			// )
-			const voteRes = verifyProof(verificationKey, proof)
+			const voteRes = verifyProof(verificationKey, fullProof)
 			console.log({ voteRes })
 
 			// Get the receipt
