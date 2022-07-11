@@ -219,8 +219,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				solidityProofBigInts,
 				{ from: currentUser.address, gasLimit: 650000 },
 			)
-			// const voteRes = verifyProof(verificationKey, fullProof)
-			console.log({ voteRes })
+			const offchainVerifyRes = await verifyProof(verificationKey, fullProof)
+			console.log({ offchainVerifyRes, voteRes })
 
 			// Get the receipt
 			const receipt = await voteRes.wait()
