@@ -12,11 +12,11 @@ This application is run on the Polygon Mainnet network.  All contracts are deplo
 
 | Contract      | Address |
 | ----------- | ----------- |
-| PolyechoNFT | 0x5121f4A8300e4Fda4Ff8FF695cA7873111C420ea |
-| StemQueue | 0x5616971539C1d6aCb632A997436f66eA35f66CBC |
-| Verifier20 | 0xA6B0e5Bbd764d8DE2168B034cDbAB121eFDDce23 |
-| PoseidonT3 | 0xf6c55e9fAeeaa214f4B23c92e0C88953D19e3dD0 |
-| IncrementalMerkleTree | 0x410c16A302d7672a9bEEBE6aF0E4c37122244E13 |
+| PolyechoNFT | 0xC766c9697daA11BA610355D3F4Bf8483126B9331 |
+| StemQueue | 0xeb2369a0076A836F18f32daB91Fe3400Edf003AE |
+| Verifier20 | 0xe8D0D5F3D6099Bc075459591CDA8a453336162Dd |
+| PoseidonT3 | 0x5270a07403F1f3D85A860f20C255deFD424dA9E0 |
+| IncrementalMerkleTree | 0x653916193B0902452bF6cC84343DDF37178fc4E0 |
 
 ---
 

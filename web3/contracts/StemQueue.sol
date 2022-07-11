@@ -106,7 +106,7 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
         uint256 _nullifierHash,
         uint256[8] calldata _proof
     ) external {
-        // _verifyProof(_vote, voters, _nullifierHash, voters, _proof, verifier);
+        _verifyProof(_vote, voters, _nullifierHash, voters, _proof, verifier);
 
         // Prevent double-voting (nullifierHash = hash(root + identityNullifier)).
         // Every user can vote once.
