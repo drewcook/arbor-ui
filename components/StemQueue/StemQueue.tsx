@@ -1,7 +1,6 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
-import { Strategy, ZkIdentity } from '@zk-kit/identity'
 import { providers, utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
@@ -17,6 +16,9 @@ const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
 
 const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
 const Semaphore = require('@zk-kit/protocols').Semaphore
+const Identity = require('@semaphore-protocol/identity').Identity
+const verifyProof = require('@semaphore-protocol/proof').verifyProof
+const verificationKey = require('../../public/zkproof/semaphore.json')
 
 type StemQueueProps = {
 	details: IProjectDoc
@@ -91,8 +93,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const message = await signer.signMessage(
 				"Sign this message to register for this Polyecho project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
 			)
-			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			const commitment: bigint = await identity.genIdentityCommitment()
+			// const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
+			const identity = new Identity(message)
+			const commitment: bigint = await identity.generateCommitment()
 			const trapdoor: bigint = identity.getTrapdoor()
 			const nullifier: bigint = identity.getNullifier()
 			const voterIdentity: IUserIdentity = {
@@ -213,32 +216,33 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ proof, publicSignals, solidityProof, solidityProofBigInts })
 
 			// Submit the vote signal and proof to the smart contract
-			const voteRes = await contracts.stemQueue.vote(
-				utils.formatBytes32String(stemId),
-				publicSignals.nullifierHash,
-				solidityProofBigInts,
-				{ from: currentUser.address, gasLimit: 650000 },
-			)
+			// const voteRes = await contracts.stemQueue.vote(
+			// 	utils.formatBytes32String(stemId),
+			// 	publicSignals.nullifierHash,
+			// 	solidityProofBigInts,
+			// 	{ from: currentUser.address, gasLimit: 650000 },
+			// )
+			const voteRes = verifyProof(JSON.parse(verificationKey), proof)
 			console.log({ voteRes })
 
 			// Get the receipt
-			const receipt = await voteRes.wait()
-			console.log({ receipt })
+			// const receipt = await voteRes.wait()
+			// console.log({ receipt })
 
-			// Update the project record vote count for the queued stem
-			const projectRes = await update(`/projects/${details._id}`, {
-				...details,
-				queue: details.queue.map(q => {
-					return q.stem._id === stem._id
-						? {
-								stem: q.stem,
-								votes: q.votes + 1,
-						  }
-						: q
-				}),
-			})
-			console.log({ projectRes })
-			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
+			// // Update the project record vote count for the queued stem
+			// const projectRes = await update(`/projects/${details._id}`, {
+			// 	...details,
+			// 	queue: details.queue.map(q => {
+			// 		return q.stem._id === stem._id
+			// 			? {
+			// 					stem: q.stem,
+			// 					votes: q.votes + 1,
+			// 			  }
+			// 			: q
+			// 	}),
+			// })
+			// console.log({ projectRes })
+			// if (!projectRes.success) throw new Error('Failed to increment stem vote count')
 
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
