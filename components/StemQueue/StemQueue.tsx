@@ -245,7 +245,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// if (!projectRes.success) throw new Error('Failed to increment stem vote count')
 
 			// Invoke the callback
-			onVoteSuccess(projectRes.data, stem.name)
+			// onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to cast the vote')
 			console.error(e)
