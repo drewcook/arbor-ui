@@ -213,36 +213,36 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ proof, publicSignals, solidityProof, solidityProofBigInts })
 
 			// Submit the vote signal and proof to the smart contract
-			// const voteRes = await contracts.stemQueue.vote(
-			// 	utils.formatBytes32String(stemId),
-			// 	publicSignals.nullifierHash,
-			// 	solidityProofBigInts,
-			// 	{ from: currentUser.address, gasLimit: 650000 },
-			// )
-			const voteRes = verifyProof(verificationKey, fullProof)
+			const voteRes = await contracts.stemQueue.vote(
+				utils.formatBytes32String(stemId),
+				publicSignals.nullifierHash,
+				solidityProofBigInts,
+				{ from: currentUser.address, gasLimit: 650000 },
+			)
+			// const voteRes = verifyProof(verificationKey, fullProof)
 			console.log({ voteRes })
 
 			// Get the receipt
-			// const receipt = await voteRes.wait()
-			// console.log({ receipt })
+			const receipt = await voteRes.wait()
+			console.log({ receipt })
 
 			// // Update the project record vote count for the queued stem
-			// const projectRes = await update(`/projects/${details._id}`, {
-			// 	...details,
-			// 	queue: details.queue.map(q => {
-			// 		return q.stem._id === stem._id
-			// 			? {
-			// 					stem: q.stem,
-			// 					votes: q.votes + 1,
-			// 			  }
-			// 			: q
-			// 	}),
-			// })
-			// console.log({ projectRes })
-			// if (!projectRes.success) throw new Error('Failed to increment stem vote count')
+			const projectRes = await update(`/projects/${details._id}`, {
+				...details,
+				queue: details.queue.map(q => {
+					return q.stem._id === stem._id
+						? {
+								stem: q.stem,
+								votes: q.votes + 1,
+						  }
+						: q
+				}),
+			})
+			console.log({ projectRes })
+			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
 
 			// Invoke the callback
-			// onVoteSuccess(projectRes.data, stem.name)
+			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to cast the vote')
 			console.error(e)
