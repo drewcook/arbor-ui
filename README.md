@@ -8,7 +8,7 @@ Polyecho is a schelling game where the objective is to publicly co-create songs 
 
 ## Contracts
 
-This application is run on the Polygon Mainnet network.  All contracts are deployed at the follwing addresses:
+This application is run on the Polygon Mainnet network.  All contracts are deployed at the following addresses:
 
 | Contract      | Address |
 | ----------- | ----------- |
