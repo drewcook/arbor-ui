@@ -1,6 +1,6 @@
-# Arbor
+# Arbor Protocol
 
-Arbor is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
+The Arbor Protocol, or more simply called Arbor, is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
 **LIVE DEMO**: <https://arbor.audio>
 
