@@ -124,7 +124,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | NFT Details</title>
+				<title>Arbor | NFT Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{details ? (

@@ -5,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square,
+	Square
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -17,7 +17,7 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography,
+	Typography
 } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
@@ -190,7 +190,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
-						'A Polyecho NFT representing collaborative music from multiple contributors on the decentralized web.',
+						'An Arbor Audio NFT representing collaborative music from multiple contributors on the decentralized web.',
 					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),

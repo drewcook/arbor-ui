@@ -71,7 +71,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Stem Details</title>
+				<title>Arbor | Stem Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				<Box sx={styles.headingWrap}>
@@ -101,12 +101,12 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 							Stem Details
 						</Typography>
 						<Typography variant="h4" component="h2" sx={styles.title}>
-							{data ? formatStemName(data.filename) : 'Polyecho Stem'}
+							{data ? formatStemName(data.filename) : 'Arbor Stem'}
 						</Typography>
 						{data && (
 							<>
 								<Typography sx={styles.desc}>
-									This is a Polyecho stem that has been uploaded through our platform and is stored using NFT.storage.
+									This is an Arbor stem that has been uploaded through our platform and is stored using NFT.storage.
 								</Typography>
 								<Box sx={styles.metadataWrap}>
 									<Typography sx={styles.metadata}>

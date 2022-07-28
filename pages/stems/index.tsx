@@ -23,7 +23,7 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Explore The StemPool</title>
+				<title>Arbor | Explore The StemPool</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{data ? (

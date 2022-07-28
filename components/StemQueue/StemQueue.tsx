@@ -88,7 +88,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const provider = new providers.Web3Provider(ethereumProvider)
 			const signer = provider.getSigner()
 			const message = await signer.signMessage(
-				"Sign this message to register for this Polyecho project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
+				"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
 			)
 			const identity = new ZkIdentity(Strategy.MESSAGE, message)
 			const commitment: string = await identity.genIdentityCommitment().toString()

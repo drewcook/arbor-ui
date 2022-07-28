@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose'
 
-// The number of voting groups we have across Polyecho
+// The number of voting groups we have across Arbor
 // This is designed to mainly have one voting group that continually gets updated.
 // There could be adverse side effects if there are multiple records in the DB...
 export interface IVotingGroup {
