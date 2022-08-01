@@ -9,7 +9,7 @@ const basePages = [
 	{ href: '/projects/new', title: 'Create' },
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
-	{ href: '/nfts', title: 'Marketplace' },
+	{ href: '/nfts', title: 'Arboretum' },
 ]
 
 // Add stats page for production environments

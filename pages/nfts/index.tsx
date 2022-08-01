@@ -23,7 +23,7 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Arbor | Explore Music and Audio NFTs</title>
+				<title>Arbor | Explore Music and Audio NFTs in the Arboretum</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{data ? (
@@ -33,8 +33,8 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 						</Typography>
 						<Container maxWidth="sm">
 							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right
-								here on Arbor.
+								Explore the artist arboretum for unique music and audio NFTs, buy, sell, and trade with others, all
+								right here on Arbor.
 							</Typography>
 						</Container>
 						{data.length > 0 ? (
