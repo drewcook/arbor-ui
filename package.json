@@ -23,7 +23,7 @@
     "@metamask/detect-provider": "^1.2.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.7",
-    "@openzeppelin/contracts": "^4.7.1",
+    "@openzeppelin/contracts": "^4.7.2",
     "@semaphore-protocol/group": "^2.0.0",
     "@semaphore-protocol/proof": "^2.1.0",
     "@web3-onboard/core": "^2.3.2",
