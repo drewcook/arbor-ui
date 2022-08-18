@@ -92,14 +92,19 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			)
 			const identity = new ZkIdentity(Strategy.MESSAGE, message)
 			const commitment: string = await identity.genIdentityCommitment().toString()
+			console.log(identity)
 
 			/*
 				Add the user's identity commitment to the on-chain group
 			*/
-			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
-				from: currentUser.address,
-				gasLimit: 650000,
+			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment
+				, {
+				from: currentUser.address
+				// gasLimit: 650000,
 			})
+			const contractReswait = await contractRes.wait()
+			console.log(contractReswait)
+			
 			if (!contractRes) {
 				console.error("Failed to register the user for the project's voting group")
 			}
@@ -165,7 +170,13 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 
 			// Re-create the identity
-			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, currentUser?.voterIdentityCommitment)
+			const ethereumProvider = (await detectEthereumProvider()) as any
+			const provider = new providers.Web3Provider(ethereumProvider)
+			const signer = provider.getSigner()
+			const message = await signer.signMessage(
+				"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
+			)
+			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
 			console.log({ voterIdentity })
 
 			// Get the other group members' identities
@@ -201,15 +212,18 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
 				utils.formatBytes32String(stemId),
+				details.votingGroupId,
 				publicSignals.nullifierHash,
 				solidityProof,
-				{ from: currentUser.address, gasLimit: 650000 },
+				{ from: currentUser.address
+					// , gasLimit: 650000 removing gas limit
+				},
 			)
 			console.log({ voteRes })
 
 			// Get the receipt
-			// const receipt = await voteRes.wait()
-			// console.log({ receipt })
+			const receipt = await voteRes.wait()
+			console.log({ receipt })
 
 			// Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
@@ -229,7 +243,14 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
-			onFailure('Uh oh! Failed to cast the vote')
+			var reason = JSON.parse(JSON.stringify(e))
+			console.log(reason)
+			if(reason.error.data.message === "execution reverted: SemaphoreCore: you cannot use the same nullifier twice"){
+				onFailure('Uh oh! You can not cast vote twice on same stem.')
+			} else {
+				onFailure('Uh oh! Failed to cast the vote.')
+			}
+			
 			console.error(e)
 		}
 		setVoteLoading(false)
