@@ -1,8 +1,8 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
-import { Strategy, ZkIdentity } from '@zk-kit/identity'
-import { providers, utils } from 'ethers'
+import { Strategy, ZkIdentity} from '@zk-kit/identity'
+import { providers, utils} from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import type { IProjectDoc } from '../../models/project.model'
@@ -98,8 +98,11 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
 				from: currentUser.address,
-				gasLimit: 650000,
+				// gasLimit: 650000,
 			})
+			const contractReswait = await contractRes.wait()
+			// console.log(contractReswait)
+
 			if (!contractRes) {
 				console.error("Failed to register the user for the project's voting group")
 			}
@@ -154,7 +157,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
 			const stemId: string = stem._id.toString()
-
 			/*
 				Generate an off-chain proof to submit to the backend contracts for signalling and verification
 					1. Re-instantiate a new ZKIdentity using the user's identity commitment from the previously signed message via EOA wallet
@@ -165,7 +167,13 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 
 			// Re-create the identity
-			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, currentUser?.voterIdentityCommitment)
+			const ethereumProvider = (await detectEthereumProvider()) as any
+			const provider = new providers.Web3Provider(ethereumProvider)
+			const signer = provider.getSigner()
+			const message = await signer.signMessage(
+				"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
+			)
+			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
 			console.log({ voterIdentity })
 
 			// Get the other group members' identities
@@ -177,14 +185,15 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Generate the Merkle proof
 			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, currentUser?.voterIdentityCommitment)
-			console.log({ merkleProof })
-
+			const stemZKId = new ZkIdentity(Strategy.MESSAGE,stemId)
+			const externalNullifier = stemZKId.genIdentityCommitment()
+			console.log(externalNullifier)
 			// Generate the witness
 			const witness = Semaphore.genWitness(
 				voterIdentity.getTrapdoor(),
 				voterIdentity.getNullifier(),
 				merkleProof,
-				merkleProof.root,
+				externalNullifier,//changed external nullifier from root to steamId
 				stemId,
 			)
 			console.log({ witness })
@@ -201,11 +210,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
 				utils.formatBytes32String(stemId),
+				details.votingGroupId,
+				publicSignals.externalNullifier,
 				publicSignals.nullifierHash,
 				solidityProof,
-				{ from: currentUser.address, gasLimit: 650000 },
+				{ from: currentUser.address
+				// , gasLimit: 650000 
+			},
 			)
 			console.log({ voteRes })
+			const receipt = await voteRes.wait()
+			// console.log({ receipt })
 
 			// Get the receipt
 			// const receipt = await voteRes.wait()
@@ -229,7 +244,16 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
-			onFailure('Uh oh! Failed to cast the vote')
+			var reason = JSON.parse(JSON.stringify(e))
+			console.log(reason)
+			if(Object.prototype.hasOwnProperty.call(reason, "error")){
+				if(reason.error.data.message === "execution reverted: SemaphoreCore: you cannot use the same nullifier twice"){
+					onFailure('Uh oh! You can not cast vote twice on same stem.')
+				} 
+			} else {
+				onFailure('Uh oh! Failed to cast the vote.')
+			}
+			
 			console.error(e)
 		}
 		setVoteLoading(false)

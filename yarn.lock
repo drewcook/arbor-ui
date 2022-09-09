@@ -5200,7 +5200,7 @@ circom_runtime@0.1.18:
   dependencies:
     ffjavascript "0.2.55"
 
-circomlibjs@0.0.8:
+circomlibjs@0.0.8, circomlibjs@^0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/circomlibjs/-/circomlibjs-0.0.8.tgz#c2d1130d2d99fbb22f3d40ac19f347d768eace76"
   integrity sha512-oZFYapLO0mfiA+i2GU/V7bRNEEPjVcwV4M444nU5lNsdSJpqLwD57m9zxTD5m/KeY7WQ3lEAC9NNKEPQHu7s1w==

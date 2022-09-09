@@ -86,10 +86,10 @@ const NewProjectPage: NextPage = () => {
 				currentUser.address,
 				{
 					from: currentUser.address,
-					gasLimit: 650000,
+					// gasLimit: 650000, removing gasLimit
 				},
 			)
-			console.log({ contractRes })
+			const contractReswait = await contractRes.wait()
 			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
 
 			// POST new project record to backend
