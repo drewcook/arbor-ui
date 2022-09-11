@@ -97,6 +97,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			})
 			if (!contractRes) console.error("Failed to register the user for the project's voting group")
 
+			// Get the receipt
 			const receipt = await contractRes.wait()
 			console.log(receipt)
 
