@@ -15,7 +15,6 @@
     "contracts:test": "cd web3 && hardhat test",
     "contracts:compile": "cd web3 && hardhat compile",
     "contracts:deploy": "cd web3 && hardhat deploy",
-    "contracts:deployharmonyDevnet": "cd web3 && hardhat deploy --network harmonyDevnet",
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "dependencies": {
