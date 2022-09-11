@@ -85,7 +85,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			/*
 				Create a user identity based off signing a message with the current signer
 			*/
-			const message = signMessage(IDENTITY_MSG)
+			const message = await signMessage(IDENTITY_MSG)
 			const identity = new ZkIdentity(Strategy.MESSAGE, message)
 			const commitment: string = await identity.genIdentityCommitment().toString()
 
