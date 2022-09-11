@@ -1,3 +1,4 @@
+import detectEthereumProvider from '@metamask/detect-provider'
 import { providers } from 'ethers'
 
 const signMessage = async (msg: string): Promise<string> => {
