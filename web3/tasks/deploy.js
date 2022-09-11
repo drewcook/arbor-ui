@@ -1,6 +1,6 @@
 const { Group } = require('@semaphore-protocol/group')
 const { task, types } = require('hardhat/config')
-const poseidon_gencontract = require('circomlibjs');
+const poseidon_gencontract = require('circomlibjs')
 
 task('deploy', 'Deploy the entire suite of smart contracts')
 	.addOptionalParam('logs', 'Print the logs', true, types.boolean)
@@ -19,22 +19,12 @@ task('deploy', 'Deploy the entire suite of smart contracts')
 
 		// Deploy PoseidonT3
 		const poseidonABI = poseidon_gencontract.poseidon_gencontract.generateABI(2)
-        const poseidonBytecode = poseidon_gencontract.poseidon_gencontract.createCode(2)
-
-        const [signer] = await ethers.getSigners()
-
-        const PoseidonLibFactory = new ethers.ContractFactory(poseidonABI, poseidonBytecode, signer)
-        const poseidonLib = await PoseidonLibFactory.deploy()
-
-        await poseidonLib.deployed()
-
-        logs && console.log(`Poseidon library has been deployed to: ${poseidonLib.address}`)
-
-		// // Deploy Hashes
-		// const Hash = await ethers.getContractFactory('PoseidonT3')
-		// const hash = await Hash.deploy()
-		// await hash.deployed
-		// logs && console.log(`PoseidonT3 contract has been deployed to: ${hash.address}`)
+		const poseidonBytecode = poseidon_gencontract.poseidon_gencontract.createCode(2)
+		const [signer] = await ethers.getSigners()
+		const PoseidonLibFactory = new ethers.ContractFactory(poseidonABI, poseidonBytecode, signer)
+		const poseidonLib = await PoseidonLibFactory.deploy()
+		await poseidonLib.deployed()
+		logs && console.log(`Poseidon library has been deployed to: ${poseidonLib.address}`)
 
 		// Deploy IncrementalBinaryTree
 		const IncrementalBinaryTree = await ethers.getContractFactory('IncrementalBinaryTree', {
