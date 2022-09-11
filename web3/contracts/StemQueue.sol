@@ -103,12 +103,15 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
     /// @dev The external nullifier is in this example the root of the Merkle tree.
     function vote(
         bytes32 _vote,
+        uint256 groupId,
+        uint256 externalNullifier,
         uint256 _nullifierHash,
         uint256[8] calldata _proof
     ) external {
-        _verifyProof(_vote, voters, _nullifierHash, voters, _proof, verifier);
+        uint256 root = getRoot(groupId);
+        _verifyProof(_vote, root, _nullifierHash, externalNullifier, _proof, verifier);
 
-        // Prevent double-voting (nullifierHash = hash(root + identityNullifier)).
+        // Prevent double-voting (nullifierHash = hash(steamId + identityNullifier)).
         // Every user can vote once.
         _saveNullifierHash(_nullifierHash);
 

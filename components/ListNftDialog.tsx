@@ -63,7 +63,6 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				const amount = web3.utils.toWei(listPrice?.toString(), 'ether')
 				const scRes: any = await contracts.nft.allowBuy(nft.token.id, amount, {
 					from: currentUser.address,
-					gasLimit: 650000,
 				})
 				if (!scRes) throw new Error('Failed to list the NFT for sale')
 
@@ -100,7 +99,6 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				// Disallow it to be bought on chain
 				const scRes: any = await contracts.nft.disallowBuy(nft.token.id, {
 					from: currentUser.address,
-					gasLimit: 650000,
 				})
 				if (!scRes) throw new Error('Failed to remove the listing for the NFT on-chain')
 

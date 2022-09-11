@@ -17,7 +17,7 @@ import {
 	Select,
 	TextField,
 	Toolbar,
-	Typography
+	Typography,
 } from '@mui/material'
 import { useState } from 'react'
 import logoBinary from '../lib/logoBinary'

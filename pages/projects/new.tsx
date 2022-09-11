@@ -69,7 +69,6 @@ const NewProjectPage: NextPage = () => {
 				- TODO: revert this, or decrement if any of the following requests fail
 			*/
 			const votingGroupRes = await update('/voting-groups')
-			console.log({ votingGroupRes })
 			if (!votingGroupRes.success) throw new Error('Failed to increment voting group count')
 			const votingGroupId = votingGroupRes.data.totalGroupCount
 
@@ -86,11 +85,11 @@ const NewProjectPage: NextPage = () => {
 				currentUser.address,
 				{
 					from: currentUser.address,
-					gasLimit: 650000,
 				},
 			)
-			console.log({ contractRes })
+			const receipt = await contractRes.wait()
 			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+			console.log(receipt)
 
 			// POST new project record to backend
 			const payload: CreateProjectPayload = {

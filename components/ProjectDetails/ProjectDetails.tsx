@@ -164,7 +164,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				files.forEach((data: Blob, filename: string) => {
+				files.forEach((data: Blob) => {
 					formData.append('files', data)
 				})
 
@@ -212,7 +212,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
 				})
 				console.log({ mintRes })
 
