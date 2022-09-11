@@ -1,21 +1,22 @@
-import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
-import { Strategy, ZkIdentity} from '@zk-kit/identity'
-import { providers, utils} from 'ethers'
+import { Strategy, ZkIdentity } from '@zk-kit/identity'
+import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { update } from '../../utils/http'
+import signMessage from '../../utils/signMessage'
 import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
 
 const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
-
 const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
 const Semaphore = require('@zk-kit/protocols').Semaphore
+const IDENTITY_MSG =
+	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
 
 type StemQueueProps = {
 	details: IProjectDoc
@@ -84,12 +85,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			/*
 				Create a user identity based off signing a message with the current signer
 			*/
-			const ethereumProvider = (await detectEthereumProvider()) as any
-			const provider = new providers.Web3Provider(ethereumProvider)
-			const signer = provider.getSigner()
-			const message = await signer.signMessage(
-				"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
-			)
+			const message = signMessage(IDENTITY_MSG)
 			const identity = new ZkIdentity(Strategy.MESSAGE, message)
 			const commitment: string = await identity.genIdentityCommitment().toString()
 
@@ -98,14 +94,11 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
 				from: currentUser.address,
-				// gasLimit: 650000,
 			})
-			const contractReswait = await contractRes.wait()
-			// console.log(contractReswait)
+			if (!contractRes) console.error("Failed to register the user for the project's voting group")
 
-			if (!contractRes) {
-				console.error("Failed to register the user for the project's voting group")
-			}
+			const receipt = await contractRes.wait()
+			console.log(receipt)
 
 			/*
 				Update the user record
@@ -167,12 +160,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 
 			// Re-create the identity
-			const ethereumProvider = (await detectEthereumProvider()) as any
-			const provider = new providers.Web3Provider(ethereumProvider)
-			const signer = provider.getSigner()
-			const message = await signer.signMessage(
-				"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
-			)
+			const message = await signMessage(IDENTITY_MSG)
 			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
 			console.log({ voterIdentity })
 
@@ -185,15 +173,16 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Generate the Merkle proof
 			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, currentUser?.voterIdentityCommitment)
-			const stemZKId = new ZkIdentity(Strategy.MESSAGE,stemId)
+			const stemZKId = new ZkIdentity(Strategy.MESSAGE, stemId)
 			const externalNullifier = stemZKId.genIdentityCommitment()
 			console.log(externalNullifier)
+
 			// Generate the witness
 			const witness = Semaphore.genWitness(
 				voterIdentity.getTrapdoor(),
 				voterIdentity.getNullifier(),
 				merkleProof,
-				externalNullifier,//changed external nullifier from root to steamId
+				externalNullifier, //changed external nullifier from root to steamId
 				stemId,
 			)
 			console.log({ witness })
@@ -214,17 +203,15 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				publicSignals.externalNullifier,
 				publicSignals.nullifierHash,
 				solidityProof,
-				{ from: currentUser.address
-				// , gasLimit: 650000 
-			},
+				{
+					from: currentUser.address,
+				},
 			)
 			console.log({ voteRes })
-			const receipt = await voteRes.wait()
-			// console.log({ receipt })
 
 			// Get the receipt
-			// const receipt = await voteRes.wait()
-			// console.log({ receipt })
+			const receipt = await voteRes.wait()
+			console.log({ receipt })
 
 			// Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
@@ -244,16 +231,18 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
-			var reason = JSON.parse(JSON.stringify(e))
+			const reason = JSON.parse(JSON.stringify(e))
 			console.log(reason)
-			if(Object.prototype.hasOwnProperty.call(reason, "error")){
-				if(reason.error.data.message === "execution reverted: SemaphoreCore: you cannot use the same nullifier twice"){
+			if (Object.prototype.hasOwnProperty.call(reason, 'error')) {
+				if (
+					reason.error.data.message === 'execution reverted: SemaphoreCore: you cannot use the same nullifier twice'
+				) {
 					onFailure('Uh oh! You can not cast vote twice on same stem.')
-				} 
+				}
 			} else {
 				onFailure('Uh oh! Failed to cast the vote.')
 			}
-			
+
 			console.error(e)
 		}
 		setVoteLoading(false)
