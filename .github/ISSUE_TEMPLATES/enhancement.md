@@ -1,7 +1,7 @@
 ---
 name: "Enhancement"
 about: Suggest an enhancement or improvement to existing functionality
-labels: 'New Issue, enhancement'
+labels: 'new issue, enhancement'
 ---
 
 # Enhancement

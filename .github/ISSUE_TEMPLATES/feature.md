@@ -1,7 +1,7 @@
 ---
 name: "Feature request \U0001F47B"
 about: Suggest an idea for this project
-labels: 'New Issue, feature'
+labels: 'new issue, feature'
 ---
 
 # New Feature
