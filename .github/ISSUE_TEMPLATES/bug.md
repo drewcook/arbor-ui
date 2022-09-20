@@ -1,5 +1,5 @@
 ---
-name: "Bug report \U0001F41B"
+name: "Bug Report \U0001F41B"
 about: Create a bug report to help us improve
 labels: 'new issue, bug'
 ---
