@@ -2,7 +2,7 @@
 name: "Bug Report \U0001F41E"
 about: Create a bug report to help us improve
 labels: 'new issue, bug'
-project: 'UI Agile Board'
+projects: 'UI Agile Board'
 ---
 
 # Bug Notes
