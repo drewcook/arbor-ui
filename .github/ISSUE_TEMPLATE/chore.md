@@ -1,5 +1,5 @@
 ---
-name: "Chore"
+name: "Chore \U0001F527"
 about: This is a chore that should not affect existing functionality of the app
 labels: 'new issue, chore'
 ---
