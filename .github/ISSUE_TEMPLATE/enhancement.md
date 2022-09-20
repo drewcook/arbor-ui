@@ -2,7 +2,6 @@
 name: "Enhancement \U0001F680"
 about: Suggest an enhancement or improvement to existing functionality
 labels: 'new issue, enhancement'
-projects: 'UI Agile Board'
 ---
 
 # Enhancement
