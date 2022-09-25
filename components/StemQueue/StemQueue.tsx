@@ -94,7 +94,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
 				from: currentUser.address,
-				gasLimit: 650000,
+				gasLimit: 1000000,
 			})
 			if (!contractRes) console.error("Failed to register the user for the project's voting group")
 
@@ -207,7 +207,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				solidityProof,
 				{
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 1000000,
 				},
 			)
 			console.log({ voteRes })

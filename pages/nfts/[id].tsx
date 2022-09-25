@@ -72,7 +72,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 				const scRes: any = await contracts.nft.buy(details.token.id, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 1000000,
 				})
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 

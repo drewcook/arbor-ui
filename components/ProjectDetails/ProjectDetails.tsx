@@ -5,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square
+	Square,
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -17,7 +17,7 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography
+	Typography,
 } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
@@ -212,7 +212,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 1000000,
 				})
 				console.log({ mintRes })
 

@@ -85,7 +85,7 @@ const NewProjectPage: NextPage = () => {
 				currentUser.address,
 				{
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 1000000,
 				},
 			)
 			const receipt = await contractRes.wait()
