@@ -52,7 +52,7 @@ const networks = {
 
 // Preferred network
 // Dev: localhost
-// Prod: Polygon Mainnet
+// Prod: Harmony Devnet
 const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'harmonyDevnet'
 
 // Onboard takes hexadecimal values

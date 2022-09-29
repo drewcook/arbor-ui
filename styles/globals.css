@@ -172,12 +172,6 @@ button a:hover, button a:active {
 	}
 }
 
-.nft-card-media img,
-.nft-card-media span {
-	width: 100% !important;
-	height: auto !important;
-}
-
 #upload-stem-type-input {
 	display: flex;
 	justify-content: space-between;

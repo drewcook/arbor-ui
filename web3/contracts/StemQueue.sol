@@ -111,7 +111,7 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
         uint256 root = getRoot(groupId);
         _verifyProof(_vote, root, _nullifierHash, externalNullifier, _proof, verifier);
 
-        // Prevent double-voting (nullifierHash = hash(steamId + identityNullifier)).
+        // Prevent double-voting (nullifierHash = hash(stemId + identityNullifier)).
         // Every user can vote once.
         _saveNullifierHash(_nullifierHash);
 

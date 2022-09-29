@@ -100,7 +100,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Get the receipt
 			const receipt = await contractRes.wait()
-			console.log(receipt)
+			console.log('register voter receipt', receipt)
 
 			/*
 				Update the user record
@@ -174,17 +174,18 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ identityCommitments })
 
 			// Generate the Merkle proof
+			// External nullifier is derived from the stem ID
 			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, currentUser?.voterIdentityCommitment)
 			const stemZKId = new ZkIdentity(Strategy.MESSAGE, stemId)
 			const externalNullifier = stemZKId.genIdentityCommitment()
-			console.log(externalNullifier)
+			console.log('external nullifier', externalNullifier)
 
 			// Generate the witness
 			const witness = Semaphore.genWitness(
 				voterIdentity.getTrapdoor(),
 				voterIdentity.getNullifier(),
 				merkleProof,
-				externalNullifier, //changed external nullifier from root to steamId
+				externalNullifier,
 				stemId,
 			)
 			console.log({ witness })
@@ -196,7 +197,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				'/zkproof/semaphore.zkey',
 			)
 			const solidityProof = Semaphore.packToSolidityProof(proof)
-			console.log({ proof, publicSignals, solidityProof })
+			console.log('proof values', { proof, publicSignals, solidityProof })
 
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
@@ -214,7 +215,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Get the receipt
 			const receipt = await voteRes.wait()
-			console.log({ receipt })
+			console.log('vote receipt', receipt)
 
 			// Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
@@ -235,7 +236,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			const reason = JSON.parse(JSON.stringify(e))
-			console.log(reason)
+			console.log('error reason', reason)
 			if (Object.prototype.hasOwnProperty.call(reason, 'error')) {
 				if (
 					reason.error.data.message === 'execution reverted: SemaphoreCore: you cannot use the same nullifier twice'
