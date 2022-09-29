@@ -1,5 +1,6 @@
 const { Group } = require('@semaphore-protocol/group')
 const { task, types } = require('hardhat/config')
+const circomlib = require('circomlibjs')
 
 task('deploy', 'Deploy the entire suite of smart contracts')
 	.addOptionalParam('logs', 'Print the logs', true, types.boolean)
@@ -16,16 +17,19 @@ task('deploy', 'Deploy the entire suite of smart contracts')
 		await verifier.deployed()
 		logs && console.log(`Verifier20 contract has been deployed to: ${verifier.address}`)
 
-		// Deploy Hashes
-		const Hash = await ethers.getContractFactory('PoseidonT3')
-		const hash = await Hash.deploy()
-		await hash.deployed
-		logs && console.log(`PoseidonT3 contract has been deployed to: ${hash.address}`)
+		// Deploy PoseidonT3
+		const poseidonABI = circomlib.poseidonContract.generateABI(2)
+		const poseidonBytecode = circomlib.poseidonContract.createCode(2)
+		const [signer] = await ethers.getSigners()
+		const PoseidonLibFactory = new ethers.ContractFactory(poseidonABI, poseidonBytecode, signer)
+		const poseidonLib = await PoseidonLibFactory.deploy()
+		await poseidonLib.deployed()
+		logs && console.log(`Poseidon library has been deployed to: ${poseidonLib.address}`)
 
 		// Deploy IncrementalBinaryTree
 		const IncrementalBinaryTree = await ethers.getContractFactory('IncrementalBinaryTree', {
 			libraries: {
-				PoseidonT3: hash.address,
+				PoseidonT3: poseidonLib.address,
 			},
 		})
 		const tree = await IncrementalBinaryTree.deploy()
@@ -47,7 +51,7 @@ task('deploy', 'Deploy the entire suite of smart contracts')
 		return {
 			nft,
 			verifier,
-			hash,
+			poseidonLib,
 			tree,
 			stemQueue,
 		}

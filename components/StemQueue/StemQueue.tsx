@@ -1,24 +1,23 @@
-import detectEthereumProvider from '@metamask/detect-provider'
 import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
 import { Box, Button, CircularProgress, Typography } from '@mui/material'
-import { providers, utils } from 'ethers'
+import { Strategy, ZkIdentity } from '@zk-kit/identity'
+import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { IUserIdentity } from '../../models/user.model'
 import { update } from '../../utils/http'
+import signMessage from '../../utils/signMessage'
 import StemUploadDialog from '../StemUploadDialog'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
 
 const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
-
 const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
 const Semaphore = require('@zk-kit/protocols').Semaphore
-const Identity = require('@semaphore-protocol/identity').Identity
-const verifyProof = require('@semaphore-protocol/proof').verifyProof
-const verificationKey = require('../../public/zkproof/semaphore.json')
+const IDENTITY_MSG =
+	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
 
 type StemQueueProps = {
 	details: IProjectDoc
@@ -87,15 +86,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			/*
 				Create a user identity based off signing a message with the current signer
 			*/
-			const ethereumProvider = (await detectEthereumProvider()) as any
-			const provider = new providers.Web3Provider(ethereumProvider)
-			const signer = provider.getSigner()
-			const message = await signer.signMessage(
-				"Sign this message to register for this Polyecho project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.",
-			)
-			// const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			const identity = new Identity(message)
-			const commitment: bigint = await identity.generateCommitment()
+			const message = await signMessage(IDENTITY_MSG)
+			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
+			const commitment: bigint = await identity.genIdentityCommitment()
 			const trapdoor: bigint = identity.getTrapdoor()
 			const nullifier: bigint = identity.getNullifier()
 			const voterIdentity: IUserIdentity = {
@@ -104,20 +97,20 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				trapdoor,
 				votingGroupId: details.votingGroupId,
 			}
-			console.log({ voterIdentity })
+			console.log('voter identity created', voterIdentity)
 
 			/*
 				Add the user's identity commitment to the on-chain group
 			*/
 			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
 				from: currentUser.address,
-				gasLimit: 650000,
+				gasLimit: 1000000,
 			})
-			if (!contractRes) {
-				console.error("Failed to register the user for the project's voting group")
-			}
+			if (!contractRes) console.error("Failed to register the user for the project's voting group")
+
+			// Get the receipt
 			const receipt = await contractRes.wait()
-			console.log({ receipt })
+			console.log('register voter receipt', receipt)
 
 			/*
 				Update the user record
@@ -137,6 +130,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					: [...currentUser.registeredGroupIds, details.votingGroupId],
 			})
 			if (!userRes.success) console.error('Failed to add the identity or group ID to the user record')
+
 			// Update current user details
 			updateCurrentUser(userRes.data)
 
@@ -180,9 +174,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					5. Call the smart contract to verify the proof that this user is part of the group
 			*/
 
-			// Get the voter's identity stored in DB
+			// Find the user's identity for the project/group
+			// const message = await signMessage(IDENTITY_MSG)
+			// const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
 			const voterIdentity = currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
 			if (!voterIdentity) return
+			console.log(`found user's voting identity for voting group ${details.votingGroupId}`, voterIdentity)
 
 			// Get the other group members' identities
 			const identityCommitments: bigint[] = []
@@ -192,39 +189,52 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log({ identityCommitments })
 
 			// Generate the Merkle proof
+			// External nullifier is derived from the stem ID
 			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, voterIdentity.commitment)
-			console.log({ merkleProof })
+			const stemZKIdentity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, stemId)
+			const externalNullifier = stemZKIdentity.genIdentityCommitment()
+			console.log('external nullifier', externalNullifier)
 
 			// Generate the witness
 			const witness = Semaphore.genWitness(
 				voterIdentity.trapdoor,
 				voterIdentity.nullifier,
 				merkleProof,
-				merkleProof.root,
+				externalNullifier,
 				stemId,
 			)
 			console.log({ witness })
 
 			// Generate the proofs
-			const fullProof = await Semaphore.genProof(witness, '/zkproof/semaphore.wasm', '/zkproof/semaphore.zkey')
-			const { proof, publicSignals } = fullProof
-			const solidityProof: string[] = Semaphore.packToSolidityProof(proof)
-			const solidityProofBigInts: bigint[] = solidityProof.map(p => BigInt(p))
-			console.log({ proof, publicSignals, solidityProof, solidityProofBigInts })
+			const { proof, publicSignals } = await Semaphore.genProof(
+				witness,
+				'/zkproof/semaphore.wasm',
+				'/zkproof/semaphore.zkey',
+			)
+			const solidityProof = Semaphore.packToSolidityProof(proof)
+			console.log('proof values', { proof, publicSignals, solidityProof })
 
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
 				utils.formatBytes32String(stemId),
+				details.votingGroupId,
+				publicSignals.externalNullifier,
 				publicSignals.nullifierHash,
-				solidityProofBigInts,
-				{ from: currentUser.address, gasLimit: 650000 },
+				solidityProof,
+				{
+					from: currentUser.address,
+					gasLimit: 1000000,
+				},
 			)
-			const offchainVerifyRes = await verifyProof(verificationKey, fullProof)
-			console.log({ offchainVerifyRes, voteRes })
+			if (!voteRes.success) throw new Error('Failed to cast an on-chain anonymous vote')
+			console.log({ voteRes })
+
+			// const offchainVerifyRes = await contracts.stemQueue.verifyProof(verificationKey, fullProof)
+			// console.log({ offchainVerifyRes, voteRes })
 
 			// Get the receipt
 			const receipt = await voteRes.wait()
-			console.log({ receipt })
+			console.log('vote receipt', receipt)
 
 			// // Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
@@ -238,13 +248,24 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						: q
 				}),
 			})
-			console.log({ projectRes })
 			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
+			console.log({ projectRes })
 
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
-			onFailure('Uh oh! Failed to cast the vote')
+			const reason = JSON.parse(JSON.stringify(e))
+			console.log('error reason', reason)
+			if (Object.prototype.hasOwnProperty.call(reason, 'error')) {
+				if (
+					reason.error.data.message === 'execution reverted: SemaphoreCore: you cannot use the same nullifier twice'
+				) {
+					onFailure('Uh oh! You can not cast vote twice on same stem.')
+				}
+			} else {
+				onFailure('Uh oh! Failed to cast the vote.')
+			}
+
 			console.error(e)
 		}
 		setVoteLoading(false)

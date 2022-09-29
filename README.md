@@ -1,6 +1,6 @@
-# Polyecho
+# Arbor Protocol
 
-Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
+The Arbor Protocol, or more simply called Arbor, is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
 **LIVE DEMO**: <https://stage.polyecho.xyz>
 
@@ -22,7 +22,7 @@ This application is run on the Polygon Mainnet network.  All contracts are deplo
 
 ## Zero-Knowledge SNARKs
 
-Polyecho uses zero knowledge technologies to incorporate anonymous voting on stems that are within a Project's Stem Queue.  It accomplishes this by using a series of zkSNARKs and relying on some of the packages to incorporate these into the dApp.
+Arbor uses zero knowledge technologies to incorporate anonymous voting on stems that are within a Project's Stem Queue.  It accomplishes this by using a series of zkSNARKs and relying on some of the packages to incorporate these into the dApp.
 
 | Library      | Use Case |
 | ----------- | ----------- |
@@ -49,7 +49,7 @@ The workflow for the zkSNARK use with Semaphore groups within the dApp are as fo
 First, clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/polyecho/polyecho.git
+git clone https://github.com/arbor-protocol/ui.git
 ```
 
 There is some local setup that needs to happen to fully run this client application locally.
@@ -134,12 +134,12 @@ mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=
 
 ### 4. Create a Database and Link It
 
-Create a new database for polyecho. Title it `polyecho` or whatever suits your fancy. It may prompt you to add a collection to it as well.  Please add a `users` collection.
+Create a new database for Arbor. Title it `arbor-protocol` or whatever suits your fancy. It may prompt you to add a collection to it as well.  Please add a `users` collection.
 
 The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
 
 ```txt
-MONGODB_URI=mongodb://localhost/polyecho
+MONGODB_URI=mongodb://localhost/arbor-protocol
 ```
 
 This will now allow the client app to work with the local MongoDB instance, and you can now interact with it through Compass as a GUI.
@@ -150,4 +150,4 @@ This will now allow the client app to work with the local MongoDB instance, and 
 
 ## Issues
 
-We encourage the open-source atmosphere. If you find any bugs or issues with this repository, don't hesitate to [file an issue](https://github.com/polyecho/polyecho/issues/new) for it. We will work to continually engage with these issues and encourage you to contribute.
+We encourage the open-source atmosphere. If you find any bugs or issues with this repository, don't hesitate to [file an issue](https://github.com/arbor-protocol/ui/issues/new) for it. We will work to continually engage with these issues and encourage you to contribute.

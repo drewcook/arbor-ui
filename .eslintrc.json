@@ -2,8 +2,7 @@
   "parser": "@typescript-eslint/parser",
   "extends": [
 		"next",
-    "next/core-web-vitals",
-		"plugin:@next/next/recommended",
+		"next/core-web-vitals",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier", // Disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier.

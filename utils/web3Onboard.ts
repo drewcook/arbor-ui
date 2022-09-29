@@ -33,10 +33,10 @@ const CHAIN = {
 const web3Onboard = Onboard({
 	wallets: [injectedWallets, ledger, walletConnect],
 	appMetadata: {
-		name: 'Polyecho',
-		icon: '/polyecho_logo_square.png',
+		name: 'Arbor',
+		icon: '/arbor_text_logo.svg',
 		description:
-			'Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors. Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed to the artists, including future royalties.',
+			'The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors.  Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed evenly to the artists, including future royalties from secondary sales.',
 		recommendedInjectedWallets: [
 			{ name: 'MetaMask', url: 'https://metamask.io' },
 			{ name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
@@ -81,9 +81,11 @@ const web3Onboard = Onboard({
 					},
 					mainText: 'Connecting...',
 					paragraph: 'Make sure to select all accounts that you want to grant access to.',
-					rejectedText: 'Connection Rejected!',
-					rejectedCTA: 'Click here to try again',
+					previousConnection:
+						'{wallet} already has a pending connection request, please open the {wallet} app to login and connect.',
 					primaryButton: 'Back to wallets',
+					rejectedCTA: 'Click here to try again',
+					rejectedText: 'Connection Rejected!',
 				},
 				connectedWallet: {
 					header: 'Connection Successful',
@@ -128,7 +130,7 @@ const web3Onboard = Onboard({
 				addAccount: 'Add Account',
 				setPrimaryAccount: 'Set Primary Account',
 				disconnectWallet: 'Disconnect Wallet',
-				// copyAddress: 'Copy Wallet address',
+				copyAddress: 'Copy Wallet address',
 			},
 			notify: {
 				transaction: {
@@ -150,6 +152,7 @@ const web3Onboard = Onboard({
 					txFailed: 'Your transaction has failed',
 					txConfirmed: 'Your transaction has succeeded',
 					txError: 'Oops something went wrong, please try again',
+					txReplaceError: 'There was an error replacing your transaction, please try again',
 				},
 				watched: {
 					txPool: 'Your account is {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
@@ -158,6 +161,7 @@ const web3Onboard = Onboard({
 					txConfirmed:
 						'Your account successfully {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
 					txFailed: 'Your account failed to {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txStuck: 'Your transaction is stuck due to a nonce gap',
 				},
 				time: {
 					minutes: 'min',

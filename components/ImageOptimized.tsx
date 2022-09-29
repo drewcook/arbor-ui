@@ -43,8 +43,8 @@ ImageOptimized.propTypes = {
 }
 
 ImageOptimized.defaultProps = {
-	alt: 'Polyecho Image',
-	title: 'Polyecho Image',
+	alt: 'Arbor Image',
+	title: 'Arbor Image',
 	width: 200,
 	height: 200,
 }

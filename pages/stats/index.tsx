@@ -25,11 +25,11 @@ const NFTStatsPage: NextPage<NFTStatsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | NFT Details</title>
+				<title>Arbor | NFT Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				<Typography variant="h4" component="h1" sx={styles.title}>
-					Polyecho Music NFT On-Chain Stats
+					Arbor Audio NFT On-Chain Stats
 				</Typography>
 				<Container maxWidth="md">
 					<Typography variant="h5" sx={styles.subtitle}>

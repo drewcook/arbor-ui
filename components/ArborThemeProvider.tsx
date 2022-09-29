@@ -26,7 +26,7 @@ declare module '@mui/material/styles' {
 	}
 }
 
-const polyEchoTheme = createTheme({
+const arborTheme = createTheme({
 	typography: {
 		fontFamily: ['Kanit', 'Arial', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"'].join(
 			',',
@@ -79,8 +79,8 @@ const polyEchoTheme = createTheme({
 	},
 })
 
-const PolyechoThemeProvider = ({ children }: ThemeProviderProps): JSX.Element => (
-	<ThemeProvider theme={polyEchoTheme}>{children}</ThemeProvider>
+const ArborThemeProvider = ({ children }: ThemeProviderProps): JSX.Element => (
+	<ThemeProvider theme={arborTheme}>{children}</ThemeProvider>
 )
 
-export default PolyechoThemeProvider
+export default ArborThemeProvider

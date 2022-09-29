@@ -24,13 +24,13 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Explore Music Projects</title>
+				<title>Arbor | Explore Audio Projects</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{data ? (
 					<>
 						<Typography variant="h4" component="h1" sx={styles.title}>
-							Polyecho Music Projects
+							Arbor Audio Projects
 						</Typography>
 						<Container maxWidth="sm">
 							<Typography variant="h5" sx={styles.subtitle}>

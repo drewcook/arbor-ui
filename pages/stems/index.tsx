@@ -23,7 +23,7 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Explore The StemPool</title>
+				<title>Arbor | Explore The StemPool</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{data ? (
@@ -33,8 +33,8 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 						</Typography>
 						<Container maxWidth="sm">
 							<Typography variant="h5" sx={styles.subtitle}>
-								Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
-								with them.
+								Explore the stem pool for unique music stems from the artist community, upload your own, or grab a few
+								and start a new project with them.
 							</Typography>
 						</Container>
 						{data.length > 0 ? (
