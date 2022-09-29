@@ -1,5 +1,5 @@
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
-import { Box, Button, Card, CardActions, CardContent, Chip, IconButton, Typography } from '@mui/material'
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
 import { NETWORK_CURRENCY } from '../constants/networks'
 import OneIcon from '../public/harmony_icon.svg'
@@ -19,16 +19,14 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 		<>
 			<Card sx={styles.card} elevation={2}>
 				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
+				<CardMedia
+					component="img"
+					image="/arbor_tree_logo.svg"
+					alt="Arbor Token Image"
+					title="Arbor Token Image"
+					sx={styles.img}
+				/>
 				<CardContent>
-					<Box className="nft-card-media">
-						<ImageOptimized
-							src="/polyecho_logo_square.png"
-							alt="Arbor Token Image"
-							width={400}
-							height={400}
-							title="Arbor Token Image"
-						/>
-					</Box>
 					<Typography variant="h5" gutterBottom>
 						{details.name ?? 'Project Name'}
 						<IconButton sx={styles.projectIconLink} color="secondary">

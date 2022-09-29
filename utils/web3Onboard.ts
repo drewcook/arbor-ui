@@ -34,7 +34,7 @@ const web3Onboard = Onboard({
 	wallets: [injectedWallets, ledger, walletConnect],
 	appMetadata: {
 		name: 'Arbor',
-		icon: '/polyecho_logo_square.png',
+		icon: '/arbor_text_logo.svg',
 		description:
 			'The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors.  Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed evenly to the artists, including future royalties from secondary sales.',
 		recommendedInjectedWallets: [
