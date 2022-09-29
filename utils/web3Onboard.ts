@@ -81,9 +81,11 @@ const web3Onboard = Onboard({
 					},
 					mainText: 'Connecting...',
 					paragraph: 'Make sure to select all accounts that you want to grant access to.',
-					rejectedText: 'Connection Rejected!',
-					rejectedCTA: 'Click here to try again',
+					previousConnection:
+						'{wallet} already has a pending connection request, please open the {wallet} app to login and connect.',
 					primaryButton: 'Back to wallets',
+					rejectedCTA: 'Click here to try again',
+					rejectedText: 'Connection Rejected!',
 				},
 				connectedWallet: {
 					header: 'Connection Successful',
@@ -128,7 +130,7 @@ const web3Onboard = Onboard({
 				addAccount: 'Add Account',
 				setPrimaryAccount: 'Set Primary Account',
 				disconnectWallet: 'Disconnect Wallet',
-				// copyAddress: 'Copy Wallet address',
+				copyAddress: 'Copy Wallet address',
 			},
 			notify: {
 				transaction: {
@@ -150,6 +152,7 @@ const web3Onboard = Onboard({
 					txFailed: 'Your transaction has failed',
 					txConfirmed: 'Your transaction has succeeded',
 					txError: 'Oops something went wrong, please try again',
+					txReplaceError: 'There was an error replacing your transaction, please try again',
 				},
 				watched: {
 					txPool: 'Your account is {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
@@ -158,6 +161,7 @@ const web3Onboard = Onboard({
 					txConfirmed:
 						'Your account successfully {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
 					txFailed: 'Your account failed to {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txStuck: 'Your transaction is stuck due to a nonce gap',
 				},
 				time: {
 					minutes: 'min',

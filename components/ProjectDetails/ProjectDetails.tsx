@@ -372,8 +372,8 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						{details.collaborators.length === 1 ? '' : 's'}
 					</Typography>
 					<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
-						{details.collaborators.map(c => (
-							<Link key={c} href={`/users/${c}`} passHref>
+						{details.collaborators.map((c, idx) => (
+							<Link key={idx} href={`/users/${c}`} passHref>
 								<Avatar>
 									<Person />
 								</Avatar>
