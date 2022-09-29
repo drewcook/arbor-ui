@@ -33,10 +33,10 @@ const CHAIN = {
 const web3Onboard = Onboard({
 	wallets: [injectedWallets, ledger, walletConnect],
 	appMetadata: {
-		name: 'Polyecho',
+		name: 'Arbor',
 		icon: '/polyecho_logo_square.png',
 		description:
-			'Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors. Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed to the artists, including future royalties.',
+			'The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors.  Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed evenly to the artists, including future royalties from secondary sales.',
 		recommendedInjectedWallets: [
 			{ name: 'MetaMask', url: 'https://metamask.io' },
 			{ name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
@@ -44,8 +44,12 @@ const web3Onboard = Onboard({
 	},
 	chains: [CHAIN],
 	accountCenter: {
+		// Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
 		desktop: {
-			enabled: false, // Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
+			enabled: false,
+		},
+		mobile: {
+			enabled: false,
 		},
 	},
 	i18n: {
@@ -59,9 +63,9 @@ const web3Onboard = Onboard({
 						paragraph:
 							'Connecting your wallet is like “logging in” to Web3. Select your wallet from the options to get started.',
 					},
-					recommendedWalletsPart1: 'Polyecho only supports',
+					recommendedWalletsPart1: '{app} only supports',
 					recommendedWalletsPart2: 'on this platform. Please use or install one of the supported wallets to continue',
-					installWallet: 'You do not have any wallets installed that Polyecho supports, please use a supported wallet',
+					installWallet: 'You do not have any wallets installed that {app} supports, please use a supported wallet',
 					agreement: {
 						agree: 'I agree to the',
 						terms: 'Terms & Conditions',
@@ -85,7 +89,7 @@ const web3Onboard = Onboard({
 					header: 'Connection Successful',
 					sidebar: {
 						subheading: 'Connection Successful!',
-						paragraph: 'Your wallet is now connected to Polyecho',
+						paragraph: 'Your wallet is now connected to {app}',
 					},
 					mainText: 'Connected',
 				},
@@ -99,7 +103,7 @@ const web3Onboard = Onboard({
 				},
 				switchChain: {
 					heading: 'Switch Chain',
-					paragraph1: 'Polyecho requires that you switch your wallet to the {nextNetworkName} network to continue.',
+					paragraph1: '{app} requires that you switch your wallet to the {nextNetworkName} network to continue.',
 					paragraph2:
 						'*Some wallets may not support changing networks. If you can not change networks in your wallet you may consider switching to a different wallet.',
 				},
@@ -119,11 +123,46 @@ const web3Onboard = Onboard({
 				gettingStartedGuide: 'Getting Started Guide',
 				smartContracts: 'Smart Contract(s)',
 				explore: 'Explore',
-				backToApp: 'Back to App',
+				backToApp: 'Back to dapp',
 				poweredBy: 'powered by',
 				addAccount: 'Add Account',
 				setPrimaryAccount: 'Set Primary Account',
 				disconnectWallet: 'Disconnect Wallet',
+				// copyAddress: 'Copy Wallet address',
+			},
+			notify: {
+				transaction: {
+					txRequest: 'Your transaction is waiting for you to confirm',
+					nsfFail: 'You have insufficient funds to complete this transaction',
+					txUnderpriced: 'The gas price for your transaction is too low, try again with a higher gas price',
+					txRepeat: 'This could be a repeat transaction',
+					txAwaitingApproval: 'You have a previous transaction waiting for you to confirm',
+					txConfirmReminder:
+						'Please confirm your transaction to continue, the transaction window may be behind your browser',
+					txSendFail: 'You rejected the transaction',
+					txSent: 'Your transaction has been sent to the network',
+					txStallPending: 'Your transaction has stalled and has not entered the transaction pool',
+					txStuck: 'Your transaction is stuck due to a nonce gap',
+					txPool: 'Your transaction has started',
+					txStallConfirmed: "Your transaction has stalled and hasn't been confirmed",
+					txSpeedUp: 'Your transaction has been sped up',
+					txCancel: 'Your transaction is being canceled',
+					txFailed: 'Your transaction has failed',
+					txConfirmed: 'Your transaction has succeeded',
+					txError: 'Oops something went wrong, please try again',
+				},
+				watched: {
+					txPool: 'Your account is {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txSpeedUp: 'Transaction for {formattedValue} {asset} {preposition} {counterpartyShortened} has been sped up',
+					txCancel: 'Transaction for {formattedValue} {asset} {preposition} {counterpartyShortened} has been canceled',
+					txConfirmed:
+						'Your account successfully {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txFailed: 'Your account failed to {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+				},
+				time: {
+					minutes: 'min',
+					seconds: 'sec',
+				},
 			},
 		},
 	},

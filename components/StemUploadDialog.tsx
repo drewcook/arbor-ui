@@ -125,7 +125,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			// Upload to NFT.storage
 			const nftsRes = await NFTStore.store({
 				name: file.name,
-				description: 'An audio file uploaded through the Polyecho platform',
+				description: 'An audio file uploaded through the Arbor Protocol',
 				image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 				properties: {
 					name: stemName,
@@ -147,7 +147,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setUploadingMsg('Updating project details...')
 
 			// Create the new stem (and adds to user's stems)
-			let res = await post('/stems', {
+			const stemRes = await post('/stems', {
 				name: stemName,
 				type: stemType,
 				metadataUrl: nftsRes.url,
@@ -158,21 +158,22 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				filesize: file.size,
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 			})
-			if (!res.success) throw new Error(res.error)
-			const stemCreated = res.data
+			if (!stemRes.success) throw new Error(stemRes.error)
+			const stemCreated = stemRes.data
 
-			// Add the new stem to the project and new collaborators list
-			res = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
+			// Add new stem to user's stems' details
+			const userUpdated = await update(`/users/${currentUser.address}`, { newStem: stemCreated._id })
+			if (!userUpdated.success) throw new Error(userUpdated.error)
 
-			// Catch error or invoke success callback with new project data
-			if (!res.success) throw new Error(res.error)
-			else {
-				// Notify success
-				onNotificationClose()
-				setLoading(false)
-				onSuccess(res.data)
-				handleClose()
-			}
+			// Add the new stem to the project stem queue
+			const projectRes = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
+			if (!projectRes.success) throw new Error(projectRes.error)
+
+			// Notify success
+			onNotificationClose()
+			setLoading(false)
+			onSuccess(projectRes.data)
+			handleClose()
 		} catch (e: any) {
 			console.error(e)
 			// Notify error
@@ -205,8 +206,8 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				</Toolbar>
 				<DialogContent>
 					<DialogContentText sx={styles.text}>
-						When you upload a stem to a Polyecho project, you become a collaborator, where you&apos;ll split a 10% cut
-						for each sale with other collaborators.
+						When you upload a stem to an Arbor project, you become a collaborator, where you&apos;ll split a 10% cut for
+						each sale with other collaborators.
 					</DialogContentText>
 					<Grid container spacing={2}>
 						<Grid item xs={12} sm={6}>

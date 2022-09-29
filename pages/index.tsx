@@ -9,7 +9,7 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | A Generative Music NFT Platform</title>
+				<title>Arbor | A Generative Music NFT Platform</title>
 			</Head>
 			<Box sx={styles.banner} component="section" className="homepage-banner">
 				<Container maxWidth="xl">
@@ -176,7 +176,7 @@ const Home: NextPage = () => {
 									Hard drive full of &quot;WIP&quot; tracks collecting dust?
 								</Typography>
 								<Typography sx={styles.blurb}>
-									Dig through &apos;em. One of your gently used stems could be worth something on Polyecho.
+									Dig through &apos;em. One of your gently used stems could be worth something on Arbor.
 								</Typography>
 							</Box>
 							<Box sx={{ mb: 4 }}>

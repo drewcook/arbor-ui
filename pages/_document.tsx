@@ -13,7 +13,7 @@ class AppDocument extends Document {
 				<Head>
 					<meta
 						name="description"
-						content="Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors."
+						content="The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors."
 					/>
 					<link rel="icon" href="/favicon.ico" />
 					<link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -164,7 +164,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				files.forEach((data: Blob, filename: string) => {
+				files.forEach((data: Blob) => {
 					formData.append('files', data)
 				})
 
@@ -190,7 +190,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const nftsRes = await NFTStore.store({
 					name: details.name, // TODO: plus a version number?
 					description:
-						'A Polyecho NFT representing collaborative music from multiple contributors on the decentralized web.',
+						'An Arbor Audio NFT representing collaborative music from multiple contributors on the decentralized web.',
 					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 					properties: {
 						createdOn: new Date().toISOString(),
@@ -212,7 +212,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 1000000,
 				})
 				console.log({ mintRes })
 

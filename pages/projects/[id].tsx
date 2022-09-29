@@ -15,7 +15,7 @@ const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Project Details</title>
+				<title>Arbor | Project Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{data && <ProjectDetailsContainer data={data} />}

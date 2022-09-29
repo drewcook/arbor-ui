@@ -69,7 +69,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | User Details</title>
+				<title>Arbor | User Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{details ? (

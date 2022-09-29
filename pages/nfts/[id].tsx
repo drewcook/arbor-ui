@@ -72,7 +72,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 				const scRes: any = await contracts.nft.buy(details.token.id, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 1000000,
 				})
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 
@@ -124,7 +124,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | NFT Details</title>
+				<title>Arbor | NFT Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
 				{details ? (
@@ -165,6 +165,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
 										<Box sx={styles.price}>
 											<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
+											{/* <ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} /> */}
 											<Typography variant="h4" component="div">
 												{details.listPrice}{' '}
 												<Typography sx={styles.eth} component="span">

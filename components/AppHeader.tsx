@@ -9,7 +9,7 @@ const basePages = [
 	{ href: '/projects/new', title: 'Create' },
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
-	{ href: '/nfts', title: 'Marketplace' },
+	{ href: '/nfts', title: 'Arboretum' },
 ]
 
 // Add stats page for production environments
@@ -33,7 +33,7 @@ const AppHeader = (): JSX.Element => {
 					<Link href="/" passHref>
 						{/* @ts-ignore */}
 						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
-							Polyecho
+							Arbor
 							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 						</Typography>
 					</Link>
@@ -78,7 +78,7 @@ const AppHeader = (): JSX.Element => {
 						<Link href="/" passHref>
 							{/* @ts-ignore */}
 							<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
-								Polyecho
+								Arbor
 								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 							</Typography>
 						</Link>

@@ -56,7 +56,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<strong>Last Updated:</strong> {formatDate(balData.updated_at)}
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						<strong>Token Name:</strong> Polyecho
+						<strong>Token Name:</strong> Arbor
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
 						<strong>Ticker Symbol:</strong> (ECHO)
@@ -66,7 +66,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 			{tokensData && (
 				<Paper elevation={2} sx={styles.covalentWrap}>
 					<Typography variant="h4" sx={styles.cardTitle}>
-						Polyecho Token Stats
+						Arbor Token Stats
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
 						<strong>Last Updated:</strong> {formatDate(tokensData.updated_at)}
@@ -80,7 +80,7 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 					{tokensData.items.map((token, idx) => (
 						<Box sx={styles.tokenRow} key={idx}>
 							<Typography variant="h6">Token #{token.token_id}</Typography>
-							<Link href={`${NETWORK_EXPLORER}/address/${NFT_CONTRACT_ADDRESS}?a=${token.token_id}`} passHref>
+							<Link href={`${NETWORK_EXPLORER}/token/${NFT_CONTRACT_ADDRESS}?a=${token.token_id}#inventory`} passHref>
 								<Button variant="contained" size="small" color="secondary" endIcon={<ArrowForwardIos />}>
 									View NFT
 								</Button>
