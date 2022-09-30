@@ -204,7 +204,7 @@ const NewProjectPage: NextPage = () => {
 					sx={styles.submitBtn}
 					disabled={loading}
 				>
-					{loading ? <CircularProgress /> : 'Create Project'}
+					{loading ? <CircularProgress size={26} /> : 'Create Project'}
 				</Button>
 			</Container>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}

@@ -1,15 +1,15 @@
 const { Group } = require('@semaphore-protocol/group')
 const { task, types } = require('hardhat/config')
-const poseidon_gencontract = require('circomlibjs')
+const circomlib = require('circomlibjs')
 
 task('deploy', 'Deploy the entire suite of smart contracts')
 	.addOptionalParam('logs', 'Print the logs', true, types.boolean)
 	.setAction(async ({ logs }, { ethers }) => {
-		// Deploy PolyechoNFT
-		const PolyechoNFTContract = await ethers.getContractFactory('PolyechoNFT')
-		const nft = await PolyechoNFTContract.deploy()
+		// Deploy ArborAudioCollections
+		const ArborAudioCollectionsContract = await ethers.getContractFactory('ArborAudioCollections')
+		const nft = await ArborAudioCollectionsContract.deploy()
 		await nft.deployed()
-		logs && console.log(`PolyechoNFT contract has been deployed to: ${nft.address}`)
+		logs && console.log(`ArborAudioCollections contract has been deployed to: ${nft.address}`)
 
 		// Deploy Verifier
 		const VerifierContract = await ethers.getContractFactory('Verifier20')
@@ -18,8 +18,8 @@ task('deploy', 'Deploy the entire suite of smart contracts')
 		logs && console.log(`Verifier20 contract has been deployed to: ${verifier.address}`)
 
 		// Deploy PoseidonT3
-		const poseidonABI = poseidon_gencontract.poseidon_gencontract.generateABI(2)
-		const poseidonBytecode = poseidon_gencontract.poseidon_gencontract.createCode(2)
+		const poseidonABI = circomlib.poseidonContract.generateABI(2)
+		const poseidonBytecode = circomlib.poseidonContract.createCode(2)
 		const [signer] = await ethers.getSigners()
 		const PoseidonLibFactory = new ethers.ContractFactory(poseidonABI, poseidonBytecode, signer)
 		const poseidonLib = await PoseidonLibFactory.deploy()

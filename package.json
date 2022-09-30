@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "next dev",
-    "stage": "NODE_ENV=test next build",
+    "stage": "NODE_ENV=test next build && next start",
     "build": "next build",
     "start": "next start",
     "test": "echo \"No tests to run\"",
@@ -14,9 +14,12 @@
     "circuits:setup": "./scripts/compileCircuit.sh && ./scripts/generateWitness.sh && ./scripts/executePlonk.sh && ./scripts/copyZkFiles.sh",
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
     "hardhat:node": "cd web3 && hardhat node",
-    "contracts:test": "cd web3 && hardhat test",
     "contracts:compile": "cd web3 && hardhat compile",
+		"contracts:clearDestDir": "rm -rf contracts/*",
+    "contracts:copyArtifacts": "cp web3/artifacts/contracts/ArborAudioCollections.sol/ArborAudioCollections.json web3/artifacts/contracts/StemQueue.sol/StemQueue.json contracts/",
+		"contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
     "contracts:deploy": "cd web3 && hardhat deploy",
+    "contracts:test": "cd web3 && hardhat test",
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "dependencies": {
@@ -27,6 +30,7 @@
     "@mui/material": "^5.8.7",
     "@openzeppelin/contracts": "^4.7.3",
     "@semaphore-protocol/group": "^2.0.0",
+    "@semaphore-protocol/identity": "^2.0.0",
     "@semaphore-protocol/proof": "^2.1.0",
     "@web3-onboard/core": "^2.8.5",
     "@web3-onboard/injected-wallets": "^2.2.4",

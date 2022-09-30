@@ -2,20 +2,20 @@
 
 const web3 = require('web3')
 const { Contract, providers } = require('ethers')
-const PolyechoNFT = require('../artifacts/contracts/PolyechoNFT.sol/PolyechoNFT.json')
+const ArborAudioCollections = require('../artifacts/contracts/ArborAudioCollections.sol/ArborAudioCollections.json')
 
 // Quick helpers
 const toEth = wei => web3.utils.fromWei(`${wei}`, 'ether')
 const toWei = eth => web3.utils.toWei(`${eth}`, 'ether')
 
-// PolyechoNFT instance
+// ArborAudioCollections instance
 const provider = new providers.JsonRpcProvider('http://localhost:8545')
-const polyechoNft = new Contract('0x7bc06c482dead17c0e297afbc32f6e63d3846650', PolyechoNFT.abi)
+const polyechoNft = new Contract('0x7bc06c482dead17c0e297afbc32f6e63d3846650', ArborAudioCollections.abi)
 const nftContract = polyechoNft.connect(provider.getSigner())
 
-contract('PolyechoNFT: deployment', () => {
+contract('ArborAudioCollections: deployment', () => {
 	it('has been deployed', async () => {
-		assert(nftContract, 'PolyechoNFT contract was not deployed')
+		assert(nftContract, 'ArborAudioCollections contract was not deployed')
 		assert.notEqual(contract, undefined)
 	})
 
@@ -29,21 +29,21 @@ contract('PolyechoNFT: deployment', () => {
 
 	it('Should have a name', async () => {
 		const name = await nftContract.name()
-		assert.equal(name, 'Polyecho')
+		assert.equal(name, 'ArborAudioCollections')
 	})
 
 	it('Should have a symbol', async () => {
 		const symbol = await nftContract.symbol()
-		assert.equal(symbol, 'ECHO')
+		assert.equal(symbol, 'ARBOR')
 	})
 
 	it('Should have a collection name', async () => {
 		const name = await nftContract.collectionName()
-		assert.equal(name, 'Polyecho Trees')
+		assert.equal(name, 'Arbor Audio NFTs')
 	})
 })
 
-contract('PolyechoNFT: state properties', accounts => {
+contract('ArborAudioCollections: state properties', accounts => {
 	it('Should have a static mint price', async () => {
 		const actualMintPrice = await nftContract.mintPrice()
 		const expectedMintPrice = toWei(0.01)
@@ -82,7 +82,7 @@ contract('PolyechoNFT: state properties', accounts => {
 	})
 })
 
-contract('PolyechoNFT: minting an NFT', accts => {
+contract('ArborAudioCollections: minting an NFT', accts => {
 	const accounts = accts.map(a => a.toLowerCase())
 	let contract
 	const owner = accounts[0]
@@ -101,7 +101,7 @@ contract('PolyechoNFT: minting an NFT', accts => {
 		}
 	})
 
-	// Tests for NFT minting function of PolyechoNFT contract using tokenID of the minted NFT
+	// Tests for NFT minting function of ArborAudioCollections contract using tokenID of the minted NFT
 	it('Should be able to mint a token with proper metadata', async () => {
 		// Mint a token
 		const mintPrice = await nftContract.mintPrice()
@@ -143,7 +143,7 @@ contract('PolyechoNFT: minting an NFT', accts => {
 	// })
 })
 
-contract('PolyechoNFT: listing and un-listing an NFT', async accts => {
+contract('ArborAudioCollections: listing and un-listing an NFT', async accts => {
 	const accounts = accts.map(a => a.toLowerCase())
 	let tokenId
 	let contributorBalance

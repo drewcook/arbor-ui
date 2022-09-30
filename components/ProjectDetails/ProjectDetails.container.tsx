@@ -45,8 +45,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	const { currentUser } = useWeb3()
 
 	const [userIsRegisteredVoter, setUserRegistration] = useState<boolean>(
-		details.voterIdentityCommitments.filter(commitment => commitment === currentUser?.voterIdentityCommitment).length >
-			0,
+		currentUser ? currentUser.registeredGroupIds.includes(details.votingGroupId) : false,
 	)
 	const [userIsCollaborator, setUserCollaborator] = useState<boolean>(
 		currentUser ? details.collaborators.includes(currentUser.address) : false,
@@ -57,9 +56,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	*/
 	useEffect(() => {
 		if (!currentUser) return
-		const isRegisteredVoter =
-			details.voterIdentityCommitments.includes(currentUser.voterIdentityCommitment) ||
-			currentUser.registeredGroupIds.includes(details.votingGroupId)
+		const isRegisteredVoter = currentUser.registeredGroupIds.includes(details.votingGroupId)
 		const isCollaborator = details.collaborators.includes(currentUser.address)
 		setUserRegistration(isRegisteredVoter)
 		setUserCollaborator(isCollaborator)

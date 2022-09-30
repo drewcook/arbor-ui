@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
-contract PolyechoNFT is ERC721, Ownable {
+contract ArborAudioCollections is ERC721, Ownable {
 	  using SafeMath for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
     // Fields
-    string public collectionName = "Polyecho Trees";
+    string public collectionName = "Arbor Audio NFTs";
     uint256 public constant mintPrice = 10000000000000000; // 0.01 ETH
 
 		// Events
@@ -30,7 +30,7 @@ contract PolyechoNFT is ERC721, Ownable {
     mapping(uint256 => address[]) public tokenIdToContributors;
     mapping (uint256 => uint256) public tokenIdToPrice;
 
-    constructor() ERC721("Polyecho", "ECHO") {}
+    constructor() ERC721("ArborAudio", "ARBOR") {}
 
     function updateCollectionName(string calldata _name) external onlyOwner {
         collectionName = _name;

@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
+import { IUserIdentity } from '../../models/user.model'
 import { update } from '../../utils/http'
 import signMessage from '../../utils/signMessage'
 import StemUploadDialog from '../StemUploadDialog'
@@ -86,8 +87,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				Create a user identity based off signing a message with the current signer
 			*/
 			const message = await signMessage(IDENTITY_MSG)
-			const identity = new ZkIdentity(Strategy.MESSAGE, message)
-			const commitment: string = await identity.genIdentityCommitment().toString()
+			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
+			const commitment: bigint = await identity.genIdentityCommitment()
+			const trapdoor: bigint = identity.getTrapdoor()
+			const nullifier: bigint = identity.getNullifier()
+			const voterIdentity: IUserIdentity = {
+				commitment,
+				nullifier,
+				trapdoor,
+				votingGroupId: details.votingGroupId,
+			}
+			console.log('voter identity created', voterIdentity)
 
 			/*
 				Add the user's identity commitment to the on-chain group
@@ -104,21 +114,23 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			/*
 				Update the user record
-				- Add in the new identity for the user if there isn't one already
+				- A couple preventative measures are in place...
+				- Add in the new identity for the user if there isn't one already for the given project
 				- Add in the group ID for user's registered groups if it doesn't exist already
 				- NOTE: This will help to show the appropriate UI elements/state
-				TODO: Probably should allow multiple identities so a user can vote on multiple projects without error
 			*/
-			const userRes = await update(`/users/${currentUser?.address}`, {
+			const userRes = await update(`/users/${currentUser.address}`, {
 				...currentUser,
-				voterIdentityCommitment: !currentUser.voterIdentityCommitment
-					? commitment
-					: currentUser.voterIdentityCommitment,
+				// TODO: Use MongoDB $addToSet on the backend, maybe?
+				voterIdentities: currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
+					? currentUser.voterIdentities
+					: [...currentUser.voterIdentities, voterIdentity],
 				registeredGroupIds: currentUser.registeredGroupIds.includes(details.votingGroupId)
 					? currentUser.registeredGroupIds
 					: [...currentUser.registeredGroupIds, details.votingGroupId],
 			})
-			if (!userRes.success) console.error('Failed to add the group ID to the user record')
+			if (!userRes.success) console.error('Failed to add the identity or group ID to the user record')
+
 			// Update current user details
 			updateCurrentUser(userRes.data)
 
@@ -129,7 +141,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
-				voterIdentityCommitments: [...details.voterIdentityCommitments, commitment],
+				voterIdentities: [...details.voterIdentities, voterIdentity],
 			})
 			if (!projectRes.success) {
 				console.error('Failed to add the identity to the project record')
@@ -152,6 +164,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
 			const stemId: string = stem._id.toString()
+
 			/*
 				Generate an off-chain proof to submit to the backend contracts for signalling and verification
 					1. Re-instantiate a new ZKIdentity using the user's identity commitment from the previously signed message via EOA wallet
@@ -161,29 +174,31 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					5. Call the smart contract to verify the proof that this user is part of the group
 			*/
 
-			// Re-create the identity
-			const message = await signMessage(IDENTITY_MSG)
-			const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			console.log({ voterIdentity })
+			// Find the user's identity for the project/group
+			// const message = await signMessage(IDENTITY_MSG)
+			// const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
+			const voterIdentity = currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
+			if (!voterIdentity) return
+			console.log(`found user's voting identity for voting group ${details.votingGroupId}`, voterIdentity)
 
 			// Get the other group members' identities
 			const identityCommitments: bigint[] = []
-			for (const commitment of details.voterIdentityCommitments) {
-				identityCommitments.push(BigInt(commitment))
+			for (const identity of details.voterIdentities) {
+				identityCommitments.push(identity.commitment)
 			}
 			console.log({ identityCommitments })
 
 			// Generate the Merkle proof
 			// External nullifier is derived from the stem ID
-			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, currentUser?.voterIdentityCommitment)
-			const stemZKId = new ZkIdentity(Strategy.MESSAGE, stemId)
-			const externalNullifier = stemZKId.genIdentityCommitment()
+			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, voterIdentity.commitment)
+			const stemZKIdentity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, stemId)
+			const externalNullifier = stemZKIdentity.genIdentityCommitment()
 			console.log('external nullifier', externalNullifier)
 
 			// Generate the witness
 			const witness = Semaphore.genWitness(
-				voterIdentity.getTrapdoor(),
-				voterIdentity.getNullifier(),
+				voterIdentity.trapdoor,
+				voterIdentity.nullifier,
 				merkleProof,
 				externalNullifier,
 				stemId,
@@ -211,13 +226,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					gasLimit: 1000000,
 				},
 			)
+			if (!voteRes.success) throw new Error('Failed to cast an on-chain anonymous vote')
 			console.log({ voteRes })
+
+			// const offchainVerifyRes = await contracts.stemQueue.verifyProof(verificationKey, fullProof)
+			// console.log({ offchainVerifyRes, voteRes })
 
 			// Get the receipt
 			const receipt = await voteRes.wait()
 			console.log('vote receipt', receipt)
 
-			// Update the project record vote count for the queued stem
+			// // Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
 				queue: details.queue.map(q => {
@@ -229,8 +248,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						: q
 				}),
 			})
-			console.log({ projectRes })
 			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
+			console.log({ projectRes })
 
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
@@ -250,6 +269,21 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.error(e)
 		}
 		setVoteLoading(false)
+	}
+
+	// Get the stem vote count for the relative stem
+	const handleGetStemVoteCount = async (stem: IStemDoc) => {
+		if (!currentUser) return
+		const stemId: string = stem._id.toString()
+		const voteCountRes = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
+			from: currentUser.address,
+			gasLimit: 650000,
+		})
+		console.log({ voteCountRes })
+
+		// Get the receipt
+		const receipt = await voteCountRes.wait()
+		console.log({ receipt })
 	}
 
 	/**
@@ -354,6 +388,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 							sx={{ mr: 1 }}
 						>
 							{voteLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
+						</Button>
+						<Button variant="outlined" size="small" onClick={() => handleGetStemVoteCount(stem.stem)} sx={{ mr: 1 }}>
+							Get Vote Count
 						</Button>
 						{userIsCollaborator && (
 							<Button

@@ -1058,7 +1058,7 @@
     "@ethersproject/logger" "^5.5.0"
     hash.js "1.1.7"
 
-"@ethersproject/sha2@5.7.0", "@ethersproject/sha2@^5.5.0", "@ethersproject/sha2@^5.7.0":
+"@ethersproject/sha2@5.7.0", "@ethersproject/sha2@^5.5.0", "@ethersproject/sha2@^5.6.1", "@ethersproject/sha2@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/sha2/-/sha2-5.7.0.tgz#9a5f7a7824ef784f7f7680984e593a800480c9fb"
   integrity sha512-gKlH42riwb3KYp0reLsFTokByAKoJdgFCwI+CCiX/k+Jm2mbNs6oOaCjYQSlI1+XBVejwH2KrmCbMAT/GnRDQw==
@@ -1124,7 +1124,7 @@
     "@ethersproject/constants" "^5.5.0"
     "@ethersproject/logger" "^5.5.0"
 
-"@ethersproject/strings@5.7.0", "@ethersproject/strings@>=5.0.0-beta.130", "@ethersproject/strings@^5.5.0", "@ethersproject/strings@^5.7.0":
+"@ethersproject/strings@5.7.0", "@ethersproject/strings@>=5.0.0-beta.130", "@ethersproject/strings@^5.5.0", "@ethersproject/strings@^5.6.1", "@ethersproject/strings@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.7.0.tgz#54c9d2a7c57ae8f1205c88a9d3a56471e14d5ed2"
   integrity sha512-/9nu+lj0YswRNSH0NXYqrh8775XNyEdUQAuf3f+SmOrnVewcJ5SBNAjF7lpgehKi4abvNNXyf+HX86czCdJ8Mg==
@@ -2398,6 +2398,17 @@
   integrity sha512-XQOw1Xj14NendmSyqHX6jpedczjWBo5KmNlfK5blVtUaXR8REldsnkI+IpGyzZyrkJSke5IbideAk0nLIkW1ng==
   dependencies:
     "@zk-kit/incremental-merkle-tree" "1.0.0"
+    circomlibjs "0.0.8"
+
+"@semaphore-protocol/identity@^2.0.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@semaphore-protocol/identity/-/identity-2.5.0.tgz#27e4af486b53dc9f75730d95c01365a416742bc5"
+  integrity sha512-ovZjWZ4ioQ2htQ9Zr5ZRTS0rJ/jjm3HO3dDdijYevb3/ac1+twHTmHC668ixO8DCkjvqS4p3/H0ZxYWHtcryrg==
+  dependencies:
+    "@ethersproject/bignumber" "^5.5.0"
+    "@ethersproject/random" "^5.5.1"
+    "@ethersproject/sha2" "^5.6.1"
+    "@ethersproject/strings" "^5.6.1"
     circomlibjs "0.0.8"
 
 "@semaphore-protocol/proof@^2.1.0":
