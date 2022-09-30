@@ -8,7 +8,7 @@ const networks = {
 		currency: 'LOCAL',
 		explorer: '',
 	},
-	polygonMainnet: {
+	polygon: {
 		networkId: 137,
 		networkHex: '0x89',
 		displayName: 'Polygon Mainnet',
@@ -16,7 +16,7 @@ const networks = {
 		currency: 'MATIC',
 		explorer: 'https://polygonscan.com',
 	},
-	polygonTestnet: {
+	polygonTest: {
 		networkId: 80001,
 		networkHex: '0x13881',
 		displayName: 'Polygon Testnet',
@@ -24,7 +24,7 @@ const networks = {
 		currency: 'MATIC',
 		explorer: 'https://mumbai.polygonscan.com',
 	},
-	harmonyMainnet: {
+	harmony: {
 		networkId: 1666600000,
 		networkHex: '0x63564C40',
 		displayName: 'Harmony Mainnet',
@@ -32,7 +32,7 @@ const networks = {
 		currency: 'ONE',
 		explorer: 'https://explorer.harmony.one',
 	},
-	harmonyTestnet: {
+	harmonyTest: {
 		networkId: 1666700000,
 		networkHex: '0x6357D2E0',
 		displayName: 'Harmony Testnet',
@@ -40,7 +40,7 @@ const networks = {
 		currency: 'ONE',
 		explorer: 'https://explorer.pops.one',
 	},
-	harmonyDevnet: {
+	harmonyDev: {
 		networkId: 1666900000,
 		networkHex: '0x635AE020',
 		displayName: 'Harmony Devnet',
@@ -53,7 +53,7 @@ const networks = {
 // Preferred network
 // Dev: localhost
 // Prod: Polygon Testnet
-const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'polygonTestnet'
+const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'polygon'
 
 // Onboard takes hexadecimal values
 export const NETWORK_HEX = networks[preferredNetwork].networkHex

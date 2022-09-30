@@ -14,9 +14,12 @@
     "circuits:setup": "./scripts/compileCircuit.sh && ./scripts/generateWitness.sh && ./scripts/executePlonk.sh && ./scripts/copyZkFiles.sh",
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
     "hardhat:node": "cd web3 && hardhat node",
-    "contracts:test": "cd web3 && hardhat test",
     "contracts:compile": "cd web3 && hardhat compile",
+		"contracts:clearDestDir": "rm -rf contracts/*",
+    "contracts:copyArtifacts": "cp web3/artifacts/contracts/ArborAudioCollections.sol/ArborAudioCollections.json web3/artifacts/contracts/StemQueue.sol/StemQueue.json contracts/",
+		"contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
     "contracts:deploy": "cd web3 && hardhat deploy",
+    "contracts:test": "cd web3 && hardhat test",
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "dependencies": {
