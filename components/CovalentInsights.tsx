@@ -56,10 +56,10 @@ const CovalentInsights = (props: CovalentInsightsProps): JSX.Element => {
 						<strong>Last Updated:</strong> {formatDate(balData.updated_at)}
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						<strong>Token Name:</strong> Arbor
+						<strong>Token Name:</strong> ArborAudio
 					</Typography>
 					<Typography variant="overline" sx={styles.covalentMeta}>
-						<strong>Ticker Symbol:</strong> (ECHO)
+						<strong>Ticker Symbol:</strong> (ARBOR)
 					</Typography>
 				</Paper>
 			)}

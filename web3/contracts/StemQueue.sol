@@ -108,12 +108,12 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
         uint256 _nullifierHash,
         uint256[8] calldata _proof
     ) external {
-        uint256 root = getRoot(groupId);
+        uint256 root = getMerkleTreeRoot(groupId);
         _verifyProof(_vote, root, _nullifierHash, externalNullifier, _proof, verifier);
 
         // Prevent double-voting (nullifierHash = hash(stemId + identityNullifier)).
         // Every user can vote once.
-        _saveNullifierHash(_nullifierHash);
+        // _saveNullifierHash(_nullifierHash);
 
 				// Update the vote count for the given stem
 				// This would be 0 for a non-existant key in the mapping

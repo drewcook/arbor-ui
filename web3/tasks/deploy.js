@@ -5,11 +5,11 @@ const circomlib = require('circomlibjs')
 task('deploy', 'Deploy the entire suite of smart contracts')
 	.addOptionalParam('logs', 'Print the logs', true, types.boolean)
 	.setAction(async ({ logs }, { ethers }) => {
-		// Deploy PolyechoNFT
-		const PolyechoNFTContract = await ethers.getContractFactory('PolyechoNFT')
-		const nft = await PolyechoNFTContract.deploy()
+		// Deploy ArborAudioCollections
+		const ArborAudioCollectionsContract = await ethers.getContractFactory('ArborAudioCollections')
+		const nft = await ArborAudioCollectionsContract.deploy()
 		await nft.deployed()
-		logs && console.log(`PolyechoNFT contract has been deployed to: ${nft.address}`)
+		logs && console.log(`ArborAudioCollections contract has been deployed to: ${nft.address}`)
 
 		// Deploy Verifier
 		const VerifierContract = await ethers.getContractFactory('Verifier20')

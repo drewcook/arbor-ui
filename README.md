@@ -12,7 +12,7 @@ This application is run on the Polygon Mainnet network.  All contracts are deplo
 
 | Contract      | Address |
 | ----------- | ----------- |
-| PolyechoNFT | 0xC766c9697daA11BA610355D3F4Bf8483126B9331 |
+| ArborAudioCollections | 0xC766c9697daA11BA610355D3F4Bf8483126B9331 |
 | StemQueue | 0xeb2369a0076A836F18f32daB91Fe3400Edf003AE |
 | Verifier20 | 0xe8D0D5F3D6099Bc075459591CDA8a453336162Dd |
 | PoseidonT3 | 0x5270a07403F1f3D85A860f20C255deFD424dA9E0 |

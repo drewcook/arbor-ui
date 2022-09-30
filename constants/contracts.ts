@@ -1,5 +1,5 @@
 import { Contract, providers } from 'ethers'
-import PolyechoNFT from '../contracts/PolyechoNFT.json'
+import ArborAudioCollections from '../contracts/ArborAudioCollections.json'
 import StemQueue from '../contracts/StemQueue.json'
 import { NETWORK_NAME, NETWORK_RPC } from './networks'
 
@@ -7,7 +7,7 @@ import { NETWORK_NAME, NETWORK_RPC } from './networks'
 	NOTE: Update these values after each new deployment to the relative network
 *******************************************************************************/
 
-// Legacy PolyechoNFT deployments:
+// Legacy ArborAudioCollections deployments:
 // Rinkeby '0xe9b33abb18c5ebe1edc1f15e68df651f1766e05e'
 // Kovan '0xaeca10e3d2db048db77d8c3f86a9b013b0741ba2'
 // Polygon Testnet '0xBd0136694e9382127602abFa5AA0679752eaD313'
@@ -52,9 +52,9 @@ export const provider = new providers.JsonRpcProvider(NETWORK_RPC)
 
 // NOTE: We could add in instances of the other three contracts, but currently there is no direct usage of them.
 
-// PolyechoNFT contract
+// ArborAudioCollections contract
 export const NFT_CONTRACT_ADDRESS = contracts[NETWORK_NAME].nft
-export const polyechoNftContract = new Contract(NFT_CONTRACT_ADDRESS, PolyechoNFT.abi)
+export const collectionsContract = new Contract(NFT_CONTRACT_ADDRESS, ArborAudioCollections.abi)
 
 // StemQueue contract
 export const STEMQUEUE_CONTRACT_ADDRESS = contracts[NETWORK_NAME].stemQueue
