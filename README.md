@@ -2,7 +2,7 @@
 
 The Arbor Protocol, or more simply called Arbor, is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
-**LIVE DEMO**: <https://stage.polyecho.xyz>
+**LIVE DEMO**: <https://stage.arbor.audio>
 
 ---
 
@@ -12,11 +12,11 @@ This application is run on the Polygon Mainnet network.  All contracts are deplo
 
 | Contract      | Address |
 | ----------- | ----------- |
-| ArborAudioCollections | 0xC766c9697daA11BA610355D3F4Bf8483126B9331 |
-| StemQueue | 0xeb2369a0076A836F18f32daB91Fe3400Edf003AE |
-| Verifier20 | 0xe8D0D5F3D6099Bc075459591CDA8a453336162Dd |
-| PoseidonT3 | 0x5270a07403F1f3D85A860f20C255deFD424dA9E0 |
-| IncrementalMerkleTree | 0x653916193B0902452bF6cC84343DDF37178fc4E0 |
+| ArborAudioCollections | 0xf6c55e9fAeeaa214f4B23c92e0C88953D19e3dD0 |
+| StemQueue | 0x222bF026aCd1Aece8DB92172F161D63AaC369Bba |
+| Verifier20 | 0x410c16A302d7672a9bEEBE6aF0E4c37122244E13 |
+| PoseidonT3 | 0x5616971539C1d6aCb632A997436f66eA35f66CBC |
+| IncrementalMerkleTree | 0x55D5452Ba831D0aa0Dd0fc8D304D3bcAE8220385 |
 
 ---
 
