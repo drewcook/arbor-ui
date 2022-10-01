@@ -104,7 +104,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
 				from: currentUser.address,
-				gasLimit: 1000000,
+				gasLimit: 2000000,
 			})
 			if (!contractRes) console.error("Failed to register the user for the project's voting group")
 
@@ -223,7 +223,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				solidityProof,
 				{
 					from: currentUser.address,
-					gasLimit: 1000000,
+					gasLimit: 2000000,
 				},
 			)
 			if (!voteRes.success) throw new Error('Failed to cast an on-chain anonymous vote')
@@ -277,7 +277,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		const stemId: string = stem._id.toString()
 		const voteCountRes = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
 			from: currentUser.address,
-			gasLimit: 650000,
+			gasLimit: 2000000,
 		})
 		console.log({ voteCountRes })
 

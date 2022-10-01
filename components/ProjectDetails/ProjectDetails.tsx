@@ -212,7 +212,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 1000000,
+					gasLimit: 2000000,
 				})
 				console.log({ mintRes })
 

@@ -85,7 +85,7 @@ const NewProjectPage: NextPage = () => {
 				currentUser.address,
 				{
 					from: currentUser.address,
-					gasLimit: 1000000,
+					gasLimit: 2000000,
 				},
 			)
 			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
