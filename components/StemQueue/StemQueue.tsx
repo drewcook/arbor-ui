@@ -235,6 +235,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Get the receipt
 			const receipt = await voteRes.wait()
 			console.log('vote receipt', receipt)
+			console.log({ receipt })
+
+			// Get on chain vote count and stored in DB
+			const voteCount = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
+				from: currentUser.address,
+			})
 
 			// // Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
@@ -243,7 +249,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					return q.stem._id === stem._id
 						? {
 								stem: q.stem,
-								votes: q.votes + 1,
+								votes: voteCount.toString(),
 						  }
 						: q
 				}),

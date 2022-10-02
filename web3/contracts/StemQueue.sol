@@ -60,16 +60,16 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 		// }
 
 		/// @dev Allow anyone to create a new group
-		/// @param groupId: Id of the group.
 		/// @param depth: Depth of the tree.
     /// @param zeroValue: Zero value of the tree.
 		function createProjectGroup(
-				uint256 groupId,
         uint8 depth,
         uint256 zeroValue,
         address admin
     ) external {
-			  // Use current group ID and then increment
+			  // Increment groupId then use
+        _currentGroupId.increment();
+        uint256 groupId = _currentGroupId.current();
         _createGroup(groupId, depth, zeroValue);
         groupAdmins[groupId] = admin;
         emit GroupAdminUpdated(groupId, address(0), admin);
