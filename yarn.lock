@@ -14305,10 +14305,10 @@ wasmcurves@0.2.0:
   dependencies:
     wasmbuilder "0.0.16"
 
-wavesurfer.js@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-5.2.0.tgz#efae107b5b561e9bfe3fffc50e6158136a17643e"
-  integrity sha512-SkPlTXfvKy+ZnEA7f7g7jn6iQg5/8mAvWpVV5vRbIS/FF9TB2ak9J7VayQfzfshOLW/CqccTiN6DDR/fZA902g==
+wavesurfer.js@6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-6.3.0.tgz#b6ff4bafd537191989b2088ffc58c35ea3916608"
+  integrity sha512-x7efObHMHY3nwqWzIC0yeZTo0u/aC9T5Av6KhSdhTlsgtKdTG7JAE3mNqnYBXUjq0yGYfTB9F85/pks9830Vjw==
 
 web-encoding@1.1.5:
   version "1.1.5"

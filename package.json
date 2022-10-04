@@ -58,7 +58,7 @@
     "react-dom": "17.0.2",
     "react-dropzone": "^12.0.5",
     "snarkjs": "^0.4.22",
-    "wavesurfer.js": "5.2.0",
+    "wavesurfer.js": "6.3.0",
     "web3": "^1.7.4"
   },
   "devDependencies": {
