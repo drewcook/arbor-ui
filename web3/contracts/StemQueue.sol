@@ -37,6 +37,10 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 		// /// @dev Gets a stem id and returns the number of votes it has.
     mapping(bytes32 => Counters.Counter) public stemVoteCounts;
 
+    /// @dev Gets a nullifier hash and returns true or false.
+    /// It is used to prevent double-voting.
+    mapping(uint256 => bool) internal nullifierHashes;
+
 		/// @dev Emitted when an admin is assigned to a group.
     /// @param groupId: Id of the group.
     /// @param oldAdmin: Old admin of the group.
@@ -108,12 +112,15 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
         uint256 _nullifierHash,
         uint256[8] calldata _proof
     ) external {
+
+        require(!nullifierHashes[_nullifierHash],"You can not use the same nullifier twice");
+
         uint256 root = getMerkleTreeRoot(groupId);
         _verifyProof(_vote, root, _nullifierHash, externalNullifier, _proof, verifier);
 
         // Prevent double-voting (nullifierHash = hash(stemId + identityNullifier)).
         // Every user can vote once.
-        // _saveNullifierHash(_nullifierHash);
+        nullifierHashes[_nullifierHash] = true;
 
 				// Update the vote count for the given stem
 				// This would be 0 for a non-existant key in the mapping
