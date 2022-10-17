@@ -4,9 +4,9 @@ import type { IProjectDoc } from './project.model'
 import type { IStemDoc } from './stem.model'
 
 export interface IUserIdentity {
-	commitment: bigint
-	nullifier: bigint
-	trapdoor: bigint
+	commitment: string
+	nullifier: string
+	trapdoor: string
 	votingGroupId: number
 }
 

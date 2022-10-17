@@ -88,9 +88,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const message = await signMessage(IDENTITY_MSG)
 			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			const commitment: bigint = await identity.genIdentityCommitment()
-			const trapdoor: bigint = identity.getTrapdoor()
-			const nullifier: bigint = identity.getNullifier()
+			const commitment: string = identity.genIdentityCommitment().toString()
+			const trapdoor: string = identity.getTrapdoor().toString()
+			const nullifier: string = identity.getNullifier().toString()
 			const voterIdentity: IUserIdentity = {
 				commitment,
 				nullifier,
@@ -182,7 +182,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			console.log(`found user's voting identity for voting group ${details.votingGroupId}`, voterIdentity)
 
 			// Get the other group members' identities
-			const identityCommitments: bigint[] = []
+			const identityCommitments: string[] = []
 			for (const identity of details.voterIdentities) {
 				identityCommitments.push(identity.commitment)
 			}
@@ -226,15 +226,24 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					gasLimit: 2000000,
 				},
 			)
+			/*	
+			ByHarsh: This code executed before transaction complete.So always shows trasaction failed.
+					So I Commented code. This is not required.
 			if (!voteRes.success) throw new Error('Failed to cast an on-chain anonymous vote')
 			console.log({ voteRes })
-
+		*/
 			// const offchainVerifyRes = await contracts.stemQueue.verifyProof(verificationKey, fullProof)
 			// console.log({ offchainVerifyRes, voteRes })
 
 			// Get the receipt
 			const receipt = await voteRes.wait()
 			console.log('vote receipt', receipt)
+			console.log({ receipt })
+
+			// Get on chain vote count and stored in DB
+			const voteCount = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
+				from: currentUser.address,
+			})
 
 			// // Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
@@ -243,7 +252,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					return q.stem._id === stem._id
 						? {
 								stem: q.stem,
-								votes: q.votes + 1,
+								votes: voteCount.toString(),
 						  }
 						: q
 				}),
@@ -280,10 +289,14 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			gasLimit: 2000000,
 		})
 		console.log({ voteCountRes })
+		/*	
 
-		// Get the receipt
+		ByHarsh : This code is not required because we are just calling function
+
+		// Get the receipt 
 		const receipt = await voteCountRes.wait()
 		console.log({ receipt })
+	*/
 	}
 
 	/**
