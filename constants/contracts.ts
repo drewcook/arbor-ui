@@ -16,21 +16,21 @@ const contracts = {
 		incrementalBinaryTree: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
 		stemQueue: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
 	},
-	// Last deployed: 09/30/22
+	// Last deployed: 10/21/22
 	'Polygon Mainnet': {
-		nft: '0xf6c55e9fAeeaa214f4B23c92e0C88953D19e3dD0',
-		verifier: '0x410c16A302d7672a9bEEBE6aF0E4c37122244E13',
-		poseidonT3: '0x5616971539C1d6aCb632A997436f66eA35f66CBC',
-		incrementalBinaryTree: '0x55D5452Ba831D0aa0Dd0fc8D304D3bcAE8220385',
-		stemQueue: '0x222bF026aCd1Aece8DB92172F161D63AaC369Bba',
+		nft: '0xB1Ce21D0a6325ea34E32d82a30B1067dE206e040',
+		verifier: '0xB77940118b82c9874bBB6E7989C3B163f468ab2b',
+		poseidonT3: '0x94B16C718C106697d7E99B0Cf059BaB614620Fc8',
+		incrementalBinaryTree: '0x955B7Aa2966B8a8039F0676D3CA2c3Aab9057929',
+		stemQueue: '0xb421fbf2bC2905F6E377ddf83926A504e3C917BE',
 	},
-	// Last deployed: 07/04/22
+	// Last deployed: 10/21/22
 	'Polygon Testnet': {
-		nft: '0xC766c9697daA11BA610355D3F4Bf8483126B9331',
-		verifier: '0xe8D0D5F3D6099Bc075459591CDA8a453336162Dd',
-		poseidonT3: '0x5270a07403F1f3D85A860f20C255deFD424dA9E0',
-		incrementalBinaryTree: '0x653916193B0902452bF6cC84343DDF37178fc4E0',
-		stemQueue: '0xeb2369a0076A836F18f32daB91Fe3400Edf003AE',
+		nft: '0x531e468A8b41F76db4Ce2A35e8E4Dd7d4a9CD7c9',
+		verifier: '0x56764a37d4C2d6D45Db1FAE0FaD9372e97DF74dB',
+		poseidonT3: '0xEA2C42A008DEe4e9680d29d98b14e9a130f5148a',
+		incrementalBinaryTree: '0xd207cafd34D6df9Fa308EcE980063b663f3E3f00',
+		stemQueue: '0xe28b6394D3d0D7F6Cfce2Db111D6b159f77688AF',
 	},
 	// Last deployed: 09/30/22
 	'Harmony Mainnet': {
