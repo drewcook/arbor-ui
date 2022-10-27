@@ -7,7 +7,7 @@ import { Contract } from 'ethers'
 import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-import { polyechoNftContract, stemQueueContract } from '../constants/contracts'
+import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
 import type { IUserDoc } from '../models/user.model'
 import getWeb3 from '../utils/getWeb3'
@@ -90,7 +90,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				// Setup contracts with signer of connected address
 				// const signer = web3Instance.getSigner(wallet.accounts[0].address)
 				// console.log(signer)
-				const nft = polyechoNftContract.connect(signer)
+				const nft = collectionsContract.connect(signer)
 				const stemQueue = stemQueueContract.connect(signer)
 				setContracts({ nft, stemQueue })
 

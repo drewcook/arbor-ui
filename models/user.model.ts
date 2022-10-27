@@ -3,6 +3,13 @@ import type { INftDoc } from './nft.model'
 import type { IProjectDoc } from './project.model'
 import type { IStemDoc } from './stem.model'
 
+export interface IUserIdentity {
+	commitment: string
+	nullifier: string
+	trapdoor: string
+	votingGroupId: number
+}
+
 export interface IUser {
 	address: string
 	displayName: string
@@ -12,7 +19,7 @@ export interface IUser {
 	stemIds: string[]
 	createdAt: string
 	updatedAt: string
-	voterIdentityCommitment: string
+	voterIdentities: IUserIdentity[]
 	registeredGroupIds: number[]
 }
 
@@ -59,10 +66,11 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			required: false,
 			default: [],
 		},
-		// Semaphore identity commitment
-		voterIdentityCommitment: {
-			type: String,
+		// Semaphore identities across multiple projects
+		voterIdentities: {
+			type: [Object],
 			required: false,
+			default: [],
 		},
 		registeredGroupIds: {
 			type: [Number],

@@ -14,7 +14,7 @@ import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../../constants/networks'
-import PolygonIcon from '../../public/polygon_icon.png'
+import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
@@ -72,7 +72,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 				const scRes: any = await contracts.nft.buy(details.token.id, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 2000000,
 				})
 				if (!scRes) throw new Error('Failed to transfer the NFT on-chain')
 
@@ -149,7 +149,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
 									</Button>
 									<Box sx={styles.price}>
-										<ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} />
+										<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
 										<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 											{details.listPrice}{' '}
 											<Typography sx={styles.eth} component="span">
@@ -164,7 +164,8 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									<Box sx={styles.buyNowListing}>
 										<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
 										<Box sx={styles.price}>
-											<ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} />
+											<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
+											{/* <ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} /> */}
 											<Typography variant="h4" component="div">
 												{details.listPrice}{' '}
 												<Typography sx={styles.eth} component="span">

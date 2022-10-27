@@ -5,7 +5,7 @@ import {
 	Person,
 	PlayArrowRounded,
 	SkipPrevious,
-	Square
+	Square,
 } from '@mui/icons-material'
 import {
 	Avatar,
@@ -17,7 +17,7 @@ import {
 	Divider,
 	Fab,
 	IconButton,
-	Typography
+	Typography,
 } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
@@ -35,7 +35,7 @@ import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
-import PolygonIcon from '../../public/polygon_icon.png'
+import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
 import formatAddress from '../../utils/formatAddress'
 import { post } from '../../utils/http'
@@ -164,7 +164,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				files.forEach((data: Blob, filename: string) => {
+				files.forEach((data: Blob) => {
 					formData.append('files', data)
 				})
 
@@ -212,7 +212,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
 					value: amount,
 					from: currentUser.address,
-					gasLimit: 650000,
+					gasLimit: 2000000,
 				})
 				console.log({ mintRes })
 
@@ -348,7 +348,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 								{minting ? <CircularProgress size={30} sx={{ my: 1.5 }} /> : 'Mint & Buy'}
 							</Button>
 							<Box sx={styles.price}>
-								<ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} />
+								<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
 								<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 									0.01{' '}
 									<Typography sx={styles.eth} component="span">
@@ -372,8 +372,8 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						{details.collaborators.length === 1 ? '' : 's'}
 					</Typography>
 					<AvatarGroup sx={styles.avatarGroup} total={details.collaborators.length}>
-						{details.collaborators.map(c => (
-							<Link key={c} href={`/users/${c}`} passHref>
+						{details.collaborators.map((c, idx) => (
+							<Link key={idx} href={`/users/${c}`} passHref>
 								<Avatar>
 									<Person />
 								</Avatar>

@@ -41,23 +41,23 @@ const config = {
 			url: 'http://127.0.0.1:8545',
 			chainId: 31337,
 		},
-		polygonMainnet: {
+		polygon: {
 			url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
 			accounts: [process.env.PRIVATE_KEY],
 		},
-		polygonTestnet: {
+		polygonTest: {
 			url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
 			accounts: [process.env.PRIVATE_KEY],
 		},
-		harmonyMainnet: {
+		harmony: {
 			url: 'https://api.s0.t.hmny.io',
 			accounts: [process.env.PRIVATE_KEY],
 		},
-		harmonyTestnet: {
+		harmonyTest: {
 			url: 'https://api.s0.b.hmny.io',
 			accounts: [process.env.PRIVATE_KEY],
 		},
-		harmonyDevnet: {
+		harmonyDev: {
 			url: 'https://api.s0.ps.hmny.io',
 			accounts: [process.env.PRIVATE_KEY],
 		},

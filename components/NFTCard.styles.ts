@@ -16,6 +16,10 @@ const styles = {
 		position: 'relative',
 		overflow: 'visible',
 	},
+	img: {
+		borderTopLeftRadius: 4,
+		borderTopRightRadius: 4,
+	},
 	projectIconLink: {
 		ml: 1,
 	},

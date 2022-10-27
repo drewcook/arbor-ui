@@ -68,10 +68,12 @@ const NewProjectPage: NextPage = () => {
 				- Use this as the groupId value for the new project record as well
 				- TODO: revert this, or decrement if any of the following requests fail
 			*/
-			const votingGroupRes = await update('/voting-groups')
-			console.log({ votingGroupRes })
-			if (!votingGroupRes.success) throw new Error('Failed to increment voting group count')
-			const votingGroupId = votingGroupRes.data.totalGroupCount
+			/*
+
+				const votingGroupRes = await update('/voting-groups')
+				if (!votingGroupRes.success) throw new Error('Failed to increment voting group count')
+				const votingGroupId = votingGroupRes.data.totalGroupCount
+			*/
 
 			/*
 				Create new Semaphore group for given project
@@ -79,18 +81,15 @@ const NewProjectPage: NextPage = () => {
 				- Do not add in the project creator as a voting member (yet)
 				- Future users will register to vote, which will add them in as group members
 			*/
-			const contractRes = await contracts.stemQueue.createProjectGroup(
-				votingGroupId,
-				20,
-				BigInt(0),
-				currentUser.address,
-				{
-					from: currentUser.address,
-					gasLimit: 650000,
-				},
-			)
-			console.log({ contractRes })
+			const contractRes = await contracts.stemQueue.createProjectGroup(20, BigInt(0), currentUser.address, {
+				from: currentUser.address,
+				gasLimit: 2000000,
+			})
+
 			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+			const receipt = await contractRes.wait()
+			const votingGroupId = receipt.events[1].args.groupId.toString()
+			console.log('new semaphore group receipt', receipt)
 
 			// POST new project record to backend
 			const payload: CreateProjectPayload = {
@@ -104,8 +103,6 @@ const NewProjectPage: NextPage = () => {
 				votingGroupId,
 			}
 			const projectRes = await post('/projects', payload)
-			console.log({ projectRes })
-
 			if (projectRes.success) {
 				// Redirect to project page
 				setSuccessMsg('Successfully created project, redirecting...')
@@ -206,7 +203,7 @@ const NewProjectPage: NextPage = () => {
 					sx={styles.submitBtn}
 					disabled={loading}
 				>
-					{loading ? <CircularProgress /> : 'Create Project'}
+					{loading ? <CircularProgress size={26} /> : 'Create Project'}
 				</Button>
 			</Container>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}

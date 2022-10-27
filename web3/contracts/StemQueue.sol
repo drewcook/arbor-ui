@@ -37,6 +37,10 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 		// /// @dev Gets a stem id and returns the number of votes it has.
     mapping(bytes32 => Counters.Counter) public stemVoteCounts;
 
+    /// @dev Gets a nullifier hash and returns true or false.
+    /// It is used to prevent double-voting.
+    mapping(uint256 => bool) internal nullifierHashes;
+
 		/// @dev Emitted when an admin is assigned to a group.
     /// @param groupId: Id of the group.
     /// @param oldAdmin: Old admin of the group.
@@ -60,16 +64,16 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
 		// }
 
 		/// @dev Allow anyone to create a new group
-		/// @param groupId: Id of the group.
 		/// @param depth: Depth of the tree.
     /// @param zeroValue: Zero value of the tree.
 		function createProjectGroup(
-				uint256 groupId,
         uint8 depth,
         uint256 zeroValue,
         address admin
     ) external {
-			  // Use current group ID and then increment
+			  // Increment groupId then use
+        _currentGroupId.increment();
+        uint256 groupId = _currentGroupId.current();
         _createGroup(groupId, depth, zeroValue);
         groupAdmins[groupId] = admin;
         emit GroupAdminUpdated(groupId, address(0), admin);
@@ -103,14 +107,20 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
     /// @dev The external nullifier is in this example the root of the Merkle tree.
     function vote(
         bytes32 _vote,
+        uint256 groupId,
+        uint256 externalNullifier,
         uint256 _nullifierHash,
         uint256[8] calldata _proof
     ) external {
-        _verifyProof(_vote, voters, _nullifierHash, voters, _proof, verifier);
 
-        // Prevent double-voting (nullifierHash = hash(root + identityNullifier)).
+        require(!nullifierHashes[_nullifierHash],"You can not use the same nullifier twice");
+
+        uint256 root = getMerkleTreeRoot(groupId);
+        _verifyProof(_vote, root, _nullifierHash, externalNullifier, _proof, verifier);
+
+        // Prevent double-voting (nullifierHash = hash(stemId + identityNullifier)).
         // Every user can vote once.
-        _saveNullifierHash(_nullifierHash);
+        nullifierHashes[_nullifierHash] = true;
 
 				// Update the vote count for the given stem
 				// This would be 0 for a non-existant key in the mapping
