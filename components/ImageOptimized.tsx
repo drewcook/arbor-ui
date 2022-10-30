@@ -27,9 +27,12 @@ const ImageOptimized = (props: ImageOptimizedProps): JSX.Element => {
 			objectFit="cover"
 			objectPosition="center"
 			placeholder={computedPlaceholder}
-			blurDataURL={new Blob([src.toString()], {
-				type: 'image/*',
-			}).toString()}
+			blurDataURL={
+				src &&
+				new Blob([src.toString()], {
+					type: 'image/*',
+				}).toString()
+			}
 		/>
 	)
 }

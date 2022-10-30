@@ -5,7 +5,7 @@ import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
-		query: { id },
+		query: { id, all = false },
 		body,
 		method,
 	} = req
@@ -77,6 +77,28 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						{
 							$addToSet: {
 								nftIds: body.addNFT,
+							},
+						},
+						{
+							new: true,
+							runValidators: true,
+						},
+					)
+					// Returns
+					if (!user) {
+						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
+					}
+					res.status(200).json({ success: true, data: user })
+				} else if (body.base64) {
+					// Update the db
+					user = await User.findOneAndUpdate(
+						{ address: id },
+						{
+							$set: {
+								avatar: {
+									base64: body.base64,
+									imageFormat: body.imageFormat,
+								},
 							},
 						},
 						{

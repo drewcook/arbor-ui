@@ -14,6 +14,16 @@ const styles = {
 		m: 0,
 		overflow: 'hidden',
 	},
+	updateAvatar: {
+		fontWeight: 300,
+		position: 'absolute',
+		top: '52%',
+		right: '5%',
+		opacity: '0.7',
+		ml: 1,
+		display: 'none',
+		fontSize: '1rem',
+	},
 	metadataWrap: {
 		mb: 3,
 	},

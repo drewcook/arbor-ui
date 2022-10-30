@@ -15,9 +15,9 @@
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
     "hardhat:node": "cd web3 && hardhat node",
     "contracts:compile": "cd web3 && hardhat compile",
-		"contracts:clearDestDir": "rm -rf contracts/*",
+    "contracts:clearDestDir": "rm -rf contracts/*",
     "contracts:copyArtifacts": "cp web3/artifacts/contracts/ArborAudioCollections.sol/ArborAudioCollections.json web3/artifacts/contracts/StemQueue.sol/StemQueue.json contracts/",
-		"contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
+    "contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
     "contracts:deploy": "cd web3 && hardhat deploy",
     "contracts:test": "cd web3 && hardhat test",
     "report-gas": "REPORT_GAS=true hardhat test"
@@ -57,6 +57,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-dropzone": "^12.0.5",
+    "react-easy-crop": "^4.6.1",
     "snarkjs": "^0.4.22",
     "wavesurfer.js": "5.2.0",
     "web3": "^1.7.4"

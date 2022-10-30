@@ -2,10 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { IUser, User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
 
+type Avatar = {
+	base64: string
+	imageFormat: string
+}
+
 export type CreateUserPayload = {
 	address: string
 	displayName: string
-	avatarUrl: string
+	avatar: Avatar
 	projectIds: string[]
 	stemIds: string[]
 	nftIds: string[]
@@ -38,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				const payload: CreateUserPayload = {
 					address: accountAddress,
 					displayName: accountAddress,
-					avatarUrl,
+					avatar: { base64: avatarUrl, imageFormat: 'image/webp' },
 					projectIds: [],
 					stemIds: [],
 					nftIds: [],

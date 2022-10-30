@@ -17,6 +17,8 @@ const ConnectedAccount = (): JSX.Element => {
 		setAnchorEl(null)
 	}
 
+	console.log(currentUser)
+
 	return (
 		<>
 			<Box sx={styles.wrapper}>
@@ -37,8 +39,9 @@ const ConnectedAccount = (): JSX.Element => {
 							<Avatar
 								alt="User Avatar"
 								src={
-									currentUser.avatarUrl ??
-									'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
+									!currentUser.avatar
+										? 'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
+										: currentUser.avatar.base64
 								}
 							/>
 						</IconButton>
