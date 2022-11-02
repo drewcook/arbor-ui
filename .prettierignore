@@ -1,12 +1,19 @@
-node_modules*
 .next
 dist
-
-*.svg
-*.ico
-*.json
-*.md
-*.log
-*.lock
+node_modules
+public
+web3/artifacts
+web3/cache
+web3/contracts
 
 .gitignore
+
+*.env
+*.ico
+*.json
+*.lock
+*.log
+*.md
+*.sh
+*.sol
+*.svg
