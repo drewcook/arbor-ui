@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import type { IVotingGroupDoc } from '../../models/votingGroup.model'
 import { VotingGroup } from '../../models/votingGroup.model'
 import dbConnect from '../../utils/db'

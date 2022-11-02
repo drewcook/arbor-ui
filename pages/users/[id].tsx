@@ -3,6 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
+
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import NFTCard from '../../components/NFTCard'

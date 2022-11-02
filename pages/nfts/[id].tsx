@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import web3 from 'web3'
+
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
 import Notification from '../../components/Notification'

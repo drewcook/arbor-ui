@@ -3,6 +3,7 @@ import _debounce from 'lodash/debounce'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+
 import DiscordIconSvg from '../public/discord_circle_black.svg'
 import GithubIconSvg from '../public/github_circle_black.svg'
 import TwitterIconSvg from '../public/twitter_circle_black.svg'

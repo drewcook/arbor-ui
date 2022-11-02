@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'

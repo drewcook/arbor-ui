@@ -6,9 +6,10 @@
     "dev": "next dev",
     "stage": "NODE_ENV=test next build && next start",
     "build": "next build",
+    "build:analyze": "ANALYZE=true yarn build",
     "start": "next start",
     "test": "echo \"No tests to run\"",
-		"lint:code": "next lint",
+    "lint:code": "next lint",
     "lint:code:fix": "next lint --fix",
     "lint:formatting": "prettier . --check",
     "lint:formatting:fix": "prettier . --write",
@@ -19,12 +20,20 @@
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
     "hardhat:node": "cd web3 && hardhat node",
     "contracts:compile": "cd web3 && hardhat compile",
-		"contracts:clearDestDir": "rm -rf contracts/*",
+    "contracts:clearDestDir": "rm -rf contracts/*",
     "contracts:copyArtifacts": "cp web3/artifacts/contracts/ArborAudioCollections.sol/ArborAudioCollections.json web3/artifacts/contracts/StemQueue.sol/StemQueue.json contracts/",
-		"contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
+    "contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
     "contracts:deploy": "cd web3 && hardhat deploy",
     "contracts:test": "cd web3 && hardhat test",
     "report-gas": "REPORT_GAS=true hardhat test"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "nextBundleAnalysis": {
+    "budget": null,
+    "budgetPercentIncreaseRed": 20,
+    "showDetails": true
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
@@ -66,6 +75,9 @@
     "web3": "^1.7.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.2.0",
+    "@commitlint/config-conventional": "^17.2.0",
+    "@next/bundle-analyzer": "^13.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@semaphore-protocol/contracts": "^2.0.0",
@@ -83,7 +95,9 @@
     "eslint": "^8.16.0",
     "eslint-config-next": "^12.3.1",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
     "ethereum-waffle": "^3.4.4",
     "hardhat": "^2.9.9",
     "hardhat-dependency-compiler": "^1.1.3",

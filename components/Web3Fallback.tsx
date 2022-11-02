@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import NextLink from 'next/link'
 import PropTypes from 'prop-types'
+
 import CoinbaseIcon from '../public/coinbasewallet_icon.png'
 import EthereumIcon from '../public/ethereum_icon.png'
 import MetaMaskIcon from '../public/metamask_icon.png'

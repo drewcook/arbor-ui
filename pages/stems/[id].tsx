@@ -1,12 +1,13 @@
 import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import { Box, Container, Divider, Fab, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
-import { useState } from 'react'
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
+
 import { IStemDoc } from '../../models/stem.model'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
 import formatDate from '../../utils/formatDate'

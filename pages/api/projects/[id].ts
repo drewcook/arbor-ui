@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import { IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 

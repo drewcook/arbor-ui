@@ -3,6 +3,7 @@ import { Box, Button, Container, Grid, List, ListItem, ListItemIcon, Typography 
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+
 import styles from '../styles/Home.styles'
 
 const Home: NextPage = () => {
