@@ -8,7 +8,7 @@ import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
 import { newProjectStyles as styles } from '../../styles/Projects.styles'
-import { post, update } from '../../utils/http'
+import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
 const NewProjectPage: NextPage = () => {

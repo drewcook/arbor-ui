@@ -70,6 +70,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 
 			// If wallet was selected and connected to the app via the wallet UI, then do several more things...
 			if (wallet) {
+				console.log(walletState)
 				// If wallet was selected successfully, but not on a supported chain, prompt to switch to a supported one
 				let switchedToSupportedChain: boolean
 				switchedToSupportedChain = await web3Onboard.setChain({ chainId: NETWORK_HEX })
