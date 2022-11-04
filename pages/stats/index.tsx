@@ -3,6 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
+
 import CovalentInsights from '../../components/CovalentInsights'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
 import { NETWORK_EXPLORER, NETWORK_ID, NETWORK_NAME } from '../../constants/networks'

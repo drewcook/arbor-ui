@@ -5,6 +5,7 @@ import Head from 'next/head'
 import Router from 'next/router'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
+
 import AvatarUploadDialog from '../../components/EditAvatarDialog'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
@@ -82,7 +83,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 			const res = await get(`/users/${data?.address}`, { params: { fullDetails: true } })
 			const newDetails: IUserFull | null = res.success ? res.data : null
 			setDetails(newDetails)
-		} catch (e:any) {
+		} catch (e: any) {
 			console.error(e.message)
 		}
 	}
@@ -131,7 +132,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							</Grid>
 							<Grid item xs={12} md={4}>
 								<Box className="avatar-wrap">
-									<Box sx={styles.avatar} onClick={isCurrentUserDetails ? handleUploadAvatarOpen:undefined}>
+									<Box sx={styles.avatar} onClick={isCurrentUserDetails ? handleUploadAvatarOpen : undefined}>
 										<ImageOptimized src={details.avatar.base64} alt="User Avatar" width={200} height={200} />
 									</Box>
 									<AvatarUploadDialog
@@ -140,7 +141,9 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										onSuccess={onAvatarUploadSuccess}
 										image={details.avatar.base64}
 									/>
-									<Typography component="p" sx={styles.updateAvatar}>Update Avatar</Typography>
+									<Typography component="p" sx={styles.updateAvatar}>
+										Update Avatar
+									</Typography>
 								</Box>
 							</Grid>
 						</Grid>
@@ -148,7 +151,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						<Typography variant="h4" gutterBottom>
 							My NFT Collection
 							<Typography component="span" sx={styles.sectionCount}>
-								({ details.nfts.length})
+								({details.nfts.length})
 							</Typography>
 						</Typography>
 						<Typography sx={styles.sectionMeta}>NFTs this user has minted or collected</Typography>

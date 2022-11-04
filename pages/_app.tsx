@@ -1,9 +1,11 @@
+import '../styles/globals.css'
+
 import type { AppProps } from 'next/app'
 import NextNProgress from 'nextjs-progressbar'
+
 import AppLayout from '../components/AppLayout'
 import ArborThemeProvider from '../components/ArborThemeProvider'
 import { Web3Provider } from '../components/Web3Provider'
-import '../styles/globals.css'
 
 // Allow New Relic APM
 require('../newrelic')

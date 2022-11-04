@@ -3,6 +3,7 @@ import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import web3 from 'web3'
+
 import { NFT_CONTRACT_ADDRESS } from '../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../constants/networks'
 import formatAddress from '../utils/formatAddress'

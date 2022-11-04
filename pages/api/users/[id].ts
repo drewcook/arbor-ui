@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import type { IUser } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
-		query: { id, all = false },
+		query: { id },
 		body,
 		method,
 	} = req

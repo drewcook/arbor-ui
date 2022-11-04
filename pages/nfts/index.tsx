@@ -2,6 +2,7 @@ import { Box, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
+
 import NFTCard from '../../components/NFTCard'
 import type { INftDoc } from '../../models/nft.model'
 import { indexStyles as styles } from '../../styles/Stems.styles'

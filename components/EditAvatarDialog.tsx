@@ -15,6 +15,7 @@ import {
 import { useCallback, useState } from 'react'
 import Cropper from 'react-easy-crop'
 import { Area, Point } from 'react-easy-crop/types'
+
 import { update } from '../utils/http'
 import styles from './EditAvatarDialog.styles'
 import Notification from './Notification'
@@ -47,23 +48,7 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 
 	const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
 	const [zoom, setZoom] = useState(1)
-	const onCropComplete = useCallback(
-		(_: Area, croppedAreaPixels: Area) => {
-			getCroppedImg(file, croppedAreaPixels).then(croppedImage => setBlob(croppedImage))
-		},
-		[file],
-	)
-
-	const createImage = (url: string) =>
-		new Promise((resolve, reject) => {
-			const image = new Image()
-			image.addEventListener('load', () => resolve(image))
-			image.addEventListener('error', error => reject(error))
-			image.setAttribute('crossOrigin', 'anonymous')
-			image.src = url
-		})
-
-	const getCroppedImg = async (imageSrc, crop) => {
+	const getCroppedImg = useCallback(async (imageSrc, crop) => {
 		const image = await createImage(imageSrc)
 		const canvas = document.createElement('canvas')
 		const ctx = canvas.getContext('2d')
@@ -77,7 +62,22 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 				resolve(blob)
 			}, 'image/jpeg')
 		})
-	}
+	}, [])
+	const onCropComplete = useCallback(
+		(_: Area, croppedAreaPixels: Area) => {
+			getCroppedImg(file, croppedAreaPixels).then(croppedImage => setBlob(croppedImage))
+		},
+		[file, getCroppedImg],
+	)
+
+	const createImage = (url: string) =>
+		new Promise((resolve, reject) => {
+			const image = new Image()
+			image.addEventListener('load', () => resolve(image))
+			image.addEventListener('error', error => reject(error))
+			image.setAttribute('crossOrigin', 'anonymous')
+			image.src = url
+		})
 
 	const { currentUser } = useWeb3()
 

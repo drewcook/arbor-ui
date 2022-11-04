@@ -1,6 +1,7 @@
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Chip, IconButton, Typography } from '@mui/material'
 import Link from 'next/link'
+
 import { NETWORK_CURRENCY } from '../constants/networks'
 import OneIcon from '../public/harmony_icon.svg'
 import formatAddress from '../utils/formatAddress'

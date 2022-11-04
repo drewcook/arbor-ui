@@ -4,6 +4,7 @@ import { Strategy, ZkIdentity } from '@zk-kit/identity'
 import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
+
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { IUserIdentity } from '../../models/user.model'
@@ -16,6 +17,7 @@ import styles from './StemQueue.styles'
 const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
 const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
 const Semaphore = require('@zk-kit/protocols').Semaphore
+
 const IDENTITY_MSG =
 	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+
 import AppFooter from './AppFooter'
 import AppHeader from './AppHeader'
 

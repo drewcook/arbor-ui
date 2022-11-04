@@ -2,6 +2,7 @@ import { Check, CloudUpload } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
+
 import styles from './StemDropzone.styles'
 
 const baseStyle = {

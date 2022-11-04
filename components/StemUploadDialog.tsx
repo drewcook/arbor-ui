@@ -20,6 +20,7 @@ import {
 	Typography,
 } from '@mui/material'
 import { useState } from 'react'
+
 import logoBinary from '../lib/logoBinary'
 import type { IProjectDoc } from '../models/project.model'
 import { post, update } from '../utils/http'

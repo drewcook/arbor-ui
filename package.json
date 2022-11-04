@@ -6,10 +6,15 @@
     "dev": "next dev",
     "stage": "NODE_ENV=test next build && next start",
     "build": "next build",
+    "build:analyze": "ANALYZE=true yarn build",
     "start": "next start",
     "test": "echo \"No tests to run\"",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint:code": "next lint",
+    "lint:code:fix": "next lint --fix",
+    "lint:formatting": "prettier . --check",
+    "lint:formatting:fix": "prettier . --write",
+    "lint": "yarn lint:code && yarn lint:formatting",
+    "lint:fix": "yarn lint:code:fix && yarn lint:formatting:fix",
     "prepare": "husky install",
     "circuits:setup": "./scripts/compileCircuit.sh && ./scripts/generateWitness.sh && ./scripts/executePlonk.sh && ./scripts/copyZkFiles.sh",
     "circuits:test": "cd circuits && jest ./tests/*.test.ts",
@@ -21,6 +26,14 @@
     "contracts:deploy": "cd web3 && hardhat deploy",
     "contracts:test": "cd web3 && hardhat test",
     "report-gas": "REPORT_GAS=true hardhat test"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "nextBundleAnalysis": {
+    "budget": null,
+    "budgetPercentIncreaseRed": 20,
+    "showDetails": true
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
@@ -63,6 +76,9 @@
     "web3": "^1.7.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.2.0",
+    "@commitlint/config-conventional": "^17.2.0",
+    "@next/bundle-analyzer": "^13.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@semaphore-protocol/contracts": "^2.0.0",
@@ -80,7 +96,9 @@
     "eslint": "^8.16.0",
     "eslint-config-next": "^12.3.1",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
     "ethereum-waffle": "^3.4.4",
     "hardhat": "^2.9.9",
     "hardhat-dependency-compiler": "^1.1.3",

@@ -14,6 +14,7 @@ import {
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import web3 from 'web3'
+
 import { NETWORK_CURRENCY } from '../constants/networks'
 import { update } from '../utils/http'
 import Notification from './Notification'

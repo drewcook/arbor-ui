@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
+
+// eslint-disable-next-line
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+	enabled: process.env.ANALYZE === 'true',
+})
+
 const nextConfig = {
 	reactStrictMode: true,
 	env: {
@@ -40,4 +46,4 @@ const nextConfig = {
 	},
 }
 
-module.exports = nextConfig
+module.exports = withBundleAnalyzer(nextConfig)

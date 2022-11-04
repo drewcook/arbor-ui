@@ -1,6 +1,7 @@
 import { Container } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+
 import ProjectDetailsContainer from '../../components/ProjectDetails/ProjectDetails.container'
 import type { IProjectDoc } from '../../models/project.model'
 import { get } from '../../utils/http'

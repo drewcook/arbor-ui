@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import { IUser, User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
 

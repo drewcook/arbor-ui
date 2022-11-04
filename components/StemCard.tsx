@@ -2,6 +2,7 @@ import AudioFileIcon from '@mui/icons-material/AudioFile'
 import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
+
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
 import styles from './StemCard.styles'

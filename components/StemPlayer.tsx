@@ -3,6 +3,7 @@ import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
+
 import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
