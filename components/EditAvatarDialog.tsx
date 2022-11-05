@@ -55,7 +55,9 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 		canvas.width = 300
 		canvas.height = 300
 
+		// if (image instanceof ){
 		ctx?.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height)
+		// }
 
 		return new Promise(resolve => {
 			canvas.toBlob(blob => {
@@ -70,14 +72,16 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 		[file, getCroppedImg],
 	)
 
-	const createImage = (url: string) =>
+	const createImage = (url: string): HTMLImageElement => {
+		const image = new Image()
 		new Promise((resolve, reject) => {
-			const image = new Image()
 			image.addEventListener('load', () => resolve(image))
 			image.addEventListener('error', error => reject(error))
 			image.setAttribute('crossOrigin', 'anonymous')
 			image.src = url
 		})
+		return image
+	}
 
 	const { currentUser } = useWeb3()
 
