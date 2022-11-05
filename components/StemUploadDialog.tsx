@@ -28,6 +28,7 @@ import type { IFileToUpload } from './StemDropzone'
 import StemDropzone from './StemDropzone'
 import styles from './StemUploadDialog.styles'
 import { useWeb3 } from './Web3Provider'
+import signMessage from '../utils/signMessage'
 
 const stemTypes = [
 	{
@@ -90,6 +91,9 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	// Other
 	const { NFTStore, currentUser, connected, handleConnectWallet } = useWeb3()
 	const disableUpload = file === null || stemName === '' || stemType === '' || loading
+	//Signing Message
+	const SIGNING_MSG =
+		'Sign this message to be able to upload this stem to Arbor. You are signing to verify that you are human.'
 
 	const handleClose = () => {
 		setStemName('')
@@ -118,6 +122,19 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 
 		try {
 			setLoading(true)
+
+			// Check signature for user
+			let stemUploadSignature: any = localStorage.getItem('stemUploadSignature')
+			console.log('stemUploadSignature', stemUploadSignature)
+
+			if (stemUploadSignature === null) stemUploadSignature = JSON.stringify({})
+
+			stemUploadSignature = JSON.parse(stemUploadSignature)
+			if (typeof stemUploadSignature[currentUser.address] === 'undefined') {
+				const message = await signMessage(SIGNING_MSG)
+				stemUploadSignature[currentUser.address] = message
+				localStorage.setItem('stemUploadSignature', JSON.stringify(stemUploadSignature))
+			}
 
 			if (!uploadingOpen) setUploadingOpen(true)
 			setUploadingMsg('Uploading stem to NFT.storage...')
