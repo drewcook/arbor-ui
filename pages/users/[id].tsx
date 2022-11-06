@@ -145,7 +145,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										open={uploadAvatarOpen}
 										onClose={handleUploadAvatarClose}
 										onSuccess={onAvatarUploadSuccess}
-										image={details.avatar.base64}
+										image={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
 									/>
 									<Typography component="p" sx={styles.updateAvatar}>
 										Update Avatar
