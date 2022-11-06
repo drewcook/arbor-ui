@@ -4,6 +4,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 
+import Faq from '../components/Faq'
 import styles from '../styles/Home.styles'
 
 const Home: NextPage = () => {
@@ -202,6 +203,14 @@ const Home: NextPage = () => {
 							</Button>
 						</Link>
 					</Box>
+				</Container>
+			</Box>
+			<Box sx={styles.faq} component="section">
+				<Container maxWidth="xl">
+					<Typography variant="h2" sx={styles.faqHeading}>
+						Frequently Asked Questions
+					</Typography>
+					<Faq />
 				</Container>
 			</Box>
 		</>

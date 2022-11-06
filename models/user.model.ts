@@ -3,6 +3,11 @@ import type { INftDoc } from './nft.model'
 import type { IProjectDoc } from './project.model'
 import type { IStemDoc } from './stem.model'
 
+type Avatar = {
+	base64: string
+	imageFormat: string
+}
+
 export interface IUserIdentity {
 	commitment: string
 	nullifier: string
@@ -13,7 +18,7 @@ export interface IUserIdentity {
 export interface IUser {
 	address: string
 	displayName: string
-	avatarUrl: string
+	avatar: Avatar
 	nftIds: string[]
 	projectIds: string[]
 	stemIds: string[]
@@ -46,10 +51,9 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 			minLength: 3,
 			maxlength: 50,
 		},
-		avatarUrl: {
-			type: String,
+		avatar: {
+			type: Object,
 			required: false,
-			default: '',
 		},
 		nftIds: {
 			type: [String],
