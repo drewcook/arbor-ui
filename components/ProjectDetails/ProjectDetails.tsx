@@ -201,7 +201,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						stems: details.stems.map((s: any) => s.metadataUrl),
 					},
 				})
-				console.log({ nftsRes })
 
 				// Check for data
 				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
@@ -215,10 +214,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					from: currentUser.address,
 					gasLimit: 2000000,
 				})
-				console.log({ mintRes })
-
 				const receipt = await mintRes.wait()
-				console.log({ receipt })
 
 				// Add new NFT to database and user details
 				if (!mintingOpen) setMintingOpen(true)
@@ -251,7 +247,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					stems: details.stems, // Direct 1:1 deep clone
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
-				console.log({ nftCreated })
 				if (!nftCreated.success) throw new Error(nftCreated.error)
 
 				// Notify success

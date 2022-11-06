@@ -126,10 +126,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 
 			// Check signature for user
 			let stemUploadSignature: any = localStorage.getItem('stemUploadSignature')
-			console.log('stemUploadSignature', stemUploadSignature)
-
 			if (stemUploadSignature === null) stemUploadSignature = JSON.stringify({})
-
 			stemUploadSignature = JSON.parse(stemUploadSignature)
 			if (typeof stemUploadSignature[currentUser.address] === 'undefined') {
 				const message = await signMessage(SIGNING_MSG)

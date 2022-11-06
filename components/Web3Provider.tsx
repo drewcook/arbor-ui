@@ -107,7 +107,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const ethersProvider = new providers.Web3Provider(provider)
 			const signer = ethersProvider.getSigner()
 			const signerAddress = await signer.getAddress()
-			console.log(`signer: ${signerAddress}`)
 
 			// Check that we're on the supported network
 

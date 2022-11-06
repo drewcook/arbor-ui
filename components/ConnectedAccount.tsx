@@ -6,6 +6,9 @@ import formatAddress from '../utils/formatAddress'
 import styles from './ConnectedAccount.styles'
 import { useWeb3 } from './Web3Provider'
 
+export const FALLBACK_AVATAR_URL =
+	'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
+
 const ConnectedAccount = (): JSX.Element => {
 	const [anchorEl, setAnchorEl] = useState(null)
 	const { currentUser, connected, handleConnectWallet, handleDisconnectWallet } = useWeb3()
@@ -17,8 +20,6 @@ const ConnectedAccount = (): JSX.Element => {
 		await handleDisconnectWallet()
 		setAnchorEl(null)
 	}
-
-	console.log(currentUser)
 
 	return (
 		<>
@@ -37,13 +38,7 @@ const ConnectedAccount = (): JSX.Element => {
 							onClick={handleOpenMenu}
 							color="inherit"
 						>
-							<Avatar
-								alt="User Avatar"
-								src={
-									currentUser.avatar?.base64 ??
-									'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
-								}
-							/>
+							<Avatar alt="User Avatar" src={currentUser.avatar?.base64 ?? fallbackAvatar} />
 						</IconButton>
 						<Menu
 							id="user-menu"

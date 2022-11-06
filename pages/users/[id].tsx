@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Router from 'next/router'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 
+import { FALLBACK_AVATAR_URL } from '../../components/ConnectedAccount'
 import AvatarUploadDialog from '../../components/EditAvatarDialog'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
@@ -115,7 +116,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											</Typography>
 											{formatDate(details.createdAt)}
 										</Typography>
-										{isCurrentUserDetails && (
+										{/* {isCurrentUserDetails && (
 											<Box sx={styles.editProfileWrap}>
 												<Button
 													variant="outlined"
@@ -126,14 +127,19 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 													Edit Details
 												</Button>
 											</Box>
-										)}
+										)} */}
 									</Box>
 								</Box>
 							</Grid>
 							<Grid item xs={12} md={4}>
 								<Box className="avatar-wrap">
 									<Box sx={styles.avatar} onClick={isCurrentUserDetails ? handleUploadAvatarOpen : undefined}>
-										<ImageOptimized src={details.avatar.base64} alt="User Avatar" width={200} height={200} />
+										<ImageOptimized
+											src={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
+											alt="User Avatar"
+											width={200}
+											height={200}
+										/>
 									</Box>
 									<AvatarUploadDialog
 										open={uploadAvatarOpen}

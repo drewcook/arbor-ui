@@ -86,13 +86,10 @@ const NewProjectPage: NextPage = () => {
 				from: currentUser.address,
 				gasLimit: 2000000,
 			})
-			console.log({ contractRes })
 
 			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
 			const receipt = await contractRes.wait()
-			console.log({ receipt, events: receipt.events })
 			const votingGroupId = receipt.events[1].args.groupId.toString()
-			console.log('new semaphore group receipt', receipt)
 
 			// POST new project record to backend
 			const payload: CreateProjectPayload = {

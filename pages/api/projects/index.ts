@@ -44,14 +44,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					votingGroupId,
 				}
 				const project: IProjectDoc = await Project.create(payload)
-				console.log({ project })
 
 				// Add new project to creator's user details
 				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
-				console.log({ userUpdated })
 
 				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })

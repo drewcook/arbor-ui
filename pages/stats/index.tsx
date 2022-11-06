@@ -60,14 +60,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	// Get's token balance
 	const balanceUrl = `https://api.covalenthq.com/v1/${NETWORK_ID}/address/${NFT_CONTRACT_ADDRESS}/balances_v2/?&key=${process.env.COVALENT_API_KEY}`
 	const balRes = await fetch(balanceUrl)
-	console.log({ balRes })
 	const balJson = balRes.ok ? await balRes.json() : null
 	const balData = balJson?.data
 
 	// Gets all Tokens in collection
 	const tokensUrl = `https://api.covalenthq.com/v1/${NETWORK_ID}/tokens/${NFT_CONTRACT_ADDRESS}/nft_token_ids/?&key=${process.env.COVALENT_API_KEY}`
 	const tokensRes = await fetch(tokensUrl)
-	console.log({ tokensRes })
 	const tokensJson = tokensRes.ok ? await tokensRes.json() : null
 	const tokensData = tokensJson?.data
 
@@ -80,7 +78,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	// 	const data = await metaJson?.data
 	// 	return data
 	// })
-	// console.log(tokensMetadata)
 
 	return {
 		props: {
