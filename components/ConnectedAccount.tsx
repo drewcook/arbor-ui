@@ -38,7 +38,7 @@ const ConnectedAccount = (): JSX.Element => {
 							onClick={handleOpenMenu}
 							color="inherit"
 						>
-							<Avatar alt="User Avatar" src={currentUser.avatar?.base64 ?? fallbackAvatar} />
+							<Avatar alt="User Avatar" src={currentUser.avatar?.base64 ?? FALLBACK_AVATAR_URL} />
 						</IconButton>
 						<Menu
 							id="user-menu"
