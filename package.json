@@ -41,6 +41,7 @@
     "@metamask/detect-provider": "^1.2.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.7",
+		"@next/bundle-analyzer": "^13.0.1",
     "@openzeppelin/contracts": "^4.7.3",
     "@semaphore-protocol/group": "^2.0.0",
     "@semaphore-protocol/identity": "^2.0.0",
@@ -78,7 +79,6 @@
   "devDependencies": {
     "@commitlint/cli": "^17.2.0",
     "@commitlint/config-conventional": "^17.2.0",
-    "@next/bundle-analyzer": "^13.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@semaphore-protocol/contracts": "^2.0.0",
