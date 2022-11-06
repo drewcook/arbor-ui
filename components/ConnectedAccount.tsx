@@ -40,9 +40,9 @@ const ConnectedAccount = (): JSX.Element => {
 							<Avatar
 								alt="User Avatar"
 								src={
-									!currentUser.avatar
-										? 'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
-										: currentUser.avatar.base64
+									currentUser.avatar?.base64
+										? currentUser.avatar.base64
+										: 'https://www.gravatar.com/avatar/94d093eda664addd6e450d7e9881bcad?s=32&d=identicon&r=PG'
 								}
 							/>
 						</IconButton>
