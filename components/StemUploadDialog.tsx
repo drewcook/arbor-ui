@@ -24,12 +24,12 @@ import { useState } from 'react'
 import logoBinary from '../lib/logoBinary'
 import type { IProjectDoc } from '../models/project.model'
 import { post, update } from '../utils/http'
+import signMessage from '../utils/signMessage'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
 import StemDropzone from './StemDropzone'
 import styles from './StemUploadDialog.styles'
 import { useWeb3 } from './Web3Provider'
-import signMessage from '../utils/signMessage'
 
 const stemTypes = [
 	{
