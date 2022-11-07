@@ -98,8 +98,8 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 			reader.onloadend = async function () {
 				const base64 = reader.result
 				// Update user avatar in database
-				const userUpdated = await update(`/users/${currentUser.address}`, { base64, imageFormat: blob.type })
-				if (!userUpdated.success) throw new Error(userUpdated.error)
+				const res = await update(`/users/${currentUser.address}`, { base64, imageFormat: blob.type })
+				if (!res.success) throw new Error(res.error)
 
 				// Notify success
 				setLoading(false)
