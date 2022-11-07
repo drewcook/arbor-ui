@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Box, Container, Divider, Grid, Typography } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import { Box, Container, Divider, Grid, IconButton, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Router from 'next/router'
@@ -54,8 +55,8 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	}
 
 	const onAvatarUploadSuccess = (): void => {
-		Router.reload()
 		handleUploadAvatarClose()
+		setTimeout(() => Router.reload(), 2000)
 	}
 
 	useEffect(() => {
@@ -116,24 +117,12 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											</Typography>
 											{formatDate(details.createdAt)}
 										</Typography>
-										{/* {isCurrentUserDetails && (
-											<Box sx={styles.editProfileWrap}>
-												<Button
-													variant="outlined"
-													color="secondary"
-													onClick={() => console.log('edit details')}
-													disabled
-												>
-													Edit Details
-												</Button>
-											</Box>
-										)} */}
 									</Box>
 								</Box>
 							</Grid>
 							<Grid item xs={12} md={4}>
-								<Box className="avatar-wrap">
-									<Box sx={styles.avatar} onClick={isCurrentUserDetails ? handleUploadAvatarOpen : undefined}>
+								<Box sx={styles.avatarWrap}>
+									<Box sx={styles.avatarImg}>
 										<ImageOptimized
 											src={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
 											alt="User Avatar"
@@ -141,15 +130,24 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											height={200}
 										/>
 									</Box>
-									<AvatarUploadDialog
-										open={uploadAvatarOpen}
-										onClose={handleUploadAvatarClose}
-										onSuccess={onAvatarUploadSuccess}
-										image={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
-									/>
-									<Typography component="p" sx={styles.updateAvatar}>
-										Update Avatar
-									</Typography>
+									{isCurrentUserDetails && (
+										<>
+											<IconButton
+												sx={styles.updateAvatar}
+												color="default"
+												size="small"
+												onClick={handleUploadAvatarOpen}
+											>
+												<EditIcon />
+											</IconButton>
+											<AvatarUploadDialog
+												open={uploadAvatarOpen}
+												onClose={handleUploadAvatarClose}
+												onSuccess={onAvatarUploadSuccess}
+												image={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
+											/>
+										</>
+									)}
 								</Box>
 							</Grid>
 						</Grid>

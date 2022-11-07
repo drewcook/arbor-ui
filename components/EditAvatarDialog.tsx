@@ -1,4 +1,4 @@
-import { Close } from '@mui/icons-material'
+import { Close, ZoomIn, ZoomOut } from '@mui/icons-material'
 import {
 	Box,
 	Button,
@@ -9,8 +9,8 @@ import {
 	Grid,
 	IconButton,
 	Slider,
+	SvgIcon,
 	Toolbar,
-	Typography,
 } from '@mui/material'
 import { useCallback, useState } from 'react'
 import Cropper from 'react-easy-crop'
@@ -102,10 +102,10 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 				if (!userUpdated.success) throw new Error(userUpdated.error)
 
 				// Notify success
-				onNotificationClose()
 				setLoading(false)
-				onSuccess()
 				handleClose()
+				onNotificationClose()
+				onSuccess()
 			}
 		} catch (e: any) {
 			console.error(e)
@@ -131,13 +131,13 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 
 	return (
 		<>
-			<Dialog onClose={handleClose} open={open} maxWidth="md" PaperProps={{ sx: styles.dialog }}>
+			<Dialog onClose={handleClose} open={open} maxWidth="xl" PaperProps={{ sx: styles.dialog }}>
 				<Toolbar>
 					{/* @ts-ignore */}
 					<DialogTitle sx={styles.title} variant="h4">
 						Update Your Avatar
 					</DialogTitle>
-					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close" disabled={loading}>
+					<IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close" disabled={loading}>
 						<Close />
 					</IconButton>
 				</Toolbar>
@@ -157,21 +157,28 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 								/>
 							</Box>
 							<Box sx={styles.controls}>
+								<SvgIcon>
+									<ZoomOut />
+								</SvgIcon>
 								<Slider
+									sx={{ mx: 1 }}
 									value={zoom}
 									min={1}
 									max={3}
 									step={0.1}
+									size="small"
 									aria-labelledby="Zoom"
 									onChange={(e, zoom) => setZoom(Number(zoom))}
-									classes={{ root: 'slider' }}
 								/>
-								<Typography component="p">Zoom</Typography>
+								<SvgIcon>
+									<ZoomIn />
+								</SvgIcon>
 							</Box>
 							<Button
-								variant="contained"
+								size="small"
+								variant="outlined"
 								onClick={() => document.getElementById('file-input')?.click()}
-								sx={styles.submitBtn}
+								sx={styles.changeImgBtn}
 							>
 								Change Image
 							</Button>
@@ -179,9 +186,11 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 						</Grid>
 					</Grid>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions sx={{ pr: 3 }}>
 					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleUpload}>Update</Button>
+					<Button variant="contained" onClick={handleUpload}>
+						Update
+					</Button>
 				</DialogActions>
 			</Dialog>
 			{uploadingOpen && (
