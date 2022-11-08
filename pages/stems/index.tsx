@@ -1,9 +1,13 @@
-import { Box, Container, Grid, Typography } from '@mui/material'
+import AppsIcon from '@mui/icons-material/Apps'
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
+import { Box, Button, ButtonGroup, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 
 import StemCard from '../../components/StemCard'
+import StemList from '../../components/StemList'
 import type { IStemDoc } from '../../models/stem.model'
 import { indexStyles as styles } from '../../styles/Stems.styles'
 import { get } from '../../utils/http'
@@ -20,6 +24,7 @@ type StemsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const StemsPage: NextPage<StemsPageProps> = props => {
 	const { data } = props
+	const [listView, showListView] = useState(false)
 
 	return (
 		<>
@@ -38,14 +43,30 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 								and start a new project with them.
 							</Typography>
 						</Container>
+						<Box sx={styles.icons}>
+							<ButtonGroup color="info" variant="outlined" aria-label="outlined button group">
+								<Button variant={!listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+									<AppsIcon />
+								</Button>
+								<Button variant={listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+									<FormatListBulletedIcon />
+								</Button>
+							</ButtonGroup>
+						</Box>
 						{data.length > 0 ? (
-							<Grid container spacing={4}>
-								{data.map((stem: any) => (
-									<Grid item sm={6} md={4} key={stem._id}>
-										<StemCard details={stem} />
+							<Box>
+								{listView ? (
+									<StemList details={data} />
+								) : (
+									<Grid container spacing={4}>
+										{data.map((stem: any) => (
+											<Grid item sm={6} md={4} key={stem._id}>
+												<StemCard details={stem} />
+											</Grid>
+										))}
 									</Grid>
-								))}
-							</Grid>
+								)}
+							</Box>
 						) : (
 							<Box sx={styles.noProjects}>
 								<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>

@@ -22,6 +22,10 @@ export const indexStyles = {
 		color: '#555',
 		mb: 3,
 	},
+	icons: {
+		float: 'right',
+		mb: 3,
+	},
 }
 
 export const detailsStyles = {
