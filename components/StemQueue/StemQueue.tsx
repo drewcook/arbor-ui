@@ -99,7 +99,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				trapdoor,
 				votingGroupId: details.votingGroupId,
 			}
-			console.log('voter identity created', voterIdentity)
 
 			/*
 				Add the user's identity commitment to the on-chain group
@@ -181,21 +180,18 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
 			const voterIdentity = currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
 			if (!voterIdentity) return
-			console.log(`found user's voting identity for voting group ${details.votingGroupId}`, voterIdentity)
 
 			// Get the other group members' identities
 			const identityCommitments: string[] = []
 			for (const identity of details.voterIdentities) {
 				identityCommitments.push(identity.commitment)
 			}
-			console.log({ identityCommitments })
 
 			// Generate the Merkle proof
 			// External nullifier is derived from the stem ID
 			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, voterIdentity.commitment)
 			const stemZKIdentity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, stemId)
 			const externalNullifier = stemZKIdentity.genIdentityCommitment()
-			console.log('external nullifier', externalNullifier)
 
 			// Generate the witness
 			const witness = Semaphore.genWitness(
@@ -205,7 +201,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				externalNullifier,
 				stemId,
 			)
-			console.log({ witness })
 
 			// Generate the proofs
 			const { proof, publicSignals } = await Semaphore.genProof(
@@ -214,7 +209,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				'/zkproof/semaphore.zkey',
 			)
 			const solidityProof = Semaphore.packToSolidityProof(proof)
-			console.log('proof values', { proof, publicSignals, solidityProof })
 
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
@@ -228,7 +222,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 					gasLimit: 2000000,
 				},
 			)
-			/*	
+			/*
 			ByHarsh: This code executed before transaction complete.So always shows trasaction failed.
 					So I Commented code. This is not required.
 			if (!voteRes.success) throw new Error('Failed to cast an on-chain anonymous vote')
@@ -240,7 +234,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Get the receipt
 			const receipt = await voteRes.wait()
 			console.log('vote receipt', receipt)
-			console.log({ receipt })
 
 			// Get on chain vote count and stored in DB
 			const voteCount = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
@@ -260,13 +253,11 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				}),
 			})
 			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
-			console.log({ projectRes })
 
 			// Invoke the callback
 			onVoteSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			const reason = JSON.parse(JSON.stringify(e))
-			console.log('error reason', reason)
 			if (Object.prototype.hasOwnProperty.call(reason, 'error')) {
 				if (
 					reason.error.data.message === 'execution reverted: SemaphoreCore: you cannot use the same nullifier twice'
@@ -290,12 +281,10 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			from: currentUser.address,
 			gasLimit: 2000000,
 		})
-		console.log({ voteCountRes })
-		/*	
 
+		/*
 		ByHarsh : This code is not required because we are just calling function
-
-		// Get the receipt 
+		// Get the receipt
 		const receipt = await voteCountRes.wait()
 		console.log({ receipt })
 	*/
@@ -338,7 +327,6 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				stems: [...details.stems, stem],
 				collaborators: [...details.collaborators, stem.createdBy],
 			})
-			console.log({ projectRes })
 			if (!projectRes.success) throw new Error('Failed to update the project record')
 
 			// Invoke the callback

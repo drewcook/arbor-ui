@@ -86,12 +86,8 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				// Get Web3 instance based off browser support
 				const { provider, signer } = await getWeb3()
 				if (!provider || !signer) throw new Error('Must be in a Web3 supported browser')
-				console.log({ provider, signer })
-				// const signerAddress = await signer.getAddress()
 
 				// Setup contracts with signer of connected address
-				// const signer = web3Instance.getSigner(wallet.accounts[0].address)
-				// console.log(signer)
 				const nft = collectionsContract.connect(signer)
 				const stemQueue = stemQueueContract.connect(signer)
 				setContracts({ nft, stemQueue })

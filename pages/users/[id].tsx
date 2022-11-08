@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import { Box, Container, Divider, Grid, IconButton, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import Router from 'next/router'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 
+import { FALLBACK_AVATAR_URL } from '../../components/ConnectedAccount'
 import AvatarUploadDialog from '../../components/EditAvatarDialog'
 import ImageOptimized from '../../components/ImageOptimized'
 import ListNftDialog from '../../components/ListNftDialog'
@@ -33,6 +34,55 @@ const propTypes = {
 
 type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
+// eslint-disable-next-line
+const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> => {
+	try {
+		let address: string
+		if (typeof userAddress === 'object') address = userAddress[0].toLowerCase()
+		else address = userAddress?.toLowerCase()
+
+		// Get user record
+		const res = await get(`/users/${address}`)
+		const userData: IUserFull | null = res.success ? res.data : null
+
+		if (!userData) return userData
+
+		// Then get full details
+		const fullUser: IUserFull = {
+			...userData,
+			projects: [],
+			stems: [],
+			nfts: [],
+		}
+
+		// Get user's NFT details
+		for (const nftId of userData.nftIds) {
+			const nftRes = await get(`/nfts/${nftId}`)
+			if (nftRes.success) fullUser.nfts.push(nftRes.data)
+			else console.error(`Failed to find user NFT of ID - ${nftId}`)
+		}
+
+		// Get user's projects' details
+		for (const projectId of userData.projectIds) {
+			const projectRes = await get(`/projects/${projectId}`)
+			if (projectRes.success) fullUser.projects.push(projectRes.data)
+			else console.error(`Failed to find user project of ID - ${projectId}`)
+		}
+
+		// Get user's stems' details
+		for (const stemId of userData.stemIds) {
+			const stemRes = await get(`/stems/${stemId}`)
+			if (stemRes.success) fullUser.stems.push(stemRes.data)
+			else console.error(`Failed to find user stem of ID - ${stemId}`)
+		}
+
+		return fullUser
+	} catch (e: any) {
+		console.error(e.message)
+		return null
+	}
+}
+
 // TODO: Show projects that a user has also collaborated on, not just ones they've created
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	const { data } = props
@@ -53,7 +103,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 	}
 
 	const onAvatarUploadSuccess = (): void => {
-		Router.reload()
+		getFullUserDetails(data?.address)
 		handleUploadAvatarClose()
 	}
 
@@ -75,18 +125,6 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 			setIsCurrentUserDetails(false)
 		}
 	}, [currentUser]) /* eslint-disable-line react-hooks/exhaustive-deps */
-
-	// Refetch user details after successfully listing a card
-	const handleListSuccess = async () => {
-		try {
-			// TODO: Implement full details
-			const res = await get(`/users/${data?.address}`, { params: { fullDetails: true } })
-			const newDetails: IUserFull | null = res.success ? res.data : null
-			setDetails(newDetails)
-		} catch (e: any) {
-			console.error(e.message)
-		}
-	}
 
 	return (
 		<>
@@ -115,35 +153,37 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 											</Typography>
 											{formatDate(details.createdAt)}
 										</Typography>
-										{isCurrentUserDetails && (
-											<Box sx={styles.editProfileWrap}>
-												<Button
-													variant="outlined"
-													color="secondary"
-													onClick={() => console.log('edit details')}
-													disabled
-												>
-													Edit Details
-												</Button>
-											</Box>
-										)}
 									</Box>
 								</Box>
 							</Grid>
 							<Grid item xs={12} md={4}>
-								<Box className="avatar-wrap">
-									<Box sx={styles.avatar} onClick={isCurrentUserDetails ? handleUploadAvatarOpen : undefined}>
-										<ImageOptimized src={details.avatar.base64} alt="User Avatar" width={200} height={200} />
+								<Box sx={styles.avatarWrap}>
+									<Box sx={styles.avatarImg}>
+										<ImageOptimized
+											src={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
+											alt="User Avatar"
+											width={200}
+											height={200}
+										/>
 									</Box>
-									<AvatarUploadDialog
-										open={uploadAvatarOpen}
-										onClose={handleUploadAvatarClose}
-										onSuccess={onAvatarUploadSuccess}
-										image={details.avatar.base64}
-									/>
-									<Typography component="p" sx={styles.updateAvatar}>
-										Update Avatar
-									</Typography>
+									{isCurrentUserDetails && (
+										<>
+											<IconButton
+												sx={styles.updateAvatar}
+												color="default"
+												size="small"
+												onClick={handleUploadAvatarOpen}
+											>
+												<EditIcon />
+											</IconButton>
+											<AvatarUploadDialog
+												open={uploadAvatarOpen}
+												onClose={handleUploadAvatarClose}
+												onSuccess={onAvatarUploadSuccess}
+												image={details.avatar?.base64 ?? FALLBACK_AVATAR_URL}
+											/>
+										</>
+									)}
 								</Box>
 							</Grid>
 						</Grid>
@@ -163,11 +203,15 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 										{nft.owner === currentUser?.address &&
 											(nft.isListed ? (
 												<Box sx={{ my: 2 }}>
-													<ListNftDialog unlist={true} nft={nft} onListSuccess={handleListSuccess} />
+													<ListNftDialog
+														unlist={true}
+														nft={nft}
+														onListSuccess={() => getFullUserDetails(data?.address)}
+													/>
 												</Box>
 											) : (
 												<Box sx={{ my: 2 }}>
-													<ListNftDialog nft={nft} onListSuccess={handleListSuccess} />
+													<ListNftDialog nft={nft} onListSuccess={() => getFullUserDetails(data?.address)} />
 												</Box>
 											))}
 									</Grid>
@@ -235,46 +279,12 @@ UserDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
 	// Get user object
-	let userId = context.query.id
-	if (typeof userId === 'object') userId = userId[0].toLowerCase()
-	else userId = userId?.toLowerCase()
-	const res = await get(`/users/${userId}`)
-	const userData: IUserFull | null = res.success ? res.data : null
-
-	if (!userData) return { props: { data: userData } }
-
-	// Then get full details
-	const fullUser: IUserFull = {
-		...userData,
-		projects: [],
-		stems: [],
-		nfts: [],
-	}
-
-	// Get user's NFT details
-	for (const nftId of userData.nftIds) {
-		const nftRes = await get(`/nfts/${nftId}`)
-		if (nftRes.success) fullUser.nfts.push(nftRes.data)
-		else console.error(`Failed to find user NFT of ID - ${nftId}`)
-	}
-
-	// Get user's projects' details
-	for (const projectId of userData.projectIds) {
-		const projectRes = await get(`/projects/${projectId}`)
-		if (projectRes.success) fullUser.projects.push(projectRes.data)
-		else console.error(`Failed to find user project of ID - ${projectId}`)
-	}
-
-	// Get user's stems' details
-	for (const stemId of userData.stemIds) {
-		const stemRes = await get(`/stems/${stemId}`)
-		if (stemRes.success) fullUser.stems.push(stemRes.data)
-		else console.error(`Failed to find user stem of ID - ${stemId}`)
-	}
+	const userId = context.query.id
+	const userData = await getFullUserDetails(userId)
 
 	return {
 		props: {
-			data: fullUser,
+			data: userData,
 		},
 	}
 }

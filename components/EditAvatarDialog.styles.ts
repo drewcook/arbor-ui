@@ -1,41 +1,37 @@
 const styles = {
-	title: {
-		flex: 1,
-		p: 0,
+	dialog: {
+		minHeight: '520px',
+		pb: 1,
 	},
-	submitBtn: {
-		position: 'absolute',
-		bottom: '5rem',
-		left: '30%',
-		fontWeight: 800,
-		fontStyle: 'italic',
-		textTransform: 'uppercase',
+	title: {
+		textAlign: 'left',
+		// flex: 1,
+		pl: 0,
 	},
 	cropContainer: {
 		position: 'absolute',
-		maxHeight: '60%',
+		maxHeight: '280px',
 		margin: 'auto',
-		maxWidth: '75%',
-		top: '24px',
+		maxWidth: '280px',
+		top: '3rem',
 		left: 0,
 		right: 0,
-		bottom: '80px',
+		bottom: '8rem',
+	},
+	changeImgBtn: {
+		position: 'absolute',
+		bottom: '7rem',
+		left: '35%',
 	},
 	controls: {
 		position: 'absolute',
-		bottom: '16px',
+		bottom: '2.5rem',
 		left: '50%',
 		width: '50%',
 		transform: 'translateX(-50%)',
 		height: '80px',
 		display: 'flex',
 		alignItems: 'center',
-	},
-	// slider: {
-	// 	padding: '22px 5px',
-	// },
-	dialog: {
-		minHeight: '75%',
 	},
 }
 
