@@ -1,39 +1,39 @@
-import { AddCircleOutline, Check, HowToReg } from '@mui/icons-material'
-import { Box, Button, CircularProgress, Typography } from '@mui/material'
-import { Strategy, ZkIdentity } from '@zk-kit/identity'
-import { utils } from 'ethers'
-import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { AddCircleOutline, Check, HowToReg } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Strategy, ZkIdentity } from "@zk-kit/identity";
+import { utils } from "ethers";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
-import type { IProjectDoc } from '../../models/project.model'
-import { IStemDoc } from '../../models/stem.model'
-import { IUserIdentity } from '../../models/user.model'
-import { update } from '../../utils/http'
-import signMessage from '../../utils/signMessage'
-import StemUploadDialog from '../StemUploadDialog'
-import { useWeb3 } from '../Web3Provider'
-import styles from './StemQueue.styles'
+import type { IProjectDoc } from "../../models/project.model";
+import { IStemDoc } from "../../models/stem.model";
+import { IUserIdentity } from "../../models/user.model";
+import { update } from "../../utils/http";
+import signMessage from "../../utils/signMessage";
+import StemUploadDialog from "../StemUploadDialog";
+import { useWeb3 } from "../Web3Provider";
+import styles from "./StemQueue.styles";
 
-const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
-const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
-const Semaphore = require('@zk-kit/protocols').Semaphore
+const StemPlayer = dynamic(() => import("../StemPlayer"), { ssr: false });
+const generateMerkleProof = require("@zk-kit/protocols").generateMerkleProof;
+const Semaphore = require("@zk-kit/protocols").Semaphore;
 
 const IDENTITY_MSG =
-	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
+	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore.";
 
 type StemQueueProps = {
-	details: IProjectDoc
-	userIsCollaborator: boolean
-	userIsRegisteredVoter: boolean
-	uploadStemOpen: boolean
-	handleUploadStemOpen: () => void
-	handleUploadStemClose: () => void
-	onStemUploadSuccess: (project: IProjectDoc) => void
-	onRegisterSuccess: (project: IProjectDoc) => void
-	onVoteSuccess: (project: IProjectDoc, stemName: string) => void
-	onApprovedSuccess: (project: IProjectDoc, stemName: string) => void
-	onFailure: (msg: string) => void
-}
+	details: IProjectDoc;
+	userIsCollaborator: boolean;
+	userIsRegisteredVoter: boolean;
+	uploadStemOpen: boolean;
+	handleUploadStemOpen: () => void;
+	handleUploadStemClose: () => void;
+	onStemUploadSuccess: (project: IProjectDoc) => void;
+	onRegisterSuccess: (project: IProjectDoc) => void;
+	onVoteSuccess: (project: IProjectDoc, stemName: string) => void;
+	onApprovedSuccess: (project: IProjectDoc, stemName: string) => void;
+	onFailure: (msg: string) => void;
+};
 
 const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const {
@@ -48,33 +48,49 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		onVoteSuccess,
 		onApprovedSuccess,
 		onFailure,
-	} = props
-	const [registerLoading, setRegisterLoading] = useState<boolean>(false)
-	const [voteLoading, setVoteLoading] = useState<boolean>(false)
-	const [approveLoading, setApproveLoading] = useState<boolean>(false)
-	const [stems, setStems] = useState<Map<number, any>>(new Map())
-	const { contracts, currentUser, updateCurrentUser } = useWeb3()
+	} = props;
+	const [registerLoading, setRegisterLoading] = useState<boolean>(false);
+	const [loadingState, setLoadingState] = useState<{ loading?: boolean }>({});
+	const [approveLoading, setApproveLoading] = useState<boolean>(false);
+	const [stems, setStems] = useState<Map<number, any>>(new Map());
+	const { contracts, currentUser, updateCurrentUser } = useWeb3();
+
+	useEffect(() => {
+		const obj = {};
+		details.queue.map((_, idx) => (obj[idx] = false));
+		setLoadingState(obj);
+	}, [details]);
+
+	const voteIsLoading = (idx: number) => loadingState[idx] == true;
+
+	const setVoteIsLoading = (idx: number, trueOrFalse: boolean) => {
+		setLoadingState({
+			...loadingState,
+			[idx]: trueOrFalse,
+			loading: Object.keys(loadingState).some((k) => !loadingState[k]),
+		});
+	};
 
 	/*
 		Stem Player callbacks
 	*/
 	const onWavesInit = (idx: number, ws: any) => {
-		const tmp = new Map(details.queue.entries())
-		tmp.set(idx, ws)
-		setStems(tmp)
-	}
+		const tmp = new Map(details.queue.entries());
+		tmp.set(idx, ws);
+		setStems(tmp);
+	};
 
 	// Play the wavesurfer file
 	const handlePlay = (id: number) => {
-		const stem = stems.get(id)
-		if (stem) stem.play()
-	}
+		const stem = stems.get(id);
+		if (stem) stem.play();
+	};
 
 	// Stop playing the track
 	const handleStop = (id: number) => {
-		const stem = stems.get(id)
-		if (stem) stem.stop()
-	}
+		const stem = stems.get(id);
+		if (stem) stem.stop();
+	};
 
 	/*
 		Stem Voting
@@ -82,23 +98,23 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const handleRegister = async () => {
 		try {
 			// Preliminary requirement to be connected
-			if (!currentUser) return
-			setRegisterLoading(true)
+			if (!currentUser) return;
+			setRegisterLoading(true);
 
 			/*
 				Create a user identity based off signing a message with the current signer
 			*/
-			const message = await signMessage(IDENTITY_MSG)
-			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			const commitment: string = identity.genIdentityCommitment().toString()
-			const trapdoor: string = identity.getTrapdoor().toString()
-			const nullifier: string = identity.getNullifier().toString()
+			const message = await signMessage(IDENTITY_MSG);
+			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message);
+			const commitment: string = identity.genIdentityCommitment().toString();
+			const trapdoor: string = identity.getTrapdoor().toString();
+			const nullifier: string = identity.getNullifier().toString();
 			const voterIdentity: IUserIdentity = {
 				commitment,
 				nullifier,
 				trapdoor,
 				votingGroupId: details.votingGroupId,
-			}
+			};
 
 			/*
 				Add the user's identity commitment to the on-chain group
@@ -106,12 +122,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
 				from: currentUser.address,
 				gasLimit: 2000000,
-			})
-			if (!contractRes) console.error("Failed to register the user for the project's voting group")
+			});
+			if (!contractRes) console.error("Failed to register the user for the project's voting group");
 
 			// Get the receipt
-			const receipt = await contractRes.wait()
-			console.log('register voter receipt', receipt)
+			const receipt = await contractRes.wait();
+			console.log("register voter receipt", receipt);
 
 			/*
 				Update the user record
@@ -123,17 +139,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const userRes = await update(`/users/${currentUser.address}`, {
 				...currentUser,
 				// TODO: Use MongoDB $addToSet on the backend, maybe?
-				voterIdentities: currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
+				voterIdentities: currentUser.voterIdentities.find((i) => i.votingGroupId === details.votingGroupId)
 					? currentUser.voterIdentities
 					: [...currentUser.voterIdentities, voterIdentity],
 				registeredGroupIds: currentUser.registeredGroupIds.includes(details.votingGroupId)
 					? currentUser.registeredGroupIds
 					: [...currentUser.registeredGroupIds, details.votingGroupId],
-			})
-			if (!userRes.success) console.error('Failed to add the identity or group ID to the user record')
+			});
+			if (!userRes.success) console.error("Failed to add the identity or group ID to the user record");
 
 			// Update current user details
-			updateCurrentUser(userRes.data)
+			updateCurrentUser(userRes.data);
 
 			/*
 				Add the user identity to the list of project's registered identities
@@ -143,28 +159,29 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
 				voterIdentities: [...details.voterIdentities, voterIdentity],
-			})
+			});
 			if (!projectRes.success) {
-				console.error('Failed to add the identity to the project record')
+				console.error("Failed to add the identity to the project record");
 			}
 
 			// Invoke the callback
-			onRegisterSuccess(projectRes.data)
+			onRegisterSuccess(projectRes.data);
 		} catch (e: any) {
-			onFailure('Uh oh! Failed register for the voting group')
-			console.error(e.message)
+			onFailure("Uh oh! Failed register for the voting group");
+			console.error(e.message);
 		}
-		setRegisterLoading(false)
-	}
+		setRegisterLoading(false);
+	};
 
-	const handleVote = async (stem: IStemDoc) => {
+	const handleVote = async (stem: IStemDoc, idx: number) => {
 		try {
 			// Preliminary requirement to be connected
-			if (!currentUser) return
-			setVoteLoading(true)
+			if (!currentUser) return;
+
+			setVoteIsLoading(idx, true);
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
-			const stemId: string = stem._id.toString()
+			const stemId: string = stem._id.toString();
 
 			/*
 				Generate an off-chain proof to submit to the backend contracts for signalling and verification
@@ -178,20 +195,20 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// Find the user's identity for the project/group
 			// const message = await signMessage(IDENTITY_MSG)
 			// const voterIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			const voterIdentity = currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
-			if (!voterIdentity) return
+			const voterIdentity = currentUser.voterIdentities.find((i) => i.votingGroupId === details.votingGroupId);
+			if (!voterIdentity) return;
 
 			// Get the other group members' identities
-			const identityCommitments: string[] = []
+			const identityCommitments: string[] = [];
 			for (const identity of details.voterIdentities) {
-				identityCommitments.push(identity.commitment)
+				identityCommitments.push(identity.commitment);
 			}
 
 			// Generate the Merkle proof
 			// External nullifier is derived from the stem ID
-			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, voterIdentity.commitment)
-			const stemZKIdentity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, stemId)
-			const externalNullifier = stemZKIdentity.genIdentityCommitment()
+			const merkleProof = generateMerkleProof(20, BigInt(0), identityCommitments, voterIdentity.commitment);
+			const stemZKIdentity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, stemId);
+			const externalNullifier = stemZKIdentity.genIdentityCommitment();
 
 			// Generate the witness
 			const witness = Semaphore.genWitness(
@@ -199,16 +216,16 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				voterIdentity.nullifier,
 				merkleProof,
 				externalNullifier,
-				stemId,
-			)
+				stemId
+			);
 
 			// Generate the proofs
 			const { proof, publicSignals } = await Semaphore.genProof(
 				witness,
-				'/zkproof/semaphore.wasm',
-				'/zkproof/semaphore.zkey',
-			)
-			const solidityProof = Semaphore.packToSolidityProof(proof)
+				"/zkproof/semaphore.wasm",
+				"/zkproof/semaphore.zkey"
+			);
+			const solidityProof = Semaphore.packToSolidityProof(proof);
 
 			// Submit the vote signal and proof to the smart contract
 			const voteRes = await contracts.stemQueue.vote(
@@ -220,8 +237,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				{
 					from: currentUser.address,
 					gasLimit: 2000000,
-				},
-			)
+				}
+			);
 			/*
 			ByHarsh: This code executed before transaction complete.So always shows trasaction failed.
 					So I Commented code. This is not required.
@@ -232,63 +249,47 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			// console.log({ offchainVerifyRes, voteRes })
 
 			// Get the receipt
-			const receipt = await voteRes.wait()
-			console.log('vote receipt', receipt)
+			const receipt = await voteRes.wait();
+			console.log("vote receipt", receipt);
 
 			// Get on chain vote count and stored in DB
 			const voteCount = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
 				from: currentUser.address,
-			})
+			});
 
 			// // Update the project record vote count for the queued stem
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
-				queue: details.queue.map(q => {
+				queue: details.queue.map((q) => {
 					return q.stem._id === stem._id
 						? {
 								stem: q.stem,
 								votes: voteCount.toString(),
 						  }
-						: q
+						: q;
 				}),
-			})
-			if (!projectRes.success) throw new Error('Failed to increment stem vote count')
+			});
+			if (!projectRes.success) throw new Error("Failed to increment stem vote count");
 
 			// Invoke the callback
-			onVoteSuccess(projectRes.data, stem.name)
+			onVoteSuccess(projectRes.data, stem.name);
 		} catch (e: any) {
-			const reason = JSON.parse(JSON.stringify(e))
-			if (Object.prototype.hasOwnProperty.call(reason, 'error')) {
+			const reason = JSON.parse(JSON.stringify(e));
+			if (Object.prototype.hasOwnProperty.call(reason, "error")) {
 				if (
-					reason.error.data.message === 'execution reverted: SemaphoreCore: you cannot use the same nullifier twice'
+					reason.error.data.message === "execution reverted: SemaphoreCore: you cannot use the same nullifier twice"
 				) {
-					onFailure('Uh oh! You can not cast vote twice on same stem.')
+					onFailure("Uh oh! You can not cast vote twice on same stem.");
 				}
 			} else {
-				onFailure('Uh oh! Failed to cast the vote.')
+				onFailure("Uh oh! Failed to cast the vote.");
 			}
 
-			console.error(e)
+			console.error(e);
 		}
-		setVoteLoading(false)
-	}
 
-	// Get the stem vote count for the relative stem
-	const handleGetStemVoteCount = async (stem: IStemDoc) => {
-		if (!currentUser) return
-		const stemId: string = stem._id.toString()
-		const voteCountRes = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
-			from: currentUser.address,
-			gasLimit: 2000000,
-		})
-
-		/*
-		ByHarsh : This code is not required because we are just calling function
-		// Get the receipt
-		const receipt = await voteCountRes.wait()
-		console.log({ receipt })
-	*/
-	}
+		setVoteIsLoading(idx, false);
+	};
 
 	/**
 	 * This allows a collaborator to approve a stem that has at least one vote onto the project
@@ -299,21 +300,21 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const handleApprove = async (stem: IStemDoc) => {
 		try {
 			// User must be a collaborator
-			if (!userIsCollaborator) return
+			if (!userIsCollaborator) return;
 
 			// Stem must be in the queue
-			if (details.queue.filter(q => q.stem._id === stem._id).length === 0) {
-				console.error("The stem must be in the project's stem queue")
-				return
+			if (details.queue.filter((q) => q.stem._id === stem._id).length === 0) {
+				console.error("The stem must be in the project's stem queue");
+				return;
 			}
 
 			// Stem must have at least one vote
-			if (details.queue.filter(q => q.stem._id === stem._id)[0].votes === 0) {
-				console.error('The stem must have at least one vote')
-				return
+			if (details.queue.filter((q) => q.stem._id === stem._id)[0].votes === 0) {
+				console.error("The stem must have at least one vote");
+				return;
 			}
 
-			setApproveLoading(true)
+			setApproveLoading(true);
 
 			/*
 				Remove the queued stem from the list, add it to project stems
@@ -323,20 +324,20 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			*/
 			const projectRes = await update(`/projects/${details._id}`, {
 				...details,
-				queue: details.queue.filter(q => q.stem._id !== stem._id),
+				queue: details.queue.filter((q) => q.stem._id !== stem._id),
 				stems: [...details.stems, stem],
 				collaborators: [...details.collaborators, stem.createdBy],
-			})
-			if (!projectRes.success) throw new Error('Failed to update the project record')
+			});
+			if (!projectRes.success) throw new Error("Failed to update the project record");
 
 			// Invoke the callback
-			onApprovedSuccess(projectRes.data, stem.name)
+			onApprovedSuccess(projectRes.data, stem.name);
 		} catch (e: any) {
-			onFailure('Uh oh! Failed to approve the stem onto the project')
-			console.error(e)
+			onFailure("Uh oh! Failed to approve the stem onto the project");
+			console.error(e);
 		}
-		setApproveLoading(false)
-	}
+		setApproveLoading(false);
+	};
 
 	return (
 		<div>
@@ -346,7 +347,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				size="large"
 				onClick={handleUploadStemOpen}
 				sx={styles.actionBtn}
-				startIcon={<AddCircleOutline sx={{ fontSize: '32px' }} />}
+				startIcon={<AddCircleOutline sx={{ fontSize: "32px" }} />}
 			>
 				Add Stem
 			</Button>
@@ -355,15 +356,15 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				size="large"
 				onClick={handleRegister}
 				sx={styles.actionBtn}
-				startIcon={userIsRegisteredVoter ? <Check sx={{ fontSize: '32px' }} /> : <HowToReg sx={{ fontSize: '32px' }} />}
+				startIcon={userIsRegisteredVoter ? <Check sx={{ fontSize: "32px" }} /> : <HowToReg sx={{ fontSize: "32px" }} />}
 				disabled={registerLoading || userIsRegisteredVoter || !currentUser}
 			>
 				{registerLoading ? (
 					<CircularProgress size={20} sx={styles.loadingIcon} />
 				) : userIsRegisteredVoter ? (
-					'Currently Registered'
+					"Currently Registered"
 				) : (
-					'Register to Vote'
+					"Register to Vote"
 				)}
 			</Button>
 			{details.queue.length === 0 ? (
@@ -386,14 +387,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						<Button
 							variant="contained"
 							size="small"
-							onClick={() => handleVote(stem.stem)}
-							disabled={voteLoading || !userIsRegisteredVoter || !currentUser}
+							onClick={() => handleVote(stem.stem, idx)}
+							disabled={loadingState.loading || !userIsRegisteredVoter || !currentUser}
 							sx={{ mr: 1 }}
 						>
-							{voteLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
-						</Button>
-						<Button variant="outlined" size="small" onClick={() => handleGetStemVoteCount(stem.stem)} sx={{ mr: 1 }}>
-							Get Vote Count
+							{voteIsLoading(idx) ? (
+								<>
+									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {"  Vote Pending"}
+								</>
+							) : (
+								"Cast Vote"
+							)}
 						</Button>
 						{userIsCollaborator && (
 							<Button
@@ -402,7 +406,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 								onClick={() => handleApprove(stem.stem)}
 								disabled={approveLoading || stem.votes === 0}
 							>
-								{approveLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Approve'}
+								{approveLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : "Approve"}
 							</Button>
 						)}
 					</Box>
@@ -415,7 +419,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				projectDetails={details}
 			/>
 		</div>
-	)
-}
+	);
+};
 
-export default StemQueue
+export default StemQueue;
