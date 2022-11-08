@@ -30,6 +30,19 @@ const propTypes = {
 		projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 	}),
+	projects: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			name: PropTypes.string.isRequired,
+			description: PropTypes.string.isRequired,
+			trackLimit: PropTypes.number.isRequired,
+			nfts: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			tags: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			collaborators: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+		}),
+	),
 }
 
 type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
@@ -85,7 +98,7 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 
 // TODO: Show projects that a user has also collaborated on, not just ones they've created
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
-	const { data } = props
+	const { data, projects } = props
 	const [uploadAvatarOpen, setUploadAvatarOpen] = useState<boolean>(false)
 	const [details, setDetails] = useState<any>(null)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
@@ -132,7 +145,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 				<title>Arbor | User Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
-				{details ? (
+				{details && projects ? (
 					<>
 						<Grid container spacing={4}>
 							<Grid item xs={12} md={8}>
@@ -224,7 +237,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						</Grid>
 						<Divider light sx={styles.divider} />
 						<Typography variant="h4" gutterBottom>
-							Projects
+							Creations
 							<Typography component="span" sx={styles.sectionCount}>
 								({details.projects.length})
 							</Typography>
@@ -240,6 +253,27 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 							) : (
 								<Grid item xs={12}>
 									<Typography sx={styles.noItemsMsg}>No projects to show, upload one!</Typography>
+								</Grid>
+							)}
+						</Grid>
+						<Divider light sx={styles.divider} />
+						<Typography variant="h4" gutterBottom>
+							Collaborations
+							<Typography component="span" sx={styles.sectionCount}>
+								({projects.length})
+							</Typography>
+						</Typography>
+						<Typography sx={styles.sectionMeta}>Projects this user has collaborated on.</Typography>
+						<Grid container spacing={4}>
+							{projects.length > 0 ? (
+								projects.map(project => (
+									<Grid item sm={6} md={4} key={project?._id}>
+										<ProjectCard details={project} />
+									</Grid>
+								))
+							) : (
+								<Grid item xs={12}>
+									<Typography sx={styles.noItemsMsg}>No projects to show, collaborate on one!</Typography>
 								</Grid>
 							)}
 						</Grid>
@@ -281,10 +315,14 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// Get user object
 	const userId = context.query.id
 	const userData = await getFullUserDetails(userId)
+	const res = await get(`/users/collaborator/${userId}`)
+	console.log(res, 'kkdkkdk')
+	const projects: IProjectDoc | null = res.success ? res.data : null
 
 	return {
 		props: {
 			data: userData,
+			projects,
 		},
 	}
 }
