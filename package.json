@@ -89,7 +89,7 @@
     "@types/react": "18.0.21",
     "@types/wavesurfer.js": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
-    "@typescript-eslint/parser": "^5.38.1",
+    "@typescript-eslint/parser": "^5.43.0",
     "@zk-kit/incremental-merkle-tree": "^0.4.3",
     "altheajs-prettier-config": "^1.3.0",
     "circom_tester": "^0.0.12",
