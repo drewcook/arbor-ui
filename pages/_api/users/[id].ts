@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import type { IUser } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
@@ -19,24 +17,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				// We will always be getting users by their address, not their MongoDB _id.
-				const cache = (await redis.get('user')) ?? undefined
-				if (cache) {
-					const user: IUser | null = JSON.parse(cache)
+				const user: IUser | null = await User.findOne({ address: id })
 
-					console.log({ user })
-					res.status(200).json({ success: true, data: user })
-				} else {
-					const user: IUser | null = await User.findOne({ address: id })
-
-					if (!user) {
-						return res.status(404).json({ success: false })
-					}
-
-					console.log({ user })
-
-					redis.set('user', JSON.stringify(user), 'EX', 60)
-					res.status(200).json({ success: true, data: user })
+				if (!user) {
+					return res.status(404).json({ success: false })
 				}
+
+				res.status(200).json({ success: true, data: user })
 			} catch (error) {
 				console.error(error)
 				res.status(400).json({ success: false })

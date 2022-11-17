@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import type { IStemDoc } from '../../../models/stem.model'
 import { Stem } from '../../../models/stem.model'
 import dbConnect from '../../../utils/db'
@@ -14,21 +12,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find all the data in our database */
-
-				const cache = (await redis.get('stems')) ?? undefined
-				if (cache) {
-					const stems: IStemDoc[] = JSON.parse(cache)
-
-					console.log({ stems })
-					res.status(200).json({ success: true, data: stems })
-				} else {
-					const stems: IStemDoc[] = await Stem.find({})
-
-					console.log({ stems })
-
-					redis.set('stems', JSON.stringify(stems), 'EX', 60)
-					res.status(200).json({ success: true, data: stems })
-				}
+				const stems: IStemDoc[] = await Stem.find({})
+				res.status(200).json({ success: true, data: stems })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}

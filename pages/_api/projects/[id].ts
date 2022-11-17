@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import { IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 
@@ -17,20 +15,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:
 			try {
-				const cache = (await redis.get('project')) ?? undefined
-				if (cache) {
-					const project: IProjectDoc | null = JSON.parse(cache)
-
-					res.status(200).json({ success: true, data: project })
-				} else {
-					const project: IProjectDoc | null = await Project.findById(id)
-					if (!project) {
-						return res.status(400).json({ success: false })
-					}
-
-					redis.set('project', JSON.stringify(project), 'EX', 60)
-					res.status(200).json({ success: true, data: project })
+				const project: IProjectDoc | null = await Project.findById(id)
+				if (!project) {
+					return res.status(400).json({ success: false })
 				}
+				res.status(200).json({ success: true, data: project })
 			} catch (error) {
 				res.status(400).json({ success: false })
 			}
@@ -108,7 +97,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					return res.status(400).json({ success: false, error: 'failed to delete project' })
 				}
 
-				// TODO: Delete from user's project
+				// TODO: Delete from user's projects
 
 				res.status(200).json({ success: true, data: deletedProject })
 			} catch (e) {

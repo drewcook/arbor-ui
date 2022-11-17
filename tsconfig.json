@@ -20,7 +20,11 @@
     "incremental": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/utils/*": ["./utils/*"]
+    }
   },
   // "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/db.js", "utils/getWeb3.js", "utils/NFTStorageClient.ts", "circuits/tests/stemQueue.test.js"],
   "exclude": [

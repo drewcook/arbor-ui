@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import { IStemDoc, Stem } from '../../../models/stem.model'
 import dbConnect from '../../../utils/db'
 
@@ -17,23 +15,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:
 			try {
-				const cache = (await redis.get('stem')) ?? undefined
-				if (cache) {
-					const stem: IStemDoc | null = JSON.parse(cache)
-
-					console.log({ stem })
-					res.status(200).json({ success: true, data: stem })
-				} else {
-					const stem: IStemDoc | null = await Stem.findById(id)
-					if (!stem) {
-						return res.status(400).json({ success: false })
-					}
-
-					console.log({ stem })
-
-					redis.set('stem', JSON.stringify(stem), 'EX', 60)
-					res.status(200).json({ success: true, data: stem })
+				const stem: IStemDoc | null = await Stem.findById(id)
+				if (!stem) {
+					return res.status(400).json({ success: false })
 				}
+				res.status(200).json({ success: true, data: stem })
 			} catch (error) {
 				res.status(400).json({ success: false })
 			}

@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import { IUser, User } from '../../../models/user.model'
 import dbConnect from '../../../utils/db'
 
@@ -27,21 +25,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find all the data in our database */
-
-				const cache = (await redis.get('users')) ?? undefined
-				if (cache) {
-					const users: IUser[] = JSON.parse(cache)
-
-					console.log({ users })
-					res.status(200).json({ success: true, data: users })
-				} else {
-					const users: IUser[] = await User.find({})
-
-					console.log({ users })
-
-					redis.set('users', JSON.stringify(users), 'EX', 60)
-					res.status(200).json({ success: true, data: users })
-				}
+				const users: IUser[] = await User.find({})
+				res.status(200).json({ success: true, data: users })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}

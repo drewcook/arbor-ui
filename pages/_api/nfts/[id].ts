@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import { INftDoc, Nft } from '../../../models/nft.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
@@ -19,20 +17,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		/* Get a model by its ID */
 		case 'GET':
 			try {
-				const cache = (await redis.get('nft')) ?? undefined
-				if (cache) {
-					const nft: INftDoc | null = JSON.parse(cache)
-
-					console.log({ nft })
-					res.status(200).json({ success: true, data: nft })
-				} else {
-					const nft: INftDoc | null = await Nft.findById(id)
-					if (!nft) return res.status(404).json({ success: false })
-					console.log({ nft })
-
-					redis.set('nft', JSON.stringify(nft), 'EX', 60)
-					res.status(200).json({ success: true, data: nft })
-				}
+				const nft: INftDoc | null = await Nft.findById(id)
+				if (!nft) return res.status(404).json({ success: false })
+				res.status(200).json({ success: true, data: nft })
 			} catch (error) {
 				res.status(400).json({ success: false, error: 'Failed to get the NFT' })
 			}

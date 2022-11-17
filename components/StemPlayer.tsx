@@ -1,5 +1,6 @@
 import { PlayArrow, SkipPrevious, Square } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
+import fs from 'fs'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
@@ -43,15 +44,42 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 	const [blob, setBlob] = useState<Blob>()
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
+	const cid = details.audioUrl?.slice(details.audioUrl?.indexOf('://') + 3, details.audioUrl?.lastIndexOf('/'))
+
 	useEffect(() => {
 		if (!blob) {
 			if (!loadingBlob) {
 				setLoadingBlob(true)
-				fetch(details.audioHref).then(resp => {
-					resp.blob().then(b => {
-						setBlob(b)
-						if (onNewFile) onNewFile(details.name, b)
-					})
+				// cache
+
+				fetch('/api/redis', { method: 'POST', body: JSON.stringify({ cid, blob: '', payload: 'GET' }) }).then(resp => {
+					if (resp.status == 200) {
+						resp.json().then(body => {
+							const bufferObject = JSON.parse(body)
+							const uint8Array = new Uint8Array(Object.values(bufferObject))
+							const blob = new Blob([uint8Array], { type: 'audio/wav' })
+							setBlob(blob)
+						})
+					} else {
+						fetch(details.audioHref).then(resp => {
+							resp.blob().then(b => {
+								setBlob(b)
+								b.arrayBuffer().then(ab => {
+									const bufferString = JSON.stringify(new Uint8Array(ab))
+									fetch('/api/redis', {
+										method: 'POST',
+										body: JSON.stringify({
+											cid,
+											blob: bufferString,
+											payload: 'POST',
+										}),
+									})
+								})
+
+								if (onNewFile) onNewFile(details.name, b)
+							})
+						})
+					}
 				})
 				setLoadingBlob(false)
 			}

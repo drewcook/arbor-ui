@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
@@ -25,19 +23,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find all the data in our database */
-
-				const cache = (await redis.get('projects')) ?? undefined
-				if (cache) {
-					const projects: IProject[] = JSON.parse(cache)
-
-					res.status(200).json({ success: true, data: projects })
-					console.log({ projects })
-				} else {
-					const projects: IProject[] = await Project.find({})
-
-					redis.set('projects', JSON.stringify(projects), 'EX', 60)
-					res.status(200).json({ success: true, data: projects })
-				}
+				const projects: IProject[] = await Project.find({})
+				res.status(200).json({ success: true, data: projects })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}

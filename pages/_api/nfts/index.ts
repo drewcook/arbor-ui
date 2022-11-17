@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import redis from '@/utils/redis'
-
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
@@ -14,21 +12,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find all the data in our database */
-
-				const cache = (await redis.get('nfts')) ?? undefined
-				if (cache) {
-					const nfts: INftDoc[] = JSON.parse(cache)
-
-					console.log({ nfts })
-					res.status(200).json({ success: true, data: nfts })
-				} else {
-					const nfts: INftDoc[] = await Nft.find({})
-
-					console.log({ nfts })
-
-					redis.set('nfts', JSON.stringify(nfts), 'EX', 60)
-					res.status(200).json({ success: true, data: nfts })
-				}
+				const nfts: INftDoc[] = await Nft.find({})
+				res.status(200).json({ success: true, data: nfts })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}
