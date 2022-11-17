@@ -1,6 +1,5 @@
 import { PlayArrow, SkipPrevious, Square } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, Grid, Typography } from '@mui/material'
-import fs from 'fs'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'

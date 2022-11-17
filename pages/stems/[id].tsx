@@ -8,8 +8,6 @@ import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import redis from '@/utils/redis'
-
 import { IStemDoc } from '../../models/stem.model'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
 import formatDate from '../../utils/formatDate'
