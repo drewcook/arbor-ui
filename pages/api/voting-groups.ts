@@ -1,8 +1,8 @@
+import dbConnect from '@utils/db'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import type { IVotingGroupDoc } from '../../models/votingGroup.model'
 import { VotingGroup } from '../../models/votingGroup.model'
-import dbConnect from '../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req

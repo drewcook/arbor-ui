@@ -1,3 +1,7 @@
+import ImageOptimized from '@components/ImageOptimized'
+import Notification from '@components/Notification'
+import StemUploadDialog from '@components/StemUploadDialog'
+import { useWeb3 } from '@components/Web3Provider'
 import {
 	AddCircleOutline,
 	Download,
@@ -19,6 +23,8 @@ import {
 	IconButton,
 	Typography,
 } from '@mui/material'
+import formatAddress from '@utils/formatAddress'
+import { post } from '@utils/http'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
@@ -27,10 +33,6 @@ import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
 import web3 from 'web3'
 
-import ImageOptimized from '../../components/ImageOptimized'
-import Notification from '../../components/Notification'
-import StemUploadDialog from '../../components/StemUploadDialog'
-import { useWeb3 } from '../../components/Web3Provider'
 import { NETWORK_CURRENCY } from '../../constants/networks'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
@@ -38,8 +40,6 @@ import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
-import formatAddress from '../../utils/formatAddress'
-import { post } from '../../utils/http'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
@@ -245,6 +245,9 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					projectId: details._id.toString(),
 					collaborators: details.collaborators,
 					stems: details.stems, // Direct 1:1 deep clone
+					auction: {
+						address: '',
+					},
 				}
 				const nftCreated = await post('/nfts', newNftPayload)
 				if (!nftCreated.success) throw new Error(nftCreated.error)

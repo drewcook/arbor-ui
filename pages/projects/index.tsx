@@ -1,13 +1,13 @@
+import ProjectCard from '@components/ProjectCard'
 import { Box, Button, Container, Grid, Typography } from '@mui/material'
+import { get } from '@utils/http'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 
-import ProjectCard from '../../components/ProjectCard'
 import { IProjectDoc } from '../../models/project.model'
 import { indexStyles as styles } from '../../styles/Projects.styles'
-import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.arrayOf(

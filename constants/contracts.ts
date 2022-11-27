@@ -1,6 +1,8 @@
 import { Contract, providers } from 'ethers'
-import ArborAudioCollections from '../contracts/ArborAudioCollections.json'
-import StemQueue from '../contracts/StemQueue.json'
+import ArborAudioCollections from '@contracts/ArborAudioCollections.json'
+import StemQueue from '@contracts/StemQueue.json'
+import BlindAuction from '@contracts/BlindAuction.json'
+import BlindAuctionFactory from '@contracts/BlindAuctionFactory.json'
 import { NETWORK_NAME, NETWORK_RPC } from './networks'
 
 /******************************************************************************
@@ -8,13 +10,15 @@ import { NETWORK_NAME, NETWORK_RPC } from './networks'
 *******************************************************************************/
 
 const contracts = {
-	// Last deployed: 07/03/22
 	Localhost: {
 		nft: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
 		verifier: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
 		poseidonT3: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
 		incrementalBinaryTree: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
 		stemQueue: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
+		highestBidderVerifier: '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707',
+		blindAuction: '0x0165878A594ca255338adfa4d48449f69242Eb8F',
+		blindAuctionFactory: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853',
 	},
 	// Last deployed: 10/21/22
 	'Polygon Mainnet': {
@@ -70,3 +74,12 @@ export const collectionsContract = new Contract(NFT_CONTRACT_ADDRESS, ArborAudio
 // StemQueue contract
 export const STEMQUEUE_CONTRACT_ADDRESS = contracts[NETWORK_NAME].stemQueue
 export const stemQueueContract = new Contract(STEMQUEUE_CONTRACT_ADDRESS, StemQueue.abi)
+
+// BlindAuction contract
+export const BLINDAUCTION_CONTRACT_ADDRESS = contracts[NETWORK_NAME].blindAuction
+export const blindAuctionContract = new Contract(BLINDAUCTION_CONTRACT_ADDRESS, BlindAuction.abi)
+export const blindAuctionContractProxy = _address => new Contract(_address, BlindAuction.abi)
+
+// BlindAuctionFactory contract
+export const BLINDAUCTIONFACTORY_CONTRACT_ADDRESS = contracts[NETWORK_NAME].blindAuctionFactory
+export const blindAuctionFactoryContract = new Contract(BLINDAUCTIONFACTORY_CONTRACT_ADDRESS, BlindAuctionFactory.abi)

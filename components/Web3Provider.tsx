@@ -1,14 +1,22 @@
-import detectEthereumProvider from '@metamask/detect-provider'
-import { Contract, providers } from 'ethers'
+// import detectEthereumProvider from '@metamask/detect-provider'
+import {
+	blindAuctionContract,
+	blindAuctionFactoryContract,
+	collectionsContract,
+	stemQueueContract,
+} from '@constants/contracts'
+import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '@constants/networks'
+import type { IUserDoc } from '@models/user.model'
+import { get, post } from '@utils/http'
+import NFTStorageClient from '@utils/NFTStorageClient'
+import {
+	Contract,
+	// providers
+} from 'ethers'
 import type { NFTStorage } from 'nft.storage'
-import type { ReactNode } from 'react'
-import { createContext, useContext, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
-import { collectionsContract, stemQueueContract } from '../constants/contracts'
-import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
-import type { IUserDoc } from '../models/user.model'
-import { get, post } from '../utils/http'
-import NFTStorageClient from '../utils/NFTStorageClient'
+import _wallet from '../_dev/_wallet'
 
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
@@ -31,6 +39,11 @@ type PolyechoContracts = {
 	stemQueue: Contract
 }
 
+type BlindAuctionContracts = {
+	blindAuction: Contract
+	blindAuctionFactory: Contract
+}
+
 // Create context
 // @ts-ignore
 const Web3Context = createContext<Web3ContextProps>({})
@@ -40,7 +53,12 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
 	const [currentUser, setCurrentUser] = useState<IUserDoc | null>(null)
-	const [contracts, setContracts] = useState<PolyechoContracts>({ nft: {} as Contract, stemQueue: {} as Contract })
+	const [contracts, setContracts] = useState<PolyechoContracts & BlindAuctionContracts>({
+		nft: {} as Contract,
+		stemQueue: {} as Contract,
+		blindAuction: {} as Contract,
+		blindAuctionFactory: {} as Contract,
+	})
 
 	const checkForSupportedNetwork = async (provider: any) => {
 		const chainId = await provider.request({ method: 'eth_chainId' })
@@ -93,7 +111,8 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 
 	const loadWeb3 = async (): Promise<any> => {
 		try {
-			// Get Web3 instance based off browser support
+			/*
+ 			// Get Web3 instance based off browser support
 			const provider = (await detectEthereumProvider()) as any
 			if (!provider) return alert('Please make sure you have installed Metamask or another Web3 wallet.')
 
@@ -108,16 +127,24 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const signer = ethersProvider.getSigner()
 			const signerAddress = await signer.getAddress()
 
+ */
+			const signer = _wallet.signer
+			const signerAddress = signer.address
+
 			// Check that we're on the supported network
 
 			// Setup contracts with signer of connected address
 			const nft = collectionsContract.connect(signer)
 			const stemQueue = stemQueueContract.connect(signer)
-			setContracts({ nft, stemQueue })
+			const blindAuction = blindAuctionContract.connect(signer)
+			const blindAuctionFactory = blindAuctionFactoryContract.connect(signer)
+
+			setContracts({ nft, stemQueue, blindAuction, blindAuctionFactory })
 
 			// Connect to NFT.storage
 			await connectNFTStorage()
 
+			/*
 			// Listen for account changes from browser wallet UI
 			provider.on('accountsChanged', async (newAccounts: string[]) => {
 				const newAccount = newAccounts[0]
@@ -133,6 +160,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				checkForSupportedNetwork(provider)
 				// window.location.reload()
 			})
+			*/
 
 			setConnected(true)
 			return { connectedAccount: signerAddress }
@@ -182,6 +210,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			// If there is not a user found for this connected account, create a new user record
 			const findRes = await get(`/users/${account.toLowerCase()}`)
 			if (findRes.data) {
+				findRes.data['signer'] = _wallet.signer
 				setCurrentUser(findRes.data)
 			} else {
 				const createRes = await post('/users', {

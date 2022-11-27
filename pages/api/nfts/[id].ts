@@ -1,8 +1,7 @@
+import { INftDoc, Nft } from '@models/nft.model'
+import dbConnect from '@utils/db'
+import { update } from '@utils/http'
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-import { INftDoc, Nft } from '../../../models/nft.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -35,6 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 							isListed: body.isListed,
 							listPrice: body.listPrice,
 							owner: body.owner,
+							auction: body.auction,
 						},
 					},
 					{

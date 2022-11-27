@@ -10,7 +10,7 @@ web3/contracts
 
 *.env
 *.ico
-*.json
+# *.json
 *.lock
 *.log
 *.md

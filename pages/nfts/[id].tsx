@@ -1,5 +1,14 @@
+import Auction from '@components/AuctionDetails'
+// import ImageOptimized from '@components/ImageOptimized'
+import ListNftDialog from '@components/ListNftDialog'
+import Notification from '@components/Notification'
+import StemCard from '@components/StemCard'
+import { useWeb3 } from '@components/Web3Provider'
 import { Person } from '@mui/icons-material'
 import { Avatar, Box, Button, Chip, CircularProgress, Container, Divider, Grid, Typography } from '@mui/material'
+import formatAddress from '@utils/formatAddress'
+import formatDate from '@utils/formatDate'
+import { get, update } from '@utils/http'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -8,18 +17,10 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import web3 from 'web3'
 
-import ImageOptimized from '../../components/ImageOptimized'
-import ListNftDialog from '../../components/ListNftDialog'
-import Notification from '../../components/Notification'
-import StemCard from '../../components/StemCard'
-import { useWeb3 } from '../../components/Web3Provider'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../../constants/networks'
-import OneIcon from '../../public/harmony_icon.svg'
+// import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
-import formatAddress from '../../utils/formatAddress'
-import formatDate from '../../utils/formatDate'
-import { get, update } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.shape({
@@ -48,6 +49,11 @@ const propTypes = {
 				audioHref: PropTypes.string.isRequired,
 			}).isRequired,
 		).isRequired,
+		auction: PropTypes.arrayOf(
+			PropTypes.shape({
+				address: PropTypes.string.isRequired,
+			}),
+		),
 	}),
 }
 
@@ -122,6 +128,46 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 		}
 	}
 
+	const transferNft = async (winningBid, winner) => {
+		if (currentUser) {
+			// get highest price + safety checks
+			const amount = web3.utils.toWei(winningBid.toString(), 'ether')
+			let res = await contracts.nft.allowBuy(1, amount, {
+				gasLimit: 2000000,
+			})
+
+			window.alert('buy allowed')
+
+			if (!res) throw new Error('Failed to Approve')
+			// allowBuy(uint256 _tokenId, uint256 _price)
+			// send nft to highestBidder
+			res = await contracts.nft.buyDev(winner, 1, {
+				value: amount,
+				gasLimit: 2000000,
+			})
+			if (!res) throw new Error('Failed to transfer the NFT on-chain')
+			window.alert('nft send')
+
+			// Make PUT request to change ownership
+			res = await update(`/nfts/${details._id}`, {
+				isListed: false,
+				listPrice: 0,
+				owner: winner,
+				buyer: winner,
+				seller: details.owner,
+			})
+			if (!res.success) throw new Error(`Failed to update the NFT ownership details - ${res.error}`)
+
+			// Notify success
+			if (!successOpen) setSuccessOpen(true)
+			setLoading(false)
+			setSuccessMsg('Success! You have transfered this NFT, redirecting...')
+
+			// Redirect to user's profile page
+			router.push(`/users/${currentUser.address}`)
+		}
+	}
+
 	return (
 		<>
 			<Head>
@@ -147,9 +193,9 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 										sx={styles.buyNowBtn}
 										disabled={loading}
 									>
-										{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Buy Now'}
+										{loading ? <CircularProgress size={18} sx={{ my: 1 }} /> : 'Buy Now'}
 									</Button>
-									<Box sx={styles.price}>
+									{/* <Box sx={styles.price}>
 										<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
 										<Typography variant="h4" component="div" sx={{ ml: 1 }}>
 											{details.listPrice}{' '}
@@ -157,23 +203,23 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 												{NETWORK_CURRENCY}
 											</Typography>
 										</Typography>
-									</Box>
+									</Box> */}
 								</Box>
 							)}
 							{currentUser?.address === details.owner &&
 								(details.isListed ? (
 									<Box sx={styles.buyNowListing}>
 										<ListNftDialog unlist={true} nft={details} onListSuccess={handleListSuccess} />
-										<Box sx={styles.price}>
+										{/* <ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} /> */}
+										{/* <Box sx={styles.price}>
 											<ImageOptimized src={OneIcon} width={30} height={30} alt={NETWORK_CURRENCY} />
-											{/* <ImageOptimized src={PolygonIcon} width={50} height={50} alt={NETWORK_CURRENCY} /> */}
 											<Typography variant="h4" component="div">
 												{details.listPrice}{' '}
 												<Typography sx={styles.eth} component="span">
 													{NETWORK_CURRENCY}
 												</Typography>
 											</Typography>
-										</Box>
+										</Box> */}
 									</Box>
 								) : (
 									<Box sx={{ my: 2 }}>
@@ -181,6 +227,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 									</Box>
 								))}
 						</Box>
+						{details.isListed && <Auction details={details} transferNft={transferNft} />}
 						<Grid container spacing={4}>
 							<Grid item xs={12} md={5}>
 								<Typography sx={styles.metadata}>
@@ -307,8 +354,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	else nftId = nftId?.toLowerCase()
 
 	// Get NFT data from database
+	console.log('get nft data from database')
 	const res = await get(`/nfts/${nftId}`)
 	const data: any | null = res.success ? res.data : null
+	console.log({ data })
 
 	return {
 		props: {

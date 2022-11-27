@@ -1,5 +1,8 @@
 import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
 import { Box, Container, Divider, Fab, Typography } from '@mui/material'
+import formatDate from '@utils/formatDate'
+import formatStemName from '@utils/formatStemName'
+import { get } from '@utils/http'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -10,9 +13,6 @@ import { useState } from 'react'
 
 import { IStemDoc } from '../../models/stem.model'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
-import formatDate from '../../utils/formatDate'
-import formatStemName from '../../utils/formatStemName'
-import { get } from '../../utils/http'
 
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
 

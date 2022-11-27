@@ -1,34 +1,32 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "noImplicitAny": false,
-    "noImplicitThis": true,
-    "strictNullChecks": true
-  },
-  // "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/db.js", "utils/getWeb3.js", "utils/NFTStorageClient.ts", "circuits/tests/stemQueue.test.js"],
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-	]
+	"compilerOptions": {
+		"target": "es5",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"noImplicitAny": false,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"baseUrl": ".",
+		"paths": {
+			"@utils/*": ["./utils/*"],
+			"@components/*": ["./components/*"],
+			"@constants/*": ["./constants/*"],
+			"@contracts/*": ["./contracts/*"],
+			"@models/*": ["./models/*"]
+		}
+	},
+	// "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/db.js", "utils/getWeb3.js", "utils/NFTStorageClient.ts", "circuits/tests/stemQueue.test.js"],
+	"exclude": ["node_modules"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"]
 }

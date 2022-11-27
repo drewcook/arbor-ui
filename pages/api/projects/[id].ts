@@ -1,7 +1,6 @@
+import { IProjectDoc, Project } from '@models/project.model'
+import dbConnect from '@utils/db'
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-import { IProjectDoc, Project } from '../../../models/project.model'
-import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {

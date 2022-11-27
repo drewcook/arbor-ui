@@ -9,6 +9,10 @@ type Token = {
 	data: any
 }
 
+type Auction = {
+	address: string
+}
+
 export interface INft {
 	createdBy: string
 	owner: string
@@ -21,6 +25,7 @@ export interface INft {
 	projectId: string
 	collaborators: string[]
 	stems: IStemDoc[]
+	auction: Auction
 }
 
 export interface INftDoc extends Document, INft {}
@@ -73,6 +78,7 @@ const nftSchema = new mongoose.Schema<INftDoc>(
 			required: true,
 			default: 0,
 		},
+		auction: { type: Object, required: true },
 	},
 	{ timestamps: true },
 )

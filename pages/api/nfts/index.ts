@@ -1,8 +1,7 @@
+import { INft, INftDoc, Nft } from '@models/nft.model'
+import dbConnect from '@utils/db'
+import { update } from '@utils/http'
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-import { INft, INftDoc, Nft } from '../../../models/nft.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
@@ -33,6 +32,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					projectId,
 					collaborators,
 					stems,
+					auction,
 				} = body
 				const payload: INft = {
 					createdBy,
@@ -46,6 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					projectId,
 					collaborators,
 					stems,
+					auction,
 				}
 
 				/* create a new model in the database */

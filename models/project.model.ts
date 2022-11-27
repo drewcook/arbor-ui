@@ -79,6 +79,7 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 			type: Number,
 			required: true,
 			min: 1,
+			unique: true,
 		},
 		voterIdentities: {
 			type: [Object],

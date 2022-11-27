@@ -1,3 +1,4 @@
+import { Signer } from 'ethers'
 import mongoose from 'mongoose'
 import type { INftDoc } from './nft.model'
 import type { IProjectDoc } from './project.model'
@@ -34,7 +35,9 @@ export interface IUserFull extends IUser {
 	stems: IStemDoc[]
 }
 
-export interface IUserDoc extends Document, IUser {}
+export interface IUserDoc extends Document, IUser {
+	signer?: Signer
+}
 
 const userSchema = new mongoose.Schema<IUserDoc>(
 	{

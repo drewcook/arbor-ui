@@ -139,7 +139,8 @@ contract ArborAudioCollections is ERC721, Ownable {
         require(price > 0, 'This token is not for sale');
 
 				// Check for right sale price
-        require(msg.value == price, 'Incorrect value');
+        // dev: bypassed for auction
+        // require(msg.value == price, 'Incorrect value');
 
 				// Make the transfer of ownership
 				// Approve any buyer, rather than seller manually approving a buyer/offer
@@ -168,6 +169,49 @@ contract ArborAudioCollections is ERC721, Ownable {
 
 				// Emit events
         emit NftBought(_tokenId, seller, msg.sender, msg.value);
+				emit SellerPaid(_tokenId, sellersCut);
+				emit RoyaltiesPaid(_tokenId, royaltiesCut, contributors);
+    }
+
+
+    function buyDev(address payable winner, uint256 _tokenId) external payable {
+				// Get the current sale price
+        uint256 price = tokenIdToPrice[_tokenId];
+
+				// Check if for sale, based off of zero value
+        require(price > 0, 'This token is not for sale');
+
+				// Check for right sale price
+        // dev: bypassed for auction
+        // require(msg.value == price, 'Incorrect value');
+
+				// Make the transfer of ownership
+				// Approve any buyer, rather than seller manually approving a buyer/offer
+        address seller = ownerOf(_tokenId);
+				_approve(winner, _tokenId);
+				safeTransferFrom(seller, winner, _tokenId);
+
+				// Make the transfer of funds from sale price
+				// 10% - Royalties to all contributors, evenly split
+				// 90% - Sale proceeds to seller
+				uint256 royaltiesCut = msg.value.div(10);
+				uint256 sellersCut = msg.value.div(10).mul(9);
+				address[] storage contributors = tokenIdToContributors[_tokenId];
+
+				// Payout out royalties evently amongst contributors
+        for (uint256 i = 0; i < contributors.length; i++) {
+            address contributor = contributors[i];
+            payable(contributor).transfer(royaltiesCut / contributors.length);
+        }
+
+				// Pay out the sellers cut
+        payable(seller).transfer(sellersCut);
+
+				// The NFT is not for sale anymore, set zero value
+				tokenIdToPrice[_tokenId] = 0;
+
+				// Emit events
+        emit NftBought(_tokenId, seller, winner, msg.value);
 				emit SellerPaid(_tokenId, sellersCut);
 				emit RoyaltiesPaid(_tokenId, royaltiesCut, contributors);
     }

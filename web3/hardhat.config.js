@@ -13,7 +13,7 @@ task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
 		console.log(account.address)
 	}
 })
-
+console.log(process.env.PRIVATE_KEY)
 // Deploy our smart contracts
 require('./tasks/deploy')
 

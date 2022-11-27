@@ -1,7 +1,6 @@
+import { IUser, User } from '@models/user.model'
+import dbConnect from '@utils/db'
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-import { IUser, User } from '../../../models/user.model'
-import dbConnect from '../../../utils/db'
 
 type Avatar = {
 	base64: string

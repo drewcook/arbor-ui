@@ -1,8 +1,7 @@
+import { IProject, IProjectDoc, Project } from '@models/project.model'
+import dbConnect from '@utils/db'
+import { update } from '@utils/http'
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-import { IProject, IProjectDoc, Project } from '../../../models/project.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
 
 export type CreateProjectPayload = {
 	createdBy: string

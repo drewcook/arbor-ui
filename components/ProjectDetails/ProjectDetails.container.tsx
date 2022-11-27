@@ -1,9 +1,9 @@
+import Notification from '@components/Notification'
+import ProjectDetails from '@components/ProjectDetails/ProjectDetails'
+import StemQueue from '@components/StemQueue/StemQueue'
 import { Box, Tab, Tabs } from '@mui/material'
 import { ReactNode, SyntheticEvent, useEffect, useState } from 'react'
 
-import Notification from '../../components/Notification'
-import ProjectDetails from '../../components/ProjectDetails/ProjectDetails'
-import StemQueue from '../../components/StemQueue/StemQueue'
 import type { IProjectDoc } from '../../models/project.model'
 import { useWeb3 } from '../Web3Provider'
 

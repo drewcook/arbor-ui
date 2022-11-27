@@ -5,7 +5,7 @@ const networks = {
 		networkHex: '0x7A69',
 		displayName: 'Localhost',
 		rpc: 'http://127.0.0.1:8545/',
-		currency: 'LOCAL',
+		currency: 'GO',
 		explorer: '',
 	},
 	polygon: {
@@ -53,7 +53,8 @@ const networks = {
 // Preferred network
 // Dev: localhost
 // Prod: Polygon Testnet
-const preferredNetwork = process.env.NODE_ENV === 'development' ? 'harmonyDev' : 'harmonyTest'
+const preferredNetwork = process.env.NODE_ENV === 'development' ? 'localhost' : 'harmonyTest'
+console.log({ preferredNetwork })
 
 // Onboard takes hexadecimal values
 export const NETWORK_HEX = networks[preferredNetwork].networkHex

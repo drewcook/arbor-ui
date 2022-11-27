@@ -102,6 +102,10 @@ contract StemQueue is SemaphoreCore, SemaphoreGroups {
         _removeMember(groupId, identityCommitment, proofSiblings, proofPathIndices);
     }
 
+    function currentGroupId() public view returns (uint256) {
+        return _currentGroupId.current();
+    }
+
     /// @dev Only users who create valid proofs can vote.
     /// @dev The contract owner must only send the transaction and they will not know anything about the identity of the voters.
     /// @dev The external nullifier is in this example the root of the Merkle tree.

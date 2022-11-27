@@ -1,17 +1,22 @@
+import Notification from '@components/Notification'
+import TagsInput from '@components/TagsInput'
+import { useWeb3 } from '@components/Web3Provider'
+import { IProjectDoc } from '@models/project.model'
 import { Button, CircularProgress, Container, TextField, Typography } from '@mui/material'
-import type { NextPage } from 'next'
+import { get, post } from '@utils/http'
+import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 
-import Notification from '../../components/Notification'
-import TagsInput from '../../components/TagsInput'
-import { useWeb3 } from '../../components/Web3Provider'
 import { newProjectStyles as styles } from '../../styles/Projects.styles'
-import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
-const NewProjectPage: NextPage = () => {
+type newProjectPageProps = {
+	data: IProjectDoc | null
+}
+
+const NewProjectPage: NextPage<newProjectPageProps> = ({ data }) => {
 	const [name, setName] = useState<string>('')
 	const [description, setDescription] = useState<string>('')
 	const [bpm, setBpm] = useState<number>(120)
@@ -119,6 +124,55 @@ const NewProjectPage: NextPage = () => {
 		}
 	}
 
+	const handleSubmitDev = async () => {
+		try {
+			if (!currentUser) {
+				setErrorOpen(true)
+				setErrorMsg('Please connect your Web3 wallet')
+				return
+			}
+			setLoading(true)
+
+			const contractRes = await contracts.stemQueue.createProjectGroup(20, BigInt(0), currentUser.address, {
+				from: currentUser.address,
+				gasLimit: 2000000,
+			})
+
+			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+			// const receipt = await contractRes.wait()
+			// const votingGroupId = receipt.events[1].args.groupId.toString()
+			const votingGroupId = Number(await contracts.stemQueue.currentGroupId())
+			console.log({ votingGroupId })
+
+			// POST new project record to backend
+			const mockPayload: CreateProjectPayload = {
+				createdBy: currentUser.address, // Use address rather than MongoDB ID
+				collaborators: [currentUser.address, '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'.toLowerCase()], // start as only collaborator
+				name: `dev: ${votingGroupId}`,
+				description: 'fake description',
+				bpm: 120,
+				trackLimit: 10,
+				tags: [''],
+				votingGroupId,
+			}
+
+			const projectRes = await post('/projects', mockPayload)
+			if (projectRes.success) {
+				// Redirect to project page
+				setSuccessMsg('Successfully created project, redirecting...')
+				resetForm()
+				router.push(`/projects/${projectRes.data._id}`)
+			} else {
+				setErrorOpen(true)
+				setErrorMsg('An error occurred creating the project')
+			}
+			setLoading(false)
+		} catch (e: any) {
+			setLoading(false)
+			console.error('Project creation failed', e.message)
+		}
+	}
+
 	const resetForm = () => {
 		setName('')
 		setDescription('')
@@ -205,11 +259,34 @@ const NewProjectPage: NextPage = () => {
 				>
 					{loading ? <CircularProgress size={26} /> : 'Create Project'}
 				</Button>
+				<Button
+					variant="contained"
+					color="secondary"
+					size="large"
+					onClick={handleSubmitDev}
+					fullWidth
+					sx={styles.submitBtn}
+					disabled={loading}
+				>
+					{loading ? <CircularProgress size={26} /> : 'DEV: Create Project'}
+				</Button>
 			</Container>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}
 			{errorOpen && <Notification open={errorOpen} msg={errorMsg} type="error" onClose={onNotificationClose} />}
 		</>
 	)
+}
+
+export const getServerSideProps: GetServerSideProps = async context => {
+	// Get project details from ID
+	const res = await get(`/projects`)
+	const data: IProjectDoc | null = res.success ? res.data : null
+
+	return {
+		props: {
+			data,
+		},
+	}
 }
 
 export default NewProjectPage

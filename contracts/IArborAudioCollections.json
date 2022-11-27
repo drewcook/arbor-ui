@@ -1,0 +1,29 @@
+{
+	"_format": "hh-sol-artifact-1",
+	"contractName": "IArborAudioCollections",
+	"sourceName": "contracts/BlindAuction.sol",
+	"abi": [
+		{
+			"inputs": [
+				{
+					"internalType": "address payable",
+					"name": "winner",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_tokenId",
+					"type": "uint256"
+				}
+			],
+			"name": "buyDev",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		}
+	],
+	"bytecode": "0x",
+	"deployedBytecode": "0x",
+	"linkReferences": {},
+	"deployedLinkReferences": {}
+}

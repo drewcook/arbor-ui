@@ -11,6 +11,7 @@ import {
 	OutlinedInput,
 	Typography,
 } from '@mui/material'
+import { formatBytes32String } from 'ethers/lib/utils'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import web3 from 'web3'
@@ -40,19 +41,20 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 	const { onClose, open, unlist, nft, onListSuccess } = props
 	const [isOpen, setIsOpen] = useState<boolean>(open ?? false)
 	const [isOpenUnlist, setIsOpenUnlist] = useState<boolean>(open ?? false)
-	const [listPrice, setListPrice] = useState<number>(0.5)
+	const [listPrice, setListPrice] = useState<number>(1)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const { contracts, currentUser } = useWeb3()
+	const nftIdBytes32 = formatBytes32String(nft._id)
 
 	const handleClose = () => {
 		if (onClose) onClose()
 		setIsOpen(false)
 		setIsOpenUnlist(false)
-		setListPrice(0.5)
+		setListPrice(1)
 		setLoading(false)
 	}
 
@@ -60,18 +62,25 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		setLoading(true)
 		try {
 			if (currentUser) {
+				await createAuction(60, 60, '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
 				// Allow it to be bought on chain
 				const amount = web3.utils.toWei(listPrice?.toString(), 'ether')
-				const scRes: any = await contracts.nft.allowBuy(nft.token.id, amount, {
+				// console.log(nft.token.id)
+				const scRes: any = await contracts.nft.allowBuy(1, amount, {
 					from: currentUser.address,
 					gasLimit: 2000000,
 				})
+				window.alert('buy allowed')
 				if (!scRes) throw new Error('Failed to list the NFT for sale')
 
+				const auctionAddress = await contracts.blindAuctionFactory.auctionAddress(formatBytes32String(nft._id), {
+					gasLimit: 2000000,
+				})
 				// Make PUT request
 				const res = await update(`/nfts/${nft._id}`, {
 					isListed: true,
 					listPrice,
+					auction: { address: auctionAddress },
 				})
 				if (!res.success) throw new Error(`Failed to list user NFT- ${res.error}`)
 				// Close dialog
@@ -83,7 +92,8 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				// Emit callback
 				onListSuccess()
 				// Reset price
-				setListPrice(0.5)
+				setListPrice(1)
+				window.location.reload()
 			}
 		} catch (e: any) {
 			console.error(e.message)
@@ -109,6 +119,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				const res = await update(`/nfts/${nft._id}`, {
 					isListed: false,
 					listPrice: 0,
+					auction: { address: '' },
 				})
 				if (!res.success) throw new Error(`Failed to remove the listing for this user NFT - ${res.error}`)
 				// Close dialog
@@ -120,7 +131,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				// Emit callback
 				onListSuccess()
 				// Reset price
-				setListPrice(0.5)
+				setListPrice(1)
 			}
 		} catch (e: any) {
 			console.error(e.message)
@@ -136,6 +147,36 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 		setSuccessMsg('')
 		setErrorOpen(false)
 		setErrorMsg('')
+	}
+
+	const createAuction = async (bidTime: number, revealTime: number, beneficiary: string) => {
+		const blindAuctionCreated = await contracts.blindAuctionFactory.createBlindAuctionProxy(
+			bidTime,
+			revealTime,
+			beneficiary,
+			nftIdBytes32,
+			{
+				gasLimit: 2000000,
+			},
+		)
+
+		if (!blindAuctionCreated) throw new Error('Failed to create a blind auction')
+		window.alert('Blind auction created')
+	}
+
+	// dev
+	const MINT = async () => {
+		const amount = web3.utils.toWei('0.01', 'ether')
+		const nftsRes = { url: '' }
+		const details = {
+			collaborators: [],
+		}
+		const mintRes: any = await contracts.nft.mintAndBuy(currentUser?.address, nftsRes?.url, details?.collaborators, {
+			value: amount,
+			from: currentUser?.address,
+			gasLimit: 2000000,
+		})
+		const receipt = await mintRes.wait()
 	}
 
 	return (
@@ -154,6 +195,30 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				<DialogTitle>List This NFT</DialogTitle>
 				<DialogContent>
 					{/* <DialogContentText> */}
+
+					{/* <form onSubmit={createAuction} className="w-full max-w-lg">
+						<div>
+							<div>
+								<label htmlFor="grid-bid-time">Bid Time (in seconds)</label>
+								<input id="grid-bid-time" name="bid-time" type="text" placeholder="60" value="60" />
+								<p>This must be a number.</p>
+							</div>
+							<div>
+								<label htmlFor="grid-reveal-time">Reveal Time (in seconds)</label>
+								<input id="grid-reveal-time" type="text" placeholder="60" name="reveal-time" value="60" />
+							</div>
+						</div> */}
+					{/* <div>
+							<div>
+								<label htmlFor="grid-beneficiary">Beneficiary Address</label>
+								<input id="grid-beneficiary" type="text" placeholder="0x..." name="beneficiary" />
+								<p>This is the address of the seller, who will receive the proceeds of the auction.</p>
+							</div>
+						</div> */}
+					{/* <button>Create Auction</button>
+						<p>Warning: The connected wallet {currentUser?.address} will become the auctioneer.</p>
+					</form> */}
+
 					<Typography gutterBottom>You are about to list this NFT on the open market.</Typography>
 					<Typography variant="overline">
 						Note: 10% of the proceeds will go to original collaborators as royalties.
@@ -181,7 +246,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 						Cancel
 					</Button>
 					<Button onClick={handleList} variant="contained" color="primary" disabled={loading}>
-						{loading ? <CircularProgress size={18} sx={{ my: 0.5 }} /> : 'Yes, List It'}
+						{loading ? <CircularProgress size={18} sx={{ my: 1 }} /> : 'Yes, List It'}
 					</Button>
 				</DialogActions>
 			</Dialog>

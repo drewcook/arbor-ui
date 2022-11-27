@@ -12,3 +12,4 @@ dist
 *.lock
 
 .gitignore
+_*

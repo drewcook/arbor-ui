@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 
 // eslint-disable-next-line
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-	enabled: process.env.ANALYZE === 'true',
-})
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+// 	enabled: process.env.ANALYZE === 'true',
+// })
 
 const nextConfig = {
 	reactStrictMode: true,
@@ -35,15 +35,14 @@ const nextConfig = {
 		if (!options.isServer) {
 			config.resolve.fallback.fs = false
 		}
-		return {
-			...config,
-			// WASM support
-			experiments: {
-				asyncWebAssembly: true,
-				layers: true,
-			},
+		// WASM support
+		config.experiments = {
+			asyncWebAssembly: true,
+			layers: true,
 		}
+		return config
 	},
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+// module.exports = withBundleAnalyzer(nextConfig)
+module.exports = nextConfig

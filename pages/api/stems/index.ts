@@ -1,8 +1,7 @@
+import type { IStemDoc } from '@models/stem.model'
+import { Stem } from '@models/stem.model'
+import dbConnect from '@utils/db'
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-import type { IStemDoc } from '../../../models/stem.model'
-import { Stem } from '../../../models/stem.model'
-import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { body, method } = req
