@@ -1,17 +1,15 @@
 import { Close, ZoomIn, ZoomOut } from '@mui/icons-material'
-import {
-	Box,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	Grid,
-	IconButton,
-	Slider,
-	SvgIcon,
-	Toolbar,
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import Slider from '@mui/material/Slider'
+import SvgIcon from '@mui/material/SvgIcon'
+import Toolbar from '@mui/material/Toolbar'
 import { useCallback, useState } from 'react'
 import Cropper from 'react-easy-crop'
 import { Area, Point } from 'react-easy-crop/types'

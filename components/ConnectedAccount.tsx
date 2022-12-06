@@ -21,6 +21,8 @@ const ConnectedAccount = (): JSX.Element => {
 		setAnchorEl(null)
 	}
 
+	console.log(currentUser)
+
 	return (
 		<>
 			<Box sx={styles.wrapper}>
