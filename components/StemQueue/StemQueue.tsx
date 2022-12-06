@@ -3,7 +3,7 @@ import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { Strategy, ZkIdentity } from '@zk-kit/identity'
 import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
@@ -50,10 +50,26 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		onFailure,
 	} = props
 	const [registerLoading, setRegisterLoading] = useState<boolean>(false)
-	const [voteLoading, setVoteLoading] = useState<boolean>(false)
+	const [loadingState, setLoadingState] = useState<{ loading?: boolean }>({})
 	const [approveLoading, setApproveLoading] = useState<boolean>(false)
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const { contracts, currentUser, updateCurrentUser } = useWeb3()
+
+	useEffect(() => {
+		const obj = {}
+		details.queue.map((_, idx) => (obj[idx] = false))
+		setLoadingState(obj)
+	}, [details])
+
+	const voteIsLoading = (idx: number) => loadingState[idx] == true
+
+	const setVoteIsLoading = (idx: number, trueOrFalse: boolean) => {
+		setLoadingState({
+			...loadingState,
+			[idx]: trueOrFalse,
+			loading: Object.keys(loadingState).some(k => !loadingState[k]),
+		})
+	}
 
 	/*
 		Stem Player callbacks
@@ -157,11 +173,12 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		setRegisterLoading(false)
 	}
 
-	const handleVote = async (stem: IStemDoc) => {
+	const handleVote = async (stem: IStemDoc, idx: number) => {
 		try {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
-			setVoteLoading(true)
+
+			setVoteIsLoading(idx, true)
 
 			// Signal will be the MongoDB ObjectId for the stem record being voted on
 			const stemId: string = stem._id.toString()
@@ -270,24 +287,8 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			console.error(e)
 		}
-		setVoteLoading(false)
-	}
 
-	// Get the stem vote count for the relative stem
-	const handleGetStemVoteCount = async (stem: IStemDoc) => {
-		if (!currentUser) return
-		const stemId: string = stem._id.toString()
-		const voteCountRes = await contracts.stemQueue.stemVoteCounts(utils.formatBytes32String(stemId), {
-			from: currentUser.address,
-			gasLimit: 2000000,
-		})
-
-		/*
-		ByHarsh : This code is not required because we are just calling function
-		// Get the receipt
-		const receipt = await voteCountRes.wait()
-		console.log({ receipt })
-	*/
+		setVoteIsLoading(idx, false)
 	}
 
 	/**
@@ -386,14 +387,17 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						<Button
 							variant="contained"
 							size="small"
-							onClick={() => handleVote(stem.stem)}
-							disabled={voteLoading || !userIsRegisteredVoter || !currentUser}
+							onClick={() => handleVote(stem.stem, idx)}
+							disabled={loadingState.loading || !userIsRegisteredVoter || !currentUser}
 							sx={{ mr: 1 }}
 						>
-							{voteLoading ? <CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> : 'Cast Vote'}
-						</Button>
-						<Button variant="outlined" size="small" onClick={() => handleGetStemVoteCount(stem.stem)} sx={{ mr: 1 }}>
-							Get Vote Count
+							{voteIsLoading(idx) ? (
+								<>
+									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {'  Vote Pending'}
+								</>
+							) : (
+								'Cast Vote'
+							)}
 						</Button>
 						{userIsCollaborator && (
 							<Button
