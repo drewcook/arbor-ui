@@ -18,11 +18,12 @@ type AudioUtilsProviderProps = {
 export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 	const ffmpeg: FFmpeg = createFFmpeg({ log: true })
 
-	const getAudio = async (href: string): any => {
+	const getAudio = async (href: string): Promise<Blob> => {
 		console.log('getting audio file', href)
 		await ffmpeg.load()
 		const audio = ffmpeg.FS('readFile', href)
 		console.log({ audio })
+		return new Blob([audio.buffer], { type: 'audio/wav' })
 	}
 
 	/**
