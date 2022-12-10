@@ -1,3 +1,4 @@
+import { createFFmpeg } from '@ffmpeg/ffmpeg'
 import {
 	AddCircleOutline,
 	Download,
@@ -23,23 +24,19 @@ import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
-import web3 from 'web3'
 
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NETWORK_CURRENCY } from '../../constants/networks'
-import logoBinary from '../../lib/logoBinary'
-import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
 import formatAddress from '../../utils/formatAddress'
-import { post } from '../../utils/http'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
@@ -71,8 +68,10 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	// Hooks
-	const router = useRouter()
-	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
+	// const router = useRouter()
+	const { /* NFTStore, contracts, */ connected, currentUser, handleConnectWallet } = useWeb3()
+	const ffmpeg = createFFmpeg({ log: true })
+	// const { ffmpeg, mergeAudio } = useAudioUtils()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -165,23 +164,29 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
+				const blobData: Blob[] = []
 				files.forEach((data: Blob) => {
 					formData.append('files', data)
+					blobData.push(data)
 				})
+				// console.log({ stems, files })
 
+				await ffmpeg.load()
+				console.log('loaded', ffmpeg.isLoaded())
 				console.log({ files })
-				const song = mergeAudioFile(files, 'mySong.wav')
-				console.log({ song })
+				// const data = await mergeAudio(details.stems.map(s => s.audioHref))
+				// const song = mergeAudioFile(files, 'mySong.wav')
+				// console.log({ song })
 
-				// 	// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
-				// 	// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
+				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
+				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
 				// 	if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
 				// 	const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
 				// 		method: 'POST',
 				// 		body: formData,
 				// 	})
 
-				// 	// Catch flatten audio error
+				// Catch flatten audio error
 				// 	if (!response.ok) throw new Error('Failed to flatten the audio files')
 				// 	if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 
@@ -191,7 +196,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// 	if (!mintingOpen) setMintingOpen(true)
 				// 	setMintingMsg('Uploading to NFT.storage...')
 
-				// 	// Construct NFT.storage data and store
+				// Construct NFT.storage data and store
 				// 	const nftsRes = await NFTStore.store({
 				// 		name: details.name, // TODO: plus a version number?
 				// 		description:
@@ -206,10 +211,10 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// 		},
 				// 	})
 
-				// 	// Check for data
+				// Check for data
 				// 	if (!nftsRes) throw new Error('Failed to store on NFT.storage')
 
-				// 	// Call smart contract and mint an nft out of the original CID
+				// Call smart contract and mint an nft out of the original CID
 				// 	if (!mintingOpen) setMintingOpen(true)
 				// 	setMintingMsg('Minting the NFT. This could take a moment...')
 				// 	const amount = web3.utils.toWei('0.01', 'ether')
@@ -220,7 +225,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// 	})
 				// 	const receipt = await mintRes.wait()
 
-				// 	// Add new NFT to database and user details
+				// Add new NFT to database and user details
 				// 	if (!mintingOpen) setMintingOpen(true)
 				// 	setMintingMsg('Updating user details...')
 				// 	const newNftPayload: INft = {
@@ -253,13 +258,13 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// 	const nftCreated = await post('/nfts', newNftPayload)
 				// 	if (!nftCreated.success) throw new Error(nftCreated.error)
 
-				// 	// Notify success
+				// Notify success
 				// 	if (!successOpen) setSuccessOpen(true)
 				// 	setSuccessMsg('Success! You now own this music NFT, redirecting...')
 				// 	setMinting(false)
 				// 	setMintingMsg('')
 
-				// 	// Route to user's profile page
+				// Route to user's profile page
 				// 	router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
