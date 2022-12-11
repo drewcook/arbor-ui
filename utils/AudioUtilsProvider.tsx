@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext } from 'react'
 type AudioUtilsContextProps = {
 	ffmpeg: FFmpeg
 	getAudio: (href: string) => any
-	mergeAudio: (files: Blob[]) => any
+	mergeAudio: (files: Blob[], outputFileName: string) => any
 }
 // @ts-ignore
 const AudioUtilsContext = createContext<AudioUtilsContextProps>({})
@@ -46,7 +46,8 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 		const commands = ['-i']
 		for (let i = 0; i < files.length; i++) {
 			commands.push('-i')
-			commands.push(files[i])
+			const name = await files[i].text()
+			commands.push(name)
 		}
 
 		// Transcode it to .mp3
