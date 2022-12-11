@@ -1,9 +1,8 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
-import { writeFile } from 'fs/promises'
 
 const ffmpeg = createFFmpeg({ log: true })
 
-const transcode = async ({ target: { files } }) => {
+export const transcodeFile = async ({ target: { files } }) => {
 	const { name } = files[0]
 	// Load instance
 	await ffmpeg.load()
@@ -27,13 +26,13 @@ const transcode = async ({ target: { files } }) => {
 
 				// 	// NOTE: We hit this di
  */
-export const mergeAudioFiles = async (files: Blob[], outpuFileName: string) => {
+export const mergeAudioFiles = async (files: Blob[], outputFileName: string) => {
 	// Load instance
 	await ffmpeg.load()
 	// For each file
 	// Example "ffmpeg -iinput0.mp3 -i input1.mp3 -filter_complex amix=inputs=2:duration=longest output.mp3"
-	let commands = ['-i']
-	for (var i = 0; i < files.length; i++) {
+	const commands = ['-i']
+	for (let i = 0; i < files.length; i++) {
 		commands.push('-i')
 		commands.push(files[i])
 	}
@@ -44,7 +43,7 @@ export const mergeAudioFiles = async (files: Blob[], outpuFileName: string) => {
 	commands.push('duration=longest')
 	commands.push(outputFileName)
 	console.log(commands.join(' '), commands)
-	await ffmpeg.run(commands)
+	await ffmpeg.run(commands.join(' '))
 
 	// Write file, fetch file contents first
 	// const fileContents: Uint8Array = await fetchFile(files[i])
