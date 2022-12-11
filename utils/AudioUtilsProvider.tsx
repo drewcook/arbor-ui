@@ -28,15 +28,35 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 
 	/**
 	 * Merges in several audio files sources into a singular designation source
+	 * Transcodes the audio to .wav
+	 * https://stackoverflow.com/questions/14498539/how-to-overlay-downmix-two-audio-files-using-ffmpeg
 	 * @param files - The audio blobs to convert into one
+	 * @param outputFileName - The name of the destination file
 	 * @returns {Blob} - THe single audio file as a blob
 	 */
-	const mergeAudio = async (files: Blob[]): Promise<Blob> => {
+	const mergeAudio = async (files: Blob[], outputFileName: string): Promise<Blob> => {
 		console.log('merging audio files', files)
 		if (!ffmpeg.isLoaded()) {
 			console.log('not loaded', { ffmpeg })
 			await ffmpeg.load()
 		}
+
+		// For each file
+		// Example "ffmpeg -iinput0.mp3 -i input1.mp3 -filter_complex amix=inputs=2:duration=longest output.mp3"
+		const commands = ['-i']
+		for (let i = 0; i < files.length; i++) {
+			commands.push('-i')
+			commands.push(files[i])
+		}
+
+		// Transcode it to .mp3
+		commands.push('-filter_complex')
+		commands.push(`amix=inputs=${files.length}`)
+		commands.push('duration=longest')
+		commands.push(outputFileName)
+		console.log(commands.join(' '), commands)
+		await ffmpeg.run(commands.join(' '))
+
 		// const outputFile = 'output.wav'
 		const inputPaths: string[] = []
 		for (const file of files) {
@@ -45,9 +65,9 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 			inputPaths.push(`file 1`)
 		}
 		ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'))
-		await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', 'output.mp4')
+		await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', outputFileName)
 		// Complete Concating
-		const data = ffmpeg.FS('readFile', 'output.mp4')
+		const data = ffmpeg.FS('readFile', outputFileName)
 		console.log({ output: data })
 		const newFile = new Blob([data.buffer], { type: 'audio/wav' })
 		return newFile

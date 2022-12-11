@@ -170,9 +170,9 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					blobData.push(data)
 				})
 				// console.log({ stems, files })
-
+				console.log('loaded b4', ffmpeg.isLoaded())
 				await ffmpeg.load()
-				console.log('loaded', ffmpeg.isLoaded())
+				console.log('loaded aft', ffmpeg.isLoaded())
 				console.log({ files })
 				// const data = await mergeAudio(details.stems.map(s => s.audioHref))
 				// const song = mergeAudioFile(files, 'mySong.wav')
