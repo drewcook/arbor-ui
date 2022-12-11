@@ -2251,6 +2251,18 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
+"@interep/identity@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@interep/identity/-/identity-0.3.0.tgz#78af77157b3e8ef43cde79fa647ba014f2f88ec6"
+  integrity sha512-GLKLII+2AKIQA0wvWc65Tj29IQpdeqXxXif5rQA07GYQpqiry2dpoxm8OdTerB1TSCqCeanKE/WC8iOpRbUsAg==
+  dependencies:
+    "@semaphore-protocol/identity" "2.6.1"
+
+"@interep/reputation@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.4.0.tgz#9bf9a6ece1428e05d24457ba8590d17977ce4808"
+  integrity sha512-tsswlUTX2Fh0+wzUxUT3qRdMTQtLkiwxmTAJzrWUqLxCaM/HzspbHWa8AE1fzkKZUNovzFThB9v4PLurO/gm+A==
+
 "@ipld/car@^3.0.1", "@ipld/car@^3.2.3":
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@ipld/car/-/car-3.2.4.tgz#115951ba2255ec51d865773a074e422c169fb01c"
@@ -3270,7 +3282,7 @@
     "@zk-kit/incremental-merkle-tree" "1.0.0"
     circomlibjs "0.0.8"
 
-"@semaphore-protocol/identity@^2.0.0":
+"@semaphore-protocol/identity@2.6.1", "@semaphore-protocol/identity@^2.0.0":
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/@semaphore-protocol/identity/-/identity-2.6.1.tgz#49385c1004261ca2e192c43aa04005ce6ef82d83"
   integrity sha512-pS3+p1Oer0P+S2AyRPrZcLqrWvelgVmweUuMC2hodRF5yEBUmLwXI/kez4qw8zOqwCXiAFpLTevaGlpp2EhsWg==
