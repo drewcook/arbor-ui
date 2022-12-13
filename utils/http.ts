@@ -37,7 +37,6 @@ const instance: AxiosInstance = axios.create({
 			normalizeHeaderName(headers, 'Accept')
 			normalizeHeaderName(headers, 'Content-Type')
 			setHeaderIfUnset(headers, 'Access-Control-Allow-Origin', '*')
-			setHeaderIfUnset(headers, 'X-testing', 'hello world')
 			// transform data
 			if (
 				utils.isFormData(data) ||
