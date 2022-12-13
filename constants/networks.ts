@@ -52,8 +52,12 @@ const networks = {
 
 // Preferred network
 // Dev: localhost
+// Preview: Heroku builds 'arbor-pr-xxx'
 // Prod: Polygon Testnet
-const preferredNetwork = process.env.NODE_ENV === 'development' ? 'harmonyDev' : 'harmonyTest'
+const isDevBuild = process.env.NODE_ENV === 'development'
+const isHerokuPrBuild = process.env.NODE_ENV === 'production' && process.env.HEROKU_APP_NAME
+const isVercelPrBuild = process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'preview'
+const preferredNetwork = isDevBuild || isHerokuPrBuild || isVercelPrBuild ? 'harmonyDev' : 'harmonyTest'
 
 // Onboard takes hexadecimal values
 export const NETWORK_HEX = networks[preferredNetwork].networkHex

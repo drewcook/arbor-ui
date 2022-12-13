@@ -19,6 +19,9 @@ const instance: AxiosInstance = axios.create({
 		// Check heroku builds
 		process.env.HEROKU_APP_NAME
 			? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
+			: // Check vercel builds
+			process.env.VERCEL_ENV === 'preview'
+			? `https://${process.env.VERCEL_URL}`
 			: // Use test build and clear out, i.e. use Vercel preview ephemeral URLs for base url
 			process.env.CLIENT_HOST === 'test'
 			? ''
