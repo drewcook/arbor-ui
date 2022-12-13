@@ -1,12 +1,13 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { AxiosInstance, AxiosRequestHeaders } from 'axios'
 import normalizeHeaderName from 'axios/lib/helpers/normalizeHeaderName'
 import utils from 'axios/lib/utils'
 import _cloneDeep from 'lodash/cloneDeep'
 
 const JSONBI = require('json-bigint')({ useNativeBigInt: true })
-const setContentTypeIfUnset = (headers, value) => {
-	if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-		headers['Content-Type'] = value
+
+const setHeaderIfUnset = (headers: AxiosRequestHeaders | undefined, headerName: string, value: string) => {
+	if (headers && !utils.isUndefined(headers) && utils.isUndefined(headers[headerName])) {
+		headers[headerName] = value
 	}
 }
 
@@ -24,8 +25,12 @@ const instance: AxiosInstance = axios.create({
 	// Or https://stackoverflow.com/questions/43787712/axios-how-to-deal-with-big-integers
 	transformRequest: [
 		(data, headers) => {
+			// normalize
 			normalizeHeaderName(headers, 'Accept')
 			normalizeHeaderName(headers, 'Content-Type')
+			setHeaderIfUnset(headers, 'Access-Control-Allow-Origin', '*')
+			setHeaderIfUnset(headers, 'X-testing', 'hello world')
+			// transform data
 			if (
 				utils.isFormData(data) ||
 				utils.isArrayBuffer(data) ||
@@ -39,14 +44,16 @@ const instance: AxiosInstance = axios.create({
 			if (utils.isArrayBufferView(data)) {
 				return data.buffer
 			}
+			// update content type
 			if (utils.isURLSearchParams(data)) {
-				setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8')
+				setHeaderIfUnset(headers, 'Content-Type', 'application/x-www-form-urlencoded;charset=utf-8')
 				return data.toString()
 			}
 			if (utils.isObject(data)) {
-				setContentTypeIfUnset(headers, 'application/json;charset=utf-8')
+				setHeaderIfUnset(headers, 'Content-Type', 'application/json;charset=utf-8')
 				return JSONBI.stringify(data)
 			}
+			// update cors info
 			return data
 		},
 	],
