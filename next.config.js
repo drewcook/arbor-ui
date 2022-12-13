@@ -38,9 +38,9 @@ const nextConfig = {
 				source: '/api/:path*',
 				headers: [
 					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
-					{ key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
-					{ key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },
-					// { key: 'Access-Control-Allow-Origin', value: '*' },
+					// { key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
+					// { key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },
+					{ key: 'Access-Control-Allow-Origin', value: '*' },
 					{ key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
 					{
 						key: 'Access-Control-Allow-Headers',
