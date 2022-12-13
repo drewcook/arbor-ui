@@ -16,9 +16,14 @@ const setHeaderIfUnset = (headers: AxiosRequestHeaders | undefined, headerName: 
 const instance: AxiosInstance = axios.create({
 	// We store this for Vercel Preview builds
 	baseURL:
-		process.env.CLIENT_HOST === 'test'
-			? '' // Use Vercel preview ephemeral URLs for base url
-			: process.env.CLIENT_HOST, // Use env vars stored
+		// Check heroku builds
+		process.env.HEROKU_APP_NAME
+			? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
+			: // Use test build and clear out, i.e. use Vercel preview ephemeral URLs for base url
+			process.env.CLIENT_HOST === 'test'
+			? ''
+			: // Use env vars stored, likely production
+			  process.env.CLIENT_HOST,
 
 	// Since JSON.stringify(BigInt) fails, we need a custom stringify handler using 'json-bigint'
 	// See https://gist.github.com/itsTalwar/d34758a5f1199e3fc3269eb364d087e8
@@ -66,6 +71,7 @@ const instance: AxiosInstance = axios.create({
  * @returns - Resources from our database
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
+	console.log('$ENV', process.env)
 	try {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
