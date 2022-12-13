@@ -74,7 +74,6 @@ const instance: AxiosInstance = axios.create({
  * @returns - Resources from our database
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
-	console.log('$ENV', process.env)
 	try {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
