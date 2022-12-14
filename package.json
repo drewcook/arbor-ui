@@ -28,7 +28,9 @@
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=16",
+		"npm": ">=9",
+		"yarn": ">=1.22.1"
   },
   "nextBundleAnalysis": {
     "budget": null,
