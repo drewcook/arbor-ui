@@ -1,4 +1,4 @@
-import { createFFmpeg, FFmpeg } from '@ffmpeg/ffmpeg'
+import { createFFmpeg, FFmpeg } from '@ffmpeg/core'
 import { createContext, ReactNode, useContext } from 'react'
 
 // Context
