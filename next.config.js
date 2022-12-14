@@ -31,6 +31,7 @@ const nextConfig = {
 		],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
 	},
+	// Ensure there's a direct match in vercel.json
 	async headers() {
 		return [
 			{
