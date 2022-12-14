@@ -64,6 +64,7 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 		const fullUser: IUserFull = {
 			...userData,
 			projects: [],
+			projectCollaborations: [],
 			stems: [],
 			nfts: [],
 		}
@@ -75,12 +76,19 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 			else console.error(`Failed to find user NFT of ID - ${nftId}`)
 		}
 
-		// Get user's projects' details
+		// Get user's projects' creations
 		for (const projectId of userData.projectIds) {
 			const projectRes = await get(`/projects/${projectId}`)
 			if (projectRes.success) fullUser.projects.push(projectRes.data)
 			else console.error(`Failed to find user project of ID - ${projectId}`)
 		}
+
+		// Get user's project collaborations
+		// TODO: move this into getFullUserDetails()
+		const userCollaborationsRes = await get(`/users/collaborator/${userAddress}`)
+		if (userCollaborationsRes.success) fullUser.projectCollaborations = userCollaborationsRes.data
+		else console.warn('Failed to find user project collaborations')
+		console.log({ userProjectCollaborations: userCollaborationsRes.data })
 
 		// Get user's stems' details
 		for (const stemId of userData.stemIds) {
@@ -315,14 +323,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// Get user object
 	const userId = context.query.id
 	const userData = await getFullUserDetails(userId)
-	const res = await get(`/users/collaborator/${userId}`)
-	console.log(res, 'kkdkkdk')
-	const projects: IProjectDoc | null = res.success ? res.data : null
 
 	return {
 		props: {
 			data: userData,
-			projects,
 		},
 	}
 }

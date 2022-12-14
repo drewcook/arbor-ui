@@ -20,7 +20,7 @@ const instance: AxiosInstance = axios.create({
 		!!process.env.HEROKU_APP_NAME
 			? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
 			: // Check vercel builds
-			process.env.VERCEL_ENV === 'preview'
+			process.env.VERCEL_ENV === 'preview' && !!process.env.VERCEL_URL
 			? `https://${process.env.VERCEL_URL}`
 			: // Use test build and clear out, i.e. use as a fallback
 			process.env.CLIENT_HOST === 'test'

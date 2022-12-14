@@ -16,7 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				const projects: IProject[] | null = await Project.find({ collaborators: id })
 				if (!projects) {
-					return res.status(400).json({ success: false })
+					return res.status(404).json({ success: false })
 				}
 				res.status(200).json({ success: true, data: projects })
 			} catch (error) {
