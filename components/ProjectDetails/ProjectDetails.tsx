@@ -70,7 +70,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	// Hooks
 	// const router = useRouter()
 	const { /* NFTStore, contracts, */ connected, currentUser, handleConnectWallet } = useWeb3()
-	const { ffmpeg, mergeAudio } = useAudioUtils()
+	const { mergeAudio } = useAudioUtils()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -173,8 +173,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						filename: name,
 					})
 				})
-				// if (!ffmpeg.isLoaded()) await ffmpeg.load()
-				// console.log('loaded aft', ffmpeg.isLoaded())
 				const stemHrefs: string[] = await details.stems.map(s => s.audioHref)
 				mergeAudioInputData = mergeAudioInputData.map((v, idx) => ({ ...v, href: stemHrefs[idx] }))
 				const song: Blob = await mergeAudio(mergeAudioInputData, 'mySong.wav')
