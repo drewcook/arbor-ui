@@ -11,7 +11,10 @@ class AppDocument extends Document {
 		return (
 			<Html>
 				<Head>
-					<meta httpEquiv="origin-trial" content="token" />
+					<meta
+						httpEquiv="origin-trial"
+						content="ApKfXWMQ6VAskBwNSbcki9K9jGc6UgVWSdKyY+sdHxuWPfJYrOMJojPxgS52lPZXL6010lnspY7OAtzS16thvwMAAAB1eyJvcmlnaW4iOiJodHRwczovL2FyYm9yLmF1ZGlvOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTY4ODA4MzE5OSwiaXNTdWJkb21haW4iOnRydWV9"
+					/>
 					<meta
 						name="description"
 						content="The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors."
