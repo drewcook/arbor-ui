@@ -58,7 +58,7 @@ const isDevBuild = process.env.NODE_ENV === 'development'
 const isHerokuPrBuild = process.env.NODE_ENV === 'production' && !!process.env.HEROKU_APP_NAME
 const isVercelPrBuild = process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'preview'
 const preferredNetwork = isDevBuild || isHerokuPrBuild || isVercelPrBuild ? 'harmonyDev' : 'harmonyTest'
-console.log({
+console.log(process.env, {
 	env: process.env.NODE_ENV,
 	heroku: process.env.HEROKU_APP_NAME,
 	vercel: process.env.VERCEL_URL,
