@@ -43,6 +43,19 @@ const propTypes = {
 			stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 		}),
 	),
+	projectCollaborations: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			name: PropTypes.string.isRequired,
+			description: PropTypes.string.isRequired,
+			trackLimit: PropTypes.number.isRequired,
+			nfts: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			tags: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			collaborators: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			projects: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+			stems: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+		}),
+	),
 }
 
 type UserDetailsPageProps = PropTypes.InferProps<typeof propTypes>
@@ -64,6 +77,7 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 		const fullUser: IUserFull = {
 			...userData,
 			projects: [],
+			projectCollaborations: [],
 			stems: [],
 			nfts: [],
 		}
@@ -75,12 +89,17 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 			else console.error(`Failed to find user NFT of ID - ${nftId}`)
 		}
 
-		// Get user's projects' details
+		// Get user's projects' creations
 		for (const projectId of userData.projectIds) {
 			const projectRes = await get(`/projects/${projectId}`)
 			if (projectRes.success) fullUser.projects.push(projectRes.data)
 			else console.error(`Failed to find user project of ID - ${projectId}`)
 		}
+
+		// Get user's project collaborations
+		const userCollaborationsRes = await get(`/users/collaborator/${userAddress}`)
+		if (userCollaborationsRes.success) fullUser.projectCollaborations = userCollaborationsRes.data
+		else console.warn('Failed to find user project collaborations')
 
 		// Get user's stems' details
 		for (const stemId of userData.stemIds) {
@@ -96,11 +115,10 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 	}
 }
 
-// TODO: Show projects that a user has also collaborated on, not just ones they've created
 const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
-	const { data, projects } = props
+	const { data } = props
 	const [uploadAvatarOpen, setUploadAvatarOpen] = useState<boolean>(false)
-	const [details, setDetails] = useState<any>(null)
+	const [details, setDetails] = useState<any>(data)
 	const [isCurrentUserDetails, setIsCurrentUserDetails] = useState<boolean>(false)
 	const { currentUser } = useWeb3()
 
@@ -145,7 +163,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 				<title>Arbor | User Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
-				{details && projects ? (
+				{details ? (
 					<>
 						<Grid container spacing={4}>
 							<Grid item xs={12} md={8}>
@@ -260,13 +278,13 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						<Typography variant="h4" gutterBottom>
 							Collaborations
 							<Typography component="span" sx={styles.sectionCount}>
-								({projects.length})
+								({details.projectCollaborations.length ?? 0})
 							</Typography>
 						</Typography>
 						<Typography sx={styles.sectionMeta}>Projects this user has collaborated on.</Typography>
 						<Grid container spacing={4}>
-							{projects.length > 0 ? (
-								projects.map(project => (
+							{details.projectCollaborations && details.projectCollaborations.length > 0 ? (
+								details.projectCollaborations.map(project => (
 									<Grid item sm={6} md={4} key={project?._id}>
 										<ProjectCard details={project} />
 									</Grid>
@@ -315,14 +333,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	// Get user object
 	const userId = context.query.id
 	const userData = await getFullUserDetails(userId)
-	const res = await get(`/users/collaborator/${userId}`)
-	console.log(res, 'kkdkkdk')
-	const projects: IProjectDoc | null = res.success ? res.data : null
 
 	return {
 		props: {
 			data: userData,
-			projects,
 		},
 	}
 }
