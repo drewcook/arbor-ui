@@ -9,6 +9,8 @@ const nextConfig = {
 	reactStrictMode: true,
 	env: {
 		HOME: process.env.HOME,
+		VERCEL_ENV: process.env.VERCEL_ENV,
+		HEROKU_APP_NAME: process.env.HEROKU_APP_NAME,
 		CLIENT_HOST: process.env.CLIENT_HOST,
 		MONGODB_URI: process.env.MONGODB_URI,
 		WALLETCONNECT_ID: process.env.WALLETCONNECT_ID,
