@@ -17,7 +17,7 @@ const instance: AxiosInstance = axios.create({
 	// We store this for Vercel Preview builds
 	baseURL:
 		// Check heroku builds
-		process.env.HEROKU_APP_NAME
+		!!process.env.HEROKU_APP_NAME
 			? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
 			: // Check vercel builds
 			process.env.VERCEL_ENV === 'preview'
@@ -74,7 +74,6 @@ const instance: AxiosInstance = axios.create({
  * @returns - Resources from our database
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
-	console.log({ env: process.env.NODE_ENV })
 	try {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
