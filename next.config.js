@@ -37,9 +37,18 @@ const nextConfig = {
 	async headers() {
 		return [
 			{
+				// ffmpeg.wasm support for all routes
+				source: '*',
+				headers: [
+					{ key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
+					{ key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+				],
+			},
+			{
 				// matching all API routes
 				source: '/api/:path*',
 				headers: [
+					// Access controll
 					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
 					// { key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
 					// { key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },

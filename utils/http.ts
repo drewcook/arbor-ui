@@ -38,6 +38,9 @@ const instance: AxiosInstance = axios.create({
 			normalizeHeaderName(headers, 'Content-Type')
 			// support all connections
 			setHeaderIfUnset(headers, 'Access-Control-Allow-Origin', '*')
+			// support ffmpeg.wasm
+			setHeaderIfUnset(headers, 'Cross-Origin-Embedder-Policy', 'require-corp')
+			setHeaderIfUnset(headers, 'Cross-Origin-Opener-Policy', 'same-origin')
 			// transform data
 			if (
 				utils.isFormData(data) ||
