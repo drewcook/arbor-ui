@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+
 import type { INftDoc } from './nft.model'
 import type { IProjectDoc } from './project.model'
 import type { IStemDoc } from './stem.model'
@@ -31,6 +32,7 @@ export interface IUser {
 export interface IUserFull extends IUser {
 	nfts: INftDoc[]
 	projects: IProjectDoc[]
+	projectCollaborations: IProjectDoc[]
 	stems: IStemDoc[]
 }
 
