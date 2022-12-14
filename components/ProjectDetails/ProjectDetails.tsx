@@ -177,7 +177,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// console.log('loaded aft', ffmpeg.isLoaded())
 				const stemHrefs: string[] = await details.stems.map(s => s.audioHref)
 				mergeAudioInputData = mergeAudioInputData.map((v, idx) => ({ ...v, href: stemHrefs[idx] }))
-				const song = await mergeAudio(mergeAudioInputData, 'mySong.wav')
+				const song: Blob = await mergeAudio(mergeAudioInputData, 'mySong.wav')
 				console.log({ song })
 
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
