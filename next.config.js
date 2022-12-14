@@ -10,6 +10,7 @@ const nextConfig = {
 	env: {
 		HOME: process.env.HOME,
 		VERCEL_ENV: process.env.VERCEL_ENV,
+		VERCEL_URL: process.env.VERCEL_URL,
 		HEROKU_APP_NAME: process.env.HEROKU_APP_NAME,
 		CLIENT_HOST: process.env.CLIENT_HOST,
 		MONGODB_URI: process.env.MONGODB_URI,
