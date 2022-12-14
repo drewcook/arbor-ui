@@ -1,4 +1,3 @@
-import { createFFmpeg } from '@ffmpeg/ffmpeg'
 import {
 	AddCircleOutline,
 	Download,
@@ -36,6 +35,7 @@ import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
+import { MergeAudioInput, useAudioUtils } from '../../utils/AudioUtilsProvider'
 import formatAddress from '../../utils/formatAddress'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
@@ -70,8 +70,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	// Hooks
 	// const router = useRouter()
 	const { /* NFTStore, contracts, */ connected, currentUser, handleConnectWallet } = useWeb3()
-	const ffmpeg = createFFmpeg({ log: true })
-	// const { ffmpeg, mergeAudio } = useAudioUtils()
+	const { ffmpeg, mergeAudio } = useAudioUtils()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -165,17 +164,21 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// Construct files and post to flattening service
 				const formData = new FormData()
 				const blobData: Blob[] = []
-				files.forEach((data: Blob) => {
+				const mergeAudioInputData: MergeAudioInput[] = []
+				files.forEach((data: Blob, name: string) => {
 					formData.append('files', data)
 					blobData.push(data)
+					mergeAudioInputData.push({
+						blob: data,
+						filename: name,
+					})
 				})
-				// console.log({ stems, files })
-				console.log('loaded b4', ffmpeg.isLoaded())
-				await ffmpeg.load()
-				console.log('loaded aft', ffmpeg.isLoaded())
-				console.log({ files })
-				// const data = await mergeAudio(details.stems.map(s => s.audioHref))
-				// const song = mergeAudioFile(files, 'mySong.wav')
+				// if (!ffmpeg.isLoaded()) await ffmpeg.load()
+				// console.log('loaded aft', ffmpeg.isLoaded())
+				const stemHrefs: string[] = await details.stems.map(s => s.audioHref)
+				mergeAudioInputData.forEach((v, idx) => ({ ...v, href: stemHrefs[idx] }))
+				console.log({ mergeAudioInputData })
+				// const song = mergeAudio(mergeAudioInputData, 'mySong.wav')
 				// console.log({ song })
 
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit

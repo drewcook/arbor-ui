@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext } from 'react'
 type AudioUtilsContextProps = {
 	ffmpeg: FFmpeg
 	getAudio: (href: string) => any
-	mergeAudio: (files: Blob[], outputFileName: string) => any
+	mergeAudio: (files: MergeAudioInput[], outputFileName: string) => any
 }
 // @ts-ignore
 const AudioUtilsContext = createContext<AudioUtilsContextProps>({})
@@ -13,6 +13,11 @@ const AudioUtilsContext = createContext<AudioUtilsContextProps>({})
 // Provider
 type AudioUtilsProviderProps = {
 	children: ReactNode
+}
+export type MergeAudioInput = {
+	blob: Blob
+	href?: string
+	filename: string
 }
 
 export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
@@ -34,7 +39,7 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 	 * @param outputFileName - The name of the destination file
 	 * @returns {Blob} - THe single audio file as a blob
 	 */
-	const mergeAudio = async (files: Blob[], outputFileName: string): Promise<Blob> => {
+	const mergeAudio = async (files: MergeAudioInput[], outputFileName: string): Promise<Blob> => {
 		console.log('merging audio files', files)
 		if (!ffmpeg.isLoaded()) {
 			console.log('not loaded', { ffmpeg })
@@ -46,7 +51,7 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 		const commands = ['-i']
 		for (let i = 0; i < files.length; i++) {
 			commands.push('-i')
-			const name = await files[i].text()
+			const name = await files[i].filename
 			commands.push(name)
 		}
 
@@ -62,7 +67,7 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 		const inputPaths: string[] = []
 		for (const file of files) {
 			// const { name } = file
-			ffmpeg.FS('writeFile', 'file 1', await fetchFile(file))
+			ffmpeg.FS('writeFile', 'file 1', await fetchFile(file.blob))
 			inputPaths.push(`file 1`)
 		}
 		ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'))
