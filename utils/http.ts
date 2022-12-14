@@ -22,7 +22,7 @@ const instance: AxiosInstance = axios.create({
 			: // Check vercel builds
 			process.env.VERCEL_ENV === 'preview'
 			? `https://${process.env.VERCEL_URL}`
-			: // Use test build and clear out, i.e. use Vercel preview ephemeral URLs for base url
+			: // Use test build and clear out, i.e. use as a fallback
 			process.env.CLIENT_HOST === 'test'
 			? ''
 			: // Use env vars stored, likely production
@@ -36,6 +36,7 @@ const instance: AxiosInstance = axios.create({
 			// normalize
 			normalizeHeaderName(headers, 'Accept')
 			normalizeHeaderName(headers, 'Content-Type')
+			// support all connections
 			setHeaderIfUnset(headers, 'Access-Control-Allow-Origin', '*')
 			// transform data
 			if (
