@@ -164,7 +164,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// Construct files and post to flattening service
 				const formData = new FormData()
 				const blobData: Blob[] = []
-				const mergeAudioInputData: MergeAudioInput[] = []
+				let mergeAudioInputData: MergeAudioInput[] = []
 				files.forEach((data: Blob, name: string) => {
 					formData.append('files', data)
 					blobData.push(data)
@@ -176,10 +176,9 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				// if (!ffmpeg.isLoaded()) await ffmpeg.load()
 				// console.log('loaded aft', ffmpeg.isLoaded())
 				const stemHrefs: string[] = await details.stems.map(s => s.audioHref)
-				mergeAudioInputData.forEach((v, idx) => ({ ...v, href: stemHrefs[idx] }))
-				console.log({ mergeAudioInputData })
-				// const song = mergeAudio(mergeAudioInputData, 'mySong.wav')
-				// console.log({ song })
+				mergeAudioInputData = mergeAudioInputData.map((v, idx) => ({ ...v, href: stemHrefs[idx] }))
+				const song = mergeAudio(mergeAudioInputData, 'mySong.wav')
+				console.log({ song })
 
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
 				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit

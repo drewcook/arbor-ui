@@ -1,4 +1,4 @@
-import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg'
+import { createFFmpeg, FFmpeg } from '@ffmpeg/ffmpeg'
 import { createContext, ReactNode, useContext } from 'react'
 
 // Context
@@ -40,51 +40,38 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 	 * @returns {Blob} - THe single audio file as a blob
 	 */
 	const mergeAudio = async (files: MergeAudioInput[], outputFileName: string): Promise<Blob> => {
-		console.log('merging audio files', files)
-		if (!ffmpeg.isLoaded()) {
-			console.log('not loaded', { ffmpeg })
-			await ffmpeg.load()
-		}
+		if (!ffmpeg.isLoaded()) await ffmpeg.load()
 
-		// For each file
+		// Compile together command
 		// Example "ffmpeg -iinput0.mp3 -i input1.mp3 -filter_complex amix=inputs=2:duration=longest output.mp3"
-		const commands = ['-i']
+		const commands: string[] = []
 		for (let i = 0; i < files.length; i++) {
 			commands.push('-i')
 			const name = await files[i].filename
-			commands.push(name)
+			commands.push(`${name}.wav`) // hardcode filetype
 		}
-
-		// Transcode it to .mp3
-		commands.push('-filter_complex')
-		commands.push(`amix=inputs=${files.length}`)
-		commands.push('duration=longest')
+		commands.push(`-filter_complex "[0:0][1:0] amix=inputs=${files.length}:duration=longest"`)
+		// commands.push('-c:a')
+		// commands.push('')
 		commands.push(outputFileName)
 		console.log(commands.join(' '), commands)
-		await ffmpeg.run(commands.join(' '))
+		// Run the command using the SDK to merge the files
+		const response = await ffmpeg.run(commands.join(' '))
+		const newFileData = ffmpeg.FS('readFile', outputFileName)
+		const newFileBlob = new Blob([newFileData.buffer], { type: 'audio/wav' })
+		console.log({ response, newFileData, newFileBlob })
 
-		// const outputFile = 'output.wav'
-		const inputPaths: string[] = []
-		for (const file of files) {
-			// const { name } = file
-			ffmpeg.FS('writeFile', 'file 1', await fetchFile(file.blob))
-			inputPaths.push(`file 1`)
-		}
-		ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'))
-		await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', outputFileName)
-		// Complete Concating
-		const data = ffmpeg.FS('readFile', outputFileName)
-		console.log({ output: data })
-		const newFile = new Blob([data.buffer], { type: 'audio/wav' })
-		return newFile
-		// for (const file in files) {
-		// 	const fileData = await fetchFile(file)
-		// 	const data = await ffmpeg.FS('readFile', file)
-		// 	// transcode it
-		// 	await ffmpeg.run('-i', file, outputFile)
-		// 	console.log({ file, fileData, data })
+		// Concating approach
+		// for (const file of files) {
+		// 	// const { name } = file
+		// 	ffmpeg.FS('writeFile', 'file 1', await fetchFile(file.blob))
+		// 	inputPaths.push(`file 1`)
 		// }
-		// await fs.promises.writeFile(file, this.ffmpeg.FS('readFile', outputFile))
+		// ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'))
+		// await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', outputFileName)
+		// const data = ffmpeg.FS('readFile', outputFileName)
+
+		return newFileBlob
 	}
 
 	return <AudioUtilsContext.Provider value={{ ffmpeg, getAudio, mergeAudio }}>{children}</AudioUtilsContext.Provider>
