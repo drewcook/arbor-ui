@@ -61,7 +61,7 @@ const preferredNetwork = isDevBuild || isHerokuPrBuild || isVercelPrBuild ? 'har
 console.log({
 	env: process.env.NODE_ENV,
 	heroku: process.env.HEROKU_APP_NAME,
-	vercel: process.env.VERCEL_ENV,
+	vercel: process.env.VERCEL_URL,
 	isHerokuPrBuild,
 	isVercelPrBuild,
 	isDevBuild,
