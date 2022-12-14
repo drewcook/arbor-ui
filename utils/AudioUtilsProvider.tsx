@@ -42,6 +42,7 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 	const mergeAudio = async (files: MergeAudioInput[], outputFileName: string): Promise<Blob> => {
 		try {
 			if (!ffmpeg.isLoaded()) await ffmpeg.load()
+			console.log('loaded, merging', ffmpeg.isLoaded())
 
 			// Compile together command
 			// Example "ffmpeg -iinput0.mp3 -i input1.mp3 -filter_complex amix=inputs=2:duration=longest output.mp3"
