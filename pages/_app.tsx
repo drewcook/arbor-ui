@@ -6,6 +6,7 @@ import NextNProgress from 'nextjs-progressbar'
 import AppLayout from '../components/AppLayout'
 import ArborThemeProvider from '../components/ArborThemeProvider'
 import { Web3Provider } from '../components/Web3Provider'
+import { AudioUtilsProvider } from '../utils/AudioUtilsProvider'
 
 // Allow New Relic APM
 require('../newrelic')
@@ -13,10 +14,12 @@ require('../newrelic')
 const ArborApp = ({ Component, pageProps }: AppProps) => (
 	<ArborThemeProvider>
 		<Web3Provider>
-			<NextNProgress color="#23F09A" />
-			<AppLayout>
-				<Component {...pageProps} />
-			</AppLayout>
+			<AudioUtilsProvider>
+				<NextNProgress color="#23F09A" />
+				<AppLayout>
+					<Component {...pageProps} />
+				</AppLayout>
+			</AudioUtilsProvider>
 		</Web3Provider>
 	</ArborThemeProvider>
 )

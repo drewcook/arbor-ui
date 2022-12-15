@@ -23,23 +23,20 @@ import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import { Fragment, useState } from 'react'
-import web3 from 'web3'
 
 import ImageOptimized from '../../components/ImageOptimized'
 import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NETWORK_CURRENCY } from '../../constants/networks'
-import logoBinary from '../../lib/logoBinary'
-import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
+import { MergeAudioInput, useAudioUtils } from '../../utils/AudioUtilsProvider'
 import formatAddress from '../../utils/formatAddress'
-import { post } from '../../utils/http'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
@@ -71,8 +68,9 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
 	// Hooks
-	const router = useRouter()
-	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
+	// const router = useRouter()
+	const { /* NFTStore, contracts, */ connected, currentUser, handleConnectWallet } = useWeb3()
+	const { mergeAudio } = useAudioUtils()
 
 	if (!details) return null
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
@@ -165,98 +163,109 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 
 				// Construct files and post to flattening service
 				const formData = new FormData()
-				files.forEach((data: Blob) => {
+				const blobData: Blob[] = []
+				let mergeAudioInputData: MergeAudioInput[] = []
+				files.forEach((data: Blob, name: string) => {
 					formData.append('files', data)
+					blobData.push(data)
+					mergeAudioInputData.push({
+						blob: data,
+						filename: name,
+					})
 				})
+				const stemHrefs: string[] = await details.stems.map(s => s.audioHref)
+				mergeAudioInputData = mergeAudioInputData.map((v, idx) => ({ ...v, href: stemHrefs[idx] }))
+				const song: Blob = await mergeAudio(mergeAudioInputData, 'mySong.wav')
+				console.log({ song })
 
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
 				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
-				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
-				const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
-					method: 'POST',
-					body: formData,
-				})
+				// 	if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
+				// 	const response = await fetch(process.env.PYTHON_HTTP_HOST + '/merge', {
+				// 		method: 'POST',
+				// 		body: formData,
+				// 	})
 
 				// Catch flatten audio error
-				if (!response.ok) throw new Error('Failed to flatten the audio files')
-				if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
+				// 	if (!response.ok) throw new Error('Failed to flatten the audio files')
+				// 	if (response.body === null) throw new Error('Failed to flatten audio files, response body empty.')
 
-				const flattenedAudioBlob = await response.blob()
-				if (!flattenedAudioBlob) throw new Error('Failed to flatten the audio files')
+				// 	const flattenedAudioBlob = await response.blob()
+				// 	if (!flattenedAudioBlob) throw new Error('Failed to flatten the audio files')
 
-				if (!mintingOpen) setMintingOpen(true)
-				setMintingMsg('Uploading to NFT.storage...')
+				// 	if (!mintingOpen) setMintingOpen(true)
+				// 	setMintingMsg('Uploading to NFT.storage...')
 
 				// Construct NFT.storage data and store
-				const nftsRes = await NFTStore.store({
-					name: details.name, // TODO: plus a version number?
-					description:
-						'An Arbor Audio NFT representing collaborative music from multiple contributors on the decentralized web.',
-					image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
-					properties: {
-						createdOn: new Date().toISOString(),
-						createdBy: currentUser.address,
-						audio: flattenedAudioBlob,
-						collaborators: details.collaborators,
-						stems: details.stems.map((s: any) => s.metadataUrl),
-					},
-				})
+				// 	const nftsRes = await NFTStore.store({
+				// 		name: details.name, // TODO: plus a version number?
+				// 		description:
+				// 			'An Arbor Audio NFT representing collaborative music from multiple contributors on the decentralized web.',
+				// 		image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
+				// 		properties: {
+				// 			createdOn: new Date().toISOString(),
+				// 			createdBy: currentUser.address,
+				// 			audio: flattenedAudioBlob,
+				// 			collaborators: details.collaborators,
+				// 			stems: details.stems.map((s: any) => s.metadataUrl),
+				// 		},
+				// 	})
 
 				// Check for data
-				if (!nftsRes) throw new Error('Failed to store on NFT.storage')
+				// 	if (!nftsRes) throw new Error('Failed to store on NFT.storage')
 
 				// Call smart contract and mint an nft out of the original CID
-				if (!mintingOpen) setMintingOpen(true)
-				setMintingMsg('Minting the NFT. This could take a moment...')
-				const amount = web3.utils.toWei('0.01', 'ether')
-				const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
-					value: amount,
-					from: currentUser.address,
-					gasLimit: 2000000,
-				})
-				const receipt = await mintRes.wait()
+				// 	if (!mintingOpen) setMintingOpen(true)
+				// 	setMintingMsg('Minting the NFT. This could take a moment...')
+				// 	const amount = web3.utils.toWei('0.01', 'ether')
+				// 	const mintRes: any = await contracts.nft.mintAndBuy(currentUser.address, nftsRes.url, details.collaborators, {
+				// 		value: amount,
+				// 		from: currentUser.address,
+				// 		gasLimit: 2000000,
+				// 	})
+				// 	const receipt = await mintRes.wait()
 
 				// Add new NFT to database and user details
-				if (!mintingOpen) setMintingOpen(true)
-				setMintingMsg('Updating user details...')
-				const newNftPayload: INft = {
-					createdBy: currentUser.address,
-					owner: currentUser.address,
-					isListed: false,
-					listPrice: 0,
-					token: {
-						// TODO: Parse the correct arguments from the event receipt
-						id: parseInt(
-							receipt.events.TokenCreated?.returnValues.newTokenId ||
-								receipt.events.TokenCreated?.returnValues.tokenId ||
-								receipt.events.TokenCreated?.returnValues._tokenId ||
-								0, // default
-						),
-						tokenURI:
-							receipt.events.TokenCreated?.returnValues.newTokenURI ||
-							receipt.events.TokenCreated?.returnValues.tokenURI ||
-							receipt.events.TokenCreated?.returnValues._tokenURI ||
-							'', // default
-						data: mintRes,
-					},
-					name: details.name,
-					metadataUrl: nftsRes.url,
-					audioHref: nftsRes.data.properties.audio,
-					projectId: details._id.toString(),
-					collaborators: details.collaborators,
-					stems: details.stems, // Direct 1:1 deep clone
-				}
-				const nftCreated = await post('/nfts', newNftPayload)
-				if (!nftCreated.success) throw new Error(nftCreated.error)
+				// 	if (!mintingOpen) setMintingOpen(true)
+				// 	setMintingMsg('Updating user details...')
+				// 	const newNftPayload: INft = {
+				// 		createdBy: currentUser.address,
+				// 		owner: currentUser.address,
+				// 		isListed: false,
+				// 		listPrice: 0,
+				// 		token: {
+				// 			// TODO: Parse the correct arguments from the event receipt
+				// 			id: parseInt(
+				// 				receipt.events.TokenCreated?.returnValues.newTokenId ||
+				// 					receipt.events.TokenCreated?.returnValues.tokenId ||
+				// 					receipt.events.TokenCreated?.returnValues._tokenId ||
+				// 					0, // default
+				// 			),
+				// 			tokenURI:
+				// 				receipt.events.TokenCreated?.returnValues.newTokenURI ||
+				// 				receipt.events.TokenCreated?.returnValues.tokenURI ||
+				// 				receipt.events.TokenCreated?.returnValues._tokenURI ||
+				// 				'', // default
+				// 			data: mintRes,
+				// 		},
+				// 		name: details.name,
+				// 		metadataUrl: nftsRes.url,
+				// 		audioHref: nftsRes.data.properties.audio,
+				// 		projectId: details._id.toString(),
+				// 		collaborators: details.collaborators,
+				// 		stems: details.stems, // Direct 1:1 deep clone
+				// 	}
+				// 	const nftCreated = await post('/nfts', newNftPayload)
+				// 	if (!nftCreated.success) throw new Error(nftCreated.error)
 
 				// Notify success
-				if (!successOpen) setSuccessOpen(true)
-				setSuccessMsg('Success! You now own this music NFT, redirecting...')
-				setMinting(false)
-				setMintingMsg('')
+				// 	if (!successOpen) setSuccessOpen(true)
+				// 	setSuccessMsg('Success! You now own this music NFT, redirecting...')
+				// 	setMinting(false)
+				// 	setMintingMsg('')
 
 				// Route to user's profile page
-				router.push(`/users/${currentUser.address}`)
+				// 	router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
 			console.error(e)

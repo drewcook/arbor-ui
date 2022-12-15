@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { IUserIdentity } from '../../models/user.model'
+import { useAudioUtils } from '../../utils/AudioUtilsProvider'
 import { update } from '../../utils/http'
 import signMessage from '../../utils/signMessage'
 import StemUploadDialog from '../StemUploadDialog'
@@ -54,6 +55,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const [approveLoading, setApproveLoading] = useState<boolean>(false)
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
 	const { contracts, currentUser, updateCurrentUser } = useWeb3()
+	const { getAudio } = useAudioUtils()
 
 	useEffect(() => {
 		const obj = {}
@@ -83,6 +85,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	// Play the wavesurfer file
 	const handlePlay = (id: number) => {
 		const stem = stems.get(id)
+		getAudio(stem.audioHref)
 		if (stem) stem.play()
 	}
 

@@ -28,7 +28,9 @@
     "report-gas": "REPORT_GAS=true hardhat test"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=16 <17",
+    "npm": ">=9 <10",
+    "yarn": ">=1.22.1"
   },
   "nextBundleAnalysis": {
     "budget": null,
@@ -38,10 +40,12 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@ffmpeg/core": "^0.11.0",
+    "@ffmpeg/ffmpeg": "^0.11.6",
     "@metamask/detect-provider": "^1.2.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.7",
-		"@next/bundle-analyzer": "^13.0.1",
+    "@next/bundle-analyzer": "^13.0.1",
     "@openzeppelin/contracts": "^4.7.3",
     "@semaphore-protocol/group": "^2.0.0",
     "@semaphore-protocol/identity": "^2.0.0",
