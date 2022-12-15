@@ -23,11 +23,17 @@ export type MergeAudioInput = {
 }
 
 export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
-	const ffmpeg: FFmpeg = createFFmpeg({ log: true, corePath: `${getClientBaseUrl()}/ffmpeg.min.js` })
+	const ffmpeg: FFmpeg = createFFmpeg({
+		corePath: `${getClientBaseUrl()}/ffmpeg.min.js`,
+		log: true,
+		logger: ({ message }) => console.info('[ffmpeg log]:', message),
+		progress: p => console.info('[ffmpeg progress]:', p),
+	})
 
 	const getAudio = async (href: string): Promise<Blob> => {
+		if (!ffmpeg.isLoaded()) await ffmpeg.load()
 		console.log('getting audio file', href)
-		await ffmpeg.load()
+
 		const audio = ffmpeg.FS('readFile', href)
 		console.log({ audio })
 		return new Blob([audio.buffer], { type: 'audio/wav' })
@@ -49,10 +55,10 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 			// Compile together command
 			// Example "ffmpeg -iinput0.mp3 -i input1.mp3 -filter_complex amix=inputs=2:duration=longest output.mp3"
 			const commands: string[] = []
+			// Add in input fils
 			for (let i = 0; i < files.length; i++) {
-				commands.push('-i')
 				const name = await files[i].filename
-				commands.push(`${name}.wav`) // hardcode filetype
+				commands.push(`-i ${name}.wav`) // hardcode filetype
 			}
 			const mixIdx = new Array(files.length)
 				.fill('')
@@ -66,10 +72,10 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 			commands.push(outputFileName)
 			console.log(commands.join(' '), commands)
 			// Run the command using the SDK to merge the files
-			const response = await ffmpeg.run(commands.join(' '))
-			const newFileData = ffmpeg.FS('readFile', outputFileName)
+			const commandResp = await ffmpeg.run(commands.join(' '))
+			const newFileData = await fs.promises.writeFile(outputFileName, ffmpeg.FS('readFile', outputFileName))
 			const newFileBlob = new Blob([newFileData.buffer], { type: 'audio/wav' })
-			console.log({ response, newFileData, newFileBlob })
+			console.log({ commandResp, newFileData, newFileBlob })
 
 			// Concating approach
 			// for (const file of files) {
