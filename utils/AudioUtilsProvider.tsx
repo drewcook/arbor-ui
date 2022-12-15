@@ -58,6 +58,7 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 				.fill('')
 				.map((v, i) => `[${i}:0]`)
 				.join('')
+			// mixIdx and double quotes could also be tried omitted
 			commands.push(`-filter_complex "${mixIdx} amix=inputs=${files.length}:duration=longest"`)
 
 			commands.push('-c:a')
