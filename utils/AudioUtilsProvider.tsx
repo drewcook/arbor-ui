@@ -52,7 +52,12 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 				const name = await files[i].filename
 				commands.push(`${name}.wav`) // hardcode filetype
 			}
-			commands.push(`-filter_complex "[0:0][1:0] amix=inputs=${files.length}:duration=longest"`)
+			const mixIdx = new Array(files.length)
+				.fill('')
+				.map((v, i) => `[${i}:0]`)
+				.join('')
+			commands.push(`-filter_complex "${mixIdx} amix=inputs=${files.length}:duration=longest"`)
+
 			// commands.push('-c:a')
 			// commands.push('')
 			commands.push(outputFileName)
