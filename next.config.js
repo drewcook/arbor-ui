@@ -38,7 +38,7 @@ const nextConfig = {
 		return [
 			{
 				// ffmpeg.wasm support for all routes
-				source: '/:path',
+				source: '*',
 				headers: [
 					{ key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
 					{ key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
@@ -48,7 +48,7 @@ const nextConfig = {
 				// matching all API routes
 				source: '/api/:path*',
 				headers: [
-					// Access controll
+					// Access control
 					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
 					// { key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
 					// { key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },
