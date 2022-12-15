@@ -11,22 +11,24 @@ const setHeaderIfUnset = (headers: AxiosRequestHeaders | undefined, headerName: 
 	}
 }
 
+export const getClientBaseUrl = (): string => {
+	// Check heroku builds
+	return !!process.env.HEROKU_APP_NAME
+		? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
+		: // Check vercel builds
+		process.env.VERCEL_ENV === 'preview' && !!process.env.VERCEL_URL
+		? `https://${process.env.VERCEL_URL}`
+		: // Use test build and clear out, i.e. use as a fallback
+		process.env.CLIENT_HOST === 'test'
+		? ''
+		: // Use env vars stored, likely production
+		  process.env.CLIENT_HOST ?? ''
+}
 // Create Axios instance
 // See https://axios-http.com/docs/req_config
 const instance: AxiosInstance = axios.create({
 	// We store this for Vercel Preview builds
-	baseURL:
-		// Check heroku builds
-		!!process.env.HEROKU_APP_NAME
-			? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
-			: // Check vercel builds
-			process.env.VERCEL_ENV === 'preview' && !!process.env.VERCEL_URL
-			? `https://${process.env.VERCEL_URL}`
-			: // Use test build and clear out, i.e. use as a fallback
-			process.env.CLIENT_HOST === 'test'
-			? ''
-			: // Use env vars stored, likely production
-			  process.env.CLIENT_HOST,
+	baseURL: getClientBaseUrl(),
 
 	// Since JSON.stringify(BigInt) fails, we need a custom stringify handler using 'json-bigint'
 	// See https://gist.github.com/itsTalwar/d34758a5f1199e3fc3269eb364d087e8
@@ -38,8 +40,8 @@ const instance: AxiosInstance = axios.create({
 			normalizeHeaderName(headers, 'Content-Type')
 			// support all connections
 			setHeaderIfUnset(headers, 'Access-Control-Allow-Origin', '*')
-			// support ffmpeg.wasm
 			setHeaderIfUnset(headers, 'Cross-Origin-Embedder-Policy', 'require-corp')
+			// support ffmpeg.wasm
 			setHeaderIfUnset(headers, 'Cross-Origin-Opener-Policy', 'same-origin')
 			// transform data
 			if (

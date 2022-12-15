@@ -1,6 +1,8 @@
 import { createFFmpeg, FFmpeg } from '@ffmpeg/ffmpeg'
 import { createContext, ReactNode, useContext } from 'react'
 
+import { getClientBaseUrl } from './http'
+
 // Context
 type AudioUtilsContextProps = {
 	ffmpeg: FFmpeg
@@ -21,7 +23,7 @@ export type MergeAudioInput = {
 }
 
 export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
-	const ffmpeg: FFmpeg = createFFmpeg({ log: true })
+	const ffmpeg: FFmpeg = createFFmpeg({ log: true, corePath: `${getClientBaseUrl()}/ffmpeg.min.js` })
 
 	const getAudio = async (href: string): Promise<Blob> => {
 		console.log('getting audio file', href)
@@ -58,8 +60,8 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 				.join('')
 			commands.push(`-filter_complex "${mixIdx} amix=inputs=${files.length}:duration=longest"`)
 
-			// commands.push('-c:a')
-			// commands.push('')
+			commands.push('-c:a')
+			commands.push('libmp3lame')
 			commands.push(outputFileName)
 			console.log(commands.join(' '), commands)
 			// Run the command using the SDK to merge the files
@@ -77,6 +79,9 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 			// ffmpeg.FS('writeFile', 'concat_list.txt', inputPaths.join('\n'))
 			// await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'concat_list.txt', outputFileName)
 			// const data = ffmpeg.FS('readFile', outputFileName)
+
+			// Examples adjusting volume
+			// [0:0]volume=0.2[a];[1:0]volume=0.5[b];[a][b]amix=inputs=2:duration=longest" -c:a libmp3lame output1.mp3
 
 			return newFileBlob
 		} catch (e: any) {
