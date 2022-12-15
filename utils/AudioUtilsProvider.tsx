@@ -73,7 +73,8 @@ export const AudioUtilsProvider = ({ children }: AudioUtilsProviderProps) => {
 			console.log(commands.join(' '), commands)
 			// Run the command using the SDK to merge the files
 			const commandResp = await ffmpeg.run(commands.join(' '))
-			const newFileData = await fs.promises.writeFile(outputFileName, ffmpeg.FS('readFile', outputFileName))
+			// Or use fetchFile?
+			const newFileData = ffmpeg.FS('readFile', outputFileName)
 			const newFileBlob = new Blob([newFileData.buffer], { type: 'audio/wav' })
 			console.log({ commandResp, newFileData, newFileBlob })
 
