@@ -1,6 +1,7 @@
 import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
 import Link from 'next/link'
+
 import type { IProjectDoc } from '../models/project.model'
 import styles from './ProjectCard.styles'
 

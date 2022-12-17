@@ -1,7 +1,4 @@
 const styles = {
-	negateMainPadding: {
-		m: '-5rem 0',
-	},
 	banner: {
 		py: '100px',
 		backgroundColor: '#111',
@@ -73,13 +70,23 @@ const styles = {
 			backgroundColor: '#FDFFA1',
 		},
 		'&[data-color="multi"]': {
-			background:
-				'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
+			background: 'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
 		},
 	},
 	about: {
 		py: 10,
 		backgroundColor: '#fafafa',
+	},
+	faq: {
+		py: 10,
+	},
+	faqHeading: {
+		mb: 5,
+		fontSize: '2.5rem',
+		'@media (min-width: 600px)': {
+			fontSize: '3.5rem',
+		},
+		textAlign: 'center',
 	},
 	blurbBold: {
 		fontWeight: 600,

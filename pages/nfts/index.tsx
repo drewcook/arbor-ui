@@ -2,10 +2,11 @@ import { Box, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
+
 import NFTCard from '../../components/NFTCard'
 import type { INftDoc } from '../../models/nft.model'
-import { get } from '../../utils/http'
 import { indexStyles as styles } from '../../styles/Stems.styles'
+import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.arrayOf(
@@ -23,36 +24,38 @@ const NftsPage: NextPage<NftsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Explore Music and Audio NFTs</title>
+				<title>Arbor | Explore Music and Audio NFTs in the Arboretum</title>
 			</Head>
-			{data ? (
-				<>
-					<Typography variant="h4" component="h1" sx={styles.title}>
-						Polyecho Audio NFTs
-					</Typography>
-					<Container maxWidth="sm">
-						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the marketplace for unique music and audio NFTs, buy, sell, and trade with others, all right here
-							on Polyecho.
+			<Container maxWidth="xl" className="content-container">
+				{data ? (
+					<>
+						<Typography variant="h4" component="h1" sx={styles.title}>
+							Arbor Audio NFTs
 						</Typography>
-					</Container>
-					{data.length > 0 ? (
-						<Grid container spacing={4}>
-							{data.map(nft => (
-								<Grid item sm={6} md={4} key={nft?._id}>
-									<NFTCard details={nft} />
-								</Grid>
-							))}
-						</Grid>
-					) : (
-						<Box sx={styles.noProjects}>
-							<Typography sx={styles.noProjectsMsg}>No NFTs to show.</Typography>
-						</Box>
-					)}
-				</>
-			) : (
-				<Typography sx={styles.noProjects}>Something went wrong</Typography>
-			)}
+						<Container maxWidth="sm">
+							<Typography variant="h5" sx={styles.subtitle}>
+								Explore the artist arboretum for unique music and audio NFTs, buy, sell, and trade with others, all
+								right here on Arbor.
+							</Typography>
+						</Container>
+						{data.length > 0 ? (
+							<Grid container spacing={4}>
+								{data.map(nft => (
+									<Grid item sm={6} md={4} key={nft?._id}>
+										<NFTCard details={nft} />
+									</Grid>
+								))}
+							</Grid>
+						) : (
+							<Box sx={styles.noProjects}>
+								<Typography sx={styles.noProjectsMsg}>No NFTs to show.</Typography>
+							</Box>
+						)}
+					</>
+				) : (
+					<Typography sx={styles.noProjects}>Something went wrong. Try refreshing.</Typography>
+				)}
+			</Container>
 		</>
 	)
 }

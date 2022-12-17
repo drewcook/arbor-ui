@@ -1,8 +1,9 @@
+import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
-import { withSentry } from '@sentry/nextjs'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
@@ -50,12 +51,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				/* create a new model in the database */
 				const nftCreated: any = await Nft.create(payload)
+				if (!nftCreated) throw new Error('Failed to create the NFT')
 
 				// Add the new NFT reference to list of User NFTs field
-				const userUpdated = await update(`/users/${token.data.from}`, { addNFT: nftCreated._id })
-				if (!userUpdated) return res.status(400).json({ success: false, error: "Failed to update user's NFTs" })
+				const userUpdated = await update(`/users/${createdBy}`, { addNFT: nftCreated._id })
+				if (!userUpdated.success) return res.status(400).json({ success: false, error: "Failed to update user's NFTs" })
 
 				// TODO: Add the new NFT reference to list of the Project's NFTs that have been minted for given projectId
+				// Note - this doesn't exist yet, but a project record could have a 'mintedNfts' of ObjectId[]
 
 				res.status(201).json({ success: true, data: nftCreated })
 			} catch (e: any) {

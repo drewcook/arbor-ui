@@ -2,6 +2,7 @@ import AudioFileIcon from '@mui/icons-material/AudioFile'
 import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
+
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
 import styles from './StemCard.styles'
@@ -10,6 +11,7 @@ const propTypes = {
 	details: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
 		createdBy: PropTypes.string.isRequired,
 		filename: PropTypes.string.isRequired,
 		filetype: PropTypes.string.isRequired,
@@ -40,7 +42,7 @@ const StemCard = (props: StemCardProps): JSX.Element => {
 			</Box>
 			<CardContent>
 				<Typography variant="h5" gutterBottom>
-					{formatStemName(details.filename)}
+					{formatStemName(details.name)}
 				</Typography>
 				<Typography variant="body2" sx={styles.detailItem}>
 					Creator: <Link href={`/users/${details.createdBy}`}>{formatAddress(details.createdBy)}</Link>

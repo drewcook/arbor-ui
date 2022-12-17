@@ -19,15 +19,17 @@ import {
 	Toolbar,
 	Typography,
 } from '@mui/material'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
+
 import logoBinary from '../lib/logoBinary'
+import type { IProjectDoc } from '../models/project.model'
 import { post, update } from '../utils/http'
+import signMessage from '../utils/signMessage'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
 import StemDropzone from './StemDropzone'
-import { useWeb3 } from './Web3Provider'
 import styles from './StemUploadDialog.styles'
+import { useWeb3 } from './Web3Provider'
 
 const stemTypes = [
 	{
@@ -67,17 +69,13 @@ const stemTypes = [
 	},
 ]
 
-const propTypes = {
-	open: PropTypes.bool.isRequired,
-	onClose: PropTypes.func.isRequired,
-	onSuccess: PropTypes.func.isRequired,
-	projectDetails: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
-		collaborators: PropTypes.array.isRequired,
-	}),
+type StemUploadDialogProps = {
+	// PropTypes.InferProps<typeof propTypes>
+	open: boolean
+	onClose: () => void
+	onSuccess: (project: IProjectDoc) => void
+	projectDetails: IProjectDoc
 }
-
-type StemUploadDialogProps = PropTypes.InferProps<typeof propTypes>
 
 const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	const { open, onClose, projectDetails, onSuccess } = props
@@ -94,6 +92,9 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 	// Other
 	const { NFTStore, currentUser, connected, handleConnectWallet } = useWeb3()
 	const disableUpload = file === null || stemName === '' || stemType === '' || loading
+	//Signing Message
+	const SIGNING_MSG =
+		'Sign this message to be able to upload this stem to Arbor. You are signing to verify that you are human.'
 
 	const handleClose = () => {
 		setStemName('')
@@ -123,13 +124,23 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 		try {
 			setLoading(true)
 
+			// Check signature for user
+			let stemUploadSignature: any = localStorage.getItem('stemUploadSignature')
+			if (stemUploadSignature === null) stemUploadSignature = JSON.stringify({})
+			stemUploadSignature = JSON.parse(stemUploadSignature)
+			if (typeof stemUploadSignature[currentUser.address] === 'undefined') {
+				const message = await signMessage(SIGNING_MSG)
+				stemUploadSignature[currentUser.address] = message
+				localStorage.setItem('stemUploadSignature', JSON.stringify(stemUploadSignature))
+			}
+
 			if (!uploadingOpen) setUploadingOpen(true)
 			setUploadingMsg('Uploading stem to NFT.storage...')
 
 			// Upload to NFT.storage
 			const nftsRes = await NFTStore.store({
 				name: file.name,
-				description: 'An audio file uploaded through the Polyecho platform',
+				description: 'An audio file uploaded through the Arbor Protocol',
 				image: new Blob([Buffer.from(logoBinary, 'base64')], { type: 'image/*' }),
 				properties: {
 					name: stemName,
@@ -151,7 +162,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setUploadingMsg('Updating project details...')
 
 			// Create the new stem (and adds to user's stems)
-			let res = await post('/stems', {
+			const stemRes = await post('/stems', {
 				name: stemName,
 				type: stemType,
 				metadataUrl: nftsRes.url,
@@ -162,27 +173,22 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				filesize: file.size,
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 			})
-			if (!res.success) throw new Error(res.error)
-			const stemCreated = res.data
+			if (!stemRes.success) throw new Error(stemRes.error)
+			const stemCreated = stemRes.data
 
-			// Add the current user as a collaborator if they aren't one already
-			const collaborators = projectDetails.collaborators
-			if (!projectDetails.collaborators.some((c: string) => c === currentUser.address))
-				collaborators.push(currentUser.address)
-			// Add the new stem to the project and new collaborators list
-			res = await update(`/projects/${projectDetails._id}`, { newStem: stemCreated, collaborators })
+			// Add new stem to user's stems' details
+			const userUpdated = await update(`/users/${currentUser.address}`, { newStem: stemCreated._id })
+			if (!userUpdated.success) throw new Error(userUpdated.error)
 
-			// Catch error or invoke success callback with new project data
-			if (!res.success) throw new Error(res.error)
-			else {
-				// Notify success
-				onNotificationClose()
-				setLoading(false)
-				onSuccess(res.data)
-				handleClose()
-			}
+			// Add the new stem to the project stem queue
+			const projectRes = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
+			if (!projectRes.success) throw new Error(projectRes.error)
 
-			// TODO: if added as a new collaborator, add this projectID to user's list of projects
+			// Notify success
+			onNotificationClose()
+			setLoading(false)
+			onSuccess(projectRes.data)
+			handleClose()
 		} catch (e: any) {
 			console.error(e)
 			// Notify error
@@ -215,8 +221,8 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				</Toolbar>
 				<DialogContent>
 					<DialogContentText sx={styles.text}>
-						When you upload a stem to a Polyecho project, you become a collaborator, where you&apos;ll split a 10% cut
-						for each sale with other collaborators.
+						When you upload a stem to an Arbor project, you become a collaborator, where you&apos;ll split a 10% cut for
+						each sale with other collaborators.
 					</DialogContentText>
 					<Grid container spacing={2}>
 						<Grid item xs={12} sm={6}>
@@ -295,7 +301,5 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 		</>
 	)
 }
-
-StemUploadDialog.propTypes = propTypes
 
 export default StemUploadDialog

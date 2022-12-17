@@ -2,16 +2,19 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { AppBar, Box, Button, Chip, Container, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { useState } from 'react'
-import ConnectedAccount from './ConnectedAccount'
-import styles from './AppHeader.styles'
 
-const pages = [
+import styles from './AppHeader.styles'
+import ConnectedAccount from './ConnectedAccount'
+
+const basePages = [
 	{ href: '/projects/new', title: 'Create' },
 	{ href: '/projects', title: 'Projects' },
 	{ href: '/stems', title: 'Stems' },
-	{ href: '/nfts', title: 'Marketplace' },
-	{ href: '/stats', title: 'Stats' },
+	{ href: '/nfts', title: 'Arboretum' },
 ]
+
+// Add stats page for production environments
+const pages = process.env.NODE_ENV === 'development' ? basePages : [...basePages, { href: '/stats', title: 'Stats' }]
 
 const AppHeader = (): JSX.Element => {
 	const [anchorElNav, setAnchorElNav] = useState(null)
@@ -31,7 +34,7 @@ const AppHeader = (): JSX.Element => {
 					<Link href="/" passHref>
 						{/* @ts-ignore */}
 						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
-							Polyecho
+							Arbor
 							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 						</Typography>
 					</Link>
@@ -76,7 +79,7 @@ const AppHeader = (): JSX.Element => {
 						<Link href="/" passHref>
 							{/* @ts-ignore */}
 							<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
-								Polyecho
+								Arbor
 								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 							</Typography>
 						</Link>

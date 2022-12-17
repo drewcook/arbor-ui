@@ -1,13 +1,14 @@
+import { Box, Typography } from '@mui/material'
+import _debounce from 'lodash/debounce'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+
 import DiscordIconSvg from '../public/discord_circle_black.svg'
 import GithubIconSvg from '../public/github_circle_black.svg'
 import TwitterIconSvg from '../public/twitter_circle_black.svg'
-import { Box, Typography } from '@mui/material'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import ImageOptimized from './ImageOptimized'
-import Link from 'next/link'
-import _debounce from 'lodash/debounce'
 import styles from './AppFooter.styles'
+import ImageOptimized from './ImageOptimized'
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -61,19 +62,19 @@ const AppFooter = (): JSX.Element => {
 							<ImageOptimized src={DiscordIconSvg} width={40} height={40} />
 						</Box>
 					</Link>
-					<Link href="https://twitter.com/polyecho_" passHref>
+					<Link href="https://twitter.com/arborprotocol" passHref>
 						<Box sx={styles.socialIcon}>
 							<ImageOptimized src={TwitterIconSvg} width={40} height={40} />
 						</Box>
 					</Link>
-					<Link href="https://github.com/polyecho-labs" passHref>
+					<Link href="https://github.com/arbor-protocol" passHref>
 						<Box sx={styles.socialIcon}>
 							<ImageOptimized src={GithubIconSvg} width={40} height={40} />
 						</Box>
 					</Link>
 				</Box>
 				<Typography sx={styles.copy} variant="body2">
-					&copy; 2022 POLYECHO | All Rights Reserved
+					&copy; 2022 Arbor Labs | All Rights Reserved
 				</Typography>
 			</Box>
 		</>

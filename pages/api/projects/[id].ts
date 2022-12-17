@@ -1,7 +1,8 @@
+import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import { IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
-import { withSentry } from '@sentry/nextjs'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -29,15 +30,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// Update stems
 				let project: IProjectDoc | null
-				if (body.newStem) {
+				if (body.approvedStem) {
 					project = await Project.findByIdAndUpdate(
 						id,
 						{
 							$set: {
+								// Update the collaborators
 								collaborators: body.collaborators,
 							},
 							$push: {
-								stems: body.newStem,
+								// Add the stem to the queue with 0 votes
+								queue: body.approvedStem,
+							},
+						},
+						{
+							new: true,
+							runValidators: true,
+						},
+					)
+				} else if (body.queuedStem) {
+					project = await Project.findByIdAndUpdate(
+						id,
+						{
+							$push: {
+								// Add the stem to the queue with 0 votes
+								queue: {
+									stem: body.queuedStem,
+									votes: 0,
+								},
 							},
 						},
 						{

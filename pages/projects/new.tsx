@@ -1,14 +1,15 @@
-import { Button, Container, TextField, Typography } from '@mui/material'
+import { Button, CircularProgress, Container, TextField, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+
 import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
+import { newProjectStyles as styles } from '../../styles/Projects.styles'
 import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
-import { newProjectStyles as styles } from '../../styles/Projects.styles'
 
 const NewProjectPage: NextPage = () => {
 	const [name, setName] = useState<string>('')
@@ -16,12 +17,13 @@ const NewProjectPage: NextPage = () => {
 	const [bpm, setBpm] = useState<number>(120)
 	const [trackLimit, setTrackLimit] = useState<number>(10)
 	const [tags, setTags] = useState<string[]>([])
+	const [loading, setLoading] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
 	const router = useRouter()
-	const { currentUser } = useWeb3()
+	const { contracts, currentUser } = useWeb3()
 
 	// Form Field Handlers
 	const handleSetBpm = (e: any) => {
@@ -47,9 +49,49 @@ const NewProjectPage: NextPage = () => {
 		try {
 			if (!currentUser) {
 				setErrorOpen(true)
-				setErrorMsg('You must have a connected Web3 wallet to create a project')
+				setErrorMsg('Please connect your Web3 wallet')
 				return
 			}
+
+			if (!description || !name || !bpm || !trackLimit) {
+				setErrorOpen(true)
+				setErrorMsg('Please enter in the required fields')
+				return
+			}
+			setLoading(true)
+
+			/*
+				Increment the global voting group counter, and use this as the ID for the new Semaphore group
+				- Call PUT /api/voting-groups to increment the value
+				- Get the returned data, inspect the new totalGroupCount value
+				- Use this as the new groupId for the on-chain group
+					- This will need to be done on the client-side, so we'll get this from the response
+				- Use this as the groupId value for the new project record as well
+				- TODO: revert this, or decrement if any of the following requests fail
+			*/
+			/*
+
+				const votingGroupRes = await update('/voting-groups')
+				if (!votingGroupRes.success) throw new Error('Failed to increment voting group count')
+				const votingGroupId = votingGroupRes.data.totalGroupCount
+			*/
+
+			/*
+				Create new Semaphore group for given project
+				- Create new group with project creator as group admin
+				- Do not add in the project creator as a voting member (yet)
+				- Future users will register to vote, which will add them in as group members
+			*/
+			const contractRes = await contracts.stemQueue.createProjectGroup(20, BigInt(0), currentUser.address, {
+				from: currentUser.address,
+				gasLimit: 2000000,
+			})
+
+			if (!contractRes) throw new Error('Failed to create on-chain Semaphore group for given project')
+			const receipt = await contractRes.wait()
+			const votingGroupId = receipt.events[1].args.groupId.toString()
+
+			// POST new project record to backend
 			const payload: CreateProjectPayload = {
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
 				collaborators: [currentUser.address], // start as only collaborator
@@ -58,20 +100,22 @@ const NewProjectPage: NextPage = () => {
 				bpm,
 				trackLimit,
 				tags,
+				votingGroupId,
 			}
-			const res = await post('/projects', payload)
-			if (res.success) {
-				setSuccessOpen(true)
+			const projectRes = await post('/projects', payload)
+			if (projectRes.success) {
+				// Redirect to project page
 				setSuccessMsg('Successfully created project, redirecting...')
 				resetForm()
-				// Redirect to project page
-				router.push(`/projects/${res.data._id}`)
+				router.push(`/projects/${projectRes.data._id}`)
 			} else {
 				setErrorOpen(true)
 				setErrorMsg('An error occurred creating the project')
 			}
-		} catch (e) {
-			console.error('Project creation failed')
+			setLoading(false)
+		} catch (e: any) {
+			setLoading(false)
+			console.error('Project creation failed', e.message)
 		}
 	}
 
@@ -93,9 +137,9 @@ const NewProjectPage: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Create A New Project</title>
+				<title>Arbor | Create A New Project</title>
 			</Head>
-			<Container maxWidth="md">
+			<Container maxWidth="md" className="content-container">
 				<Typography variant="h4" component="h1" sx={styles.title}>
 					Create A New Project
 				</Typography>
@@ -115,6 +159,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={e => setName(e.target.value)}
 					placeholder="Give it a catchy name!"
 					fullWidth
+					required
 				/>
 				<TextField
 					label="Project Description"
@@ -124,6 +169,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={e => setDescription(e.target.value)}
 					placeholder="Describe what your vision for this project is so that collaborators have a guiding star."
 					fullWidth
+					required
 				/>
 				<TextField
 					label="Project BPM"
@@ -134,6 +180,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={handleSetBpm}
 					placeholder="What BPM is this project targetting?"
 					fullWidth
+					required
 				/>
 				<TextField
 					label="Track Limit"
@@ -144,6 +191,7 @@ const NewProjectPage: NextPage = () => {
 					onChange={handleSetTrackLimit}
 					placeholder="Set a maximum limit of tracks that can be uploaded to this project."
 					fullWidth
+					required
 				/>
 				<TagsInput tags={tags} onAdd={tag => handleAddTag(tag)} onDelete={(tag: string) => handleRemoveTag(tag)} />
 				<Button
@@ -153,8 +201,9 @@ const NewProjectPage: NextPage = () => {
 					onClick={handleSubmit}
 					fullWidth
 					sx={styles.submitBtn}
+					disabled={loading}
 				>
-					Create Project
+					{loading ? <CircularProgress size={26} /> : 'Create Project'}
 				</Button>
 			</Container>
 			{successOpen && <Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />}

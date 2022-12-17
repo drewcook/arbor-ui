@@ -1,8 +1,9 @@
+import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
-import { withSentry } from '@sentry/nextjs'
 
 export type CreateProjectPayload = {
 	createdBy: string
@@ -12,6 +13,7 @@ export type CreateProjectPayload = {
 	bpm: number
 	trackLimit: number
 	tags: string[]
+	votingGroupId?: number // Added upon creation
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,16 +32,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
+				// Create the new project record
+				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = req.body
 				const payload: CreateProjectPayload = {
-					createdBy: req.body.createdBy,
-					collaborators: req.body.collaborators,
-					name: req.body.name,
-					description: req.body.description,
-					bpm: req.body.bpm,
-					trackLimit: req.body.trackLimit,
-					tags: req.body.tags,
+					createdBy,
+					collaborators,
+					name,
+					description,
+					bpm,
+					trackLimit,
+					tags,
+					votingGroupId,
 				}
-				/* create a new model in the database */
 				const project: IProjectDoc = await Project.create(payload)
 
 				// Add new project to creator's user details
@@ -48,8 +52,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
 
+				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })
-			} catch (e) {
+			} catch (e: any) {
+				console.error(e.message)
 				res.status(400).json({ success: false, error: e })
 			}
 			break

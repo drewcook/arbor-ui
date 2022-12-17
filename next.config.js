@@ -1,10 +1,19 @@
 const { withSentryConfig } = require('@sentry/nextjs')
 
 /** @type {import('next').NextConfig} */
+
+// eslint-disable-next-line
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+	enabled: process.env.ANALYZE === 'true',
+})
+
 const nextConfig = {
 	reactStrictMode: true,
 	env: {
 		HOME: process.env.HOME,
+		VERCEL_ENV: process.env.VERCEL_ENV,
+		VERCEL_URL: process.env.VERCEL_URL,
+		HEROKU_APP_NAME: process.env.HEROKU_APP_NAME,
 		CLIENT_HOST: process.env.CLIENT_HOST,
 		MONGODB_URI: process.env.MONGODB_URI,
 		WALLETCONNECT_ID: process.env.WALLETCONNECT_ID,
@@ -12,6 +21,7 @@ const nextConfig = {
 		NFT_STORAGE_KEY: process.env.NFT_STORAGE_KEY,
 		COVALENT_API_KEY: process.env.COVALENT_API_KEY,
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
+		ALCHEMY_POLYGON_KEY: process.env.ALCHEMY_POLYGON_KEY,
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 		SENTRY_DSN: process.env.SENTRY_DSN,
 	},
@@ -27,6 +37,41 @@ const nextConfig = {
 		],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
 	},
+	// Ensure there's a direct match in vercel.json
+	async headers() {
+		return [
+			{
+				// matching all API routes
+				source: '/api/:path*',
+				headers: [
+					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
+					// { key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
+					// { key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },
+					{ key: 'Access-Control-Allow-Origin', value: '*' },
+					{ key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
+					{
+						key: 'Access-Control-Allow-Headers',
+						value:
+							'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+					},
+				],
+			},
+		]
+	},
+	reactStrictMode: true,
+	webpack: (config, options) => {
+		if (!options.isServer) {
+			config.resolve.fallback.fs = false
+		}
+		return {
+			...config,
+			// WASM support
+			experiments: {
+				asyncWebAssembly: true,
+				layers: true,
+			},
+		}
+	},
 }
 
 const sentryWebpackPluginOptions = {
@@ -41,4 +86,4 @@ const sentryWebpackPluginOptions = {
 
 // Make sure adding Sentry options is the last code to run before exporting, to
 // ensure that your source maps include changes from all other Webpack plugins
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)

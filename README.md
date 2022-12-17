@@ -1,17 +1,55 @@
-# Polyecho
+# Arbor Protocol
 
-Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
+The Arbor Protocol, or more simply called Arbor, is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors.
 
-**LIVE DEMO**: <https://polyecho.xyz>
+**LIVE DEMO**: <https://arbor.audio>
 
 ---
 
-## Getting Started
+## Contracts
+
+This application is run on the Polygon Mainnet network.  All contracts are deployed at the following addresses:
+
+| Contract      | Address |
+| ----------- | ----------- |
+| ArborAudioCollections | 0xf6c55e9fAeeaa214f4B23c92e0C88953D19e3dD0 |
+| StemQueue | 0x222bF026aCd1Aece8DB92172F161D63AaC369Bba |
+| Verifier20 | 0x410c16A302d7672a9bEEBE6aF0E4c37122244E13 |
+| PoseidonT3 | 0x5616971539C1d6aCb632A997436f66eA35f66CBC |
+| IncrementalMerkleTree | 0x55D5452Ba831D0aa0Dd0fc8D304D3bcAE8220385 |
+
+---
+
+## Zero-Knowledge SNARKs
+
+Arbor uses zero knowledge technologies to incorporate anonymous voting on stems that are within a Project's Stem Queue.  It accomplishes this by using a series of zkSNARKs and relying on some of the packages to incorporate these into the dApp.
+
+| Library      | Use Case |
+| ----------- | ----------- |
+| @semaphore-protocol/group | To create the on-chain Semaphore voting group for a given Project |
+| @zk-kit/identity | To create the anonymous identity for the voter |
+| @zk-kit/protocols | To generate the off-chain proof and witness to submit to the on-chain verifier that a voter is a member of the Project's voting group |
+
+### Anonymous Voting Workflow
+
+The workflow for the zkSNARK use with Semaphore groups within the dApp are as follows:
+
+1. A user creates a new project.  A new Semaphore group is created on chain and tied to a unique identifier for the project.
+2. A user uploads a stem onto a project.  The stem is put into the Stem Queue.
+3. With stems availabe in the queue, a user can register to be a voter for this project.  A message is signed and an identity commitment is created from the signature.  The commitment is then submitted to the on-chain group and stored in the Merkle tree for the given group that is tied to the given Project.
+4. Only registered users can cast votes on available stems within the Stem Queue.  When a user votes on a stem, the signal is the stem's unique identifier stored in MongoDB.  A Merkle proof is generated from the voter's identity along with all the other identities stored from other users within the voting group. A witness is generated from this proof and used to create a full proof with the WASM and verification key SNARK-based files initially created from the trusted setup. This full proof is then submitted along with the signal to the StemQueue.sol contract.  The contract function then verifies the proof.  If all is okay, the function will succeed and the vote is stored on-chain, anonymously.
+5. With stems having at least one vote, a collaborator of the Project can then approve the stem to be added on for the next slot.  This will remove the stem from the Stem Queue.
+6. The user who uploaded the approved stem will now become a collaborator on the Project and will gain approval permissions.
+7. Collaborators can register and vote within the Stem Queue as well, allowing them to remain anonymous and contribute to voting.
+
+---
+
+## Local Development - Getting Started
 
 First, clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/polyecho/polyecho.git
+git clone https://github.com/arbor-protocol/ui.git
 ```
 
 There is some local setup that needs to happen to fully run this client application locally.
@@ -96,12 +134,12 @@ mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=
 
 ### 4. Create a Database and Link It
 
-Create a new database for polyecho. Title it `polyecho` or whatever suits your fancy. It may prompt you to add a collection to it as well.  Please add a `users` collection.
+Create a new database for Arbor. Title it `arbor-protocol` or whatever suits your fancy. It may prompt you to add a collection to it as well.  Please add a `users` collection.
 
 The important bit is to **update your local environment variables** in the client app. Update the following in `.env.local` to your new connection string:
 
 ```txt
-MONGODB_URI=mongodb://localhost/polyecho
+MONGODB_URI=mongodb://localhost/arbor-protocol
 ```
 
 This will now allow the client app to work with the local MongoDB instance, and you can now interact with it through Compass as a GUI.
@@ -112,4 +150,4 @@ This will now allow the client app to work with the local MongoDB instance, and 
 
 ## Issues
 
-We encourage the open-source atmosphere. If you find any bugs or issues with this repository, don't hesitate to [file an issue](https://github.com/polyecho/polyecho/issues/new) for it. We will work to continually engage with these issues and encourage you to contribute.
+We encourage the open-source atmosphere. If you find any bugs or issues with this repository, don't hesitate to [file an issue](https://github.com/arbor-protocol/ui/issues/new) for it. We will work to continually engage with these issues and encourage you to contribute.

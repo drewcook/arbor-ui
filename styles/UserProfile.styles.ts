@@ -6,13 +6,31 @@ const styles = {
 	editProfileWrap: {
 		my: 2,
 	},
-	avatar: {
+	avatarWrap: {
+		position: 'relative',
+		display: 'inline-flex',
+		justifyContent: 'flex-start',
+		'@media (min-width: 900px)': {
+			display: 'flex',
+			justifyContent: 'flex-end',
+		},
+	},
+	avatarImg: {
 		border: '3px solid #a0b3a0',
 		borderRadius: '50%',
 		height: 200,
 		width: 200,
 		m: 0,
 		overflow: 'hidden',
+	},
+	updateAvatar: {
+		position: 'absolute',
+		bottom: '12px',
+		right: '12px',
+		backgroundColor: '#eee',
+		'&:hover': {
+			backgroundColor: '#ccc',
+		},
 	},
 	metadataWrap: {
 		mb: 3,

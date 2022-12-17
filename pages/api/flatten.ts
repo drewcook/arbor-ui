@@ -1,6 +1,6 @@
+import { withSentry } from '@sentry/nextjs'
 import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { withSentry } from '@sentry/nextjs'
 
 const pythonServer = axios.create({ baseURL: process.env.PYTHON_HTTP_HOST })
 

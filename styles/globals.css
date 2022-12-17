@@ -3,7 +3,7 @@
 /* Blocknative Onboard CSS Vars */
 /* See https://docs.blocknative.com/onboard/core#custom-styling */
 :root {
-  /*
+	/*
 	--onboard-white: white;
   --onboard-black: black;
   --onboard-primary-1: #2f80ed;
@@ -70,115 +70,97 @@
   --onboard-modal-z-index: 10
 	*/
 
-
-  /* CUSTOMIZE SECTIONS OF THE CONNECT MODAL */
-  --onboard-wallet-columns: 1;
-  /* --onboard-connect-content-width: #fff; */
-  /* --onboard-connect-content-height: #fff; */
-  /* --onboard-connect-sidebar-background: #fff; */
-  /* --onboard-connect-sidebar-color: #fff; */
-  /* --onboard-connect-sidebar-progress-background: #fff; */
-  /* --onboard-connect-sidebar-progress-color: #fff; */
-  /* --onboard-connect-header-background: #fff; */
-  /* --onboard-connect-header-color: #fff; */
-  /* --onboard-link-color: #fff; */
-  /* --onboard-close-button-background: #fff; */
-  /* --onboard-close-button-color: #fff; */
-  /* --onboard-checkbox-background: #fff; */
-  /* --onboard-checkbox-color: #fff; */
-  /* --onboard-wallet-button-background: #fff; */
-  /* --onboard-wallet-button-background-hover: #fff; */
-  /* --onboard-wallet-button-color: #fff; */
-  /* --onboard-wallet-button-border-color: #fff; */
-  /* --onboard-wallet-app-icon-border-color: #fff; */
+	/* CUSTOMIZE SECTIONS OF THE CONNECT MODAL */
+	--onboard-wallet-columns: 1;
+	/* --onboard-connect-content-width: #fff; */
+	/* --onboard-connect-content-height: #fff; */
+	/* --onboard-connect-sidebar-background: #fff; */
+	/* --onboard-connect-sidebar-color: #fff; */
+	/* --onboard-connect-sidebar-progress-background: #fff; */
+	/* --onboard-connect-sidebar-progress-color: #fff; */
+	/* --onboard-connect-header-background: #fff; */
+	/* --onboard-connect-header-color: #fff; */
+	/* --onboard-link-color: #fff; */
+	/* --onboard-close-button-background: #fff; */
+	/* --onboard-close-button-color: #fff; */
+	/* --onboard-checkbox-background: #fff; */
+	/* --onboard-checkbox-color: #fff; */
+	/* --onboard-wallet-button-background: #fff; */
+	/* --onboard-wallet-button-background-hover: #fff; */
+	/* --onboard-wallet-button-color: #fff; */
+	/* --onboard-wallet-button-border-color: #fff; */
+	/* --onboard-wallet-app-icon-border-color: #fff; */
 }
 
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	padding: 0;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+		Helvetica Neue, sans-serif;
 }
 
-ol, ul {
+ol,
+ul {
 	padding: 0;
 	margin: 0;
 }
 
 .code-block {
 	text-align: left;
-  display: block;
-  background-color: ghostwhite;
-  border: 1px solid silver;
+	display: block;
+	background-color: ghostwhite;
+	border: 1px solid silver;
 	border-radius: 4px;
-  padding: 15px 20px;
+	padding: 15px 20px;
 	overflow-x: auto;
 	/* word-wrap: break-word; */
 }
 
 .code-block .json-key {
-  color: brown;
+	color: brown;
 }
 .code-block .json-value {
-  color: navy;
+	color: navy;
 }
 .code-block .json-string {
-  color: olive;
+	color: olive;
 }
-
 
 /* Links */
 
-a, a:visited {
-  color: inherit;
-  text-decoration: none;
+a,
+a:visited {
+	color: inherit;
+	text-decoration: none;
 	transition: color 200ms ease-in-out;
 }
 
-a:hover:not(.MuiButton-root:hover), a:active:not(.MuiButton-root:active) {
-	color: #4CE79D;
+a:hover:not(.MuiButton-root:hover),
+a:active:not(.MuiButton-root:active) {
+	color: #4ce79d;
 	transition: color 200ms ease-in-out;
 }
 
-button a:hover, button a:active {
+button a:hover,
+button a:active {
 	color: initial;
 }
 
 /* App */
 
-#app-main {
-  padding: 5rem 0;
-}
-
-#app-main.homepage {
-	padding: 0;
+.content-container {
+	padding-top: 5rem;
+	padding-bottom: 5rem;
 }
 
 .dropzone-loading {
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
-.avatar-wrap {
-	display: flex;
-	justify-content: flex-start;
-}
-
-@media (min-width: 900px) {
-	.avatar-wrap {
-		justify-content: flex-end;
-	}
-}
-
-.nft-card-media img,
-.nft-card-media span {
-	width: 100% !important;
-	height: auto !important;
+	pointer-events: none;
+	cursor: not-allowed;
 }
 
 #upload-stem-type-input {

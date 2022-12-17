@@ -43,8 +43,8 @@ export const config = {
 		bodyParser: {
 			sizeLimit: '100mb',
 			responseLimit: false,
-		}
-	}
+		},
+	},
 }
 
 export default dbConnect

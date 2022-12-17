@@ -3,10 +3,11 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
+
 import ProjectCard from '../../components/ProjectCard'
 import { IProjectDoc } from '../../models/project.model'
-import { get } from '../../utils/http'
 import { indexStyles as styles } from '../../styles/Projects.styles'
+import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.arrayOf(
@@ -24,40 +25,43 @@ const ProjectsPage: NextPage<ProjectsPageProps> = props => {
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Explore Music Projects</title>
+				<title>Arbor | Explore Audio Projects</title>
 			</Head>
-			{data ? (
-				<>
-					<Typography variant="h4" component="h1" sx={styles.title}>
-						Polyecho Music Projects
-					</Typography>
-					<Container maxWidth="sm">
-						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the ecosystem for unique music, collaborate and build with others, create something one of a kind.
+			<Container maxWidth="xl" className="content-container">
+				{data ? (
+					<>
+						<Typography variant="h4" component="h1" sx={styles.title}>
+							Arbor Audio Projects
 						</Typography>
-					</Container>
-					{data.length > 0 ? (
-						<Grid container spacing={4}>
-							{data.map(project => (
-								<Grid item sm={6} md={4} key={project?._id}>
-									<ProjectCard details={project} />
-								</Grid>
-							))}
-						</Grid>
-					) : (
-						<Box sx={styles.noProjects}>
-							<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
-							<Link href="/projects/new" passHref>
-								<Button variant="contained" color="secondary">
-									Create Project
-								</Button>
-							</Link>
-						</Box>
-					)}
-				</>
-			) : (
-				<Typography sx={styles.noProjects}>Something went wrong</Typography>
-			)}
+						<Container maxWidth="sm">
+							<Typography variant="h5" sx={styles.subtitle}>
+								Explore the ecosystem for unique music, collaborate and build with others, create something one of a
+								kind.
+							</Typography>
+						</Container>
+						{data.length > 0 ? (
+							<Grid container spacing={4}>
+								{data.map(project => (
+									<Grid item sm={6} md={4} key={project?._id}>
+										<ProjectCard details={project} />
+									</Grid>
+								))}
+							</Grid>
+						) : (
+							<Box sx={styles.noProjects}>
+								<Typography sx={styles.noProjectsMsg}>No projects to show. Create one!</Typography>
+								<Link href="/projects/new" passHref>
+									<Button variant="contained" color="secondary">
+										Create Project
+									</Button>
+								</Link>
+							</Box>
+						)}
+					</>
+				) : (
+					<Typography sx={styles.noProjects}>Something went wrong. Try refreshing.</Typography>
+				)}
+			</Container>
 		</>
 	)
 }

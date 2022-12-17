@@ -1,11 +1,16 @@
-import { Box, Container, Grid, Typography } from '@mui/material'
+import AppsIcon from '@mui/icons-material/Apps'
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
+import { Box, Button, ButtonGroup, Container, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
+
 import StemCard from '../../components/StemCard'
+import StemList from '../../components/StemList'
 import type { IStemDoc } from '../../models/stem.model'
-import { get } from '../../utils/http'
 import { indexStyles as styles } from '../../styles/Stems.styles'
+import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.arrayOf(
@@ -19,40 +24,59 @@ type StemsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const StemsPage: NextPage<StemsPageProps> = props => {
 	const { data } = props
+	const [listView, showListView] = useState(false)
 
 	return (
 		<>
 			<Head>
-				<title>Polyecho | Explore The StemPool</title>
+				<title>Arbor | Explore The StemPool</title>
 			</Head>
-			{data ? (
-				<>
-					<Typography variant="h4" component="h1" sx={styles.title}>
-						Plunge Into The StemPool
-					</Typography>
-					<Container maxWidth="sm">
-						<Typography variant="h5" sx={styles.subtitle}>
-							Explore the marketplace for unique music stems, upload your own, or grab a few and start a new project
-							with them.
+			<Container maxWidth="xl" className="content-container">
+				{data ? (
+					<>
+						<Typography variant="h4" component="h1" sx={styles.title}>
+							Plunge Into The StemPool
 						</Typography>
-					</Container>
-					{data.length > 0 ? (
-						<Grid container spacing={4}>
-							{data.map((stem: any) => (
-								<Grid item sm={6} md={4} key={stem._id}>
-									<StemCard details={stem} />
-								</Grid>
-							))}
-						</Grid>
-					) : (
-						<Box sx={styles.noProjects}>
-							<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>
+						<Container maxWidth="sm">
+							<Typography variant="h5" sx={styles.subtitle}>
+								Explore the stem pool for unique music stems from the artist community, upload your own, or grab a few
+								and start a new project with them.
+							</Typography>
+						</Container>
+						<Box sx={styles.icons}>
+							<ButtonGroup color="info" variant="outlined" aria-label="outlined button group">
+								<Button variant={!listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+									<AppsIcon />
+								</Button>
+								<Button variant={listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+									<FormatListBulletedIcon />
+								</Button>
+							</ButtonGroup>
 						</Box>
-					)}
-				</>
-			) : (
-				<Typography sx={styles.noProjects}>Something went wrong</Typography>
-			)}
+						{data.length > 0 ? (
+							<Box>
+								{listView ? (
+									<StemList details={data} />
+								) : (
+									<Grid container spacing={4}>
+										{data.map((stem: any) => (
+											<Grid item sm={6} md={4} key={stem._id}>
+												<StemCard details={stem} />
+											</Grid>
+										))}
+									</Grid>
+								)}
+							</Box>
+						) : (
+							<Box sx={styles.noProjects}>
+								<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>
+							</Box>
+						)}
+					</>
+				) : (
+					<Typography sx={styles.noProjects}>Something went wrong. Try refreshing.</Typography>
+				)}
+			</Container>
 		</>
 	)
 }

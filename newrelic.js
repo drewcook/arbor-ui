@@ -9,7 +9,7 @@ exports.config = {
 	/**
 	 * Array of application names.
 	 */
-	app_name: ['polyecho-web'],
+	app_name: ['arbor-ui'],
 	/**
 	 * Your New Relic license key.
 	 */

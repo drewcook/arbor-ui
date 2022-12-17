@@ -5,6 +5,7 @@ import Onboard from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
 import ledgerModule from '@web3-onboard/ledger'
 import walletConnectModule from '@web3-onboard/walletconnect'
+import { NETWORK_CURRENCY, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
 
 // See https://docs.blocknative.com/onboard/injected-wallets
 const injectedWallets = injectedModule()
@@ -19,48 +20,36 @@ const walletConnect = walletConnectModule({
 	},
 })
 
-// Alchemy RPC URL - Polygon Testnet
-const rpcPolygonTestnet = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`
-// ...We can add other RPC URLs for other chains where contract is deployed to, as Onboard supports multiple wallets on multiple chains :)
+// Our one and only chain we want to support, for now
+const CHAIN = {
+	id: NETWORK_HEX,
+	token: NETWORK_CURRENCY,
+	label: NETWORK_NAME,
+	rpcUrl: NETWORK_RPC,
+}
 
 // Initialize Onboard
 // See https://docs.blocknative.com/onboard/core#initialization
 const web3Onboard = Onboard({
 	wallets: [injectedWallets, ledger, walletConnect],
 	appMetadata: {
-		name: 'Polyecho',
-		icon: '/polyecho_logo_square.png',
+		name: 'Arbor',
+		icon: '/arbor_text_logo.svg',
 		description:
-			'Polyecho is a schelling game where the objective is to publicly co-create songs worthy of purchase by NFT collectors. Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed to the artists, including future royalties.',
+			'The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors.  Collectors can explore, curate, and own a wild world of memetic music. Proceeds are distributed evenly to the artists, including future royalties from secondary sales.',
 		recommendedInjectedWallets: [
 			{ name: 'MetaMask', url: 'https://metamask.io' },
 			{ name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
 		],
 	},
-	chains: [
-		{
-			id: '0x13881', // chain ID must be in hexadecimal
-			token: 'MATIC', // main chain token
-			label: 'Polygon Testnet',
-			rpcUrl: rpcPolygonTestnet, // rpcURL required for wallet balances
-		},
-		// {
-		// 	id: '0x89',
-		//   token: 'MATIC',
-		//   label: 'Matic Mainnet',
-		//   rpcUrl: 'https://matic-mainnet.chainstacklabs.com'
-		// },
-		// {
-		// 	id: '0x1',
-		//   token: 'ETH',
-		//   label: 'Ethereum Mainnet',
-		//   rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`
-		// },
-		// {
-	],
+	chains: [CHAIN],
 	accountCenter: {
+		// Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
 		desktop: {
-			enabled: false, // Disable the built in wallet UI and rely on native extensions/apps for switching accounts and networks
+			enabled: false,
+		},
+		mobile: {
+			enabled: false,
 		},
 	},
 	i18n: {
@@ -74,11 +63,9 @@ const web3Onboard = Onboard({
 						paragraph:
 							'Connecting your wallet is like “logging in” to Web3. Select your wallet from the options to get started.',
 					},
-					recommendedWalletsPart1: 'Polyecho only supports',
-					recommendedWalletsPart2:
-						'on this platform. Please use or install one of the supported wallets to continue',
-					installWallet:
-						'You do not have any wallets installed that Polyecho supports, please use a supported wallet',
+					recommendedWalletsPart1: '{app} only supports',
+					recommendedWalletsPart2: 'on this platform. Please use or install one of the supported wallets to continue',
+					installWallet: 'You do not have any wallets installed that {app} supports, please use a supported wallet',
 					agreement: {
 						agree: 'I agree to the',
 						terms: 'Terms & Conditions',
@@ -87,24 +74,24 @@ const web3Onboard = Onboard({
 					},
 				},
 				connectingWallet: {
-					header:
-						'{connectionRejected, select, false {Connecting to {wallet}...} other {Connection Rejected}}',
+					header: '{connectionRejected, select, false {Connecting to {wallet}...} other {Connection Rejected}}',
 					sidebar: {
 						subheading: 'Approve Connection',
-						paragraph:
-							'Please approve the connection in your wallet and authorize access to continue.',
+						paragraph: 'Please approve the connection in your wallet and authorize access to continue.',
 					},
 					mainText: 'Connecting...',
 					paragraph: 'Make sure to select all accounts that you want to grant access to.',
-					rejectedText: 'Connection Rejected!',
-					rejectedCTA: 'Click here to try again',
+					previousConnection:
+						'{wallet} already has a pending connection request, please open the {wallet} app to login and connect.',
 					primaryButton: 'Back to wallets',
+					rejectedCTA: 'Click here to try again',
+					rejectedText: 'Connection Rejected!',
 				},
 				connectedWallet: {
 					header: 'Connection Successful',
 					sidebar: {
 						subheading: 'Connection Successful!',
-						paragraph: 'Your wallet is now connected to Polyecho',
+						paragraph: 'Your wallet is now connected to {app}',
 					},
 					mainText: 'Connected',
 				},
@@ -118,8 +105,7 @@ const web3Onboard = Onboard({
 				},
 				switchChain: {
 					heading: 'Switch Chain',
-					paragraph1:
-						'Polyecho requires that you switch your wallet to the {nextNetworkName} network to continue.',
+					paragraph1: '{app} requires that you switch your wallet to the {nextNetworkName} network to continue.',
 					paragraph2:
 						'*Some wallets may not support changing networks. If you can not change networks in your wallet you may consider switching to a different wallet.',
 				},
@@ -139,11 +125,48 @@ const web3Onboard = Onboard({
 				gettingStartedGuide: 'Getting Started Guide',
 				smartContracts: 'Smart Contract(s)',
 				explore: 'Explore',
-				backToApp: 'Back to App',
+				backToApp: 'Back to dapp',
 				poweredBy: 'powered by',
 				addAccount: 'Add Account',
 				setPrimaryAccount: 'Set Primary Account',
 				disconnectWallet: 'Disconnect Wallet',
+				copyAddress: 'Copy Wallet address',
+			},
+			notify: {
+				transaction: {
+					txRequest: 'Your transaction is waiting for you to confirm',
+					nsfFail: 'You have insufficient funds to complete this transaction',
+					txUnderpriced: 'The gas price for your transaction is too low, try again with a higher gas price',
+					txRepeat: 'This could be a repeat transaction',
+					txAwaitingApproval: 'You have a previous transaction waiting for you to confirm',
+					txConfirmReminder:
+						'Please confirm your transaction to continue, the transaction window may be behind your browser',
+					txSendFail: 'You rejected the transaction',
+					txSent: 'Your transaction has been sent to the network',
+					txStallPending: 'Your transaction has stalled and has not entered the transaction pool',
+					txStuck: 'Your transaction is stuck due to a nonce gap',
+					txPool: 'Your transaction has started',
+					txStallConfirmed: "Your transaction has stalled and hasn't been confirmed",
+					txSpeedUp: 'Your transaction has been sped up',
+					txCancel: 'Your transaction is being canceled',
+					txFailed: 'Your transaction has failed',
+					txConfirmed: 'Your transaction has succeeded',
+					txError: 'Oops something went wrong, please try again',
+					txReplaceError: 'There was an error replacing your transaction, please try again',
+				},
+				watched: {
+					txPool: 'Your account is {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txSpeedUp: 'Transaction for {formattedValue} {asset} {preposition} {counterpartyShortened} has been sped up',
+					txCancel: 'Transaction for {formattedValue} {asset} {preposition} {counterpartyShortened} has been canceled',
+					txConfirmed:
+						'Your account successfully {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txFailed: 'Your account failed to {verb} {formattedValue} {asset} {preposition} {counterpartyShortened}',
+					txStuck: 'Your transaction is stuck due to a nonce gap',
+				},
+				time: {
+					minutes: 'min',
+					seconds: 'sec',
+				},
 			},
 		},
 	},
