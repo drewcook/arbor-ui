@@ -1,7 +1,7 @@
 const styles = {
 	footer: {
-		backgroundColor: '#000',
-		color: '#111',
+		backgroundColor: '#1B2021',
+		color: '#F1F1F1',
 		display: 'flex',
 		flex: 1,
 		flexDirection: 'column',
@@ -16,17 +16,21 @@ const styles = {
 		},
 	},
 	social: {
-		my: 4,
+		mt: 4,
+		mb: 1,
 	},
 	socialIcon: {
 		display: 'inline-block',
 		mx: 1,
 		cursor: 'pointer',
+		background: '#1B2021',
+
 		'&:hover': {
 			opacity: 0.5,
 		},
 	},
 	copy: {
+		mt: 2,
 		textAlign: 'center',
 	},
 }

@@ -1,6 +1,6 @@
 const styles = {
 	appbar: {
-		backgroundColor: '#000',
+		backgroundColor: '#1B2021',
 		color: '#F1F1F1',
 		boxShadow: 0,
 	},
