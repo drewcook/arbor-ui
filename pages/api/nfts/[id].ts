@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { INftDoc, Nft } from '../../../models/nft.model'
@@ -71,4 +72,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	}
 }
 
-export default handler
+export default withSentry(handler)

@@ -43,7 +43,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# Sentry
 .sentryclirc
 
 # specific local scripts
 scripts/connectToAPM.sh
+
+# Sentry
+.sentryclirc

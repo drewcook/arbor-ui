@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import type { IUser } from '../../../models/user.model'
@@ -165,4 +166,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	}
 }
 
-export default handler
+export default withSentry(handler)
