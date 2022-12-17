@@ -24,6 +24,7 @@ const nextConfig = {
 		ALCHEMY_POLYGON_KEY: process.env.ALCHEMY_POLYGON_KEY,
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 		SENTRY_DSN: process.env.SENTRY_DSN,
+		SENTRY_LOG_LEVEL: process.env.SENTRY_LOG_LEVEL,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
