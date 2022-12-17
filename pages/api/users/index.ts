@@ -65,4 +65,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	}
 }
 
-export default withSentry(handler)
+// Use Sentry as a logging tool when running production environments
+export default process.env.NODE_ENV === 'production' ? withSentry(handler) : handler
