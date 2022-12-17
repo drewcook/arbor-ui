@@ -34,6 +34,7 @@ const nextConfig = {
 			'nft.storage',
 			'bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link', // Default PE Logo NFT Placeholder Image
 			'robohash.org', // User avatars
+			'gravatar.com',
 		],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
 	},
