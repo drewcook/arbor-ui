@@ -5,9 +5,25 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 import Faq from '../components/Faq'
+import RecentProjectActivity from '../components/RecentProjectActivity'
 import styles from '../styles/Home.styles'
+import { get } from '../utils/http'
 
-const Home: NextPage = () => {
+type Project = {
+	_id: string
+	name: string
+	description: string
+	stems: string[]
+	trackLimit: number
+	collaborators: string[]
+	tags: string[]
+}
+
+type HomeProps = {
+	projects: Project[]
+}
+
+const Home: NextPage<HomeProps> = ({ projects }) => {
 	return (
 		<>
 			<Head>
@@ -213,8 +229,21 @@ const Home: NextPage = () => {
 					<Faq />
 				</Container>
 			</Box>
+			<RecentProjectActivity projects={projects} />
 		</>
 	)
+}
+
+export const getServerSideProps = async () => {
+	const result = await get('/projects', {
+		sort: '-updatedAt',
+		limit: 3,
+	})
+	return {
+		props: {
+			projects: result.data,
+		},
+	}
 }
 
 export default Home
