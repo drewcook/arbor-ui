@@ -2,8 +2,8 @@ const styles = {
 	covalentWrap: {
 		p: 2,
 		mb: 2,
-		background: '#fafafa',
-		border: '1px solid #ccc',
+		background: '#F1F1F1',
+		border: '1px solid #B9BDCB',
 	},
 	cardTitle: {
 		mb: 3,
@@ -23,7 +23,7 @@ const styles = {
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		borderBottom: '1px solid #ccc',
+		borderBottom: '1px solid #B9BDCB',
 		'&:last-of-type': {
 			borderBottom: 0,
 		},
