@@ -140,15 +140,11 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	}
 
 	const handlePlay = () => {
-		stems.forEach(waveform => waveform.play())
+		stems.forEach(stem => stem.play())
 	}
 
-	//   const handlePause = () => {
-	// 	stems.forEach(waveform => waveform.pause());
-	//   };
-
-	const handleStopp = () => {
-		stems.forEach(waveform => waveform.stop())
+	const onStop = () => {
+		stems.forEach(stem => stem.stop())
 	}
 
 	const handleSolo = (idx: number) => {
@@ -478,15 +474,11 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 								details={stem}
 								onWavesInit={onWavesInit}
 								onFinish={() => setIsPlayingAll(false)}
-								// onSolo={handleSoloStem}
 								onNewFile={onNewFile}
-								// isStemDetails
-								// isQueued
 								onPlay={handlePlay}
 								onSolo={handleSolo}
 								onMute={handleMute}
-								// onSkipPrev
-								onStop={handleStopp}
+								onStop={onStop}
 								handleUnmuteAll={handleUnmuteAll}
 							/>
 						</Fragment>
