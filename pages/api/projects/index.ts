@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { IProjectDoc, Project } from '../../../models/project.model'
+import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
 
@@ -24,9 +24,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find all the data in our database */
-				throw new Error('Failing to get projects to test Sentry')
-				// const projects: IProject[] = await Project.find({})
-				// res.status(200).json({ success: true, data: projects })
+				const projects: IProject[] = await Project.find({})
+				res.status(200).json({ success: true, data: projects })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}
