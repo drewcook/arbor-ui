@@ -76,6 +76,7 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					</List>
 				</Container>
 			</Box>
+			<RecentProjectActivity projects={projects} />
 			<Box sx={styles.features} component="section">
 				<Container maxWidth="xl">
 					<Typography variant="h2" sx={styles.sectionHeading}>
@@ -237,7 +238,6 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					<Faq />
 				</Container>
 			</Box>
-			<RecentProjectActivity projects={projects} />
 		</>
 	)
 }

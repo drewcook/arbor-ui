@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, Grid } from '@mui/material'
-import React from 'react'
 
+import home_styles from '../styles/Home.styles'
 import ProjectCard from './ProjectCard'
 import styles from './ProjectCard.styles'
 
@@ -11,7 +11,7 @@ type RecentProjectActivityProps = {
 const RecentProjectActivity = ({ projects }: RecentProjectActivityProps): JSX.Element => {
 	return (
 		<Card sx={styles.card} elevation={2}>
-			<CardHeader title="Recent Activity" />
+			<CardHeader sx={[home_styles.features, home_styles.heading, home_styles.featureBox]} title="Recent Activity" />
 			<CardContent>
 				<Grid container spacing={3}>
 					{projects.map(project => (
