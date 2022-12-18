@@ -24,7 +24,7 @@ import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import web3 from 'web3'
 
 import ImageOptimized from '../../components/ImageOptimized'
@@ -74,7 +74,29 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const router = useRouter()
 	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
 
+	const [mutedTracks, setMutedTracks] = useState<number[]>([])
+	const [soloedTracks, setSoloedTracks] = useState<number[]>([])
+	const [handleUnmuteAll, setHandleUnmuteAll] = useState<boolean>(false)
+
+	useEffect(() => {
+		if (soloedTracks.length > 0 && soloedTracks.length === stems.size) {
+			setHandleUnmuteAll(unMuteAll => !unMuteAll)
+			setSoloedTracks([])
+			setMutedTracks([])
+		}
+		stems.forEach((stem, idx) => {
+			if (soloedTracks.includes(idx)) {
+				stem.setMute(false)
+			} else if (soloedTracks.length > 0) {
+				stem.setMute(true)
+			} else {
+				stem.setMute(mutedTracks.includes(idx))
+			}
+		})
+	}, [soloedTracks, mutedTracks, stems])
+
 	if (!details) return null
+
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
 
 	/*
@@ -117,12 +139,36 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 		})
 	}
 
-	const handleSoloStem = (idx: number) => {
-		stems.forEach((ws, i) => {
-			if (ws !== null && i !== idx) {
-				ws?.setMute(!ws?.getMute())
-			}
-		})
+	const handlePlay = () => {
+		stems.forEach(waveform => waveform.play())
+	}
+
+	//   const handlePause = () => {
+	// 	stems.forEach(waveform => waveform.pause());
+	//   };
+
+	const handleStopp = () => {
+		stems.forEach(waveform => waveform.stop())
+	}
+
+	const handleSolo = (idx: number) => {
+		if (soloedTracks.includes(idx)) {
+			setSoloedTracks(soloedTracks.filter(i => i !== idx))
+			setMutedTracks(mutedTracks.filter(i => i !== idx))
+		} else {
+			setSoloedTracks([...soloedTracks, idx])
+			setMutedTracks(mutedTracks.filter(i => i !== idx))
+		}
+	}
+
+	const handleMute = (idx: number) => {
+		if (mutedTracks.includes(idx)) {
+			setMutedTracks(mutedTracks.filter(i => i !== idx))
+			setSoloedTracks(soloedTracks.filter(i => i !== idx))
+		} else {
+			setMutedTracks([...mutedTracks, idx])
+			setSoloedTracks(soloedTracks.filter(i => i !== idx))
+		}
 	}
 
 	const handleDownloadAll = async () => {
@@ -432,8 +478,16 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 								details={stem}
 								onWavesInit={onWavesInit}
 								onFinish={() => setIsPlayingAll(false)}
-								onSolo={handleSoloStem}
+								// onSolo={handleSoloStem}
 								onNewFile={onNewFile}
+								// isStemDetails
+								// isQueued
+								onPlay={handlePlay}
+								onSolo={handleSolo}
+								onMute={handleMute}
+								// onSkipPrev
+								onStop={handleStopp}
+								handleUnmuteAll={handleUnmuteAll}
 							/>
 						</Fragment>
 					))}
