@@ -90,10 +90,6 @@ const arborTheme = createTheme({
 			main: '##FFC467',
 			contrastText: '#111',
 		},
-
-		// Variants
-
-		variants: {},
 	},
 })
 

@@ -55,15 +55,12 @@ const StemList = (props: any) => {
 			if (d?.audioHref) {
 				fetch(new URL(d.audioHref)).then(async res => {
 					const blob = await res.blob()
-					console.log(d.audioHref, 'kkk', blob)
 					getBlobDuration(blob).then(length => {
-						console.log(length, 'ooo')
 						setLengths(l => [...l, length])
 					})
 				})
 			}
 		})
-		console.log(lengths)
 	}, [details])
 
 	return (

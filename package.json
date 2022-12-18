@@ -12,7 +12,7 @@
     "lint:code": "next lint",
     "lint:code:fix": "next lint --fix",
     "lint:formatting": "prettier . --check",
-    "lint:formatting:fix": "prettier . --write",
+    "lint:formatting:fix": "prettier . --write --loglevel=silent",
     "lint": "yarn lint:code && yarn lint:formatting",
     "lint:fix": "yarn lint:code:fix && yarn lint:formatting:fix",
     "prepare": "husky install",
