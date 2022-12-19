@@ -229,7 +229,14 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					<Faq />
 				</Container>
 			</Box>
-			<RecentProjectActivity projects={projects} />
+			<Box sx={styles.recent} component="section">
+				<Container maxWidth="xl">
+					<Typography variant="h2" sx={styles.recentHeading}>
+						Recent Activity
+					</Typography>
+					<RecentProjectActivity projects={projects} />
+				</Container>
+			</Box>
 		</>
 	)
 }
