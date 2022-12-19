@@ -28,11 +28,9 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 			<Head>
 				<title>Arbor | A Generative Music NFT Platform</title>
 			</Head>
-
 			<Banner />
 			<Features />
 			<About />
-
 			<Faq />
 			<RecentProjectActivity projects={projects} />
 		</>
