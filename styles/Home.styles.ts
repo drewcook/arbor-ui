@@ -88,17 +88,6 @@ const styles = {
 		},
 		textAlign: 'center',
 	},
-	recent: {
-		py: 10,
-	},
-	recentHeading: {
-		mb: 5,
-		fontSize: '3rem',
-		textAlign: 'center',
-		'@media (min-width: 600px)': {
-			fontSize: '3.5rem',
-		},
-	},
 	blurbBold: {
 		fontWeight: 600,
 		fontSize: '1.3rem',
