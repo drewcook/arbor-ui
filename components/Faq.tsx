@@ -1,7 +1,10 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Container, Typography } from '@mui/material'
+import React from 'react'
 
-const Faq = (): JSX.Element => {
+import styles from './Faq.styles'
+
+const FaqContent = (): JSX.Element => {
 	return (
 		<>
 			<Accordion>
@@ -63,6 +66,19 @@ const Faq = (): JSX.Element => {
 				</AccordionDetails>
 			</Accordion>
 		</>
+	)
+}
+
+const Faq = (): JSX.Element => {
+	return (
+		<Box sx={styles.faq} component="section">
+			<Container maxWidth="xl">
+				<Typography variant="h2" sx={styles.faqHeading}>
+					Frequently Asked Questions
+				</Typography>
+				<FaqContent />
+			</Container>
+		</Box>
 	)
 }
 
