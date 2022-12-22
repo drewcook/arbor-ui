@@ -81,6 +81,14 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					<Typography variant="h2" sx={styles.sectionHeading}>
 						How It Works
 					</Typography>
+					<Button
+						variant="contained"
+						onClick={() => {
+							throw new Error('Testing client-side error')
+						}}
+					>
+						See How
+					</Button>
 					<Typography sx={styles.howItWorksText}>
 						Songs are created publicly via stems and sold as NFTs. Proceeds are split equally among artists.
 					</Typography>
