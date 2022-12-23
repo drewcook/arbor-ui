@@ -32,10 +32,10 @@ const nextConfig = {
 			'', // Catchall, maybe?
 			'ipfs.io', // Anything from IPFS directly
 			'dweb.link', // Anything from NFT.storage
-			// 'nft.storage',
+			'nft.storage',
 			'bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link', // Default PE Logo NFT Placeholder Image
-			// 'robohash.org', // User avatars
-			// 'gravatar.com',
+			'robohash.org', // User avatars
+			'gravatar.com',
 		],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
 	},
@@ -88,8 +88,10 @@ const sentryWebpackPluginOptions = {
 	// silent: true
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
-
-// Make sure adding Sentry options is the last code to run before exporting, to
-// ensure that your source maps include changes from all other Webpack plugins
-// module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)
+module.exports =
+	process.env.NODE_ENV === 'production'
+		? // Use Sentry on production environments - Make sure adding Sentry options is the last code to run
+		  // before exporting, to ensure that your source maps include changes from all other Webpack plugins
+		  // TODO: update to using two keys, one for all staging, and one for production
+		  withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)
+		: withBundleAnalyzer(nextConfig)
