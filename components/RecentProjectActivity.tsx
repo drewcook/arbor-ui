@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, Grid } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import React from 'react'
 
 import ProjectCard from './ProjectCard'
-import styles from './ProjectCard.styles'
+import styles from './RecentProjectActivity.styles'
 
 type RecentProjectActivityProps = {
 	projects: any[]
@@ -10,18 +10,19 @@ type RecentProjectActivityProps = {
 
 const RecentProjectActivity = ({ projects }: RecentProjectActivityProps): JSX.Element => {
 	return (
-		<Card sx={styles.card} elevation={2}>
-			<CardHeader title="Recent Activity" />
-			<CardContent>
-				<Grid container spacing={3}>
-					{projects.map(project => (
-						<Grid item xs={12} sm={4} key={project._id}>
-							<ProjectCard details={project} />
-						</Grid>
-					))}
-				</Grid>
-			</CardContent>
-		</Card>
+		<Box sx={styles.recentActivity} component="section">
+			<Typography variant="h2" sx={styles.header}>
+				Recent Activity
+			</Typography>
+			<Typography sx={styles.subheader}>Check out a few of the most recently updated projects on Arbor.</Typography>
+			<Grid container spacing={3}>
+				{projects.map(project => (
+					<Grid item xs={12} sm={4} key={project._id}>
+						<ProjectCard details={project} />
+					</Grid>
+				))}
+			</Grid>
+		</Box>
 	)
 }
 

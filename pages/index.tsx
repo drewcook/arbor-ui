@@ -237,16 +237,15 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					<Faq />
 				</Container>
 			</Box>
-			<RecentProjectActivity projects={projects} />
+			<Container maxWidth="xl">
+				<RecentProjectActivity projects={projects} />
+			</Container>
 		</>
 	)
 }
 
 export const getServerSideProps = async () => {
-	const result = await get('/projects', {
-		sort: '-updatedAt',
-		limit: 3,
-	})
+	const result = await get('/projects/recent')
 	return {
 		props: {
 			projects: result.data,
