@@ -19,9 +19,11 @@ type StemPlayerProps = {
 	isQueued?: boolean
 	onPlay?: (idx: number) => any
 	onSolo?: (idx: number) => any
+	onMute?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: (idx: number) => any
 	onNewFile?: (newFileName: string, newFile: Blob) => void
+	handleUnmuteAll?: boolean
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
@@ -34,11 +36,12 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		isQueued,
 		onPlay,
 		onSolo,
+		onMute,
 		onSkipPrev,
 		onStop,
 		onNewFile,
+		handleUnmuteAll,
 	} = props
-	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 	const [blob, setBlob] = useState<Blob>()
@@ -77,20 +80,25 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				if (onFinish) onFinish(idx, ws)
 			})
 
-			setWavesurfer(ws)
 			// Callback to the parent
 			onWavesInit(idx, ws)
 			return () => ws.destroy()
 		}
 	}, [blob, loadingBlob]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
+	useEffect(() => {
+		setIsSoloed(false)
+	}, [handleUnmuteAll])
+
 	const toggleMute = () => {
 		setIsMuted(!isMuted)
-		wavesurfer?.setMute(!wavesurfer?.getMute())
+		setIsSoloed(false)
+		if (onMute) onMute(idx)
 	}
 
 	const toggleSolo = () => {
 		setIsSoloed(!isSoloed)
+		setIsMuted(false)
 		if (onSolo) onSolo(idx)
 	}
 

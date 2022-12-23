@@ -29,7 +29,7 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 			<Head>
 				<title>Arbor | A Generative Music NFT Platform</title>
 			</Head>
-			<Box sx={styles.banner} component="section" className="homepage-banner">
+			<Box sx={styles.banner} component="section">
 				<Container maxWidth="xl">
 					<Typography variant="h2" sx={styles.heading}>
 						Create Together,
@@ -82,14 +82,6 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					<Typography variant="h2" sx={styles.sectionHeading}>
 						How It Works
 					</Typography>
-					<Button
-						variant="contained"
-						onClick={() => {
-							throw new Error('Testing client-side error')
-						}}
-					>
-						See How
-					</Button>
 					<Typography sx={styles.howItWorksText}>
 						Songs are created publicly via stems and sold as NFTs. Proceeds are split equally among artists.
 					</Typography>
