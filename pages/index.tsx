@@ -76,9 +76,6 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					</List>
 				</Container>
 			</Box>
-			<Container maxWidth="xl">
-				<RecentProjectActivity projects={projects} />
-			</Container>
 			<RecentProjectActivity projects={projects} />
 			<Box sx={styles.features} component="section">
 				<Container maxWidth="xl">

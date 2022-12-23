@@ -1,6 +1,7 @@
 const styles = {
 	recentActivity: {
 		py: 10,
+		textAlign: 'center',
 	},
 	header: {
 		mb: 5,
