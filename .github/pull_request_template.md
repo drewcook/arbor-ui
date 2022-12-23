@@ -18,6 +18,11 @@ Add any notes here that may be helpful for reviewers.
 - [ ]  The General Changes section has been filled out
 - [ ]  Developer Notes have been added (optional)
 
+**If the PR is ready for review:**
+
+- [ ]  The PR is in `Open` state and not in `Draft` mode
+- [ ]  The `Ready for Dev Review` label has been added
+
 ## Reviewer Checklist
 
 - [ ]  End-to-end tests are passing without any errors
