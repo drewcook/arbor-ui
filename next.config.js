@@ -46,6 +46,7 @@ const nextConfig = {
 				// matching all API routes
 				source: '/api/:path*',
 				headers: [
+					{ key: 'X-Sentry-Auth', value: process.env.SENTRY_DSN },
 					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
 					// { key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
 					// { key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },
