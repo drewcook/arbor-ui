@@ -49,9 +49,7 @@ const nextConfig = {
 				headers: [
 					{ key: 'X-Sentry-Auth', value: process.env.SENTRY_DSN },
 					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
-					// { key: 'Access-Control-Allow-Origin', value: 'https://arbor-pr-*.herokuapp.com' },
-					// { key: 'Access-Control-Allow-Origin', value: 'https://ui-*-arbor-protocol.vercel.app' },
-					{ key: 'Access-Control-Allow-Origin', value: '*' },
+					{ key: 'Access-Control-Allow-Origin', value: '*' }, // https://arbor-pr-*.herokuapp.com for preview builds
 					{ key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
 					{
 						key: 'Access-Control-Allow-Headers',
@@ -78,25 +76,28 @@ const nextConfig = {
 	},
 }
 
+/**
+ * Additional config options for the Sentry Webpack plugin.
+ * For all available options, see:
+ * https://github.com/getsentry/sentry-webpack-plugin#options
+ * https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup
+ * Keep in mind thatthe following options are set automatically, and overriding them is not recommended:
+ * 	- release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
+ */
 const sentryWebpackPluginOptions = {
-	// Additional config options for the Sentry Webpack plugin. Keep in mind that
-	// the following options are set automatically, and overriding them is not
-	// recommended:
-	//   release, url, org, project, authToken, configFile, stripPrefix,
-	//   urlPrefix, include, ignore
-	// For all available options, see:
-	// https://github.com/getsentry/sentry-webpack-plugin#options.
-	// Suppresses all logs
 	org: 'arbor-labs',
 	project: 'ui',
 	silent: process.env.NODE_ENV === 'production',
 	authToken: process.env.SENTRY_AUTH_TOKEN,
+	hideSourceMaps: process.env.NODE_ENV === 'production',
 }
 
+/**
+ * Use Sentry on production environments - Make sure adding Sentry options is the last code to run
+ * before exporting, to ensure that your source maps include changes from all other Webpack plugins
+ * TODO: update to using two keys, one for all staging, and one for production
+ */
 module.exports =
 	process.env.NODE_ENV === 'production'
-		? // Use Sentry on production environments - Make sure adding Sentry options is the last code to run
-		  // before exporting, to ensure that your source maps include changes from all other Webpack plugins
-		  // TODO: update to using two keys, one for all staging, and one for production
-		  withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)
+		? withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)
 		: withBundleAnalyzer(nextConfig)
