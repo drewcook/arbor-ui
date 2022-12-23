@@ -25,6 +25,7 @@ const nextConfig = {
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 		SENTRY_DSN: process.env.SENTRY_DSN,
 		SENTRY_LOG_LEVEL: process.env.SENTRY_LOG_LEVEL,
+		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -86,7 +87,10 @@ const sentryWebpackPluginOptions = {
 	// For all available options, see:
 	// https://github.com/getsentry/sentry-webpack-plugin#options.
 	// Suppresses all logs
-	// silent: true
+	org: 'arbor-labs',
+	project: 'ui',
+	silent: process.env.NODE_ENV === 'production',
+	authToken: process.env.SENTRY_AUTH_TOKEN,
 }
 
 module.exports =
