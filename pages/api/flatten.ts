@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs'
 import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -24,4 +25,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	}
 }
 
-export default handler
+// Use Sentry as a logging tool when running production environments
+export default process.env.NODE_ENV === 'production' ? withSentry(handler) : handler

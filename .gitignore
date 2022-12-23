@@ -43,6 +43,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# Sentry
 .sentryclirc
 
 # specific local scripts
