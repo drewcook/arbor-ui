@@ -30,14 +30,6 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 				<title>Arbor | A Generative Music NFT Platform</title>
 			</Head>
 			<Box sx={styles.banner} component="section">
-				<Button
-					variant="outlined"
-					onClick={() => {
-						throw new Error('frontend error')
-					}}
-				>
-					Error
-				</Button>
 				<Container maxWidth="xl">
 					<Typography variant="h2" sx={styles.heading}>
 						Create Together,
