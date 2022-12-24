@@ -86,7 +86,12 @@ const nextConfig = {
  */
 const sentryWebpackPluginOptions = {
 	org: 'arbor-labs',
-	project: 'ui',
+	project:
+		process.env.CLIENT_HOST === 'https://arbor.audio'
+			? 'ui-production'
+			: process.env.NODE_ENV === 'production'
+			? 'ui-staging'
+			: '',
 	silent: process.env.NODE_ENV === 'production',
 	authToken: process.env.SENTRY_AUTH_TOKEN,
 	hideSourceMaps: process.env.NODE_ENV === 'production',
