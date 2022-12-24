@@ -24,6 +24,7 @@ const nextConfig = {
 		ALCHEMY_POLYGON_KEY: process.env.ALCHEMY_POLYGON_KEY,
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 		SENTRY_DSN: process.env.SENTRY_DSN,
+		SENTRY_PROJECT_NAME: process.env.SENTRY_PROJECT_NAME,
 		SENTRY_LOG_LEVEL: process.env.SENTRY_LOG_LEVEL,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 	},
@@ -86,12 +87,7 @@ const nextConfig = {
  */
 const sentryWebpackPluginOptions = {
 	org: 'arbor-labs',
-	project:
-		process.env.CLIENT_HOST === 'https://arbor.audio'
-			? 'ui-production'
-			: process.env.NODE_ENV === 'production'
-			? 'ui-staging'
-			: '',
+	project: process.env.SENTRY_PROJECT_NAME,
 	silent: process.env.NODE_ENV === 'production',
 	authToken: process.env.SENTRY_AUTH_TOKEN,
 	hideSourceMaps: process.env.NODE_ENV === 'production',
