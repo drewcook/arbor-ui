@@ -62,6 +62,9 @@ const nextConfig = {
 		]
 	},
 	reactStrictMode: true,
+	sentry: {
+		hideSourceMaps: process.env.NODE_ENV === 'production',
+	},
 	webpack: (config, options) => {
 		if (!options.isServer) {
 			config.resolve.fallback.fs = false
@@ -90,7 +93,6 @@ const sentryWebpackPluginOptions = {
 	project: process.env.SENTRY_PROJECT_NAME,
 	silent: process.env.NODE_ENV === 'production',
 	authToken: process.env.SENTRY_AUTH_TOKEN,
-	hideSourceMaps: process.env.NODE_ENV === 'production',
 }
 
 /**
