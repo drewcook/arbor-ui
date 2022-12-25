@@ -8,7 +8,6 @@ import { useState } from 'react'
 
 import StemCard from '../../components/StemCard'
 import StemList from '../../components/StemList'
-import listStyles from '../../components/StemList.styles'
 import type { IStemDoc } from '../../models/stem.model'
 import { indexStyles as styles } from '../../styles/Stems.styles'
 import { get } from '../../utils/http'
@@ -54,14 +53,14 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 								disableFocusRipple
 							>
 								<Button
-									sx={listStyles.btn}
+									sx={styles.stemListBtn}
 									variant={listView ? 'outlined' : 'contained'}
 									onClick={() => showListView(!listView)}
 								>
 									<AppsIcon />
 								</Button>
 								<Button
-									sx={listStyles.btn}
+									sx={styles.stemListBtn}
 									variant={listView ? 'contained' : 'outlined'}
 									onClick={() => showListView(!listView)}
 								>

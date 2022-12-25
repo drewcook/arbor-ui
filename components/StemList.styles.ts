@@ -5,16 +5,6 @@ const styles = {
 			color: '#30343F',
 		},
 	},
-	buttonGroup: {
-		borderColor: 'initial',
-		backgroundColor: 'initial',
-	},
-	btn: {
-		'&.MuiButton-contained': {
-			background: '#000',
-			color: '#fff',
-		},
-	},
 	cardMediaIcon: {
 		color: '#000',
 		fontSize: '2rem',
