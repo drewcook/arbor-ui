@@ -215,7 +215,7 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 					</Grid>
 					<Box sx={{ textAlign: 'center', color: '#fff' }}>
 						<Link href="/projects" passHref>
-							<Button size="large" variant="contained" color="primary" sx={styles.btn}>
+							<Button size="large" variant="contained" color="secondary" sx={styles.btn}>
 								Explore Projects
 							</Button>
 						</Link>

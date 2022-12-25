@@ -16,8 +16,7 @@ const styles = {
 		},
 	},
 	social: {
-		mt: 4,
-		mb: 1,
+		my: 4,
 	},
 	socialIcon: {
 		display: 'inline-block',
