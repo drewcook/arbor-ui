@@ -1,7 +1,7 @@
 const styles = {
 	footer: {
-		backgroundColor: '#1B2021',
-		color: '#F1F1F1',
+		backgroundColor: '#fff',
+		color: '#1B2021',
 		display: 'flex',
 		flex: 1,
 		flexDirection: 'column',
@@ -23,7 +23,7 @@ const styles = {
 		display: 'inline-block',
 		mx: 1,
 		cursor: 'pointer',
-		background: '#1B2021',
+		background: '#fff',
 
 		'&:hover': {
 			opacity: 0.5,

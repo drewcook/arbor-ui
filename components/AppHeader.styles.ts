@@ -1,11 +1,11 @@
 const styles = {
 	appbar: {
-		backgroundColor: '#1B2021',
-		color: '#F1F1F1',
+		backgroundColor: '#fff',
+		color: '#1B2021',
 		boxShadow: 0,
 	},
 	alphaChip: {
-		color: '#F1F1F1',
+		color: '#fff',
 		ml: 1,
 		fontSize: '.6rem',
 		height: '1.25rem',

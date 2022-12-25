@@ -34,7 +34,7 @@ const AppHeader = (): JSX.Element => {
 				<Toolbar disableGutters>
 					<Link href="/" passHref>
 						<Box sx={styles.logoDesktop}>
-							<ImageOptimized src="/arbor_logo_text_wav.svg" width={180} height={60} />
+							<ImageOptimized src="/arbor_logo_text_wave.svg" width={180} height={60} />
 							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
 						</Box>
 					</Link>
