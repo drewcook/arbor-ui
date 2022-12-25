@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
@@ -64,4 +65,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	}
 }
 
-export default handler
+// Use Sentry as a logging tool when running production environments
+export default process.env.NODE_ENV === 'production' ? withSentry(handler) : handler

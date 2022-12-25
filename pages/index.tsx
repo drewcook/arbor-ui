@@ -5,15 +5,31 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 import Faq from '../components/Faq'
+import RecentProjectActivity from '../components/RecentProjectActivity'
 import styles from '../styles/Home.styles'
+import { get } from '../utils/http'
 
-const Home: NextPage = () => {
+type Project = {
+	_id: string
+	name: string
+	description: string
+	stems: string[]
+	trackLimit: number
+	collaborators: string[]
+	tags: string[]
+}
+
+type HomeProps = {
+	projects: Project[]
+}
+
+const Home: NextPage<HomeProps> = ({ projects }) => {
 	return (
 		<>
 			<Head>
 				<title>Arbor | A Generative Music NFT Platform</title>
 			</Head>
-			<Box sx={styles.banner} component="section" className="homepage-banner">
+			<Box sx={styles.banner} component="section">
 				<Container maxWidth="xl">
 					<Typography variant="h2" sx={styles.heading}>
 						Create Together,
@@ -60,6 +76,7 @@ const Home: NextPage = () => {
 					</List>
 				</Container>
 			</Box>
+			<RecentProjectActivity projects={projects} />
 			<Box sx={styles.features} component="section">
 				<Container maxWidth="xl">
 					<Typography variant="h2" sx={styles.sectionHeading}>
@@ -198,7 +215,7 @@ const Home: NextPage = () => {
 					</Grid>
 					<Box sx={{ textAlign: 'center', color: '#fff' }}>
 						<Link href="/projects" passHref>
-							<Button size="large" variant="contained" color="primary" sx={styles.btn}>
+							<Button size="large" variant="contained" color="secondary" sx={styles.btn}>
 								Explore Projects
 							</Button>
 						</Link>
@@ -215,6 +232,15 @@ const Home: NextPage = () => {
 			</Box>
 		</>
 	)
+}
+
+export const getServerSideProps = async () => {
+	const result = await get('/projects/recent')
+	return {
+		props: {
+			projects: result.data,
+		},
+	}
 }
 
 export default Home

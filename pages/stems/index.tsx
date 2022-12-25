@@ -44,11 +44,26 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 							</Typography>
 						</Container>
 						<Box sx={styles.icons}>
-							<ButtonGroup color="info" variant="outlined" aria-label="outlined button group">
-								<Button variant={!listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+							<ButtonGroup
+								color="inherit"
+								variant="outlined"
+								aria-label="outlined button group"
+								disableElevation
+								disableRipple
+								disableFocusRipple
+							>
+								<Button
+									sx={styles.stemListBtn}
+									variant={listView ? 'outlined' : 'contained'}
+									onClick={() => showListView(!listView)}
+								>
 									<AppsIcon />
 								</Button>
-								<Button variant={listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+								<Button
+									sx={styles.stemListBtn}
+									variant={listView ? 'contained' : 'outlined'}
+									onClick={() => showListView(!listView)}
+								>
 									<FormatListBulletedIcon />
 								</Button>
 							</ButtonGroup>
