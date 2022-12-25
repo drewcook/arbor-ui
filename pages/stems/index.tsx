@@ -8,6 +8,7 @@ import { useState } from 'react'
 
 import StemCard from '../../components/StemCard'
 import StemList from '../../components/StemList'
+import listStyles from '../../components/StemList.styles'
 import type { IStemDoc } from '../../models/stem.model'
 import { indexStyles as styles } from '../../styles/Stems.styles'
 import { get } from '../../utils/http'
@@ -44,11 +45,26 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 							</Typography>
 						</Container>
 						<Box sx={styles.icons}>
-							<ButtonGroup color="info" variant="outlined" aria-label="outlined button group">
-								<Button variant={!listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+							<ButtonGroup
+								color="inherit"
+								variant="outlined"
+								aria-label="outlined button group"
+								disableElevation
+								disableRipple
+								disableFocusRipple
+							>
+								<Button
+									sx={listStyles.btn}
+									variant={listView ? 'outlined' : 'contained'}
+									onClick={() => showListView(!listView)}
+								>
 									<AppsIcon />
 								</Button>
-								<Button variant={listView ? 'contained' : 'outlined'} onClick={() => showListView(!listView)}>
+								<Button
+									sx={listStyles.btn}
+									variant={listView ? 'contained' : 'outlined'}
+									onClick={() => showListView(!listView)}
+								>
 									<FormatListBulletedIcon />
 								</Button>
 							</ButtonGroup>

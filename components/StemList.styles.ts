@@ -1,13 +1,18 @@
 const styles = {
 	icon: {
-		visibility: 'hidden',
-	},
-	table: {
-		'& > *': {
-			borderBottom: 'unset',
+		color: '#30343F',
+		'&:hover': {
+			color: '#30343F',
 		},
-		'&:hover .MuiIconButton-root': {
-			visibility: 'visible',
+	},
+	buttonGroup: {
+		borderColor: 'initial',
+		backgroundColor: 'initial',
+	},
+	btn: {
+		'&.MuiButton-contained': {
+			background: '#000',
+			color: '#fff',
 		},
 	},
 	cardMediaIcon: {
@@ -17,7 +22,7 @@ const styles = {
 	detailItem: {
 		textTransform: 'uppercase',
 		color: '#a8a8a8',
-		fontWeight: 600,
+		fontWeight: 700,
 		mb: 1,
 	},
 	actions: {
