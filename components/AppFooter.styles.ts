@@ -1,7 +1,7 @@
 const styles = {
 	footer: {
 		backgroundColor: '#fff',
-		color: '#111',
+		color: '#1B2021',
 		display: 'flex',
 		flex: 1,
 		flexDirection: 'column',
@@ -22,11 +22,14 @@ const styles = {
 		display: 'inline-block',
 		mx: 1,
 		cursor: 'pointer',
+		background: '#fff',
+
 		'&:hover': {
 			opacity: 0.5,
 		},
 	},
 	copy: {
+		mt: 2,
 		textAlign: 'center',
 	},
 }
