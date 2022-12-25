@@ -26,6 +26,12 @@ export const indexStyles = {
 		float: 'right',
 		mb: 3,
 	},
+	stemListBtn: {
+		'&.MuiButton-contained': {
+			background: '#000',
+			color: '#fff',
+		},
+	},
 }
 
 export const detailsStyles = {

@@ -33,20 +33,35 @@ const arborTheme = createTheme({
 		),
 	},
 	palette: {
-		// Ideas
-		// '#91ff00'
-		// '#d1ff00'
-		// '#ff5200'
-		// '#ff399f'
-
+		mode: 'dark',
+		// Colors
 		primary: {
-			main: '#000',
-			contrastText: '#fff',
+			main: '#C9184A',
+			contrastText: '#F1F1F1',
 		},
 		secondary: {
-			main: '#4CE79D',
-			contrastText: '#000',
+			main: '#E74B7A',
+			contrastText: '#F1F1F1',
 		},
+		/*
+			error: { light: '', main: '', dark: '', contrastText: '' },
+			warning: { light: '', main: '', dark: '', contrastText: '' },
+			info: { light: '', main: '', dark: '', contrastText: '' },
+			success: { light: '', main: '', dark: '', contrastText: '' },
+			grey: {10: '', 20, '', ...}
+			action: { ,.. }
+		*/
+		text: {
+			primary: '#1B2021',
+			secondary: '#30343F',
+			disabled: '#B9BDCB',
+		},
+		divider: '#B9BDCB',
+		background: {
+			default: '#F1F1F1',
+			paper: '#F1F1F1',
+		},
+		// Swatches for stem categories
 		swatchDrums: {
 			main: '#FFA1A1',
 			contrastText: '#111',
@@ -75,7 +90,6 @@ const arborTheme = createTheme({
 			main: '##FFC467',
 			contrastText: '#111',
 		},
-		divider: '#ccc',
 	},
 })
 
