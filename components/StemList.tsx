@@ -78,7 +78,7 @@ const StemList = (props: any) => {
 				<TableBody>
 					{details.map((stem, i) => (
 						<Fragment key={stem._id}>
-							<StyledTableRow type={stem.type} sx={styles.tableRow}>
+							<StyledTableRow type={stem.type}>
 								<TableCell>
 									<IconButton aria-label="row">
 										<PlayCircleIcon sx={styles.icon} />
