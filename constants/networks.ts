@@ -72,3 +72,5 @@ export const NETWORK_RPC = networks[preferredNetwork].rpc
 export const NETWORK_CURRENCY = networks[preferredNetwork].currency
 
 export const NETWORK_EXPLORER = networks[preferredNetwork].explorer
+
+export const CLOUDFRONT_HOST = 'https://d38oicgkdd5l2w.cloudfront.net'

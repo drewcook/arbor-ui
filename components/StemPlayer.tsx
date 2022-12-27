@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
 
+import { CLOUDFRONT_HOST } from '../constants/networks'
 import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
@@ -50,12 +51,24 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		if (!blob) {
 			if (!loadingBlob) {
 				setLoadingBlob(true)
-				fetch(details.audioHref).then(resp => {
-					resp.blob().then(b => {
-						setBlob(b)
-						if (onNewFile) onNewFile(details.name, b)
-					})
+				fetch(CLOUDFRONT_HOST + '/' + details.audioUrl.replace('ipfs://', ''), {
+					method: 'GET',
+					headers: {
+						Accept: 'binary/octet-stream',
+						'Content-Type': 'binary/octet-stream',
+						'User-Agent': 'ArborAudioUI/1.0',
+					},
 				})
+					.then(async resp => {
+						const audioBlob = await resp.blob()
+						if (audioBlob.size == 0) {
+							console.error('Failed to download audio data from cloudfront...')
+							// call cache endpoint
+						}
+						setBlob(audioBlob)
+						if (onNewFile) onNewFile(details.name, audioBlob)
+					})
+					.catch(e => console.error(`Failed to download stems from CID...${e}`))
 				setLoadingBlob(false)
 			}
 		} else {
