@@ -48,3 +48,6 @@ yarn-error.log*
 
 # specific local scripts
 scripts/connectToAPM.sh
+
+# Sentry
+.sentryclirc

@@ -73,6 +73,7 @@ const AppFooter = (): JSX.Element => {
 						</Box>
 					</Link>
 				</Box>
+				<ImageOptimized src="/arbor_logo_text_wave_black.svg" width={180} height={60} />
 				<Typography sx={styles.copy} variant="body2">
 					&copy; 2022 Arbor Labs | All Rights Reserved
 				</Typography>
