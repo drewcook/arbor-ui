@@ -30,11 +30,18 @@ contract ArborAudioCollections is ERC1155, Ownable {
     mapping(uint256 => address[]) public tokenIdToContributors;
     mapping (uint256 => uint256) public tokenIdToPrice;
 
-    constructor() ERC1155("ArborAudio", "ARBOR") {}
+    // Mapping from token ID to owner address
+    mapping(uint256 => address) private _owners;
+
+    constructor() ERC1155("") {}
 
     function updateCollectionName(string calldata _name) external onlyOwner {
         collectionName = _name;
         emit CollectionNameUpdated(_name);
+    }
+
+    function _exists(uint256 tokenId) internal view virtual returns (bool) {
+        return _owners[tokenId] != address(0);
     }
 
     function getContributors(uint256 tokenId)
@@ -44,7 +51,7 @@ contract ArborAudioCollections is ERC1155, Ownable {
     {
         require(
             _exists(tokenId),
-            "ERC721: Contributor query for nonexistent token"
+            "ERC1155: Contributor query for nonexistent token"
         );
 
         return tokenIdToContributors[tokenId];
@@ -53,12 +60,11 @@ contract ArborAudioCollections is ERC1155, Ownable {
     function tokenURI(uint256 tokenId)
         public
         view
-        override
         returns (string memory)
     {
         require(
             _exists(tokenId),
-            "ERC721Metadata: URI query for nonexistent token"
+            "ERC1155Metadata: URI query for nonexistent token"
         );
         return tokenIdToUri[tokenId];
     }
@@ -66,12 +72,13 @@ contract ArborAudioCollections is ERC1155, Ownable {
 		// Both mints a new token and pays out value equally to stem contributors
     function mintAndBuy(
         address _buyer,
+        uint256 _amount,
         string calldata _metadataURI,
         address payable[] calldata _contributors
     ) public payable returns (uint256, string memory) {
 				// Require sender is paying the mint price
         require(
-            msg.value >= mintPrice,
+            msg.value >= (mintPrice * _amount),
             "Sent ether value is not enough to mint"
         );
 
@@ -84,10 +91,10 @@ contract ArborAudioCollections is ERC1155, Ownable {
 
 				// Mint the new token for the buyer
 				// Buyer becomes owner
-        _safeMint(_buyer, newTokenId);
-				// Pre-approve buyer as operator for token
-				_approve(_buyer, newTokenId);
-
+        _mint(_buyer, newTokenId, _amount,"");
+				
+        // Mapp owner to token id
+        _owners[newTokenId] = _buyer;
 
 				// Payout out value sent from buyer equally to contributors
         for (uint256 i = 0; i < _contributors.length; i++) {
@@ -106,7 +113,7 @@ contract ArborAudioCollections is ERC1155, Ownable {
 		// This is called when an owner wants to list the NFT for sale and sets a price.
     function allowBuy(uint256 _tokenId, uint256 _price) external {
 				// Only an owner can list it
-        require(msg.sender == ownerOf(_tokenId), 'Not owner of this token');
+        require(msg.sender == _owners[_tokenId], 'Not owner of this token');
 				// Required a sale price
         require(_price > 0, 'Price zero');
 
@@ -120,7 +127,7 @@ contract ArborAudioCollections is ERC1155, Ownable {
 		// This is called when an owner wants to remove the NFT from being for sale.
     function disallowBuy(uint256 _tokenId) external {
 				// Only an owner can unlist it
-        require(msg.sender == ownerOf(_tokenId), 'Not owner of this token');
+        require(msg.sender == _owners[_tokenId], 'Not owner of this token');
 
 				// Unlist the tokenId, null price
         tokenIdToPrice[_tokenId] = 0;
@@ -134,6 +141,7 @@ contract ArborAudioCollections is ERC1155, Ownable {
     function buy(uint256 _tokenId) external payable {
 				// Get the current sale price
         uint256 price = tokenIdToPrice[_tokenId];
+        address seller = _owners[_tokenId];
 
 				// Check if for sale, based off of zero value
         require(price > 0, 'This token is not for sale');
@@ -141,11 +149,14 @@ contract ArborAudioCollections is ERC1155, Ownable {
 				// Check for right sale price
         require(msg.value == price, 'Incorrect value');
 
+        // Check for token balance
+        require(balanceOf(seller,_tokenId) > 0,'Not enough token balance');
+
 				// Make the transfer of ownership
 				// Approve any buyer, rather than seller manually approving a buyer/offer
-        address seller = ownerOf(_tokenId);
-				_approve(msg.sender, _tokenId);
-				safeTransferFrom(seller, msg.sender, _tokenId);
+
+				_setApprovalForAll(seller,msg.sender, true);
+				safeTransferFrom(seller, msg.sender, _tokenId,1,"");
 
 				// Make the transfer of funds from sale price
 				// 10% - Royalties to all contributors, evenly split
