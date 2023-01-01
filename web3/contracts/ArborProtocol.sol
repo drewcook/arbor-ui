@@ -13,35 +13,45 @@ contract ArborAudioCollections is ERC1155, Ownable {
     Counters.Counter private _tokenIds;
 
     // Fields
-    string public collectionName = "Arbor Audio NFTs";
     uint256 public constant mintPrice = 10000000000000000; // 0.01 ETH
 
 		// Events
-    event CollectionNameUpdated(string name);
+    event CollectionNameUpdated(string name,uint256 _tokenId);
     event TokenCreated(uint256 _tokenId, string _tokenURI);
-		event ListedForSale(address _lister, uint256 _tokenId, uint256 _price);
-		event RemovedForSale(address _lister, uint256 _tokenId);
-		event NftBought(uint256 _tokenId, address _seller, address _buyer, uint256 _price);
+		event ListedForSale(address _lister, uint256 _tokenId, uint256 _price,uint256 _tokenIndex);
+		event RemovedForSale(address _lister, uint256 _tokenId,uint256 _tokenIndex);
+		event NftBought(uint256 _tokenId, address _seller, address _buyer, uint256 _price,uint256 _tokenIndex);
 		event SellerPaid(uint256 _tokenId, uint256 _price);
 		event RoyaltiesPaid(uint256 _tokenId, uint256 _price, address[] _contributors);
 
 		// Mapping of tokenIDs to their current data points
     mapping(uint256 => string) tokenIdToUri;
     mapping(uint256 => address[]) public tokenIdToContributors;
-    mapping (uint256 => uint256) public tokenIdToPrice;
+    mapping (uint256 => mapping(uint256 => uint256)) public tokenIdToPrice;
+    mapping(uint256 => uint256) public tokenIdToTotalSupply;
+    mapping(uint256 => address) public tokenIdToInitialOwner;
+    mapping(uint256 => string) public tokenIdToCollectionName;
 
     // Mapping from token ID to owner address
-    mapping(uint256 => address) private _owners;
+    mapping(uint256 => mapping(uint256 => address)) public  tokenIdToOwners;
 
     constructor() ERC1155("") {}
 
-    function updateCollectionName(string calldata _name) external onlyOwner {
-        collectionName = _name;
-        emit CollectionNameUpdated(_name);
+    function updateCollectionName(string calldata _name,uint256 _tokenId) external {
+
+        require(_exists(_tokenId),"ERC1155: CollectionName query for nonexistent token");
+
+        address _initialOwner = tokenIdToInitialOwner[_tokenId];
+
+        require(msg.sender == _initialOwner,"Not owner of this token");
+
+        tokenIdToCollectionName[_tokenId] = _name;
+
+        emit CollectionNameUpdated(_name,_tokenId);
     }
 
     function _exists(uint256 tokenId) internal view virtual returns (bool) {
-        return _owners[tokenId] != address(0);
+        return tokenIdToTotalSupply[tokenId] > 0;
     }
 
     function getContributors(uint256 tokenId)
@@ -74,6 +84,7 @@ contract ArborAudioCollections is ERC1155, Ownable {
         address _buyer,
         uint256 _amount,
         string calldata _metadataURI,
+        string calldata _collectionName,
         address payable[] calldata _contributors
     ) public payable returns (uint256, string memory) {
 				// Require sender is paying the mint price
@@ -92,9 +103,20 @@ contract ArborAudioCollections is ERC1155, Ownable {
 				// Mint the new token for the buyer
 				// Buyer becomes owner
         _mint(_buyer, newTokenId, _amount,"");
+
+        //Mapp initial owner to token id
+        tokenIdToInitialOwner[newTokenId] = _buyer;
+
+        //Mapp collectionName to token id
+        tokenIdToCollectionName[newTokenId] = _collectionName;
+
+        // Mapp total Supply to token id
+        tokenIdToTotalSupply[newTokenId] = _amount;
 				
         // Mapp owner to token id
-        _owners[newTokenId] = _buyer;
+        for (uint256 i = 1; i <= _amount; i++) {
+            tokenIdToOwners[newTokenId][i] = _buyer;
+        }
 
 				// Payout out value sent from buyer equally to contributors
         for (uint256 i = 0; i < _contributors.length; i++) {
@@ -111,37 +133,39 @@ contract ArborAudioCollections is ERC1155, Ownable {
     }
 
 		// This is called when an owner wants to list the NFT for sale and sets a price.
-    function allowBuy(uint256 _tokenId, uint256 _price) external {
+    function allowBuy(uint256 _tokenId, uint256 _price, uint256 _tokenIndex) external {
+        address _owner = tokenIdToOwners[_tokenId][_tokenIndex];
 				// Only an owner can list it
-        require(msg.sender == _owners[_tokenId], 'Not owner of this token');
+        require(msg.sender == _owner, 'Not owner of this token');
 				// Required a sale price
         require(_price > 0, 'Price zero');
 
 				// Set the sale price
-        tokenIdToPrice[_tokenId] = _price;
+        tokenIdToPrice[_tokenId][_tokenIndex] = _price;
 
 				// Emit the event
-				emit ListedForSale(msg.sender, _tokenId, _price);
+				emit ListedForSale(msg.sender, _tokenId, _price,_tokenIndex);
     }
 
 		// This is called when an owner wants to remove the NFT from being for sale.
-    function disallowBuy(uint256 _tokenId) external {
+    function disallowBuy(uint256 _tokenId,uint256 _tokenIndex) external {
+        address _owner = tokenIdToOwners[_tokenId][_tokenIndex];
 				// Only an owner can unlist it
-        require(msg.sender == _owners[_tokenId], 'Not owner of this token');
+        require(msg.sender == _owner, 'Not owner of this token');
 
 				// Unlist the tokenId, null price
-        tokenIdToPrice[_tokenId] = 0;
+        tokenIdToPrice[_tokenId][_tokenIndex] = 0;
 
 				// Emit the event
-				emit RemovedForSale(msg.sender, _tokenId);
+				emit RemovedForSale(msg.sender, _tokenId,_tokenIndex);
     }
 
 		// This is called when a caller wants to buy a token at its sale price
 		// The msg.sender is already pre-approved to buy the token, as set in allowBuy()
-    function buy(uint256 _tokenId) external payable {
+    function buy(uint256 _tokenId,uint256 _tokenIndex) external payable {
 				// Get the current sale price
-        uint256 price = tokenIdToPrice[_tokenId];
-        address seller = _owners[_tokenId];
+        uint256 price = tokenIdToPrice[_tokenId][_tokenIndex];
+        address seller = tokenIdToOwners[_tokenId][_tokenIndex];
 
 				// Check if for sale, based off of zero value
         require(price > 0, 'This token is not for sale');
@@ -175,10 +199,13 @@ contract ArborAudioCollections is ERC1155, Ownable {
         payable(seller).transfer(sellersCut);
 
 				// The NFT is not for sale anymore, set zero value
-				tokenIdToPrice[_tokenId] = 0;
+				tokenIdToPrice[_tokenId][_tokenIndex] = 0;
+
+        // Mapp tokenIndex to new owner
+        tokenIdToOwners[_tokenId][_tokenIndex] = msg.sender;
 
 				// Emit events
-        emit NftBought(_tokenId, seller, msg.sender, msg.value);
+        emit NftBought(_tokenId, seller, msg.sender, msg.value,_tokenIndex);
 				emit SellerPaid(_tokenId, sellersCut);
 				emit RoyaltiesPaid(_tokenId, royaltiesCut, contributors);
     }
