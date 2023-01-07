@@ -17,10 +17,10 @@ const styles = {
 		overflow: 'visible',
 	},
 	cardMedia: {
-		backgroundColor: '#111',
+		background: 'linear-gradient(94.22deg, #20163B 9.36%, #5E548E 33.65%, #9F86C0 65.94%, #D8C5F2 89.96%)',
 		borderTopLeftRadius: '4px',
 		borderTopRightRadius: '4px',
-		borderBottom: '3px solid #4CE79D',
+		borderBottom: '1px solid #3C3839',
 		py: 1,
 		px: 1.5,
 	},
@@ -30,7 +30,7 @@ const styles = {
 	},
 	collaborators: {
 		textTransform: 'uppercase',
-		color: '#a8a8a8',
+		color: '#3C3839',
 		fontWeight: 600,
 		mb: 1,
 	},

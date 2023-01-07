@@ -6,9 +6,9 @@ const styles = {
 		position: 'absolute',
 		top: '1.5rem',
 		right: '-1rem',
-		backgroundColor: '#ff5200',
+		backgroundColor: '#FC898F',
 		py: 2.5,
-		color: '#fff',
+		color: '#0C0101',
 		zIndex: 1,
 	},
 	card: {
@@ -30,7 +30,7 @@ const styles = {
 	},
 	detailItem: {
 		textTransform: 'uppercase',
-		color: '#a8a8a8',
+		color: '#3C3839',
 		fontWeight: 600,
 		mb: 1,
 	},
@@ -51,7 +51,7 @@ const styles = {
 		alignItems: 'center',
 	},
 	eth: {
-		color: '#aaa',
+		color: '#B9BDCB',
 		fontSize: '1rem',
 	},
 }

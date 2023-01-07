@@ -24,6 +24,22 @@ type HomeProps = {
 }
 
 const Home: NextPage<HomeProps> = ({ projects }) => {
+	const ArtistBlocks: React.FC = () => (
+		<>
+			<Box sx={styles.featureBlock} data-color="alice">
+				Alice&apos;s Drums
+			</Box>
+			<Box sx={styles.featureBlock} data-color="bob">
+				Bobs&apos;s Bass
+			</Box>
+			<Box sx={styles.featureBlock} data-color="charlie">
+				Charlie&apos;s Melody
+			</Box>
+			<Box sx={styles.featureBlock} data-color="dave">
+				Dave&apos;s Chords
+			</Box>
+		</>
+	)
 	return (
 		<>
 			<Head>
@@ -100,18 +116,7 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 						<Grid item xs={12} sm={6} md={3}>
 							<Typography variant="h6">Artists Add Stems</Typography>
 							<Box sx={styles.featureBox}>
-								<Box sx={styles.featureBlock} data-color="red">
-									Bob&apos;s Drums
-								</Box>
-								<Box sx={styles.featureBlock} data-color="purple">
-									Alice&apos;s Bass
-								</Box>
-								<Box sx={styles.featureBlock} data-color="blue">
-									Charlie&apos;s Melody
-								</Box>
-								<Box sx={styles.featureBlock} data-color="yellow">
-									Dave&apos;s Chords
-								</Box>
+								<ArtistBlocks />
 								<ArrowDownward />
 								<Box sx={styles.featureBlock} className="bigBlock" />
 							</Box>
@@ -119,18 +124,7 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 						<Grid item xs={12} sm={6} md={3}>
 							<Typography variant="h6">Collectors Mint &amp; Buy Songs</Typography>
 							<Box sx={styles.featureBox}>
-								<Box sx={styles.featureBlock} data-color="red">
-									Bob&apos;s Drums
-								</Box>
-								<Box sx={styles.featureBlock} data-color="purple">
-									Alice&apos;s Bass
-								</Box>
-								<Box sx={styles.featureBlock} data-color="blue">
-									Charlie&apos;s Melody
-								</Box>
-								<Box sx={styles.featureBlock} data-color="yellow">
-									Dave&apos;s Chords
-								</Box>
+								<ArtistBlocks />
 								<Sell />
 								<Box sx={styles.featureBlock} className="bigBlock" data-color="multi">
 									SOLD FOR 1 ETH
@@ -140,18 +134,7 @@ const Home: NextPage<HomeProps> = ({ projects }) => {
 						<Grid item xs={12} sm={6} md={3}>
 							<Typography variant="h6">Artists Get Paid</Typography>
 							<Box sx={styles.featureBox}>
-								<Box sx={styles.featureBlock} data-color="red">
-									Bob&apos;s Drums
-								</Box>
-								<Box sx={styles.featureBlock} data-color="purple">
-									Alice&apos;s Bass
-								</Box>
-								<Box sx={styles.featureBlock} data-color="blue">
-									Charlie&apos;s Melody
-								</Box>
-								<Box sx={styles.featureBlock} data-color="yellow">
-									Dave&apos;s Chords
-								</Box>
+								<ArtistBlocks />
 								<ArrowUpward />
 								<Box sx={styles.featureBlock} className="bigBlock" data-color="multi">
 									.25 ETH FOR EACH ARTIST

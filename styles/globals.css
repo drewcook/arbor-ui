@@ -142,7 +142,7 @@ a:visited {
 
 a:hover:not(.MuiButton-root:hover),
 a:active:not(.MuiButton-root:active) {
-	color: #4ce79d;
+	color: #e95d87;
 	transition: color 200ms ease-in-out;
 }
 

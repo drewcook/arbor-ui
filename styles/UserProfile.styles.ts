@@ -42,7 +42,7 @@ const styles = {
 	metadataKey: {
 		mr: 1,
 		display: 'inline-block',
-		color: '#a8a8a8',
+		color: '#3C3839',
 	},
 	divider: {
 		my: 3,

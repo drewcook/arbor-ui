@@ -46,7 +46,7 @@ export const detailsStyles = {
 	metadataKey: {
 		mr: 1,
 		display: 'inline-block',
-		color: '#a8a8a8',
+		color: '#3C3839',
 	},
 	buyNowListing: {
 		mt: 3,
@@ -66,7 +66,7 @@ export const detailsStyles = {
 		pl: 3,
 	},
 	eth: {
-		color: '#aaa',
+		color: '#B9BDCB',
 		fontSize: '1rem',
 	},
 	btn: {

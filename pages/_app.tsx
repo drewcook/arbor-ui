@@ -13,7 +13,7 @@ require('../newrelic')
 const ArborApp = ({ Component, pageProps }: AppProps) => (
 	<ArborThemeProvider>
 		<Web3Provider>
-			<NextNProgress color="#23F09A" />
+			<NextNProgress color="#E95D87" />
 			<AppLayout>
 				<Component {...pageProps} />
 			</AppLayout>

@@ -12,9 +12,10 @@ const styles = {
 	header: {
 		py: 1,
 		px: 2,
+		color: '#FFFFFF',
 	},
 	metadataPlayBtn: {
-		color: '#fff',
+		color: '#000',
 		minWidth: '50px',
 		mr: 2,
 	},
@@ -29,24 +30,26 @@ const styles = {
 	},
 	addedBy: {
 		display: 'inline-block',
-		color: '#5a5a5a',
+		color: '#F1E6E6',
 		fontStyle: 'italic',
 		fontSize: '.75rem',
+		fontWeight: 100,
 		verticalAlign: 'super',
 	},
 	addressLink: {
-		color: '#000',
+		color: '#FFEBEB',
 		fontSize: '.9rem',
 		fontWeight: 600,
 		display: 'inline-block',
 		verticalAlign: 'middle',
 	},
 	forkBtn: {
-		backgroundColor: '#fff',
+		backgroundColor: '#1B2021',
+		color: '#FFFFFF',
 		textTransform: 'uppercase',
 		fontWeight: 800,
 		'&:hover': {
-			backgroundColor: '#f5f5f5',
+			backgroundColor: '#1B2021',
 		},
 	},
 	playback: {
