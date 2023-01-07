@@ -15,10 +15,13 @@ const styles = {
 		minWidth: '200px',
 		position: 'relative',
 		overflow: 'visible',
+		border: '2px solid #000',
+		borderRadius: 2,
 	},
 	img: {
 		borderTopLeftRadius: 4,
 		borderTopRightRadius: 4,
+		borderBottom: '2px solid #000',
 	},
 	projectIconLink: {
 		ml: 1,
