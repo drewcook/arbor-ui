@@ -1,8 +1,8 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { IStemDoc, Stem } from '../../../models/stem.model'
-import dbConnect from '../../../utils/db'
+import { IStemDoc, Stem } from '../../../../models/stem.model'
+import dbConnect from '../../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {

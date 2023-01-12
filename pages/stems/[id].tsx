@@ -1,5 +1,5 @@
 import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import { Box, Container, Divider, Fab, Typography } from '@mui/material'
+import { Box, Container, Divider, Fab, Grid, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -8,8 +8,11 @@ import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
+import ProjectCard from '../../components/ProjectCard'
+import { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
+import userProfileStyles from '../../styles/UserProfile.styles'
 import formatDate from '../../utils/formatDate'
 import formatStemName from '../../utils/formatStemName'
 import { get } from '../../utils/http'
@@ -23,12 +26,17 @@ const propTypes = {
 		filetype: PropTypes.string.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
 	}),
+	projects: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+		}),
+	),
 }
 
 type StemDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
-	const { data } = props
+	const { data, projects } = props
 	const [waves, setWaves] = useState<any>(null)
 	const [isPlaying, setIsPlaying] = useState<boolean>(false)
 	// const [isLooping, setIsLooping] = useState<boolean>(false)
@@ -150,6 +158,30 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 						Sorry, no details were found for this stem.
 					</Typography>
 				)}
+
+				<Divider light sx={userProfileStyles.divider} />
+				<Typography variant="h4" gutterBottom>
+					Collaborations
+					<Typography component="span" sx={userProfileStyles.sectionCount}>
+						({projects && projects.length ? projects.length : '0'})
+					</Typography>
+				</Typography>
+				<Typography sx={userProfileStyles.sectionMeta}>Projects this stem has been used on</Typography>
+				<Grid container spacing={4}>
+					{projects && projects.length > 0 ? (
+						projects.map(project => (
+							<Grid item sm={6} md={4} key={project?._id}>
+								<ProjectCard details={project} />
+							</Grid>
+						))
+					) : (
+						<Grid item xs={12}>
+							<Typography sx={userProfileStyles.noItemsMsg}>
+								This stem has not been used in any projects yet.
+							</Typography>
+						</Grid>
+					)}
+				</Grid>
 			</Container>
 		</>
 	)
@@ -159,9 +191,14 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const stemId = context.query.id
 	const res = await get(`/stems/${stemId}`)
 	const data: IStemDoc | null = res.success ? res.data : null
+
+	const result = await get(`/stems/${stemId}/collaborations`)
+	const projects: IProjectDoc[] | null = result.success ? result.data : null
+
 	return {
 		props: {
 			data,
+			projects,
 		},
 	}
 }
