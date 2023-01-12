@@ -163,10 +163,10 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 				<Typography variant="h4" gutterBottom>
 					Collaborations
 					<Typography component="span" sx={userProfileStyles.sectionCount}>
-						({projects && projects.length ? 0 : ''})
+						({projects && projects.length ? projects.length : '0'})
 					</Typography>
 				</Typography>
-				<Typography sx={userProfileStyles.sectionMeta}>Projects this stem has been used on.</Typography>
+				<Typography sx={userProfileStyles.sectionMeta}>Projects this stem has been used on</Typography>
 				<Grid container spacing={4}>
 					{projects && projects.length > 0 ? (
 						projects.map(project => (
@@ -192,9 +192,9 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const res = await get(`/stems/${stemId}`)
 	const data: IStemDoc | null = res.success ? res.data : null
 
-	// Get all Projects
-	const result = await get(`/projects`)
+	const result = await get(`/stems/${stemId}/collaborations`)
 	const projects: IProjectDoc[] | null = result.success ? result.data : null
+
 	return {
 		props: {
 			data,
