@@ -78,7 +78,9 @@ export const stemQueueContract = new Contract(STEMQUEUE_CONTRACT_ADDRESS, StemQu
 // BlindAuction contract
 export const BLINDAUCTION_CONTRACT_ADDRESS = contracts[NETWORK_NAME].blindAuction
 export const blindAuctionContract = new Contract(BLINDAUCTION_CONTRACT_ADDRESS, BlindAuction.abi)
-export const blindAuctionContractProxy = _address => new Contract(_address, BlindAuction.abi)
+
+// BlindAuctionProxy contract
+export const blindAuctionProxyContract = (_address: string) => new Contract(_address, BlindAuction.abi)
 
 // BlindAuctionFactory contract
 export const BLINDAUCTIONFACTORY_CONTRACT_ADDRESS = contracts[NETWORK_NAME].blindAuctionFactory

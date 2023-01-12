@@ -1,22 +1,20 @@
-// import detectEthereumProvider from '@metamask/detect-provider'
+import detectEthereumProvider from '@metamask/detect-provider'
+import { Contract, providers } from 'ethers'
+import type { NFTStorage } from 'nft.storage'
+import type { ReactNode } from 'react'
+import { createContext, useContext, useState } from 'react'
+
 import {
 	blindAuctionContract,
 	blindAuctionFactoryContract,
+	blindAuctionProxyContract,
 	collectionsContract,
 	stemQueueContract,
-} from '@constants/contracts'
-import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '@constants/networks'
-import type { IUserDoc } from '@models/user.model'
-import { get, post } from '@utils/http'
-import NFTStorageClient from '@utils/NFTStorageClient'
-import {
-	Contract,
-	// providers
-} from 'ethers'
-import type { NFTStorage } from 'nft.storage'
-import { createContext, ReactNode, useContext, useState } from 'react'
-
-import _wallet from '../_dev/_wallet'
+} from '../constants/contracts'
+import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
+import type { IUserDoc } from '../models/user.model'
+import { get, post } from '../utils/http'
+import NFTStorageClient from '../utils/NFTStorageClient'
 
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
@@ -42,6 +40,7 @@ type PolyechoContracts = {
 type BlindAuctionContracts = {
 	blindAuction: Contract
 	blindAuctionFactory: Contract
+	// blindAuctionProxy: Contract
 }
 
 // Create context
@@ -58,6 +57,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 		stemQueue: {} as Contract,
 		blindAuction: {} as Contract,
 		blindAuctionFactory: {} as Contract,
+		// blindAuctionProxy: {} as Contract,
 	})
 
 	const checkForSupportedNetwork = async (provider: any) => {
@@ -111,8 +111,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 
 	const loadWeb3 = async (): Promise<any> => {
 		try {
-			/*
- 			// Get Web3 instance based off browser support
+			// Get Web3 instance based off browser support
 			const provider = (await detectEthereumProvider()) as any
 			if (!provider) return alert('Please make sure you have installed Metamask or another Web3 wallet.')
 
@@ -127,10 +126,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const signer = ethersProvider.getSigner()
 			const signerAddress = await signer.getAddress()
 
- */
-			const signer = _wallet.signer
-			const signerAddress = signer.address
-
 			// Check that we're on the supported network
 
 			// Setup contracts with signer of connected address
@@ -138,13 +133,13 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const stemQueue = stemQueueContract.connect(signer)
 			const blindAuction = blindAuctionContract.connect(signer)
 			const blindAuctionFactory = blindAuctionFactoryContract.connect(signer)
+			// const blindAuctionProxy = blindAuctionProxyContract.connect(signer)
 
 			setContracts({ nft, stemQueue, blindAuction, blindAuctionFactory })
 
 			// Connect to NFT.storage
 			await connectNFTStorage()
 
-			/*
 			// Listen for account changes from browser wallet UI
 			provider.on('accountsChanged', async (newAccounts: string[]) => {
 				const newAccount = newAccounts[0]
@@ -160,7 +155,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				checkForSupportedNetwork(provider)
 				// window.location.reload()
 			})
-			*/
 
 			setConnected(true)
 			return { connectedAccount: signerAddress }
@@ -210,7 +204,6 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			// If there is not a user found for this connected account, create a new user record
 			const findRes = await get(`/users/${account.toLowerCase()}`)
 			if (findRes.data) {
-				findRes.data['signer'] = _wallet.signer
 				setCurrentUser(findRes.data)
 			} else {
 				const createRes = await post('/users', {

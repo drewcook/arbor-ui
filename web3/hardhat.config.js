@@ -41,26 +41,6 @@ const config = {
 			url: 'http://127.0.0.1:8545',
 			chainId: 31337,
 		},
-		polygon: {
-			url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_KEY}`,
-			accounts: [process.env.PRIVATE_KEY],
-		},
-		polygonTest: {
-			url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_POLYGON_TESTNET_KEY}`,
-			accounts: [process.env.PRIVATE_KEY],
-		},
-		harmony: {
-			url: 'https://api.s0.t.hmny.io',
-			accounts: [process.env.PRIVATE_KEY],
-		},
-		harmonyTest: {
-			url: 'https://api.s0.b.hmny.io',
-			accounts: [process.env.PRIVATE_KEY],
-		},
-		harmonyDev: {
-			url: 'https://api.s0.ps.hmny.io',
-			accounts: [process.env.PRIVATE_KEY],
-		},
 	},
 	gasReporter: {
 		enabled: process.env.REPORT_GAS !== undefined,

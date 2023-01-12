@@ -1,10 +1,10 @@
 // import AuctionDetails from '../../components/auction-details';
-import { blindAuctionContractProxy } from '@constants/contracts'
+import { blindAuctionProxyContract } from '@constants/contracts'
 import { NETWORK_CURRENCY } from '@constants/networks'
 import { INftDoc } from '@models/nft.model'
 import { Button, Grid, Typography } from '@mui/material'
 import { buildPoseidonOpt as buildPoseidon } from 'circomlibjs'
-import { BigNumber, ethers, Signer } from 'ethers'
+import { BigNumber, Contract, ethers, Signer } from 'ethers'
 import { MutableRefObject, useEffect, useRef, useState } from 'react'
 
 import { detailsStyles as styles } from '../styles/NFTs.styles'
@@ -219,6 +219,7 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 	const [data, setData] = useState(Data)
 	const amountRef = useRef({ value: '' })
 	const inputsRef = useRef({ value: '' })
+	const [blindAuctionProxy, setBlindAuctionProxy] = useState<Contract>()
 	const {
 		beneficiary,
 		auctioneer,
@@ -230,9 +231,6 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 	const { currentUser } = useWeb3()
 
 	const auction = details.auction.address
-
-	const blindAuctionProxy = blindAuctionContractProxy(auction).connect(currentUser?.signer as Signer)
-
 	const bidData = 'none'
 	const bidsLoading = false
 	const bidLoading = false
@@ -240,6 +238,7 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 
 	useEffect(() => {
 		if (currentUser?.signer) {
+			setBlindAuctionProxy(blindAuctionProxyContract(auction).connect(currentUser?.signer as Signer))
 			console.log('signer connected')
 			getAuctionDetails()
 		}
@@ -257,7 +256,7 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 
 	async function getBids() {
 		try {
-			const res = await blindAuctionProxy.getBidsDev()
+			const res = await blindAuctionProxy?.getBidsDev()
 			const blindedBids = res[0]
 			const bids = res[1].map((amounts: string, idx: number) => [amounts, res[2][idx]])
 			const inputs = {
@@ -273,7 +272,7 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 	}
 
 	async function getData() {
-		const res = await blindAuctionProxy.getData()
+		const res = await blindAuctionProxy?.getData()
 		const [beneficiary, auctioneer, winnerAddress, winningBid] = Object.values(res).map((d: string | BigNumber | any) =>
 			d._isBigNumber ? Number(d) / 10 ** 18 : d,
 		)
@@ -298,7 +297,7 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 					setSecrets({ ...secrets, [amount]: blindingNumber.toString() })
 					const blindedBid = ethers.BigNumber.from(poseidon.F.toString(poseidon([amount, blindingNumber])))
 					const deposit = ethers.utils.parseEther('1')
-					await blindAuctionProxy.bidDev(blindedBid.toHexString(), amount.toString(), blindingNumber.toString(), {
+					await blindAuctionProxy?.bidDev(blindedBid.toHexString(), amount.toString(), blindingNumber.toString(), {
 						value: deposit,
 						gasLimit: 5000000,
 					})
@@ -325,7 +324,7 @@ export default function Auction({ details, transferNft }: AuctionProps) {
 				window.alert('Verification OK')
 				const { proofList, a, b, c } = getSolidityProofArray(proof)
 
-				const call = await blindAuctionProxy.getHighestBidderDev(a, b, c, publicSignals, { gasLimit: 2000000 })
+				const call = await blindAuctionProxy?.getHighestBidderDev(a, b, c, publicSignals, { gasLimit: 2000000 })
 
 				const tx = await call.wait()
 				console.log(tx)
