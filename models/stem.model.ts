@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose'
 
-export type StemType = 'drums' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
+export type StemType = 'drums' | 'percussion' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
 
 export interface IStem {
 	name: string

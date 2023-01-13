@@ -403,6 +403,39 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
 					Song Stems
 				</Typography>
+				<Box sx={styles.playSection}>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handlePlayPauseStems}
+						disableRipple
+						disableFocusRipple
+						title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+					>
+						{isPlayingAll ? (
+							<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+						) : (
+							<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+						)}
+					</IconButton>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handleStop}
+						disableRipple
+						disableFocusRipple
+						title="Stop playback"
+					>
+						<Square />
+					</IconButton>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handleSkipPrev}
+						disableRipple
+						disableFocusRipple
+						title="Skip to beginning"
+					>
+						<SkipPrevious />
+					</IconButton>
+				</Box>
 				<Box sx={styles.stemsMeta}>
 					<Typography>
 						{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from {details.collaborators.length}{' '}
@@ -432,58 +465,22 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				</Box>
 			</Box>
 			{details.stems.length > 0 ? (
-				<>
-					<Box sx={styles.playSection}>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handlePlayPauseStems}
-							disableRipple
-							disableFocusRipple
-							title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
-						>
-							{isPlayingAll ? (
-								<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
-							) : (
-								<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
-							)}
-						</IconButton>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handleStop}
-							disableRipple
-							disableFocusRipple
-							title="Stop playback"
-						>
-							<Square />
-						</IconButton>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handleSkipPrev}
-							disableRipple
-							disableFocusRipple
-							title="Skip to beginning"
-						>
-							<SkipPrevious />
-						</IconButton>
-						<Box sx={styles.playTracker} />
-					</Box>
-					{details.stems.map((stem, idx) => (
-						<Fragment key={idx}>
-							<StemPlayer
-								idx={idx + 1}
-								details={stem}
-								onWavesInit={onWavesInit}
-								onFinish={() => setIsPlayingAll(false)}
-								onNewFile={onNewFile}
-								onPlay={handlePlay}
-								onSolo={handleSolo}
-								onMute={handleMute}
-								onStop={onStop}
-								handleUnmuteAll={handleUnmuteAll}
-							/>
-						</Fragment>
-					))}
-				</>
+				details.stems.map((stem, idx) => (
+					<Fragment key={idx}>
+						<StemPlayer
+							idx={idx + 1}
+							details={stem}
+							onWavesInit={onWavesInit}
+							onFinish={() => setIsPlayingAll(false)}
+							onNewFile={onNewFile}
+							onPlay={handlePlay}
+							onSolo={handleSolo}
+							onMute={handleMute}
+							onStop={onStop}
+							handleUnmuteAll={handleUnmuteAll}
+						/>
+					</Fragment>
+				))
 			) : (
 				<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 			)}

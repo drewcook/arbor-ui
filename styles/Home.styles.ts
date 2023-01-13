@@ -57,20 +57,20 @@ const styles = {
 			minHeight: '5rem',
 			fontSize: '1.2rem',
 		},
-		'&[data-color="red"]': {
-			backgroundColor: '#FFA1A1',
+		'&[data-color="alice"]': {
+			backgroundColor: '#E74B7A',
 		},
-		'&[data-color="purple"]': {
-			backgroundColor: '#D6A1FF',
+		'&[data-color="bob"]': {
+			backgroundColor: '#FFD6D8',
 		},
-		'&[data-color="blue"]': {
-			backgroundColor: '#A1EEFF',
+		'&[data-color="charlie"]': {
+			backgroundColor: '#D8C5F2',
 		},
-		'&[data-color="yellow"]': {
-			backgroundColor: '#FDFFA1',
+		'&[data-color="dave"]': {
+			backgroundColor: '#9F86C0',
 		},
 		'&[data-color="multi"]': {
-			background: 'linear-gradient(94.22deg, #FFA1A1 9.36%, #A1AAFF 33.65%, #A1EEFF 65.94%, #FDFFA1 89.96%);',
+			background: 'linear-gradient(94.22deg, #E74B7A 9.36%, #FFD6D8 33.65%, #D8C5F2 65.94%, #9F86C0 89.96%);',
 		},
 	},
 	about: {

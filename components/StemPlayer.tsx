@@ -7,6 +7,7 @@ import WaveSurfer from 'wavesurfer.js'
 import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
+import { stemTypesToColor } from './ArborThemeProvider'
 import styles from './StemPlayer.styles'
 
 // We have to pass back up callbacks because we use global controls outside of this player's track
@@ -102,16 +103,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		if (onSolo) onSolo(idx)
 	}
 
-	const stemTypesToColor: Record<string, string> = {
-		drums: '#FFA1A1',
-		bass: '#D6A1FF',
-		chords: '#FDFFA1',
-		melody: '#A1EEFF',
-		vocals: '#A1FFBB',
-		combo: '#FFA1F0',
-		other: '##FFC467',
-	}
-
 	return (
 		<Box sx={styles.stem}>
 			<Box sx={{ ...styles.header, backgroundColor: stemTypesToColor[details.type] || '#dadada' }}>
@@ -128,7 +119,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 						</Typography>
 					</Grid>
 					<Grid item xs={2} sx={{ textAlign: 'right' }}>
-						{/* @ts-ignore */}
 						<Button variant="outlined" size="small" sx={styles.forkBtn} disabled>
 							Fork
 						</Button>
