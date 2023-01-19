@@ -27,6 +27,7 @@ const nextConfig = {
 		SENTRY_PROJECT_NAME: process.env.SENTRY_PROJECT_NAME,
 		SENTRY_LOG_LEVEL: process.env.SENTRY_LOG_LEVEL,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+		GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
