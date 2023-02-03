@@ -4,16 +4,22 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
 
+import { IProjectDoc } from '../models/project.model'
 import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
 import { stemTypesToColor } from './ArborThemeProvider'
 import styles from './StemPlayer.styles'
+import StemQueue from './StemQueue/StemQueue'
 
 // We have to pass back up callbacks because we use global controls outside of this player's track
 type StemPlayerProps = {
 	idx: number
 	details: IStemDoc | any
+	projectDetails?: IProjectDoc
+	votes?: number
+	userIsCollaborator?: boolean
+	userIsRegisteredVoter?: boolean
 	onWavesInit: (idx: number, ws: any) => any
 	onFinish?: (idx: number, ws: any) => any
 	isStemDetails?: boolean
@@ -25,6 +31,10 @@ type StemPlayerProps = {
 	onStop?: (idx: number) => any
 	onNewFile?: (newFileName: string, newFile: Blob) => void
 	handleUnmuteAll?: boolean
+	onRegisterSuccess?: (project: IProjectDoc) => void
+	onVoteSuccess?: (project: IProjectDoc, stemName: string) => void
+	onApprovedSuccess?: (project: IProjectDoc, stemName: string) => void
+	onFailure?: (msg: string) => void
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
@@ -42,11 +52,22 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		onStop,
 		onNewFile,
 		handleUnmuteAll,
+		userIsCollaborator,
+		userIsRegisteredVoter,
+		projectDetails,
+		onRegisterSuccess,
+		onVoteSuccess,
+		onApprovedSuccess,
+		onFailure,
+		votes,
 	} = props
+
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 	const [blob, setBlob] = useState<Blob>()
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
+
+	const stem = { stem: details, votes: votes || 0 }
 	useEffect(() => {
 		if (!blob) {
 			if (!loadingBlob) {
@@ -104,7 +125,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 	}
 
 	return (
-		<Box sx={styles.stem}>
+		<Box sx={isQueued ? styles.queuedStem : styles.stem}>
 			<Box sx={{ ...styles.header, backgroundColor: stemTypesToColor[details.type] || '#dadada' }}>
 				<Grid container spacing={2} sx={{ alignItems: 'center' }}>
 					<Grid item xs={10}>
@@ -129,7 +150,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				<Grid container spacing={1}>
 					<Grid item xs={1} sx={styles.btnsWrap}>
 						<ButtonGroup sx={styles.btnGroup} orientation="vertical">
-							{isStemDetails || isQueued ? (
+							{isStemDetails ? (
 								<>
 									{isQueued && (
 										<Button size="small" onClick={() => (onPlay ? onPlay(idx) : null)} title="Play stem">
@@ -166,11 +187,35 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 								</>
 							)}
 						</ButtonGroup>
+						{isQueued &&
+							userIsCollaborator !== undefined &&
+							userIsRegisteredVoter !== undefined &&
+							projectDetails &&
+							onRegisterSuccess &&
+							onVoteSuccess &&
+							onApprovedSuccess &&
+							onFailure && (
+								<StemQueue
+									userIsCollaborator={userIsCollaborator}
+									idx={idx}
+									userIsRegisteredVoter={userIsRegisteredVoter}
+									onVoteSuccess={onVoteSuccess}
+									onApprovedSuccess={onApprovedSuccess}
+									onFailure={onFailure}
+									details={projectDetails}
+									stem={stem}
+								/>
+							)}
 					</Grid>
 					<Grid item xs={11}>
 						<div id={`waveform-${details._id}-${idx}`} />
 					</Grid>
 				</Grid>
+				{isQueued && (
+					<Typography sx={{ mt: 1 }}>
+						<strong>Votes:</strong> {votes}
+					</Typography>
+				)}
 			</Box>
 		</Box>
 	)
