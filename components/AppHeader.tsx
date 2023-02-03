@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import styles from './AppHeader.styles'
 import ConnectedAccount from './ConnectedAccount'
+import ImageOptimized from './ImageOptimized'
 
 const basePages = [
 	{ href: '/projects/new', title: 'Create' },
@@ -32,11 +33,10 @@ const AppHeader = (): JSX.Element => {
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Link href="/" passHref>
-						{/* @ts-ignore */}
-						<Typography variant="h6" noWrap component="div" sx={styles.logoDesktop}>
-							Arbor
-							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
-						</Typography>
+						<Box sx={styles.logoDesktop}>
+							<ImageOptimized src="/arbor_logo_text_wave_black.svg" width={180} height={60} />
+							<Chip label="Alpha" size="small" sx={styles.alphaChip} />
+						</Box>
 					</Link>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -77,11 +77,10 @@ const AppHeader = (): JSX.Element => {
 							))}
 						</Menu>
 						<Link href="/" passHref>
-							{/* @ts-ignore */}
-							<Typography variant="h6" noWrap component="div" sx={styles.logoMobile}>
-								Arbor
-								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
-							</Typography>
+							<Box sx={styles.logoMobile}>
+								<ImageOptimized src="/arbor_logo_text_wave_black.svg" width={180} height={60} />
+								<Chip label="Alpha" size="small" sx={styles.alphaChip} />
+							</Box>
 						</Link>
 					</Box>
 

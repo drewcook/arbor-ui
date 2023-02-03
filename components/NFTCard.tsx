@@ -22,7 +22,7 @@ const NFTCard = (props: NFTCardProps): JSX.Element => {
 				{details.isListed && <Chip label="Listed For Sale" size="medium" sx={styles.buyableChip} />}
 				<CardMedia
 					component="img"
-					image="/arbor_tree_logo.svg"
+					image="/arbor_logo_tree.svg"
 					alt="Arbor Token Image"
 					title="Arbor Token Image"
 					sx={styles.img}

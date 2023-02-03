@@ -1,30 +1,26 @@
 const styles = {
 	appbar: {
 		backgroundColor: '#fff',
-		color: '#111',
+		color: '#1B2021',
 		boxShadow: 0,
 	},
 	alphaChip: {
-		backgroundColor: '#FF5200',
 		color: '#fff',
+		backgroundColor: '#9F86C0',
 		ml: 1,
 		fontSize: '.6rem',
 		height: '1.25rem',
 		textShadow: 'none',
 	},
 	logoDesktop: {
-		mr: 2,
+		mr: 1,
 		display: { xs: 'none', md: 'flex' },
 		cursor: 'pointer',
-		textTransform: 'uppercase',
-		fontSize: '2rem',
 	},
 	logoMobile: {
-		display: { xs: 'flex', alignItems: 'center', md: 'none' },
 		ml: 1,
+		display: { xs: 'flex', md: 'none' },
 		cursor: 'pointer',
-		textTransform: 'uppercase',
-		fontSize: '2rem',
 	},
 }
 

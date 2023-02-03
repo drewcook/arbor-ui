@@ -7,24 +7,47 @@ type ThemeProviderProps = {
 
 declare module '@mui/material/styles' {
 	interface Palette {
+		swatchVocal: Palette['primary']
 		swatchDrums: Palette['primary']
+		swatchPercussion: PaletteOptions['primary']
 		swatchBass: Palette['primary']
 		swatchChords: Palette['primary']
 		swatchMelody: Palette['primary']
-		swatchVocal: Palette['primary']
 		swatchCombo: Palette['primary']
 		swatchOther: Palette['primary']
 	}
 	interface PaletteOptions {
+		reds: string[]
+		neutrals: Record<string, string>
+		swatchVocal: PaletteOptions['primary']
 		swatchDrums: PaletteOptions['primary']
+		swatchPercussion: PaletteOptions['primary']
 		swatchBass: PaletteOptions['primary']
 		swatchChords: PaletteOptions['primary']
 		swatchMelody: PaletteOptions['primary']
-		swatchVocal: PaletteOptions['primary']
 		swatchCombo: PaletteOptions['primary']
 		swatchOther: PaletteOptions['primary']
 	}
 }
+
+export const stemTypesToColor: Record<string, string> = {
+	vocals: '#7E0017',
+	drums: '#C9184A',
+	percussion: '#E74B7A',
+	bass: '#FFD6D8',
+	chords: '#20163B',
+	melody: '#5E548E',
+	combo: '#9F86C0',
+	other: '#D8C5F2',
+}
+
+// const neutralsToColor: Record<string, string> = {
+// 	white: '#FFFFFF',
+// 	light: '#F1E6E6',
+// 	medium: '#B6A0A0',
+// 	med4: '#696061',
+// 	dark: '#1B2021',
+// }
 
 const arborTheme = createTheme({
 	typography: {
@@ -33,49 +56,92 @@ const arborTheme = createTheme({
 		),
 	},
 	palette: {
-		// Ideas
-		// '#91ff00'
-		// '#d1ff00'
-		// '#ff5200'
-		// '#ff399f'
-
+		mode: 'dark',
+		// Colors
 		primary: {
-			main: '#000',
-			contrastText: '#fff',
+			main: '#1B2021',
+			contrastText: '#F1F1F1',
 		},
 		secondary: {
-			main: '#4CE79D',
-			contrastText: '#000',
+			main: '#C9184A',
+			contrastText: '#F1F1F1',
+		},
+		error: { light: '#FF3333', main: '#D10000', dark: '#8F0000', contrastText: '' },
+		warning: { light: '#FEB571', main: '#FE922F', dark: '#DF6501', contrastText: '' },
+		info: { light: '#99DFFF', main: '#50BBFF', dark: '#005FA3', contrastText: '' },
+		success: { light: '#31F500', main: '#25B800', dark: '#187A00', contrastText: '' },
+		// grey: {10: '', 20, '', ...{}},
+		// action: { ,..{} },
+		text: {
+			primary: '#1B2021',
+			secondary: '#30343F',
+			disabled: '#B9BDCB',
+		},
+		divider: '#3C3839',
+		background: {
+			default: '#F1F1F1',
+			paper: '#F1F1F1',
+		},
+		reds: [
+			'#FFEBEB',
+			'#FFD6D6',
+			'#FFC2C2',
+			'#FFADAD',
+			'#FF9999',
+			'#FF8585',
+			'#FF7070',
+			'#FF5C5C',
+			'#FF4747',
+			'#FF3333',
+			'#FF1F1F',
+			'#FF0A0A',
+			'#F50000',
+		],
+		// melon: '#FFB8B0',
+		// coral: '#FC898F',
+		// blush: '#E95D87',
+		// jam: '#901148',
+		neutrals: {
+			lightest: '#FFFFFF',
+			lighter: '#F1E6E6',
+			light: '#B6A0A0',
+			medium: '#5D4F51',
+			dark: '#3C3839',
+			darker: '#1B2021',
+			darkest: '#0C0101',
+		},
+		swatchVocal: {
+			main: '#7E0017',
+			contrastText: '#111',
 		},
 		swatchDrums: {
-			main: '#FFA1A1',
+			main: '#C9184A',
+			contrastText: '#111',
+		},
+		swatchPercussion: {
+			main: '#E74B7A',
 			contrastText: '#111',
 		},
 		swatchBass: {
-			main: '#D6A1FF',
+			main: '#FFD6D8',
 			contrastText: '#111',
 		},
 		swatchChords: {
-			main: '#FDFFA1',
+			main: '#20163B',
 			contrastText: '#111',
 		},
 		swatchMelody: {
-			main: '#A1EEFF',
-			contrastText: '#111',
-		},
-		swatchVocal: {
-			main: '#A1FFBB',
+			main: '#5E548E',
 			contrastText: '#111',
 		},
 		swatchCombo: {
-			main: '#FFA1F0',
+			main: '#9F86C0',
 			contrastText: '#111',
 		},
 		swatchOther: {
-			main: '##FFC467',
+			main: '#D8C5F2',
 			contrastText: '#111',
 		},
-		divider: '#ccc',
 	},
 })
 

@@ -24,7 +24,7 @@ import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import web3 from 'web3'
 
 import ImageOptimized from '../../components/ImageOptimized'
@@ -74,7 +74,29 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const router = useRouter()
 	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
 
+	const [mutedTracks, setMutedTracks] = useState<number[]>([])
+	const [soloedTracks, setSoloedTracks] = useState<number[]>([])
+	const [handleUnmuteAll, setHandleUnmuteAll] = useState<boolean>(false)
+
+	useEffect(() => {
+		if (soloedTracks.length > 0 && soloedTracks.length === stems.size) {
+			setHandleUnmuteAll(unMuteAll => !unMuteAll)
+			setSoloedTracks([])
+			setMutedTracks([])
+		}
+		stems.forEach((stem, idx) => {
+			if (soloedTracks.includes(idx)) {
+				stem.setMute(false)
+			} else if (soloedTracks.length > 0) {
+				stem.setMute(true)
+			} else {
+				stem.setMute(mutedTracks.includes(idx))
+			}
+		})
+	}, [soloedTracks, mutedTracks, stems])
+
 	if (!details) return null
+
 	const limitReached = details ? details.stems.length >= details.trackLimit : false
 
 	/*
@@ -117,12 +139,32 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 		})
 	}
 
-	const handleSoloStem = (idx: number) => {
-		stems.forEach((ws, i) => {
-			if (ws !== null && i !== idx) {
-				ws?.setMute(!ws?.getMute())
-			}
-		})
+	const handlePlay = () => {
+		stems.forEach(stem => stem.play())
+	}
+
+	const onStop = () => {
+		stems.forEach(stem => stem.stop())
+	}
+
+	const handleSolo = (idx: number) => {
+		if (soloedTracks.includes(idx)) {
+			setSoloedTracks(soloedTracks.filter(i => i !== idx))
+			setMutedTracks(mutedTracks.filter(i => i !== idx))
+		} else {
+			setSoloedTracks([...soloedTracks, idx])
+			setMutedTracks(mutedTracks.filter(i => i !== idx))
+		}
+	}
+
+	const handleMute = (idx: number) => {
+		if (mutedTracks.includes(idx)) {
+			setMutedTracks(mutedTracks.filter(i => i !== idx))
+			setSoloedTracks(soloedTracks.filter(i => i !== idx))
+		} else {
+			setMutedTracks([...mutedTracks, idx])
+			setSoloedTracks(soloedTracks.filter(i => i !== idx))
+		}
 	}
 
 	const handleDownloadAll = async () => {
@@ -361,6 +403,39 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
 					Song Stems
 				</Typography>
+				<Box sx={styles.playSection}>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handlePlayPauseStems}
+						disableRipple
+						disableFocusRipple
+						title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+					>
+						{isPlayingAll ? (
+							<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+						) : (
+							<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+						)}
+					</IconButton>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handleStop}
+						disableRipple
+						disableFocusRipple
+						title="Stop playback"
+					>
+						<Square />
+					</IconButton>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handleSkipPrev}
+						disableRipple
+						disableFocusRipple
+						title="Skip to beginning"
+					>
+						<SkipPrevious />
+					</IconButton>
+				</Box>
 				<Box sx={styles.stemsMeta}>
 					<Typography>
 						{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from {details.collaborators.length}{' '}
@@ -390,54 +465,22 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				</Box>
 			</Box>
 			{details.stems.length > 0 ? (
-				<>
-					<Box sx={styles.playSection}>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handlePlayPauseStems}
-							disableRipple
-							disableFocusRipple
-							title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
-						>
-							{isPlayingAll ? (
-								<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
-							) : (
-								<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
-							)}
-						</IconButton>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handleStop}
-							disableRipple
-							disableFocusRipple
-							title="Stop playback"
-						>
-							<Square />
-						</IconButton>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handleSkipPrev}
-							disableRipple
-							disableFocusRipple
-							title="Skip to beginning"
-						>
-							<SkipPrevious />
-						</IconButton>
-						<Box sx={styles.playTracker} />
-					</Box>
-					{details.stems.map((stem, idx) => (
-						<Fragment key={idx}>
-							<StemPlayer
-								idx={idx + 1}
-								details={stem}
-								onWavesInit={onWavesInit}
-								onFinish={() => setIsPlayingAll(false)}
-								onSolo={handleSoloStem}
-								onNewFile={onNewFile}
-							/>
-						</Fragment>
-					))}
-				</>
+				details.stems.map((stem, idx) => (
+					<Fragment key={idx}>
+						<StemPlayer
+							idx={idx + 1}
+							details={stem}
+							onWavesInit={onWavesInit}
+							onFinish={() => setIsPlayingAll(false)}
+							onNewFile={onNewFile}
+							onPlay={handlePlay}
+							onSolo={handleSolo}
+							onMute={handleMute}
+							onStop={onStop}
+							handleUnmuteAll={handleUnmuteAll}
+						/>
+					</Fragment>
+				))
 			) : (
 				<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 			)}

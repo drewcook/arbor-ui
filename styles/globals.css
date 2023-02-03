@@ -142,7 +142,7 @@ a:visited {
 
 a:hover:not(.MuiButton-root:hover),
 a:active:not(.MuiButton-root:active) {
-	color: #4ce79d;
+	color: #e95d87;
 	transition: color 200ms ease-in-out;
 }
 
@@ -167,4 +167,17 @@ button a:active {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+html {
+	overflow: scroll;
+	overflow-x: hidden;
+}
+::-webkit-scrollbar {
+	width: 0; /* Remove scrollbar space */
+	background: transparent; /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+	background: #ff0000;
 }

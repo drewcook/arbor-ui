@@ -7,6 +7,7 @@ import WaveSurfer from 'wavesurfer.js'
 import type { IStemDoc } from '../models/stem.model'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
+import { stemTypesToColor } from './ArborThemeProvider'
 import styles from './StemPlayer.styles'
 
 // We have to pass back up callbacks because we use global controls outside of this player's track
@@ -19,9 +20,11 @@ type StemPlayerProps = {
 	isQueued?: boolean
 	onPlay?: (idx: number) => any
 	onSolo?: (idx: number) => any
+	onMute?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: (idx: number) => any
 	onNewFile?: (newFileName: string, newFile: Blob) => void
+	handleUnmuteAll?: boolean
 }
 
 const StemPlayer = (props: StemPlayerProps): JSX.Element => {
@@ -34,11 +37,12 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		isQueued,
 		onPlay,
 		onSolo,
+		onMute,
 		onSkipPrev,
 		onStop,
 		onNewFile,
+		handleUnmuteAll,
 	} = props
-	const [wavesurfer, setWavesurfer] = useState<WaveSurfer>()
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 	const [blob, setBlob] = useState<Blob>()
@@ -77,31 +81,26 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				if (onFinish) onFinish(idx, ws)
 			})
 
-			setWavesurfer(ws)
 			// Callback to the parent
 			onWavesInit(idx, ws)
 			return () => ws.destroy()
 		}
 	}, [blob, loadingBlob]) /* eslint-disable-line react-hooks/exhaustive-deps */
 
+	useEffect(() => {
+		setIsSoloed(false)
+	}, [handleUnmuteAll])
+
 	const toggleMute = () => {
 		setIsMuted(!isMuted)
-		wavesurfer?.setMute(!wavesurfer?.getMute())
+		setIsSoloed(false)
+		if (onMute) onMute(idx)
 	}
 
 	const toggleSolo = () => {
 		setIsSoloed(!isSoloed)
+		setIsMuted(false)
 		if (onSolo) onSolo(idx)
-	}
-
-	const stemTypesToColor: Record<string, string> = {
-		drums: '#FFA1A1',
-		bass: '#D6A1FF',
-		chords: '#FDFFA1',
-		melody: '#A1EEFF',
-		vocals: '#A1FFBB',
-		combo: '#FFA1F0',
-		other: '##FFC467',
 	}
 
 	return (
@@ -120,7 +119,6 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 						</Typography>
 					</Grid>
 					<Grid item xs={2} sx={{ textAlign: 'right' }}>
-						{/* @ts-ignore */}
 						<Button variant="outlined" size="small" sx={styles.forkBtn} disabled>
 							Fork
 						</Button>

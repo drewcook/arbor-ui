@@ -1,5 +1,6 @@
 import type { DocumentContext } from 'next/document'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 
 class AppDocument extends Document {
 	static async getInitialProps(ctx: DocumentContext) {
@@ -25,24 +26,35 @@ class AppDocument extends Document {
 					<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 					{process.env.NODE_ENV === 'production' && (
 						<>
-							<script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6RKG6N7H"></script>
-							<script
-								dangerouslySetInnerHTML={{
-									__html: `
+							<Script src="https://www.googletagmanager.com/gtag/js?id=G-BV6RKG6N7H" strategy="afterInteractive" />
+							<Script id="google-analytics" strategy="afterInteractive">
+								{`
 									window.dataLayer = window.dataLayer || [];
-									function gtag(){dataLayer.push(arguments);}
+									function gtag(){window.dataLayer.push(arguments);}
 									gtag('js', new Date());
 
 									gtag('config', 'G-BV6RKG6N7H');
-								`,
-								}}
-							/>
+								`}
+							</Script>
 						</>
 					)}
 				</Head>
 				<body>
 					<Main />
 					<NextScript />
+					<Script
+						src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`}
+						strategy="afterInteractive"
+					/>
+					<Script id="google-analytics" strategy="afterInteractive">
+						{`
+							window.dataLayer = window.dataLayer || [];
+							function gtag(){window.dataLayer.push(arguments);}
+							gtag('js', new Date());
+
+							gtag('config', '${process.env.GA_MEASUREMENT_ID}');
+						`}
+					</Script>
 				</body>
 			</Html>
 		)

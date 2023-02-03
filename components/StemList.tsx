@@ -16,32 +16,21 @@ import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import formatLength from '../utils/formatLength'
 import formatStemName from '../utils/formatStemName'
+import { stemTypesToColor } from './ArborThemeProvider'
 import styles from './StemList.styles'
 
 interface StyledTableRowProps extends TableRowProps {
 	type?: string
 }
 
-const stemTypesToColor: Record<string, string> = {
-	drums: '#FFA1A1',
-	bass: '#D6A1FF',
-	chords: '#FDFFA1',
-	melody: '#A1EEFF',
-	vocals: '#A1FFBB',
-	combo: '#FFA1F0',
-	other: '##FFC467',
-}
-
 const StyledTableRow = styled(TableRow, { shouldForwardProp: prop => prop !== 'type' })<StyledTableRowProps>(
 	({ type, theme }) => ({
-		'&:last-child td, &:last-child th': {
+		'th, td': {
 			border: 0,
 		},
-		'thead &': {
-			backgroundColor: theme.palette.action.hover,
-		},
 		...(type && {
-			backgroundColor: stemTypesToColor[type] || '#dadada',
+			borderLeft: `15px solid ${stemTypesToColor[type] || '#dadada'}`,
+			borderBottom: `1px solid ${theme.palette.divider}`,
 		}),
 	}),
 )
@@ -55,49 +44,58 @@ const StemList = (props: any) => {
 			if (d?.audioHref) {
 				fetch(new URL(d.audioHref)).then(async res => {
 					const blob = await res.blob()
-					console.log(d.audioHref, 'kkk', blob)
 					getBlobDuration(blob).then(length => {
-						console.log(length, 'ooo')
 						setLengths(l => [...l, length])
 					})
 				})
 			}
 		})
-		console.log(lengths)
 	}, [details])
+
+	if (!details) return null
 
 	return (
 		<TableContainer component={Paper}>
 			<Table aria-label="collapsible table">
 				<TableHead>
-					<StyledTableRow>
-						<TableCell />
-						<TableCell>TITLE</TableCell>
-						<TableCell align="right">LENGTH</TableCell>
-						<TableCell align="right">DATE UPLOADED</TableCell>
-						<TableCell align="right">UPLOADED BY</TableCell>
-					</StyledTableRow>
+					<TableRow
+						sx={{
+							th: {
+								backgroundColor: '#1B2021',
+							},
+						}}
+					>
+						<TableCell variant="head" width={50} />
+						<TableCell variant="head">TITLE</TableCell>
+						<TableCell variant="head" align="right">
+							LENGTH
+						</TableCell>
+						<TableCell variant="head" align="right">
+							DATE UPLOADED
+						</TableCell>
+						<TableCell variant="head" align="right">
+							UPLOADED BY
+						</TableCell>
+					</TableRow>
 				</TableHead>
 				<TableBody>
-					{details.map((detail, i) => (
-						<Fragment key={detail?._id}>
-							{detail && (
-								<StyledTableRow type={detail.type} sx={styles.table}>
-									<TableCell>
-										<IconButton aria-label="row" size="small" sx={styles.icon}>
-											<PlayCircleIcon sx={{ color: '#000000' }} />
-										</IconButton>
-									</TableCell>
-									<TableCell component="th" scope="row">
-										{formatStemName(detail.name)}
-									</TableCell>
-									<TableCell align="right">{formatLength(parseInt(lengths[i]))}</TableCell>
-									<TableCell align="right">{formatDate(detail.createdAt)}</TableCell>
-									<TableCell align="right">
-										<Link href={`/users/${detail.createdBy}`}>{formatAddress(detail.createdBy)}</Link>
-									</TableCell>
-								</StyledTableRow>
-							)}
+					{details.map((stem, i) => (
+						<Fragment key={stem._id}>
+							<StyledTableRow type={stem.type}>
+								<TableCell>
+									<IconButton aria-label="row">
+										<PlayCircleIcon sx={styles.icon} />
+									</IconButton>
+								</TableCell>
+								<TableCell component="th" scope="row">
+									{formatStemName(stem.name)}
+								</TableCell>
+								<TableCell align="right">{formatLength(parseInt(lengths[i]))}</TableCell>
+								<TableCell align="right">{formatDate(stem.createdAt)}</TableCell>
+								<TableCell align="right">
+									<Link href={`/users/${stem.createdBy}`}>{formatAddress(stem.createdBy)}</Link>
+								</TableCell>
+							</StyledTableRow>
 						</Fragment>
 					))}
 				</TableBody>

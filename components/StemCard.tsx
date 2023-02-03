@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
+import { stemTypesToColor } from './ArborThemeProvider'
 import styles from './StemCard.styles'
 
 const propTypes = {
@@ -21,16 +22,6 @@ const propTypes = {
 }
 
 type StemCardProps = PropTypes.InferProps<typeof propTypes>
-
-const stemTypesToColor: Record<string, string> = {
-	drums: '#FFA1A1',
-	bass: '#D6A1FF',
-	chords: '#FDFFA1',
-	melody: '#A1EEFF',
-	vocals: '#A1FFBB',
-	combo: '#FFA1F0',
-	other: '##FFC467',
-}
 
 const StemCard = (props: StemCardProps): JSX.Element => {
 	const { details } = props

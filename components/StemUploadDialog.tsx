@@ -33,9 +33,19 @@ import { useWeb3 } from './Web3Provider'
 
 const stemTypes = [
 	{
+		key: 'vocals',
+		displayName: 'Vocals',
+		styles: 'swatchVocals',
+	},
+	{
 		key: 'drums',
 		displayName: 'Drums',
 		styles: 'swatchDrums',
+	},
+	{
+		key: 'percussion',
+		displayName: 'Percussion',
+		styles: 'swatchPercussion',
 	},
 	{
 		key: 'bass',
@@ -51,11 +61,6 @@ const stemTypes = [
 		key: 'melody',
 		displayName: 'Melody',
 		styles: 'swatchMelody',
-	},
-	{
-		key: 'vocals',
-		displayName: 'Vocals',
-		styles: 'swatchVocals',
 	},
 	{
 		key: 'combo',

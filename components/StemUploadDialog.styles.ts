@@ -28,7 +28,7 @@ const styles = {
 		height: '1.5rem',
 		borderRadius: '4px',
 		mr: 3,
-		border: '1px solid #aaa',
+		border: '1px solid #B9BDCB',
 	},
 	submitBtn: {
 		fontWeight: 800,
@@ -38,26 +38,29 @@ const styles = {
 	loadingIcon: {
 		my: 0.4,
 	},
+	swatchVocal: {
+		backgroundColor: '#7E0017',
+	},
 	swatchDrums: {
-		backgroundColor: '#FFA1A1',
+		backgroundColor: '#C9184A',
+	},
+	swatchPercussion: {
+		backgroundColor: '#E74B7A',
 	},
 	swatchBass: {
-		backgroundColor: '#D6A1FF',
+		backgroundColor: '#FFD6D8',
 	},
 	swatchChords: {
-		backgroundColor: '#FDFFA1',
+		backgroundColor: '#20163B',
 	},
 	swatchMelody: {
-		backgroundColor: '#A1EEFF',
-	},
-	swatchVocals: {
-		backgroundColor: '#A1FFBB',
+		backgroundColor: '#5E548E',
 	},
 	swatchCombo: {
-		backgroundColor: '#FFA1F0',
+		backgroundColor: '#9F86C0',
 	},
 	swatchOther: {
-		backgroundColor: '#FFC467',
+		backgroundColor: '#D8C5F2',
 	},
 }
 
