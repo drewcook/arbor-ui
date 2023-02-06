@@ -7,6 +7,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { createClient } from 'redis'
 
 import { IStemDoc } from '../../models/stem.model'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
@@ -23,12 +24,13 @@ const propTypes = {
 		filetype: PropTypes.string.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
 	}),
+	blob: PropTypes.any,
 }
 
 type StemDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
-	const { data } = props
+	const { data, blob } = props
 	const [waves, setWaves] = useState<any>(null)
 	const [isPlaying, setIsPlaying] = useState<boolean>(false)
 	// const [isLooping, setIsLooping] = useState<boolean>(false)
@@ -140,6 +142,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 						idx={1}
 						details={data}
 						onWavesInit={onWavesInit}
+						blob={blob}
 						// onFinish={handleLoopReplay}
 						isStemDetails
 						onSkipPrev={handleSkipPrev}
@@ -159,9 +162,19 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const stemId = context.query.id
 	const res = await get(`/stems/${stemId}`)
 	const data: IStemDoc | null = res.success ? res.data : null
+
+	const client = createClient({
+		url: `redis://default:3ED83Ay8uxtcs1HlYI8J5spNeFr8TzEm@redis-15246.c80.us-east-1-2.ec2.cloud.redislabs.com:15246`,
+	})
+
+	await client.connect()
+
+	const blob = await client.get(String(data?._id))
+
 	return {
 		props: {
 			data,
+			blob,
 		},
 	}
 }

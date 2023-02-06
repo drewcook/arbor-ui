@@ -3,12 +3,12 @@ import { ReactNode, SyntheticEvent, useEffect, useState } from 'react'
 
 import Notification from '../../components/Notification'
 import ProjectDetails from '../../components/ProjectDetails/ProjectDetails'
-import StemQueue from '../../components/StemQueue/StemQueue'
 import type { IProjectDoc } from '../../models/project.model'
 import { useWeb3 } from '../Web3Provider'
 
 type ProjectDetailsContainerProps = {
 	data: IProjectDoc
+	blob: string
 }
 
 interface TabPanelProps {
@@ -34,7 +34,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Element => {
-	const { data } = props
+	const { data, blob } = props
 	const [details, setDetails] = useState<IProjectDoc>(data)
 	const [currentTab, setCurrentTab] = useState(0)
 	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
@@ -94,7 +94,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		setSuccessOpen(true)
 		setSuccessMsg("Success! You've uploaded a new stem to the project stem queue.")
 		handleUploadStemClose()
-		setCurrentTab(1)
+		setCurrentTab(0)
 	}
 
 	////////////////////////////////////////////////////////////////////////
@@ -148,21 +148,12 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
 					<Tab label="Details" {...a11yProps(0)} />
-					<Tab label={`Stem Queue (${details.queue.length})`} {...a11yProps(1)} />
 				</Tabs>
 			</Box>
 			<TabPanel value={currentTab} index={0}>
 				<ProjectDetails
 					details={details}
-					uploadStemOpen={uploadStemOpen}
-					handleUploadStemOpen={handleUploadStemOpen}
-					handleUploadStemClose={handleUploadStemClose}
-					onStemUploadSuccess={onStemUploadSuccess}
-				/>
-			</TabPanel>
-			<TabPanel value={currentTab} index={1}>
-				<StemQueue
-					details={details}
+					blob={blob}
 					userIsRegisteredVoter={userIsRegisteredVoter}
 					userIsCollaborator={userIsCollaborator}
 					uploadStemOpen={uploadStemOpen}

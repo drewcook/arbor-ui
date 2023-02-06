@@ -1,5 +1,6 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { createClient } from 'redis'
 
 import type { IStemDoc } from '../../../models/stem.model'
 import { Stem } from '../../../models/stem.model'
@@ -23,6 +24,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				/* create a new model in the database */
 				const stem: IStemDoc = await Stem.create(body)
+
+				const client = createClient({
+					url: `redis://default:3ED83Ay8uxtcs1HlYI8J5spNeFr8TzEm@redis-15246.c80.us-east-1-2.ec2.cloud.redislabs.com:15246`,
+				})
+
+				await client.connect()
+				client.set(String(stem._id), body.audioUrl)
+				// client.set("stem._id", "body.audioUrl")
 
 				res.status(201).json({ success: true, data: stem })
 			} catch (e) {

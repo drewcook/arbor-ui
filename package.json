@@ -38,6 +38,8 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@interep/identity": "^0.3.0",
+    "@interep/reputation": "^0.4.0",
     "@metamask/detect-provider": "^1.2.0",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.7",
@@ -74,6 +76,7 @@
     "react-dom": "17.0.2",
     "react-dropzone": "^12.0.5",
     "react-easy-crop": "^4.6.1",
+    "redis": "^4.6.4",
     "snarkjs": "^0.4.22",
     "wavesurfer.js": "5.2.0",
     "web3": "^1.7.4"
