@@ -15,6 +15,7 @@ import StemQueue from './StemQueue/StemQueue'
 // We have to pass back up callbacks because we use global controls outside of this player's track
 type StemPlayerProps = {
 	idx: number
+	blob?: any
 	details: IStemDoc | any
 	projectDetails?: IProjectDoc
 	votes?: number
@@ -60,15 +61,29 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		onApprovedSuccess,
 		onFailure,
 		votes,
+		blob: incomingBlob,
 	} = props
 
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
-	const [blob, setBlob] = useState<Blob>()
+	const [blob, setBlob] = useState<Blob | null>(incomingBlob || null)
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
 
 	const stem = { stem: details, votes: votes || 0 }
 	useEffect(() => {
+		const ws = WaveSurfer.create({
+			container: `#waveform-${details._id}-${idx}`,
+			waveColor: '#bbb',
+			progressColor: '#444',
+			cursorColor: '#656565',
+			barWidth: 3,
+			barRadius: 3,
+			cursorWidth: 1,
+			height: 80,
+			barGap: 2,
+		})
+
+		// Load audio from an XHR request
 		if (!blob) {
 			if (!loadingBlob) {
 				setLoadingBlob(true)
@@ -81,21 +96,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				setLoadingBlob(false)
 			}
 		} else {
-			const ws = WaveSurfer.create({
-				container: `#waveform-${details._id}-${idx}`,
-				waveColor: '#bbb',
-				progressColor: '#444',
-				cursorColor: '#656565',
-				barWidth: 3,
-				barRadius: 3,
-				cursorWidth: 1,
-				height: 80,
-				barGap: 2,
-			})
-
-			// Load audio from an XHR request
 			ws.loadBlob(blob)
-
 			// Skip back to zero when finished playing
 			ws.on('finish', () => {
 				ws.seekTo(0)

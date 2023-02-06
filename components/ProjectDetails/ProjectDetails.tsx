@@ -53,6 +53,7 @@ const IDENTITY_MSG =
 
 type ProjectDetailsProps = {
 	details: IProjectDoc
+	blob: string
 	userIsCollaborator: boolean
 	userIsRegisteredVoter: boolean
 	uploadStemOpen: boolean
@@ -68,6 +69,7 @@ type ProjectDetailsProps = {
 const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const {
 		details,
+		blob,
 		userIsCollaborator,
 		userIsRegisteredVoter,
 		uploadStemOpen,
@@ -504,7 +506,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 							</Box>
 						</Box>
 					)}
-					{!userIsRegisteredVoter && (
+					{userIsRegisteredVoter && (
 						<Button
 							variant="outlined"
 							size="large"
@@ -598,6 +600,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						<Fragment key={idx}>
 							<StemPlayer
 								idx={idx + 1}
+								blob={blob}
 								details={stem}
 								onWavesInit={onWavesInit}
 								onFinish={() => setIsPlayingAll(false)}
@@ -615,6 +618,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 							<StemPlayer
 								isQueued
 								idx={idx + 1}
+								blob={blob}
 								details={stem.stem}
 								votes={stem.votes}
 								onWavesInit={onWavesInit}
