@@ -6336,6 +6336,13 @@ circom_runtime@0.1.20:
   dependencies:
     ffjavascript "0.2.55"
 
+circom_runtime@0.1.22:
+  version "0.1.22"
+  resolved "https://registry.yarnpkg.com/circom_runtime/-/circom_runtime-0.1.22.tgz#f957c47662cdd03cd3fb76979c434c719a366373"
+  integrity sha512-V/XYZWBhbZY8SotkaGH4FbiDYAZ8a1Md++MBiKPDOuWS/NIJB+Q+XIiTC8zKMgoDaa9cd2OiTvsC9J6te7twNg==
+  dependencies:
+    ffjavascript "0.2.57"
+
 circom_tester@^0.0.12:
   version "0.0.12"
   resolved "https://registry.yarnpkg.com/circom_tester/-/circom_tester-0.0.12.tgz#97ea84fb76c2b5ca034cad47d801fd917f41fcae"
@@ -8587,7 +8594,7 @@ ffjavascript@0.2.55:
     wasmcurves "0.1.0"
     web-worker "^1.2.0"
 
-ffjavascript@^0.2.30, ffjavascript@^0.2.38, ffjavascript@^0.2.45, ffjavascript@^0.2.48:
+ffjavascript@0.2.57, ffjavascript@^0.2.30, ffjavascript@^0.2.38, ffjavascript@^0.2.45, ffjavascript@^0.2.48:
   version "0.2.57"
   resolved "https://registry.yarnpkg.com/ffjavascript/-/ffjavascript-0.2.57.tgz#ba1be96015b2688192e49f2f4de2cc5150fd8594"
   integrity sha512-V+vxZ/zPNcthrWmqfe/1YGgqdkTamJeXiED0tsk7B84g40DKlrTdx47IqZuiygqAVG6zMw4qYuvXftIJWsmfKQ==
@@ -13458,6 +13465,16 @@ r1csfile@0.0.40:
     fastfile "0.0.20"
     ffjavascript "0.2.55"
 
+r1csfile@0.0.45:
+  version "0.0.45"
+  resolved "https://registry.yarnpkg.com/r1csfile/-/r1csfile-0.0.45.tgz#59d59a33f8b5280017fc00ee691d003a3d705fe0"
+  integrity sha512-YKIp4D441aZ6OoI9y+bfAyb2j4Cl+OFq/iiX6pPWDrL4ZO968h0dq0w07i65edvrTt7/G43mTnl0qEuLXyp/Yw==
+  dependencies:
+    "@iden3/bigarray" "0.0.2"
+    "@iden3/binfileutils" "0.0.11"
+    fastfile "0.0.20"
+    ffjavascript "0.2.57"
+
 rabin-wasm@^0.1.4:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/rabin-wasm/-/rabin-wasm-0.1.5.tgz#5b625ca007d6a2cbc1456c78ae71d550addbc9c9"
@@ -14431,7 +14448,7 @@ snarkjs@0.4.10:
     r1csfile "0.0.33"
     readline "^1.3.0"
 
-snarkjs@^0.4.13, snarkjs@^0.4.22:
+snarkjs@^0.4.13:
   version "0.4.27"
   resolved "https://registry.yarnpkg.com/snarkjs/-/snarkjs-0.4.27.tgz#6f00e17e2b0b197dd69029a65ee570085b49a5f0"
   integrity sha512-2CH4JpOIkaoEiPvc/d9eiA7Vs0mC2ZnQAhFIFF+qp8eVxhHpDXFZn50hEZhcb8lypGry8ZiiEQ73a3hOFOUbYQ==
@@ -14446,6 +14463,22 @@ snarkjs@^0.4.13, snarkjs@^0.4.22:
     js-sha3 "^0.8.0"
     logplease "^1.2.15"
     r1csfile "0.0.40"
+
+snarkjs@^0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/snarkjs/-/snarkjs-0.6.7.tgz#e417fece9cd35e92599abac53144209ecf5be655"
+  integrity sha512-W/xzg+UXBsrC4Ttb3Lu1pG3DDFzS36R67OVzydwhDKFJ0mdQ4sSwOCvKLM9E2KdI+0mhEYhtWdljHsNUZo41kg==
+  dependencies:
+    "@iden3/binfileutils" "0.0.11"
+    bfj "^7.0.2"
+    blake2b-wasm "^2.4.0"
+    circom_runtime "0.1.22"
+    ejs "^3.1.6"
+    fastfile "0.0.20"
+    ffjavascript "0.2.57"
+    js-sha3 "^0.8.0"
+    logplease "^1.2.15"
+    r1csfile "0.0.45"
 
 socks@^2.7.1:
   version "2.7.1"
