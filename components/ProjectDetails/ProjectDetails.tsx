@@ -36,6 +36,7 @@ import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NETWORK_CURRENCY } from '../../constants/networks'
 import { post, update } from '../../lib/http'
+import logger from '../../lib/logger'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
@@ -220,7 +221,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 			// TODO: Await until they confirm the selection from the saveAs window
 			setSuccessMsg(`Stem(s) downloaded succussfully`)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 			setErrorOpen(true)
 			setErrorMsg('Failed to download all stems')
 		}
@@ -257,7 +258,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				from: currentUser.address,
 				gasLimit: 2000000,
 			})
-			if (!contractRes) console.error("Failed to register the user for the project's voting group")
+			if (!contractRes) logger.red("Failed to register the user for the project's voting group")
 
 			// Get the receipt
 			const receipt = await contractRes.wait()
@@ -280,7 +281,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					? currentUser.registeredGroupIds
 					: [...currentUser.registeredGroupIds, details.votingGroupId],
 			})
-			if (!userRes.success) console.error('Failed to add the identity or group ID to the user record')
+			if (!userRes.success) logger.red('Failed to add the identity or group ID to the user record')
 
 			// Update current user details
 			updateCurrentUser(userRes.data)
@@ -295,14 +296,14 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				voterIdentities: [...details.voterIdentities, voterIdentity],
 			})
 			if (!projectRes.success) {
-				console.error('Failed to add the identity to the project record')
+				logger.red('Failed to add the identity to the project record')
 			}
 
 			// Invoke the callback
 			onRegisterSuccess(projectRes.data)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed register for the voting group')
-			console.error(e.message)
+			logger.red(e.message)
 		}
 		setRegisterLoading(false)
 	}
@@ -411,7 +412,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
-			console.error(e)
+			logger.red(e)
 			// Notify error
 			setMintingOpen(false)
 			setMintingMsg('')

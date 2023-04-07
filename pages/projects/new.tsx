@@ -8,6 +8,7 @@ import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
 import { post } from '../../lib/http'
+import logger from '../../lib/logger'
 import { newProjectStyles as styles } from '../../styles/Projects.styles'
 import type { CreateProjectPayload } from '../api/projects'
 
@@ -115,7 +116,7 @@ const NewProjectPage: NextPage = () => {
 			setLoading(false)
 		} catch (e: any) {
 			setLoading(false)
-			console.error('Project creation failed', e.message)
+			logger.red(`Project creation failed - ${e.message}`)
 		}
 	}
 

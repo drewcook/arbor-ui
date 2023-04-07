@@ -7,6 +7,7 @@ import { createContext, useContext, useState } from 'react'
 import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
 import { get, post } from '../lib/http'
+import logger from '../lib/logger'
 import NFTStorageClient from '../lib/NFTStorageClient'
 import type { IUserDoc } from '../models/user.model'
 
@@ -81,10 +82,10 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 							],
 						})
 					} catch (addError) {
-						console.error(addError)
+						logger.red(addError)
 					}
 				}
-				console.error(error)
+				logger.red(error)
 			}
 		} else {
 			console.info(`Network ID ${chainId} is supported`)
@@ -138,7 +139,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			return { connectedAccount: signerAddress }
 		} catch (e: any) {
 			// Catch any errors for any of the above operations.
-			console.error(e.message)
+			logger.red(e.message)
 			// Disconnect and clean up for fail safe
 			handleDisconnectWallet()
 			return { connectedAccount: null }
@@ -156,7 +157,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				console.info('Connected to NFT.storage')
 			}
 		} catch (err) {
-			console.error('Failed to connect to NFT.storage', err)
+			logger.red(`Failed to connect to NFT.storage - ${err}`)
 		}
 	}
 
@@ -168,7 +169,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const { connectedAccount } = await loadWeb3()
 			if (connectedAccount) await findOrCreateUser(connectedAccount)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -190,7 +191,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				setCurrentUser(createRes.data)
 			}
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -205,7 +206,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			console.info('Successfully disconnected wallet')
 			window.location.reload()
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 

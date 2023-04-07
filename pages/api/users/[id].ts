@@ -25,8 +25,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				res.status(200).json({ success: true, data: user })
-			} catch (error) {
-				console.error(error)
+			} catch (error: any) {
 				res.status(400).json({ success: false })
 			}
 			break
@@ -143,7 +142,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				}
-			} catch (e) {
+			} catch (e: any) {
 				res.status(400).json({ success: false, error: e })
 			}
 			break

@@ -30,6 +30,7 @@ const nextConfig = {
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
 		REDIS_HOST: process.env.REDIS_HOST,
+		REDIS_USER: process.env.REDIS_USER,
 		REDIS_AUTH: process.env.REDIS_AUTH,
 	},
 	images: {

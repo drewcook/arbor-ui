@@ -73,6 +73,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			res.status(400).json({ success: false, error: `HTTP method '${method}' not supported` })
 			break
 	}
+
+	console.log('LAST BIT HIT HERE')
 }
 
 // Use Sentry as a logging tool when running production environments

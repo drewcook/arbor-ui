@@ -10,11 +10,12 @@ import { createContext, useContext, useState } from 'react'
 
 import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
+import getWeb3 from '../lib/getWeb3'
 import { get, post } from '../lib/http'
+import logger from '../lib/logger'
+import NFTStorageClient from '../lib/NFTStorageClient'
+import web3Onboard from '../lib/web3Onboard'
 import type { IUserDoc } from '../models/user.model'
-import getWeb3 from '../utils/../lib/NFTStorageClient'
-import NFTStorageClient from '../utils/NFTStorageClient'
-import web3Onboard from '../utils/web3Onboard'
 
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
@@ -139,7 +140,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			}
 		} catch (e: any) {
 			// Catch any errors for any of the above operations.
-			console.error(e.message)
+			logger.red(e.message)
 			// Disconnect and clean up for fail safe
 			handleDisconnectWallet()
 			return { connectedAccount: null }
@@ -157,7 +158,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				console.info('Connected to NFT.storage')
 			}
 		} catch (err) {
-			console.error('Failed to connect to NFT.storage', err)
+			logger.red(`Failed to connect to NFT.storage -  ${err}`)
 		}
 	}
 
@@ -169,7 +170,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const { connectedAccount } = await loadWeb3()
 			if (connectedAccount) await findOrCreateUser(connectedAccount)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -191,7 +192,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				setCurrentUser(createRes.data)
 			}
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -209,7 +210,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			setCurrentUser(null)
 			console.info('Successfully disconnected wallet')
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 

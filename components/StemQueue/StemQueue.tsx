@@ -4,6 +4,7 @@ import { utils } from 'ethers'
 import { useEffect, useState } from 'react'
 
 import { update } from '../../lib/http'
+import logger from '../../lib/logger'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
 import { useWeb3 } from '../Web3Provider'
@@ -162,7 +163,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				onFailure('Uh oh! Failed to cast the vote.')
 			}
 
-			console.error(e)
+			logger.red(e)
 		}
 
 		setVoteIsLoading(idx, false)
@@ -181,13 +182,13 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 
 			// Stem must be in the queue
 			if (details.queue.filter(q => q.stem._id === stem._id).length === 0) {
-				console.error("The stem must be in the project's stem queue")
+				logger.red("The stem must be in the project's stem queue")
 				return
 			}
 
 			// Stem must have at least one vote
 			if (details.queue.filter(q => q.stem._id === stem._id)[0].votes === 0) {
-				console.error('The stem must have at least one vote')
+				logger.red('The stem must have at least one vote')
 				return
 			}
 
@@ -211,7 +212,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			onApprovedSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to approve the stem onto the project')
-			console.error(e)
+			logger.red(e)
 		}
 		setApproveLoading(false)
 	}

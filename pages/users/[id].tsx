@@ -15,6 +15,7 @@ import ProjectCard from '../../components/ProjectCard'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import { get } from '../../lib/http'
+import logger from '../../lib/logger'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
 import styles from '../../styles/UserProfile.styles'
@@ -86,31 +87,31 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 		for (const nftId of userData.nftIds) {
 			const nftRes = await get(`/nfts/${nftId}`)
 			if (nftRes.success) fullUser.nfts.push(nftRes.data)
-			else console.error(`Failed to find user NFT of ID - ${nftId}`)
+			else logger.red(`Failed to find user NFT of ID - ${nftId}`)
 		}
 
 		// Get user's projects' creations
 		for (const projectId of userData.projectIds) {
 			const projectRes = await get(`/projects/${projectId}`)
 			if (projectRes.success) fullUser.projects.push(projectRes.data)
-			else console.error(`Failed to find user project of ID - ${projectId}`)
+			else logger.red(`Failed to find user project of ID - ${projectId}`)
 		}
 
 		// Get user's project collaborations
 		const userCollaborationsRes = await get(`/users/collaborator/${userAddress}`)
 		if (userCollaborationsRes.success) fullUser.projectCollaborations = userCollaborationsRes.data
-		else console.warn('Failed to find user project collaborations')
+		else logger.red('Failed to find user project collaborations')
 
 		// Get user's stems' details
 		for (const stemId of userData.stemIds) {
 			const stemRes = await get(`/stems/${stemId}`)
 			if (stemRes.success) fullUser.stems.push(stemRes.data)
-			else console.error(`Failed to find user stem of ID - ${stemId}`)
+			else logger.red(`Failed to find user stem of ID - ${stemId}`)
 		}
 
 		return fullUser
 	} catch (e: any) {
-		console.error(e.message)
+		logger.red(e.message)
 		return null
 	}
 }

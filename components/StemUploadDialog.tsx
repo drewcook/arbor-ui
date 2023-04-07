@@ -22,6 +22,7 @@ import {
 import { useState } from 'react'
 
 import { post, update } from '../lib/http'
+import logger from '../lib/logger'
 import logoBinary from '../lib/logoBinary'
 import type { IProjectDoc } from '../models/project.model'
 import signMessage from '../utils/signMessage'
@@ -119,7 +120,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				setFile(fileToUpload)
 			}
 		} catch (err) {
-			console.error(err)
+			logger.red(err)
 		}
 	}
 
@@ -194,8 +195,8 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setLoading(false)
 			onSuccess(projectRes.data)
 			handleClose()
-		} catch (e: any) {
-			console.error(e)
+		} catch (err: any) {
+			logger.red(err)
 			// Notify error
 			setUploadingOpen(false)
 			setUploadingMsg('')

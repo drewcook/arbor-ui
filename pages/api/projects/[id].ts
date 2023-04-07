@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import dbConnect from '../../../lib/dbConnect'
 import logger from '../../../lib/logger'
-import redisClient from '../../../lib/redisClient'
+import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import { IProjectDoc, Project } from '../../../models/project.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,15 +13,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
+	// connect to mongo
 	await dbConnect()
 
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:
 			try {
 				let project: IProjectDoc | null
-				const redisData = await redisClient.get(`projects:${id}`)
-				console.log({ redisData })
+
+				// open redis connection
+				await connectRedis()
 				// check and return from cache
+				const redisData = await redisClient.get(`projects:${id}`)
 				if (redisData !== null) {
 					logger.magenta('Redis hit')
 					project = JSON.parse(redisData)
@@ -30,15 +33,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					// find project in database
 					project = await Project.findById(id)
 				}
+
 				// return 400 if doesn't exist
-				if (!project) {
-					return res.status(400).json({ success: false })
-				}
+				if (!project) return res.status(400).json({ success: false })
+
 				// write to cache for subsequent calls
-				await redisClient.set(`projects:${project.id}`, JSON.stringify(project))
+				await redisClient.setEx(`projects:${project.id}`, DEFAULT_EXPIRY, JSON.stringify(project))
+				// close redis connection
+				await disconnectRedis()
 				// return 200
 				res.status(200).json({ success: true, data: project })
 			} catch (error) {
+				// close redis connection as failsafe
+				await disconnectRedis()
 				res.status(400).json({ success: false })
 			}
 			break
@@ -114,9 +121,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				if (!deletedProject) {
 					return res.status(400).json({ success: false, error: 'failed to delete project' })
 				}
-
 				// TODO: Delete from user's projects
-
 				res.status(200).json({ success: true, data: deletedProject })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })

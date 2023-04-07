@@ -9,7 +9,7 @@ import GithubIconSvg from '../public/github_circle_black.svg'
 import TwitterIconSvg from '../public/twitter_circle_black.svg'
 import styles from './AppFooter.styles'
 import ImageOptimized from './ImageOptimized'
-
+//
 /* eslint-disable react-hooks/exhaustive-deps */
 
 const AppFooter = (): JSX.Element => {

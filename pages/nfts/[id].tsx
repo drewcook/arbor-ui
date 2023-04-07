@@ -16,6 +16,7 @@ import { useWeb3 } from '../../components/Web3Provider'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../../constants/networks'
 import { get, update } from '../../lib/http'
+import logger from '../../lib/logger'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
@@ -97,7 +98,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			}
 		} catch (e: any) {
 			// Log and notify error
-			console.error(e.message)
+			logger.red(e.message)
 			setErrorOpen(true)
 			setErrorMsg('Uh oh, failed to buy the NFT')
 			setLoading(false)
@@ -118,7 +119,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			const data: any | null = res.success ? res.data : null
 			setDetails(data)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 

@@ -15,6 +15,7 @@ import Cropper from 'react-easy-crop'
 import { Area, Point } from 'react-easy-crop/types'
 
 import { update } from '../lib/http'
+import logger from '../lib/logger'
 import styles from './EditAvatarDialog.styles'
 import Notification from './Notification'
 import { useWeb3 } from './Web3Provider'
@@ -106,7 +107,7 @@ const EditAvatarDialog = (props: EditAvatarDialogProps): JSX.Element => {
 				onSuccess()
 			}
 		} catch (e: any) {
-			console.error(e)
+			logger.red(e)
 			// Notify error
 			setUploadingOpen(false)
 			setUploadingMsg('')

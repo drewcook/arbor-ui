@@ -17,6 +17,7 @@ import web3 from 'web3'
 
 import { NETWORK_CURRENCY } from '../constants/networks'
 import { update } from '../lib/http'
+import logger from '../lib/logger'
 import Notification from './Notification'
 import { useWeb3 } from './Web3Provider'
 
@@ -86,7 +87,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				setListPrice(0.5)
 			}
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 			// Notify error
 			setErrorOpen(true)
 			setErrorMsg('Uh oh, failed to list the NFT')
@@ -123,7 +124,7 @@ const ListNftDialog = (props: ListNftDialogProps): JSX.Element => {
 				setListPrice(0.5)
 			}
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 			// Notify error
 			setErrorOpen(true)
 			setErrorMsg('Uh oh, failed to remove the NFT listing')

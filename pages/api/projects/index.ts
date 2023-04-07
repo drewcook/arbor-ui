@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from '../../../lib/dbConnect'
 import { update } from '../../../lib/http'
 import logger from '../../../lib/logger'
-import redisClient from '../../../lib/redisClient'
+import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 
 export type CreateProjectPayload = {
@@ -20,6 +20,8 @@ export type CreateProjectPayload = {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req
+
+	// open mongodb connection
 	await dbConnect()
 
 	switch (method) {
@@ -27,23 +29,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			try {
 				// check redis cache
 				let projects: IProject[]
-				const redisData = await redisClient.get('projects')
-				// console.log({ redisData })
+				// open redis connection
+				await connectRedis()
 				// check and return from cache
+				const redisData = await redisClient.get('projects')
 				if (redisData !== null) {
 					logger.magenta('Redis hit')
-					projects = JSON.parse(JSON.parse(redisData))
+					projects = JSON.parse(redisData)
 				} else {
 					logger.magenta('Redis miss')
 					// find projects in database
 					projects = await Project.find({})
 					// write to cache for subsequent calls
-					await redisClient.set('projects', JSON.stringify(projects))
+					await redisClient.setEx('projects', DEFAULT_EXPIRY, JSON.stringify(projects))
 				}
 				// close redis connection
-				redisClient.quit()
+				await disconnectRedis()
+				// return 200
 				return res.status(200).json({ success: true, data: projects })
 			} catch (e) {
+				// close redis connection as failsafe
+				await disconnectRedis()
 				res.status(400).json({ success: false, error: e })
 			}
 			break
@@ -63,13 +69,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 				const project: IProjectDoc = await Project.create(payload)
 
-				// add to redis
-				await redisClient.set(`projects:${project.id}`, JSON.stringify(project))
+				// open redis connection
+				await connectRedis()
+				// add to redis both project and update existing projects array
+				await redisClient.setEx(`projects:${project.id}`, DEFAULT_EXPIRY, JSON.stringify(project))
 				const existingCachedProjects = await redisClient.get('projects')
 				if (existingCachedProjects !== null) {
 					JSON.parse(existingCachedProjects).push(project)
-					await redisClient.set('projects', JSON.stringify(existingCachedProjects))
+					await redisClient.setEx('projects', DEFAULT_EXPIRY, JSON.stringify(existingCachedProjects))
 				}
+				// close redis connection
+				await disconnectRedis()
 
 				// Add new project to creator's user details
 				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
@@ -80,7 +90,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// Return back the new Project record
 				res.status(201).json({ success: true, data: project })
 			} catch (e: any) {
-				console.error(e.message)
+				// close redis connection as failsafe
+				await disconnectRedis()
 				res.status(400).json({ success: false, error: e })
 			}
 			break
