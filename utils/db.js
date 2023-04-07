@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
+
 import logger from '../utils/logger'
+import redisClient from './redisClient'
 
 export const MONGODB_URI = process.env.MONGODB_URI || ''
 
@@ -20,20 +22,27 @@ if (!cached) {
 
 async function dbConnect() {
 	if (cached.conn) {
-		logger.magenta(`Connected to MongoDB at ${MONGODB_URI}`)
+		logger.magenta(`Connected to MongoDB`)
+		if (!redisClient.isReady && !redisClient.isOpen) {
+			await redisClient.connect()
+			logger.magenta('Connected to Redis')
+		}
 		return cached.conn
 	}
 
 	if (!cached.promise) {
+		await redisClient.connect()
+
 		const opts = {
 			bufferCommands: false,
 		}
 
 		cached.promise = mongoose.connect(MONGODB_URI, opts).then(mongoose => {
-			logger.magenta(`Connected to MongoDB at ${MONGODB_URI}`)
+			// logger.magenta(`Connected to MongoDB`)
 			return mongoose
 		})
 	}
+
 	cached.conn = await cached.promise
 	return cached.conn
 }

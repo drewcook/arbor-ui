@@ -25,7 +25,8 @@
     "contracts:recompile": "yarn contracts:compile && yarn contracts:clearDestDir && yarn contracts:copyArtifacts",
     "contracts:deploy": "cd web3 && hardhat deploy",
     "contracts:test": "cd web3 && hardhat test",
-    "report-gas": "REPORT_GAS=true hardhat test"
+    "report-gas": "REPORT_GAS=true hardhat test",
+		"redis-cli": "redis-cli -u redis://default:0SgErK92awMH7ulOMFl0yOuapdpI8qpX@redis-18864.c44.us-east-1-2.ec2.cloud.redislabs.com:18864"
   },
   "engines": {
     "node": ">=16"

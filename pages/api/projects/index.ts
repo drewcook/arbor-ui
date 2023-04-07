@@ -4,6 +4,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 import dbConnect from '../../../utils/db'
 import { update } from '../../../utils/http'
+import logger from '../../../utils/logger'
+import redisClient from '../../../utils/redisClient'
 
 export type CreateProjectPayload = {
 	createdBy: string
@@ -23,9 +25,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET':
 			try {
-				/* find all the data in our database */
-				const projects: IProject[] = await Project.find({})
-				res.status(200).json({ success: true, data: projects })
+				// check redis cache
+				let projects: IProject[]
+				const redisData = await redisClient.get('projects')
+				// return from cache if so
+				if (redisData !== null) {
+					logger.magenta('Redis hit')
+					projects = JSON.parse(redisData) as IProject[]
+				} else {
+					logger.magenta('Redis miss')
+					// find all the data in our database
+					projects = await Project.find({})
+					// write projects to cache for subsequent calls
+					await redisClient.set('projects', JSON.stringify(projects))
+				}
+				return res.status(200).json({ success: true, data: projects })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })
 			}
