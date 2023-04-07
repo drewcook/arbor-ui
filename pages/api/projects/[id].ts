@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/db'
+import dbConnect from '../../../lib/dbConnect'
 import logger from '../../../lib/logger'
 import redisClient from '../../../lib/redisClient'
 import { IProjectDoc, Project } from '../../../models/project.model'

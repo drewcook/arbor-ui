@@ -29,6 +29,7 @@ const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
 export const getServerSideProps: GetServerSideProps = async context => {
 	// Get  project details from ID
 	const projectId = context.query.id
+	console.log({ context })
 	const res = await get(`/projects/${projectId}`)
 	const data: IProjectDoc | null = res.success ? res.data : null
 

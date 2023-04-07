@@ -70,6 +70,7 @@ ProjectsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	// Get all Projects
+	console.log('getServerSideProps')
 	const res = await get(`/projects`)
 	const data: IProjectDoc[] | null = res.success ? res.data : null
 	return {

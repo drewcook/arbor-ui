@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/db'
+import dbConnect from '../../../lib/dbConnect'
 import { update } from '../../../lib/http'
 import logger from '../../../lib/logger'
 import redisClient from '../../../lib/redisClient'
@@ -28,7 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// check redis cache
 				let projects: IProject[]
 				const redisData = await redisClient.get('projects')
-				console.log({ redisData })
+				// console.log({ redisData })
 				// check and return from cache
 				if (redisData !== null) {
 					logger.magenta('Redis hit')
@@ -40,6 +40,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					// write to cache for subsequent calls
 					await redisClient.set('projects', JSON.stringify(projects))
 				}
+				// close redis connection
+				redisClient.quit()
 				return res.status(200).json({ success: true, data: projects })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })

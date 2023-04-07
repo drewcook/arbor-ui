@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../lib/db'
+import dbConnect from '../../lib/dbConnect'
 import type { IVotingGroupDoc } from '../../models/votingGroup.model'
 import { VotingGroup } from '../../models/votingGroup.model'
 
