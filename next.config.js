@@ -66,9 +66,6 @@ const nextConfig = {
 		]
 	},
 	reactStrictMode: true,
-	sentry: {
-		hideSourceMaps: process.env.NODE_ENV === 'production',
-	},
 	webpack: (config, options) => {
 		if (!options.isServer) {
 			config.resolve.fallback.fs = false
@@ -93,10 +90,11 @@ const nextConfig = {
  * 	- release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
  */
 const sentryWebpackPluginOptions = {
+	authToken: process.env.SENTRY_AUTH_TOKEN,
 	org: 'arbor-labs',
 	project: process.env.SENTRY_PROJECT_NAME,
 	silent: process.env.NODE_ENV === 'production',
-	authToken: process.env.SENTRY_AUTH_TOKEN,
+	hideSourceMaps: process.env.NODE_ENV === 'production',
 }
 
 /**

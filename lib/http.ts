@@ -1,9 +1,16 @@
+/**
+ * This file is an axios wrapper that sits between the client components and the backend API handled by Next.js routes.
+ * This is essentially middleware in the context of Axios, and for simplicity, allows easy to use functions with common error handling
+ * - get
+ * - post
+ * - update
+ * - remove
+ */
+
 import axios, { AxiosInstance, AxiosRequestHeaders } from 'axios'
 import normalizeHeaderName from 'axios/lib/helpers/normalizeHeaderName'
 import utils from 'axios/lib/utils'
 import _cloneDeep from 'lodash/cloneDeep'
-
-import redisClient from './redisClient'
 
 const JSONBI = require('json-bigint')({ useNativeBigInt: true })
 
@@ -77,12 +84,9 @@ const instance: AxiosInstance = axios.create({
  */
 export const get = async (pathname: string, params?: any): Promise<any> => {
 	try {
-		await redisClient.connect()
 		const { data } = await instance.get(`/api${pathname}`, { params })
-		await redisClient.quit()
 		return data
 	} catch (e: any) {
-		await redisClient.quit()
 		return { success: false, error: e.message }
 	}
 }
@@ -95,12 +99,9 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
  */
 export const post = async (pathname: string, data?: any): Promise<any> => {
 	try {
-		await redisClient.connect()
 		const res = await instance.post(`/api${pathname}`, _cloneDeep(data))
-		await redisClient.quit()
 		return res.data
 	} catch (e: any) {
-		await redisClient.quit()
 		return { success: false, error: e.message }
 	}
 }
@@ -113,12 +114,9 @@ export const post = async (pathname: string, data?: any): Promise<any> => {
  */
 export const update = async (pathname: string, data?: any): Promise<any> => {
 	try {
-		await redisClient.connect()
 		const res = await instance.put(`/api${pathname}`, data)
-		await redisClient.quit()
 		return res.data
 	} catch (e: any) {
-		await redisClient.quit()
 		return { success: false, error: e.message }
 	}
 }
@@ -131,12 +129,9 @@ export const update = async (pathname: string, data?: any): Promise<any> => {
  */
 export const remove = async (pathname: string, data?: any): Promise<any> => {
 	try {
-		await redisClient.connect()
 		const res = await instance.delete(`/api${pathname}`, { data: _cloneDeep(data) })
-		await redisClient.quit()
 		return res.data
 	} catch (e: any) {
-		await redisClient.quit()
 		return { success: false, error: e.message }
 	}
 }
