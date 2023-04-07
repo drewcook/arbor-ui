@@ -1,8 +1,8 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import dbConnect from '../../../lib/db'
 import { IUser, User } from '../../../models/user.model'
-import dbConnect from '../../../utils/db'
 
 type Avatar = {
 	base64: string

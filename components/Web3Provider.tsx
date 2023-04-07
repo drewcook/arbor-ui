@@ -6,9 +6,9 @@ import { createContext, useContext, useState } from 'react'
 
 import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
+import { get, post } from '../lib/http'
+import NFTStorageClient from '../lib/NFTStorageClient'
 import type { IUserDoc } from '../models/user.model'
-import { get, post } from '../utils/http'
-import NFTStorageClient from '../utils/NFTStorageClient'
 
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined

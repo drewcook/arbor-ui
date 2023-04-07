@@ -2,9 +2,9 @@ import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from 'redis'
 
+import dbConnect from '../../../lib/db'
+import { update } from '../../../lib/http'
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req

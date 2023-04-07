@@ -1,9 +1,9 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import dbConnect from '../../../lib/db'
 import type { IUser } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
-import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {

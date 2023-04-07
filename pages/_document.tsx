@@ -16,7 +16,7 @@ class AppDocument extends Document {
 						name="description"
 						content="The Arbor Protocol is a collaborative, music-making experience where artists can create music NFTs and benefit from split revenue and royalties via collectors."
 					/>
-					<link rel="icon" href="/favicon.ico" />
+					{/* <link rel="preconnect" href="/favicon.ico" /> */}
 					<link rel="preconnect" href="https://fonts.googleapis.com" />
 					<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
 					<link

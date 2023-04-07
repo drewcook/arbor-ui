@@ -16,7 +16,7 @@ import { useState } from 'react'
 import web3 from 'web3'
 
 import { NETWORK_CURRENCY } from '../constants/networks'
-import { update } from '../utils/http'
+import { update } from '../lib/http'
 import Notification from './Notification'
 import { useWeb3 } from './Web3Provider'
 

@@ -3,9 +3,9 @@ import { Strategy, ZkIdentity } from '@zk-kit/identity'
 import { utils } from 'ethers'
 import { useEffect, useState } from 'react'
 
+import { update } from '../../lib/http'
 import type { IProjectDoc } from '../../models/project.model'
 import { IStemDoc } from '../../models/stem.model'
-import { update } from '../../utils/http'
 import { useWeb3 } from '../Web3Provider'
 import styles from './StemQueue.styles'
 

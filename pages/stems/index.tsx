@@ -8,9 +8,9 @@ import { useState } from 'react'
 
 import StemCard from '../../components/StemCard'
 import StemList from '../../components/StemList'
+import { get } from '../../lib/http'
 import type { IStemDoc } from '../../models/stem.model'
 import { indexStyles as styles } from '../../styles/Stems.styles'
-import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.arrayOf(

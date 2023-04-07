@@ -10,9 +10,9 @@ import { createContext, useContext, useState } from 'react'
 
 import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
+import { get, post } from '../lib/http'
 import type { IUserDoc } from '../models/user.model'
-import getWeb3 from '../utils/getWeb3'
-import { get, post } from '../utils/http'
+import getWeb3 from '../utils/../lib/NFTStorageClient'
 import NFTStorageClient from '../utils/NFTStorageClient'
 import web3Onboard from '../utils/web3Onboard'
 

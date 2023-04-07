@@ -21,9 +21,9 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 
+import { post, update } from '../lib/http'
 import logoBinary from '../lib/logoBinary'
 import type { IProjectDoc } from '../models/project.model'
-import { post, update } from '../utils/http'
 import signMessage from '../utils/signMessage'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'

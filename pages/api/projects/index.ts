@@ -1,11 +1,11 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import dbConnect from '../../../lib/db'
+import { update } from '../../../lib/http'
+import logger from '../../../lib/logger'
+import redisClient from '../../../lib/redisClient'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
-import logger from '../../../utils/logger'
-import redisClient from '../../../utils/redisClient'
 
 export type CreateProjectPayload = {
 	createdBy: string
@@ -28,15 +28,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// check redis cache
 				let projects: IProject[]
 				const redisData = await redisClient.get('projects')
-				// return from cache if so
+				console.log({ redisData })
+				// check and return from cache
 				if (redisData !== null) {
 					logger.magenta('Redis hit')
-					projects = JSON.parse(redisData) as IProject[]
+					projects = JSON.parse(JSON.parse(redisData))
 				} else {
 					logger.magenta('Redis miss')
-					// find all the data in our database
+					// find projects in database
 					projects = await Project.find({})
-					// write projects to cache for subsequent calls
+					// write to cache for subsequent calls
 					await redisClient.set('projects', JSON.stringify(projects))
 				}
 				return res.status(200).json({ success: true, data: projects })
@@ -59,6 +60,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					votingGroupId,
 				}
 				const project: IProjectDoc = await Project.create(payload)
+
+				// add to redis
+				await redisClient.set(`projects:${project.id}`, JSON.stringify(project))
+				const existingCachedProjects = await redisClient.get('projects')
+				if (existingCachedProjects !== null) {
+					JSON.parse(existingCachedProjects).push(project)
+					await redisClient.set('projects', JSON.stringify(existingCachedProjects))
+				}
 
 				// Add new project to creator's user details
 				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })

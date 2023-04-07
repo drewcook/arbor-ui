@@ -1,8 +1,10 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import dbConnect from '../../../lib/db'
+import logger from '../../../lib/logger'
+import redisClient from '../../../lib/redisClient'
 import { IProjectDoc, Project } from '../../../models/project.model'
-import dbConnect from '../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -16,10 +18,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:
 			try {
-				const project: IProjectDoc | null = await Project.findById(id)
+				let project: IProjectDoc | null
+				const redisData = await redisClient.get(`projects:${id}`)
+				console.log({ redisData })
+				// check and return from cache
+				if (redisData !== null) {
+					logger.magenta('Redis hit')
+					project = JSON.parse(redisData)
+				} else {
+					logger.magenta('Redis miss')
+					// find project in database
+					project = await Project.findById(id)
+				}
+				// return 400 if doesn't exist
 				if (!project) {
 					return res.status(400).json({ success: false })
 				}
+				// write to cache for subsequent calls
+				await redisClient.set(`projects:${project.id}`, JSON.stringify(project))
+				// return 200
 				res.status(200).json({ success: true, data: project })
 			} catch (error) {
 				res.status(400).json({ success: false })

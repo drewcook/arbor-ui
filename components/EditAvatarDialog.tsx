@@ -14,7 +14,7 @@ import { useCallback, useState } from 'react'
 import Cropper from 'react-easy-crop'
 import { Area, Point } from 'react-easy-crop/types'
 
-import { update } from '../utils/http'
+import { update } from '../lib/http'
 import styles from './EditAvatarDialog.styles'
 import Notification from './Notification'
 import { useWeb3 } from './Web3Provider'

@@ -14,12 +14,12 @@ import NFTCard from '../../components/NFTCard'
 import ProjectCard from '../../components/ProjectCard'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
+import { get } from '../../lib/http'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IUserFull } from '../../models/user.model'
 import styles from '../../styles/UserProfile.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
-import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.shape({

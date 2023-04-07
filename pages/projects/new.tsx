@@ -7,8 +7,8 @@ import { useState } from 'react'
 import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
+import { post } from '../../lib/http'
 import { newProjectStyles as styles } from '../../styles/Projects.styles'
-import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
 const NewProjectPage: NextPage = () => {
