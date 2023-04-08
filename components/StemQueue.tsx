@@ -37,11 +37,6 @@ type StemQueueProps = {
 	onFailure: (msg: string) => void
 }
 
-export interface IQueuedStem {
-	stem: IStemDoc
-	votes: number
-}
-
 const StemQueue = (props: StemQueueProps): JSX.Element => {
 	const {
 		details,
@@ -400,7 +395,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						>
 							{voteIsLoading(idx) ? (
 								<>
-									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {'  Vote Pending'}
+									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {' Vote Pending'}
 								</>
 							) : (
 								'Cast Vote'
