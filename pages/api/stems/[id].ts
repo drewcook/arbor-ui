@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/connectMongo'
+import dbConnect from '../../../lib/mongoClient'
 import { IStemDoc, Stem } from '../../../models/stem.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {

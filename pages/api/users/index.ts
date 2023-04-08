@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/connectMongo'
+import dbConnect from '../../../lib/mongoClient'
 import { IUser, User } from '../../../models/user.model'
 
 type Avatar = {

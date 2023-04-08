@@ -1,8 +1,8 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/connectMongo'
 import { update } from '../../../lib/http'
+import dbConnect from '../../../lib/mongoClient'
 import { INftDoc, Nft } from '../../../models/nft.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {

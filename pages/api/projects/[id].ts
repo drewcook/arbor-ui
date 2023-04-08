@@ -1,8 +1,8 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/connectMongo'
 import logger from '../../../lib/logger'
+import dbConnect from '../../../lib/mongoClient'
 import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import { IProjectDoc, Project } from '../../../models/project.model'
 
