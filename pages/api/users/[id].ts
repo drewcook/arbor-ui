@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/mongoClient'
+import connectMongo from '../../../lib/mongoClient'
 import type { IUser } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
 
@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':

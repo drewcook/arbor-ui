@@ -1,14 +1,14 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/mongoClient'
+import connectMongo from '../../../lib/mongoClient'
 import redisClient from '../../../lib/redisClient'
 import type { IStemDoc } from '../../../models/stem.model'
 import { Stem } from '../../../models/stem.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { body, method } = req
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':

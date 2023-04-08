@@ -1,13 +1,13 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../lib/mongoClient'
+import connectMongo from '../../lib/mongoClient'
 import type { IVotingGroupDoc } from '../../models/votingGroup.model'
 import { VotingGroup } from '../../models/votingGroup.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':

@@ -2,7 +2,7 @@ import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
-import dbConnect from '../../../lib/mongoClient'
+import connectMongo from '../../../lib/mongoClient'
 import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import { IProjectDoc, Project } from '../../../models/project.model'
 
@@ -14,7 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	} = req
 
 	// connect to mongo
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:

@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { update } from '../../../lib/http'
 import logger from '../../../lib/logger'
-import dbConnect from '../../../lib/mongoClient'
+import connectMongo from '../../../lib/mongoClient'
 import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import { IProject, IProjectDoc, Project } from '../../../models/project.model'
 
@@ -22,7 +22,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req
 
 	// open mongodb connection
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':

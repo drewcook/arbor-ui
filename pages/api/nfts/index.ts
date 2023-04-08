@@ -2,13 +2,13 @@ import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { update } from '../../../lib/http'
-import dbConnect from '../../../lib/mongoClient'
+import connectMongo from '../../../lib/mongoClient'
 import redisClient from '../../../lib/redisClient'
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':

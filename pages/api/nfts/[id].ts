@@ -2,7 +2,7 @@ import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { update } from '../../../lib/http'
-import dbConnect from '../../../lib/mongoClient'
+import connectMongo from '../../../lib/mongoClient'
 import { INftDoc, Nft } from '../../../models/nft.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		body,
 	} = req
 
-	await dbConnect()
+	await connectMongo()
 
 	switch (method) {
 		/* Get a model by its ID */
