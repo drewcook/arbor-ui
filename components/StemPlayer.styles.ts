@@ -2,18 +2,7 @@ const styles = {
 	stem: {
 		borderLeft: '3px solid #000',
 		borderRight: '3px solid #000',
-		borderTop: '3px solid #111',
-		'&:last-of-type': {
-			borderBottom: '3px solid #111',
-		},
-	},
-	queuedStem: {
-		borderLeft: '3px dashed #000',
-		borderRight: '3px dashed #000',
-		'&:last-of-type': {
-			borderBottom: '3px dashed #111',
-		},
-		borderTop: '3px dashed #111',
+		borderBottom: '3px solid #111',
 	},
 	btnsWrap: {
 		display: 'flex',

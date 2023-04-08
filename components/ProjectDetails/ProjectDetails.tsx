@@ -1,8 +1,6 @@
 import {
 	AddCircleOutline,
-	Check,
 	Download,
-	HowToReg,
 	PauseRounded,
 	Person,
 	PlayArrowRounded,
@@ -21,7 +19,6 @@ import {
 	IconButton,
 	Typography,
 } from '@mui/material'
-import { Strategy, ZkIdentity } from '@zk-kit/identity'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import dynamic from 'next/dynamic'
@@ -35,53 +32,29 @@ import Notification from '../../components/Notification'
 import StemUploadDialog from '../../components/StemUploadDialog'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NETWORK_CURRENCY } from '../../constants/networks'
-import { post, update } from '../../lib/http'
+import { post } from '../../lib/http'
 import logger from '../../lib/logger'
 import logoBinary from '../../lib/logoBinary'
 import type { INft } from '../../models/nft.model'
 import type { IProjectDoc } from '../../models/project.model'
 import type { IStemDoc } from '../../models/stem.model'
-import { IUserIdentity } from '../../models/user.model'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/Projects.styles'
 import formatAddress from '../../utils/formatAddress'
-import signMessage from '../../utils/signMessage'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
-const IDENTITY_MSG =
-	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
 
 type ProjectDetailsProps = {
 	details: IProjectDoc
-	blob: string
-	userIsCollaborator: boolean
-	userIsRegisteredVoter: boolean
 	uploadStemOpen: boolean
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
 	onStemUploadSuccess: (project: IProjectDoc) => void
-	onRegisterSuccess: (project: IProjectDoc) => void
-	onVoteSuccess: (project: IProjectDoc, stemName: string) => void
-	onApprovedSuccess: (project: IProjectDoc, stemName: string) => void
-	onFailure: (msg: string) => void
 }
 
 const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
-	const {
-		details,
-		blob,
-		userIsCollaborator,
-		userIsRegisteredVoter,
-		uploadStemOpen,
-		handleUploadStemOpen,
-		handleUploadStemClose,
-		onStemUploadSuccess,
-		onRegisterSuccess,
-		onVoteSuccess,
-		onApprovedSuccess,
-		onFailure,
-	} = props
+	const { details, handleUploadStemOpen, handleUploadStemClose, uploadStemOpen, onStemUploadSuccess } = props
 	// Notifications
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
 	const [successMsg, setSuccessMsg] = useState<string>('')
@@ -102,12 +75,10 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const router = useRouter()
 	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
 
-	const [registerLoading, setRegisterLoading] = useState<boolean>(false)
 	const [mutedTracks, setMutedTracks] = useState<number[]>([])
 	const [soloedTracks, setSoloedTracks] = useState<number[]>([])
 	const [handleUnmuteAll, setHandleUnmuteAll] = useState<boolean>(false)
 
-	const { updateCurrentUser } = useWeb3()
 	useEffect(() => {
 		if (soloedTracks.length > 0 && soloedTracks.length === stems.size) {
 			setHandleUnmuteAll(unMuteAll => !unMuteAll)
@@ -225,87 +196,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 			setErrorOpen(true)
 			setErrorMsg('Failed to download all stems')
 		}
-	}
-
-	/*
-		Stem Voting
-	*/
-	const handleRegister = async () => {
-		try {
-			// Preliminary requirement to be connected
-			if (!currentUser) return
-			setRegisterLoading(true)
-
-			/*
-				Create a user identity based off signing a message with the current signer
-			*/
-			const message = await signMessage(IDENTITY_MSG)
-			const identity: ZkIdentity = new ZkIdentity(Strategy.MESSAGE, message)
-			const commitment: string = identity.genIdentityCommitment().toString()
-			const trapdoor: string = identity.getTrapdoor().toString()
-			const nullifier: string = identity.getNullifier().toString()
-			const voterIdentity: IUserIdentity = {
-				commitment,
-				nullifier,
-				trapdoor,
-				votingGroupId: details.votingGroupId,
-			}
-
-			/*
-				Add the user's identity commitment to the on-chain group
-			*/
-			const contractRes = await contracts.stemQueue.addMemberToProjectGroup(details.votingGroupId, commitment, {
-				from: currentUser.address,
-				gasLimit: 2000000,
-			})
-			if (!contractRes) logger.red("Failed to register the user for the project's voting group")
-
-			// Get the receipt
-			const receipt = await contractRes.wait()
-			console.log('register voter receipt', receipt)
-
-			/*
-				Update the user record
-				- A couple preventative measures are in place...
-				- Add in the new identity for the user if there isn't one already for the given project
-				- Add in the group ID for user's registered groups if it doesn't exist already
-				- NOTE: This will help to show the appropriate UI elements/state
-			*/
-			const userRes = await update(`/users/${currentUser.address}`, {
-				...currentUser,
-				// TODO: Use MongoDB $addToSet on the backend, maybe?
-				voterIdentities: currentUser.voterIdentities.find(i => i.votingGroupId === details.votingGroupId)
-					? currentUser.voterIdentities
-					: [...currentUser.voterIdentities, voterIdentity],
-				registeredGroupIds: currentUser.registeredGroupIds.includes(details.votingGroupId)
-					? currentUser.registeredGroupIds
-					: [...currentUser.registeredGroupIds, details.votingGroupId],
-			})
-			if (!userRes.success) logger.red('Failed to add the identity or group ID to the user record')
-
-			// Update current user details
-			updateCurrentUser(userRes.data)
-
-			/*
-				Add the user identity to the list of project's registered identities
-				- This is so we can generate an off-chain group to submit an off-chain proof of
-				- NOTE: There's not an easy way to translate the on-chain groups[groupId] as an off-chain Group object
-			*/
-			const projectRes = await update(`/projects/${details._id}`, {
-				...details,
-				voterIdentities: [...details.voterIdentities, voterIdentity],
-			})
-			if (!projectRes.success) {
-				logger.red('Failed to add the identity to the project record')
-			}
-
-			// Invoke the callback
-			onRegisterSuccess(projectRes.data)
-		} catch (e: any) {
-			onFailure('Uh oh! Failed register for the voting group')
-			logger.red(e.message)
-		}
-		setRegisterLoading(false)
 	}
 
 	// TODO: Keep track of minted versions and how many mints a project has undergone
@@ -507,26 +397,6 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 							</Box>
 						</Box>
 					)}
-					{userIsRegisteredVoter && (
-						<Button
-							variant="outlined"
-							size="large"
-							onClick={handleRegister}
-							sx={styles.actionBtn}
-							startIcon={
-								userIsRegisteredVoter ? <Check sx={{ fontSize: '32px' }} /> : <HowToReg sx={{ fontSize: '32px' }} />
-							}
-							disabled={registerLoading || !currentUser}
-						>
-							{registerLoading ? (
-								<CircularProgress size={20} sx={styles.loadingIcon} />
-							) : userIsRegisteredVoter ? (
-								'Currently Registered'
-							) : (
-								'Register to Vote'
-							)}
-						</Button>
-					)}
 				</Box>
 			</Box>
 			{/* @ts-ignore */}
@@ -595,47 +465,23 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 					</Button>
 				</Box>
 			</Box>
-			{details.stems.length > 0 || details.queue.length ? (
-				<>
-					{details.stems.map((stem, idx) => (
-						<Fragment key={idx}>
-							<StemPlayer
-								idx={idx + 1}
-								blob={blob}
-								details={stem}
-								onWavesInit={onWavesInit}
-								onFinish={() => setIsPlayingAll(false)}
-								onNewFile={onNewFile}
-								onPlay={handlePlay}
-								onSolo={handleSolo}
-								onMute={handleMute}
-								onStop={onStop}
-								handleUnmuteAll={handleUnmuteAll}
-							/>
-						</Fragment>
-					))}
-					{details.queue.map((stem, idx) => (
-						<Fragment key={idx}>
-							<StemPlayer
-								isQueued
-								idx={idx + 1}
-								blob={blob}
-								details={stem.stem}
-								votes={stem.votes}
-								onWavesInit={onWavesInit}
-								onPlay={handlePlay}
-								userIsCollaborator={userIsCollaborator}
-								userIsRegisteredVoter={userIsRegisteredVoter}
-								onRegisterSuccess={onRegisterSuccess}
-								onVoteSuccess={onVoteSuccess}
-								onApprovedSuccess={onApprovedSuccess}
-								onFailure={onFailure}
-								onStop={handleStop}
-								projectDetails={details}
-							/>
-						</Fragment>
-					))}
-				</>
+			{details.stems.length > 0 ? (
+				details.stems.map((stem, idx) => (
+					<Fragment key={idx}>
+						<StemPlayer
+							idx={idx + 1}
+							details={stem}
+							onWavesInit={onWavesInit}
+							onFinish={() => setIsPlayingAll(false)}
+							onNewFile={onNewFile}
+							onPlay={handlePlay}
+							onSolo={handleSolo}
+							onMute={handleMute}
+							onStop={onStop}
+							handleUnmuteAll={handleUnmuteAll}
+						/>
+					</Fragment>
+				))
 			) : (
 				<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 			)}

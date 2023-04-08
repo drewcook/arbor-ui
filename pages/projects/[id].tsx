@@ -20,7 +20,7 @@ const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
 				<title>Arbor | Project Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
-				{data && <ProjectDetailsContainer data={data} blob={blob} />}
+				{data && <ProjectDetailsContainer data={data} />}
 			</Container>
 		</>
 	)

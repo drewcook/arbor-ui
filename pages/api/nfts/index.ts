@@ -1,7 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import dbConnect from '../../../lib/dbConnect'
+import dbConnect from '../../../lib/connectMongo'
 import { update } from '../../../lib/http'
 import redisClient from '../../../lib/redisClient'
 import { INft, INftDoc, Nft } from '../../../models/nft.model'

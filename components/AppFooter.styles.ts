@@ -9,11 +9,11 @@ const styles = {
 		alignItems: 'center',
 		px: 2,
 		pb: 2,
-		// '&.stuck': {
-		// 	position: 'fixed',
-		// 	bottom: 0,
-		// 	width: '100%',
-		// },
+		'&.stuck': {
+			position: 'fixed',
+			bottom: 0,
+			width: '100%',
+		},
 	},
 	social: {
 		my: 4,
