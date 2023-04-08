@@ -1,11 +1,11 @@
 import { Box, Tab, Tabs } from '@mui/material'
 import { ReactNode, SyntheticEvent, useEffect, useState } from 'react'
 
-import Notification from '../../components/Notification'
-import ProjectDetails from '../../components/ProjectDetails/ProjectDetails'
-import type { IProjectDoc } from '../../models/project.model'
-import StemQueue from '../StemQueue/StemQueue'
-import { useWeb3 } from '../Web3Provider'
+import type { IProjectDoc } from '../models/project.model'
+import Notification from './Notification'
+import ProjectDetails from './ProjectDetails'
+import StemQueue from './StemQueue'
+import { useWeb3 } from './Web3Provider'
 
 type ProjectDetailsContainerProps = {
 	data: IProjectDoc

@@ -27,23 +27,23 @@ import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
 import web3 from 'web3'
 
-import ImageOptimized from '../../components/ImageOptimized'
-import Notification from '../../components/Notification'
-import StemUploadDialog from '../../components/StemUploadDialog'
-import { useWeb3 } from '../../components/Web3Provider'
-import { NETWORK_CURRENCY } from '../../constants/networks'
-import { post } from '../../lib/http'
-import logger from '../../lib/logger'
-import logoBinary from '../../lib/logoBinary'
-import type { INft } from '../../models/nft.model'
-import type { IProjectDoc } from '../../models/project.model'
-import type { IStemDoc } from '../../models/stem.model'
-import OneIcon from '../../public/harmony_icon.svg'
-import { detailsStyles as styles } from '../../styles/Projects.styles'
-import formatAddress from '../../utils/formatAddress'
+import { NETWORK_CURRENCY } from '../constants/networks'
+import { post } from '../lib/http'
+import logger from '../lib/logger'
+import logoBinary from '../lib/logoBinary'
+import type { INft } from '../models/nft.model'
+import type { IProjectDoc } from '../models/project.model'
+import type { IStemDoc } from '../models/stem.model'
+import OneIcon from '../public/harmony_icon.svg'
+import { detailsStyles as styles } from '../styles/Projects.styles'
+import formatAddress from '../utils/formatAddress'
+import ImageOptimized from './ImageOptimized'
+import Notification from './Notification'
+import StemUploadDialog from './StemUploadDialog'
+import { useWeb3 } from './Web3Provider'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
-const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
+const StemPlayer = dynamic(() => import('./StemPlayer'), { ssr: false })
 
 type ProjectDetailsProps = {
 	details: IProjectDoc

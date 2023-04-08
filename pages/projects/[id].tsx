@@ -2,7 +2,7 @@ import { Container } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 
-import ProjectDetailsContainer from '../../components/ProjectDetails/ProjectDetails.container'
+import ProjectDetailsContainer from '../../components/ProjectDetails.container'
 import { get } from '../../lib/http'
 import type { IProjectDoc } from '../../models/project.model'
 
@@ -12,7 +12,7 @@ type ProjectDetailsPageProps = {
 }
 
 const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
-	const { data, blob } = props
+	const { data } = props
 
 	return (
 		<>
@@ -33,14 +33,13 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	if (projectId !== '[object Blob]') {
 		const res = await get(`/projects/${projectId}`)
 		const data: IProjectDoc | null = res.success ? res.data : null
-		// const blob = await client.get(String(data?._id))
 		return {
 			props: {
 				data,
-				blob: null,
 			},
 		}
 	}
+
 	return { props: { data: null } }
 }
 

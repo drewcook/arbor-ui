@@ -5,17 +5,17 @@ import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 
-import { update } from '../../lib/http'
-import logger from '../../lib/logger'
-import type { IProjectDoc } from '../../models/project.model'
-import { IStemDoc } from '../../models/stem.model'
-import { IUserIdentity } from '../../models/user.model'
-import signMessage from '../../utils/signMessage'
-import StemUploadDialog from '../StemUploadDialog'
-import { useWeb3 } from '../Web3Provider'
+import { update } from '../lib/http'
+import logger from '../lib/logger'
+import type { IProjectDoc } from '../models/project.model'
+import { IStemDoc } from '../models/stem.model'
+import { IUserIdentity } from '../models/user.model'
+import signMessage from '../utils/signMessage'
 import styles from './StemQueue.styles'
+import StemUploadDialog from './StemUploadDialog'
+import { useWeb3 } from './Web3Provider'
 
-const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
+const StemPlayer = dynamic(() => import('./StemPlayer'), { ssr: false })
 
 const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
 const Semaphore = require('@zk-kit/protocols').Semaphore
