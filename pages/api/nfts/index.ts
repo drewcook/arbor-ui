@@ -83,7 +83,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					await multi.exec()
 				}
 				// Add the new NFT reference to list of User NFTs field
-				const userUpdated = await update(`/users/${body.createdBy}`, { addNFT: nftCreated._id })
+				const userUpdated = await update(`/users/${body.createdBy}`, { addNFT: nftKey })
 				if (!userUpdated.success) return res.status(400).json({ success: false, error: "Failed to update user's NFTs" })
 
 				// TODO: Add the new NFT reference to list of the Project's NFTs that have been minted for given projectId
