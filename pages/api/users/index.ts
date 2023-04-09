@@ -1,6 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
 import { IUser, User } from '../../../models/user.model'
 
@@ -55,7 +56,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				const user: IUser = await User.create(payload)
 
 				res.status(201).json({ success: true, data: user })
-			} catch (e: any) {
+			} catch (e) {
+				logger.red(e)
 				res.status(400).json({ success: false, error: e.message })
 			}
 			break

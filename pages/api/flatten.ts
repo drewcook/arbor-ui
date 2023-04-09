@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		try {
 			const response = await pythonServer.post('/merge', body)
 			return res.status(200).json(response.data) // { success: true, cid: '...' }
-		} catch (e: any) {
+		} catch (e) {
 			logger.red(e)
 			return { success: false, error: e }
 		}
