@@ -162,17 +162,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const res = await get(`/stems/${stemId}`)
 	const data: IStemDoc | null = res.success ? res.data : null
 
-	// const client = createClient({
-	// 	url: `redis://default:3ED83Ay8uxtcs1HlYI8J5spNeFr8TzEm@redis-15246.c80.us-east-1-2.ec2.cloud.redislabs.com:15246`,
-	// })
-	// await client.connect()
-
-	// const blob = await client.get(String(data?._id))
-
 	return {
 		props: {
 			data,
-			blob: null,
+			blob: null, // TODO: return blob from Redis vs fetching from IPFS
 		},
 	}
 }

@@ -9,7 +9,6 @@ import type { IProjectDoc } from '../../models/project.model'
 
 type ProjectDetailsPageProps = {
 	data: IProjectDoc | null
-	blob: string
 }
 
 const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
@@ -41,7 +40,7 @@ const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	// Get  project details from ID
+	// Get project details from ID
 	const projectId = context.query.id
 
 	if (projectId !== '[object Blob]') {
@@ -54,6 +53,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 		}
 	}
 
+	// Fallback, typically if server returns a 404 or 400
 	return { props: { data: null } }
 }
 

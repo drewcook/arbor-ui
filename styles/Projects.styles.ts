@@ -54,18 +54,6 @@ export const newProjectStyles = {
 }
 
 export const detailsStyles = {
-	actionBtn: {
-		borderWidth: '3px',
-		borderColor: '#111',
-		borderRadius: '5px',
-		fontWeight: 800,
-		'&:hover': {
-			borderWidth: '3px',
-		},
-	},
-	loadingIcon: {
-		my: 0.4,
-	},
 	error: {
 		textAlign: 'center',
 		marginY: 4,
@@ -193,7 +181,6 @@ export const detailsStyles = {
 	},
 	stemsHeader: {
 		border: '3px solid #000',
-		borderBottomWidth: '1px',
 		borderTopLeftRadius: '10px',
 		borderTopRightRadius: '10px',
 		background: 'linear-gradient(94.22deg, #20163B 9.36%, #5E548E 33.65%, #9F86C0 65.94%, #D8C5F2 89.96%)',

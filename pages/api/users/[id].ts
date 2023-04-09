@@ -1,6 +1,7 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
 import type { IUser } from '../../../models/user.model'
 import { User } from '../../../models/user.model'
@@ -25,7 +26,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				res.status(200).json({ success: true, data: user })
-			} catch (error: any) {
+			} catch (e) {
+				logger.red(e)
 				res.status(400).json({ success: false })
 			}
 			break
@@ -142,7 +144,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					}
 					res.status(200).json({ success: true, data: user })
 				}
-			} catch (e: any) {
+			} catch (e) {
+				logger.red(e)
 				res.status(400).json({ success: false, error: e })
 			}
 			break
@@ -155,6 +158,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 				res.status(200).json({ success: true, data: deletedUser })
 			} catch (e) {
+				logger.red(e)
 				res.status(400).json({ success: false, error: e })
 			}
 			break
