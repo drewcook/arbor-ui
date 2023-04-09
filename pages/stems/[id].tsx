@@ -23,13 +23,12 @@ const propTypes = {
 		filetype: PropTypes.string.isRequired,
 		metadataUrl: PropTypes.string.isRequired,
 	}),
-	blob: PropTypes.any,
 }
 
 type StemDetailsPageProps = PropTypes.InferProps<typeof propTypes>
 
 const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
-	const { data, blob } = props
+	const { data } = props
 	const [waves, setWaves] = useState<any>(null)
 	const [isPlaying, setIsPlaying] = useState<boolean>(false)
 	// const [isLooping, setIsLooping] = useState<boolean>(false)
@@ -141,7 +140,6 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 						idx={1}
 						details={data}
 						onWavesInit={onWavesInit}
-						blob={blob}
 						// onFinish={handleLoopReplay}
 						isStemDetails
 						onSkipPrev={handleSkipPrev}
@@ -161,11 +159,9 @@ export const getServerSideProps: GetServerSideProps = async context => {
 	const stemId = context.query.id
 	const res = await get(`/stems/${stemId}`)
 	const data: IStemDoc | null = res.success ? res.data : null
-
 	return {
 		props: {
 			data,
-			blob: null, // TODO: return blob from Redis vs fetching from IPFS
 		},
 	}
 }
