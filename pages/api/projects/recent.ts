@@ -2,7 +2,7 @@ import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import connectMongo from '../../../lib/mongoClient'
-import { IProject, Project } from '../../../models/project.model'
+import { IProjectDoc, Project } from '../../../models/project.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req
@@ -12,7 +12,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				/* find the 3 most recently updated projects in our database */
-				const projects: IProject[] = await Project.find().sort({ updatedAt: 'desc' }).limit(3).exec()
+				const projects: IProjectDoc[] = await Project.find().sort({ updatedAt: 'desc' }).limit(3).exec()
 				res.status(200).json({ success: true, data: projects })
 			} catch (e) {
 				res.status(400).json({ success: false, error: e })

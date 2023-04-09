@@ -14,7 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	await connectMongo()
 
 	switch (method) {
-		case 'GET' /* Get a model by its ID */:
+		case 'GET':
 			try {
 				const stem: IStemDoc | null = await Stem.findById(id)
 				if (!stem) {
@@ -26,7 +26,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			}
 			break
 
-		case 'PUT' /* Edit a model by its ID */:
+		case 'PUT':
 			try {
 				// Update anything passed through,
 				const stem: IStemDoc | null = await Stem.findByIdAndUpdate(id, body, {
@@ -45,7 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			}
 			break
 
-		case 'DELETE' /* Delete a model by its ID */:
+		case 'DELETE':
 			try {
 				const deletedStem = await Stem.deleteOne({ _id: id })
 				if (!deletedStem) {

@@ -144,6 +144,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setUploadingMsg('Uploading stem to NFT.storage...')
 
 			// Upload to NFT.storage
+			// TODO: look into storing all stems within a single Arbor directory, or one for each user, and storing each stem within that directory -  https://github.com/nftstorage/nftup/blob/eed72d1bc6b1373d0656ac30b5a40bf251a7cefe/public/electron.js#L106
 			const nftsRes = await NFTStore.store({
 				name: file.name,
 				description: 'An audio file uploaded through the Arbor Protocol',

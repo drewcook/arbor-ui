@@ -15,7 +15,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	await connectMongo()
 
 	switch (method) {
-		/* Get a model by its ID */
 		case 'GET':
 			try {
 				const nft: INftDoc | null = await Nft.findById(id)
@@ -26,7 +25,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			}
 			break
 
-		/* Update a model by its ID */
 		case 'PUT':
 			try {
 				const nft: INftDoc | null = await Nft.findByIdAndUpdate(

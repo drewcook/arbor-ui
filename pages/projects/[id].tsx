@@ -1,6 +1,7 @@
-import { Container } from '@mui/material'
+import { Box, Button, Container, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 
 import ProjectDetailsContainer from '../../components/ProjectDetails.container'
 import { get } from '../../lib/http'
@@ -20,7 +21,20 @@ const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
 				<title>Arbor | Project Details</title>
 			</Head>
 			<Container maxWidth="xl" className="content-container">
-				{data && <ProjectDetailsContainer data={data} />}
+				{data ? (
+					<ProjectDetailsContainer data={data} />
+				) : (
+					<Box textAlign="center">
+						<Typography mb={4}>
+							Sorry, there are no details to show for this project. The ID being used may exist.
+						</Typography>
+						<Link href="/projects">
+							<Button variant="contained" color="secondary">
+								Back To Projects
+							</Button>
+						</Link>
+					</Box>
+				)}
 			</Container>
 		</>
 	)

@@ -4,8 +4,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { update } from '../../../lib/http'
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
-import { IProject, IProjectDoc, Project } from '../../../models/project.model'
+import redisClient, { allProjectsKey, connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
+import { IProjectDoc, Project } from '../../../models/project.model'
 
 export type CreateProjectPayload = {
 	createdBy: string
@@ -19,7 +19,7 @@ export type CreateProjectPayload = {
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const { method } = req
+	const { body, method } = req
 
 	// open mongodb connection
 	await connectMongo()
@@ -27,36 +27,42 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET':
 			try {
-				// check redis cache
-				let projects: IProject[]
-				// open redis connection
+				let projects: IProjectDoc[]
+				// Connect to Redis
 				await connectRedis()
-				// check and return from cache
-				const redisData = await redisClient.get('projects')
-				if (redisData !== null) {
+				// Check if Redis has the desired data
+				const redisData = await redisClient.hGetAll(allProjectsKey)
+				if (Object.keys(redisData).length) {
+					// Redis data exists, parse and return it
 					logger.magenta('Redis hit')
-					projects = JSON.parse(redisData)
+					projects = Object.values(redisData).map((projectString: string) => JSON.parse(projectString))
 				} else {
+					// Redis data does not exist, fetch from MongoDB and cache it in Redis
 					logger.magenta('Redis miss')
-					// find projects in database
 					projects = await Project.find({})
-					// write to cache for subsequent calls
-					await redisClient.setEx('projects', DEFAULT_EXPIRY, JSON.stringify(projects))
+					const multi = redisClient.multi()
+					projects.forEach(project => {
+						const projectKey = String(project.id)
+						multi.hSet(allProjectsKey, projectKey, JSON.stringify(project))
+						multi.expire(projectKey, DEFAULT_EXPIRY)
+					})
+					await multi.exec()
 				}
-				// close redis connection
-				await disconnectRedis()
-				// return 200
+				// Return 200
 				return res.status(200).json({ success: true, data: projects })
 			} catch (e) {
-				// close redis connection as failsafe
-				await disconnectRedis()
+				logger.red(e)
+				// Return 400
 				res.status(400).json({ success: false, error: e })
+			} finally {
+				// Close Redis connection
+				await disconnectRedis()
 			}
 			break
 		case 'POST':
 			try {
-				// Create the new project record
-				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = req.body
+				// Create the new project record in MongoDB
+				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = body
 				const payload: CreateProjectPayload = {
 					createdBy,
 					collaborators,
@@ -68,31 +74,35 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					votingGroupId,
 				}
 				const project: IProjectDoc = await Project.create(payload)
-
-				// open redis connection
+				// Write project to Redis hash
 				await connectRedis()
-				// add to redis both project and update existing projects array
-				await redisClient.setEx(`projects:${project.id}`, DEFAULT_EXPIRY, JSON.stringify(project))
-				const existingCachedProjects = await redisClient.get('projects')
-				if (existingCachedProjects !== null) {
-					JSON.parse(existingCachedProjects).push(project)
-					await redisClient.setEx('projects', DEFAULT_EXPIRY, JSON.stringify(existingCachedProjects))
+				const projectKey = String(project.id)
+				if (await redisClient.exists(allProjectsKey)) {
+					// Redis key exists, add new project to hash and set expiry
+					logger.magenta('Redis hit')
+					await redisClient.hSet(allProjectsKey, projectKey, JSON.stringify(project))
+					await redisClient.expire(projectKey, DEFAULT_EXPIRY)
+				} else {
+					// Redis key does not exist (expired), create hash and add new project with expiry
+					logger.magenta('Redis miss')
+					const multi = redisClient.multi()
+					multi.hSet(allProjectsKey, projectKey, JSON.stringify(project))
+					multi.expire(projectKey, DEFAULT_EXPIRY)
+					await multi.exec()
 				}
-				// close redis connection
-				await disconnectRedis()
-
 				// Add new project to creator's user details
-				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
+				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: projectKey })
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
-
-				// Return back the new Project record
-				res.status(201).json({ success: true, data: project })
-			} catch (e: any) {
-				// close redis connection as failsafe
-				await disconnectRedis()
+				// Return 201 with new project data
+				return res.status(201).json({ success: true, data: project })
+			} catch (e) {
+				// Return 400
 				res.status(400).json({ success: false, error: e })
+			} finally {
+				// Close Redis connection
+				await disconnectRedis()
 			}
 			break
 		default:

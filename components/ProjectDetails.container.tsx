@@ -42,7 +42,6 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	const [successMsg, setSuccessMsg] = useState<string>('')
 	const [errorOpen, setErrorOpen] = useState<boolean>(false)
 	const [errorMsg, setErrorMsg] = useState<string>('')
-
 	const { currentUser } = useWeb3()
 
 	const [userIsRegisteredVoter, setUserRegistration] = useState<boolean>(

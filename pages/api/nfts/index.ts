@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { update } from '../../../lib/http'
 import connectMongo from '../../../lib/mongoClient'
-import redisClient from '../../../lib/redisClient'
 import { INft, INftDoc, Nft } from '../../../models/nft.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -61,9 +60,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// TODO: Add the new NFT reference to list of the Project's NFTs that have been minted for given projectId
 				// Note - this doesn't exist yet, but a project record could have a 'mintedNfts' of ObjectId[]
 
-				// Add audio href to redis for the NFT
-				redisClient.set(String(nftCreated._id), audioHref)
-				redisClient.quit()
 				res.status(201).json({ success: true, data: nftCreated })
 			} catch (e: any) {
 				res.status(400).json({ success: false, error: e.message })

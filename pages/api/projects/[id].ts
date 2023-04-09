@@ -3,130 +3,140 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import redisClient, { connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
+import redisClient, { allProjectsKey, connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import { IProjectDoc, Project } from '../../../models/project.model'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+	// Extract request params
 	const {
 		query: { id },
 		body,
 		method,
 	} = req
 
+	// Redis project key
+	const projectKey = String(id)
+
 	// connect to mongo
 	await connectMongo()
 
 	switch (method) {
-		case 'GET' /* Get a model by its ID */:
+		case 'GET':
 			try {
 				let project: IProjectDoc | null
-
-				// open redis connection
+				// Connect to Redis
 				await connectRedis()
-				// check and return from cache
-				const redisData = await redisClient.get(`projects:${id}`)
-				if (redisData !== null) {
+				// Check if Redis has the desired data
+				const redisData = await redisClient.hGet(allProjectsKey, projectKey)
+				if (redisData) {
+					// Redis data exists, parse and return it
 					logger.magenta('Redis hit')
 					project = JSON.parse(redisData)
 				} else {
+					// Redis data does not exist, fetch from MongoDB
 					logger.magenta('Redis miss')
-					// find project in database
 					project = await Project.findById(id)
-				}
-
-				// return 400 if doesn't exist
-				if (!project) return res.status(400).json({ success: false })
-
-				// write to cache for subsequent calls
-				await redisClient.setEx(`projects:${project.id}`, DEFAULT_EXPIRY, JSON.stringify(project))
-				// close redis connection
-				await disconnectRedis()
-				// return 200
-				res.status(200).json({ success: true, data: project })
-			} catch (error) {
-				// close redis connection as failsafe
-				await disconnectRedis()
-				res.status(400).json({ success: false })
-			}
-			break
-
-		case 'PUT' /* Edit a model by its ID */:
-			try {
-				// Update stems
-				let project: IProjectDoc | null
-				if (body.approvedStem) {
-					project = await Project.findByIdAndUpdate(
-						id,
-						{
-							$set: {
-								// Update the collaborators
-								collaborators: body.collaborators,
-							},
-							$push: {
-								// Add the stem to the queue with 0 votes
-								queue: body.approvedStem,
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-				} else if (body.queuedStem) {
-					project = await Project.findByIdAndUpdate(
-						id,
-						{
-							$push: {
-								// Add the stem to the queue with 0 votes
-								queue: {
-									stem: body.queuedStem,
-									votes: 0,
-								},
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-
-					// Catch error
+					// Return 404 if doesn't exist
 					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to add stems or collaborators to project' })
+						return res.status(404).json({ success: false, error: `Project with '${id}' not found` })
+					} else {
+						// Write to Redis
+						await redisClient.hSet(allProjectsKey, projectKey, JSON.stringify(project))
 					}
+				}
+				// Return 200
+				return res.status(200).json({ success: true, data: project })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
+			} finally {
+				// Close Redis connection
+				await disconnectRedis()
+			}
 
-					res.status(200).json({ success: true, data: project })
-				} else {
-					// Update anything else,
-					project = await Project.findByIdAndUpdate(id, body, {
+		case 'PUT':
+			try {
+				// Update project in MongoDB
+				const { approvedStem, queuedStem, ...update } = body
+				const project = await Project.findByIdAndUpdate(
+					id,
+					{
+						$set: update,
+						// Add the approved stem to the queue with the amount of votes it has
+						// Or, add the newly accepted queued stem to the queue with zero votes
+						// Otherwise, don't push anything
+						$push: approvedStem
+							? { queue: { stem: approvedStem, votes: approvedStem.votes } }
+							: queuedStem
+							? { queue: { stem: queuedStem, votes: 0 } }
+							: {},
+					},
+					{
 						new: true,
 						runValidators: true,
-					})
+					},
+				)
 
-					// Catch error
-					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to update project' })
+				// Catch error if exists and return 400
+				if (!project) {
+					return res.status(400).json({ success: false, error: 'Failed to update project' })
+				} else {
+					// Update entity Redis cache, checking if exists first
+					await connectRedis()
+					if (await redisClient.exists(allProjectsKey)) {
+						logger.magenta('Redis hit')
+						// Update the 'projects:all' key in Redis
+						const cachedProjects = await redisClient.hGetAll(allProjectsKey)
+						if (cachedProjects) {
+							const updatedProjects = {
+								...cachedProjects,
+								[projectKey]: JSON.stringify(project),
+							}
+
+							await redisClient.hSet(allProjectsKey, updatedProjects)
+						}
+					} else {
+						// Redis key does not exist (expired), create hash and add new project with expiry
+						logger.magenta('Redis miss')
+						const multi = redisClient.multi()
+						multi.hSet(allProjectsKey, project.id, JSON.stringify(project))
+						multi.expire(projectKey, DEFAULT_EXPIRY)
+						await multi.exec()
 					}
-
-					res.status(200).json({ success: true, data: project })
 				}
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
-			}
-			break
 
-		case 'DELETE' /* Delete a model by its ID */:
+				// Return 200
+				return res.status(200).json({ success: true, data: project })
+			} catch (e) {
+				logger.red(e)
+				return res.status(400).json({ success: false, error: e })
+			} finally {
+				// Close Redis connection
+				await disconnectRedis()
+			}
+
+		case 'DELETE':
 			try {
-				const deletedProject = await Project.deleteOne({ _id: id })
-				if (!deletedProject) {
-					return res.status(400).json({ success: false, error: 'failed to delete project' })
+				// Connect to Redis
+				await connectRedis()
+				// Check if the project exists in Redis and delete if so
+				const redisExists = await redisClient.hExists(allProjectsKey, projectKey)
+				if (redisExists) await redisClient.hDel(allProjectsKey, projectKey)
+				// Delete the project from MongoDB
+				const result = await Project.findByIdAndDelete(id)
+				// Check if the project was found and deleted
+				if (result) {
+					return res.status(200).json({ success: true, message: `Project with '${id}' was deleted successfully` })
+				} else {
+					return res.status(404).json({ success: false, error: `Project with '${id}' not found` })
 				}
-				// TODO: Delete from user's projects
-				res.status(200).json({ success: true, data: deletedProject })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
+			} finally {
+				// Close Redis connection
+				await disconnectRedis()
 			}
-			break
 
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })

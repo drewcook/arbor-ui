@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose'
+
 import type { IStemDoc } from './stem.model'
 import { stemSchema } from './stem.model'
 import { IUserIdentity } from './user.model'
