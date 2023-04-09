@@ -1,6 +1,7 @@
 import mongoose, { Document } from 'mongoose'
 
 export type StemType = 'drums' | 'percussion' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
+export type StemFileType = 'audio/wav'
 
 export interface IStem {
 	name: string
@@ -9,7 +10,7 @@ export interface IStem {
 	audioUrl: string
 	audioHref: string
 	filename: string
-	filetype: string
+	filetype: StemFileType
 	filesize: number
 	createdBy: string
 }

@@ -5,7 +5,9 @@ import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
 import redisClient, { allStemsKey, connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
 import type { IStemDoc } from '../../../models/stem.model'
-import { Stem } from '../../../models/stem.model'
+import { IStem, Stem } from '../../../models/stem.model'
+
+type CreateStemPayload = IStem
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { body, method } = req
@@ -50,8 +52,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			break
 		case 'POST':
 			try {
-				// write to mongo
-				const stem: IStemDoc = await Stem.create(body)
+				// Create the new stem record in MongoDB
+				const payload: CreateStemPayload = {
+					name: body.name,
+					type: body.type,
+					metadataUrl: body.metadataUrl,
+					audioUrl: body.audioUrl,
+					audioHref: body.audioHref,
+					filename: body.filename,
+					filetype: body.filetype,
+					filesize: body.filesize,
+					createdBy: body.createdBy,
+				}
+				const stem: IStemDoc = await Stem.create(payload)
 				// Write stem to Redis hash
 				await connectRedis()
 				const stemKey = String(stem.id)
@@ -71,6 +84,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// Return 201 with new stem data
 				return res.status(201).json({ success: true, data: stem })
 			} catch (e) {
+				logger.red(e)
 				// Return 400
 				res.status(400).json({ success: false, error: e })
 			} finally {

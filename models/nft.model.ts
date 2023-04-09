@@ -1,4 +1,5 @@
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
+
 import type { IStemDoc } from './stem.model'
 import { stemSchema } from './stem.model'
 
@@ -13,7 +14,7 @@ export interface INft {
 	createdBy: string
 	owner: string
 	isListed: boolean
-	listPrice: number // In gwei
+	listPrice: number // In wei
 	token: Token
 	metadataUrl: string
 	audioHref: string

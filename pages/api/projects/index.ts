@@ -62,18 +62,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'POST':
 			try {
 				// Create the new project record in MongoDB
-				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = body
 				const payload: CreateProjectPayload = {
-					createdBy,
-					collaborators,
-					name,
-					description,
-					bpm,
-					trackLimit,
-					tags,
-					votingGroupId,
+					createdBy: body.createdBy,
+					collaborators: body.collaborators,
+					name: body.name,
+					description: body.description,
+					bpm: body.bpm,
+					trackLimit: body.trackLimit,
+					tags: body.tags,
+					votingGroupId: body.votingGroupId,
 				}
 				const project: IProjectDoc = await Project.create(payload)
+				if (!project) throw new Error('Failed to create the project')
 				// Write project to Redis hash
 				await connectRedis()
 				const projectKey = String(project.id)
@@ -91,13 +91,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					await multi.exec()
 				}
 				// Add new project to creator's user details
-				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: projectKey })
+				const userUpdated = await update(`/users/${body.createdBy}`, { newProject: projectKey })
 				if (!userUpdated) {
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
 				// Return 201 with new project data
 				return res.status(201).json({ success: true, data: project })
 			} catch (e) {
+				logger.red(e)
 				// Return 400
 				res.status(400).json({ success: false, error: e })
 			} finally {
