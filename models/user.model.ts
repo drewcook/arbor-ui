@@ -1,8 +1,6 @@
 import mongoose from 'mongoose'
 
-import type { INftDoc } from './nft.model'
-import type { IProjectDoc } from './project.model'
-import type { IStemDoc } from './stem.model'
+import { NftDoc, ProjectDoc, StemDoc, UserDoc } from '.'
 
 type Avatar = {
 	base64: string
@@ -30,15 +28,13 @@ export interface IUser {
 }
 
 export interface IUserFull extends IUser {
-	nfts: INftDoc[]
-	projects: IProjectDoc[]
-	projectCollaborations: IProjectDoc[]
-	stems: IStemDoc[]
+	nfts: NftDoc[]
+	projects: ProjectDoc[]
+	projectCollaborations: ProjectDoc[]
+	stems: StemDoc[]
 }
 
-export interface IUserDoc extends Document, IUser {}
-
-const userSchema = new mongoose.Schema<IUserDoc>(
+const userSchema = new mongoose.Schema<UserDoc>(
 	{
 		address: {
 			type: String,
@@ -87,4 +83,4 @@ const userSchema = new mongoose.Schema<IUserDoc>(
 	{ timestamps: true },
 )
 
-export const User = mongoose.models.user || mongoose.model<IUserDoc>('user', userSchema)
+export const User = mongoose.models.user || mongoose.model<UserDoc>('user', userSchema)

@@ -1,9 +1,8 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose from 'mongoose'
 
-import type { IStemDoc } from './stem.model'
+import { NftDoc, StemDoc } from '.'
 import { stemSchema } from './stem.model'
 
-// TODO: create token model
 type Token = {
 	id: number
 	tokenURI: string
@@ -21,12 +20,10 @@ export interface INft {
 	name: string
 	projectId: string
 	collaborators: string[]
-	stems: IStemDoc[]
+	stems: StemDoc[]
 }
 
-export interface INftDoc extends Document, INft {}
-
-const nftSchema = new mongoose.Schema<INftDoc>(
+const nftSchema = new mongoose.Schema<NftDoc>(
 	{
 		token: {
 			type: Object,
@@ -78,4 +75,4 @@ const nftSchema = new mongoose.Schema<INftDoc>(
 	{ timestamps: true },
 )
 
-export const Nft = mongoose.models.nft || mongoose.model<INftDoc>('nft', nftSchema)
+export const Nft = mongoose.models.nft || mongoose.model<NftDoc>('nft', nftSchema)

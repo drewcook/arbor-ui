@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import type { IUser } from '../../../models/user.model'
-import { User } from '../../../models/user.model'
+import { getEntityById } from '../../../lib/redisClient'
+import { User, UserDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -13,24 +13,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
+	// Connect to MongoDB
 	await connectMongo()
 
 	switch (method) {
 		case 'GET':
 			try {
-				// We will always be getting users by their address, not their MongoDB _id.
-				const user: IUser | null = await User.findOne({ address: id })
+				// Get the cached entity or fetch it from MongoDB
+				const user: UserDoc | null = await getEntityById('user', id)
 
-				if (!user) {
-					return res.status(404).json({ success: false })
-				}
-
-				res.status(200).json({ success: true, data: user })
-			} catch (e) {
-				logger.red(e)
-				res.status(400).json({ success: false })
+				// Return 200
+				return res.status(200).json({ success: true, data: user })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		case 'PUT':
 			try {

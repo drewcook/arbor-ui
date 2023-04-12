@@ -4,8 +4,14 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { update } from '../../../lib/http'
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import redisClient, { allProjectsKey, connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
-import { IProjectDoc, Project } from '../../../models/project.model'
+import redisClient, {
+	allProjectsKey,
+	connectRedis,
+	DEFAULT_EXPIRY,
+	disconnectRedis,
+	getAllEntitiesOfType,
+} from '../../../lib/redisClient'
+import { Project, ProjectDoc } from '../../../models'
 
 export type CreateProjectPayload = {
 	createdBy: string
@@ -27,38 +33,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET':
 			try {
-				let projects: IProjectDoc[]
-				// Connect to Redis
-				await connectRedis()
-				// Check if Redis has the desired data
-				const redisData = await redisClient.hGetAll(allProjectsKey)
-				if (Object.keys(redisData).length) {
-					// Redis data exists, parse and return it
-					logger.magenta('Redis hit')
-					projects = Object.values(redisData).map((projectString: string) => JSON.parse(projectString))
-				} else {
-					// Redis data does not exist, fetch from MongoDB and cache it in Redis
-					logger.magenta('Redis miss')
-					projects = await Project.find({})
-					const multi = redisClient.multi()
-					projects.forEach(project => {
-						const projectKey = String(project.id)
-						multi.hSet(allProjectsKey, projectKey, JSON.stringify(project))
-						multi.expire(projectKey, DEFAULT_EXPIRY)
-					})
-					await multi.exec()
-				}
-				// Return 200
+				const projects = await getAllEntitiesOfType('project')
 				return res.status(200).json({ success: true, data: projects })
-			} catch (e) {
-				logger.red(e)
-				// Return 400
-				res.status(400).json({ success: false, error: e })
-			} finally {
-				// Close Redis connection
-				await disconnectRedis()
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
+
 		case 'POST':
 			try {
 				// Create the new project record in MongoDB
@@ -72,7 +53,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					tags: body.tags,
 					votingGroupId: body.votingGroupId,
 				}
-				const project: IProjectDoc = await Project.create(payload)
+				const project: ProjectDoc = await Project.create(payload)
 				if (!project) throw new Error('Failed to create the project')
 				// Write project to Redis hash
 				await connectRedis()
@@ -81,22 +62,30 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					// Redis key exists, add new project to hash and set expiry
 					logger.magenta('Redis hit')
 					await redisClient.hSet(allProjectsKey, projectKey, JSON.stringify(project))
-					await redisClient.expire(projectKey, DEFAULT_EXPIRY)
+					await redisClient.expire(`${allProjectsKey}:${projectKey}`, DEFAULT_EXPIRY)
 				} else {
 					// Redis key does not exist (expired), create hash and add new project with expiry
 					logger.magenta('Redis miss')
 					const multi = redisClient.multi()
 					multi.hSet(allProjectsKey, projectKey, JSON.stringify(project))
-					multi.expire(projectKey, DEFAULT_EXPIRY)
+					multi.expire(`${allProjectsKey}:${projectKey}`, DEFAULT_EXPIRY)
 					await multi.exec()
 				}
 				// Add new project to creator's user details
 				const userUpdated = await update(`/users/${body.createdBy}`, { newProject: projectKey })
 				if (!userUpdated) {
+					logger.red('Failed to update user')
+					await Project.findByIdAndDelete(project.id) // Delete the project record if user update fails
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
 				// Return 201 with new project data
-				return res.status(201).json({ success: true, data: project })
+				return res.status(201).json({
+					success: true,
+					data: {
+						...project.toJSON(),
+						votingGroupId: payload.votingGroupId, // Include the votingGroupId in the response data
+					},
+				})
 			} catch (e) {
 				logger.red(e)
 				// Return 400

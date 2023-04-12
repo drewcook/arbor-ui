@@ -183,6 +183,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			if (!stemRes.success) throw new Error(stemRes.error)
 			const stemCreated = stemRes.data
 
+			// TODO: add these to the backend api
 			// Add new stem to user's stems' details
 			const userUpdated = await update(`/users/${currentUser.address}`, { newStem: stemCreated._id })
 			if (!userUpdated.success) throw new Error(userUpdated.error)

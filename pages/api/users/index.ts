@@ -3,7 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import { IUser, User } from '../../../models/user.model'
+import { getAllEntitiesOfType } from '../../../lib/redisClient'
+import { User, UserDoc } from '../../../models'
 
 type Avatar = {
 	base64: string
@@ -26,13 +27,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 	switch (method) {
 		case 'GET':
 			try {
-				/* find all the data in our database */
-				const users: IUser[] = await User.find({})
-				res.status(200).json({ success: true, data: users })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				const users = await getAllEntitiesOfType('user')
+				return res.status(200).json({ success: true, data: users })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 		case 'POST':
 			try {
 				const accountAddress = req.body.address.toLowerCase()
@@ -53,12 +53,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				}
 
 				/* create a new model in the database */
-				const user: IUser = await User.create(payload)
+				const user: UserDoc = await User.create(payload)
 
 				res.status(201).json({ success: true, data: user })
 			} catch (e) {
 				logger.red(e)
-				res.status(400).json({ success: false, error: e.message })
+				res.status(400).json({ success: false, error: e })
 			}
 			break
 		default:

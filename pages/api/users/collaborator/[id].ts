@@ -10,6 +10,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
+	// Connect to MongoDB
 	await connectMongo()
 
 	switch (method) {

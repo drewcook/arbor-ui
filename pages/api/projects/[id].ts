@@ -3,8 +3,14 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import redisClient, { allProjectsKey, connectRedis, DEFAULT_EXPIRY, disconnectRedis } from '../../../lib/redisClient'
-import { IProjectDoc, Project } from '../../../models/project.model'
+import redisClient, {
+	allProjectsKey,
+	connectRedis,
+	DEFAULT_EXPIRY,
+	disconnectRedis,
+	getEntityById,
+} from '../../../lib/redisClient'
+import { Project, ProjectDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	// Extract request params
@@ -14,44 +20,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
-	// Redis project key
+	// Redis keys
 	const projectKey = String(id)
+	const fullKey = `${allProjectsKey}:${projectKey}`
 
-	// connect to mongo
+	// Connect to MongoDB
 	await connectMongo()
 
 	switch (method) {
 		case 'GET':
 			try {
-				let project: IProjectDoc | null
-				// Connect to Redis
-				await connectRedis()
-				// Check if Redis has the desired data
-				const redisData = await redisClient.hGet(allProjectsKey, projectKey)
-				if (redisData) {
-					// Redis data exists, parse and return it
-					logger.magenta('Redis hit')
-					project = JSON.parse(redisData)
-				} else {
-					// Redis data does not exist, fetch from MongoDB
-					logger.magenta('Redis miss')
-					project = await Project.findById(id)
-					// Return 404 if doesn't exist
-					if (!project) {
-						return res.status(404).json({ success: false, error: `Project with '${id}' not found` })
-					} else {
-						// Write to Redis
-						await redisClient.hSet(allProjectsKey, projectKey, JSON.stringify(project))
-					}
-				}
+				// Get the cached entity or fetch it from MongoDB
+				const project: ProjectDoc | null = await getEntityById('project', id)
+
 				// Return 200
 				return res.status(200).json({ success: true, data: project })
 			} catch (error) {
 				logger.red(error)
 				return res.status(400).json({ success: false, error })
-			} finally {
-				// Close Redis connection
-				await disconnectRedis()
 			}
 
 		case 'PUT':
@@ -77,13 +63,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					},
 				)
 
-				// Catch error if exists and return 400
+				// Catch error
 				if (!project) {
 					return res.status(400).json({ success: false, error: 'Failed to update project' })
 				} else {
 					// Update entity Redis cache, checking if exists first
 					await connectRedis()
-					if (await redisClient.exists(allProjectsKey)) {
+					if (await redisClient.exists(fullKey)) {
 						logger.magenta('Redis hit')
 						// Update the 'projects:all' key in Redis
 						const cachedProjects = await redisClient.hGetAll(allProjectsKey)
@@ -99,14 +85,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						// Redis key does not exist (expired), create hash and add new project with expiry
 						logger.magenta('Redis miss')
 						const multi = redisClient.multi()
-						multi.hSet(allProjectsKey, project.id, JSON.stringify(project))
-						multi.expire(projectKey, DEFAULT_EXPIRY)
+						multi.hSet(allProjectsKey, projectKey, JSON.stringify(project))
+						multi.expire(fullKey, DEFAULT_EXPIRY)
 						await multi.exec()
 					}
+					// Return 200
+					return res.status(200).json({ success: true, data: project })
 				}
-
-				// Return 200
-				return res.status(200).json({ success: true, data: project })
 			} catch (e) {
 				logger.red(e)
 				return res.status(400).json({ success: false, error: e })
