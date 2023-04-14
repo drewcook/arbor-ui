@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import { getEntityById, updateEntityById } from '../../../lib/redisClient'
-import { Stem, StemDoc } from '../../../models'
+import { deleteEntityById, getEntityById, updateEntityById, UpdateEntityOptions } from '../../../lib/redisClient'
+import { StemDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				// Get the cached entity or fetch it from MongoDB
-				const stem: StemDoc | null = await getEntityById('stem', id)
+				const stem: StemDoc = await getEntityById('stem', id)
 
 				// Return 200
 				return res.status(200).json({ success: true, data: stem })
@@ -32,7 +32,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'PUT':
 			try {
 				// Update NFT in MongoDB and Redis cache
-				const stem: StemDoc | null = await updateEntityById('stem', id, body)
+				const options: UpdateEntityOptions = { set: body }
+				const stem: StemDoc = await updateEntityById('stem', id, options)
 
 				// Return 200
 				return res.status(200).json({ success: true, data: stem })
@@ -43,18 +44,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'DELETE':
 			try {
-				const deletedStem = await Stem.deleteOne({ _id: id })
-				if (!deletedStem) {
-					return res.status(400).json({ success: false, error: 'failed to delete stem' })
-				}
+				// Delete Stem from MongoDB and Redis
+				const deletedStem: StemDoc = await deleteEntityById('stem', id)
 
-				// TODO: Delete from user's stems
+				// TODO: delete stem from user object
 
-				res.status(200).json({ success: true, data: deletedStem })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				// Return 200
+				return res.status(200).json({ success: true, data: deletedStem })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })

@@ -16,7 +16,7 @@ import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import { get } from '../../lib/http'
 import logger from '../../lib/logger'
-import type { IProjectDoc } from '../../models/project.model'
+import { ProjectDoc } from '../../models'
 import type { IUserFull } from '../../models/user.model'
 import styles from '../../styles/UserProfile.styles'
 import formatAddress from '../../utils/formatAddress'
@@ -264,7 +264,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
 						<Grid container spacing={4}>
 							{details.projects.length > 0 ? (
-								details.projects.map((project: IProjectDoc) => (
+								details.projects.map((project: ProjectDoc) => (
 									<Grid item sm={6} md={4} key={project._id}>
 										<ProjectCard details={project} />
 									</Grid>

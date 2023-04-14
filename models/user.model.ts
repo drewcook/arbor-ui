@@ -15,6 +15,7 @@ export interface IUserIdentity {
 }
 
 export interface IUser {
+	_id: string
 	address: string
 	displayName: string
 	avatar: Avatar

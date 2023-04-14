@@ -1,14 +1,14 @@
 import { Box, Tab, Tabs } from '@mui/material'
 import { ReactNode, SyntheticEvent, useEffect, useState } from 'react'
 
-import type { IProjectDoc } from '../models/project.model'
+import type { ProjectDoc } from '../models'
 import Notification from './Notification'
 import ProjectDetails from './ProjectDetails'
 import StemQueue from './StemQueue'
 import { useWeb3 } from './Web3Provider'
 
 type ProjectDetailsContainerProps = {
-	data: IProjectDoc
+	data: ProjectDoc
 }
 
 interface TabPanelProps {
@@ -35,7 +35,7 @@ const TabPanel = (props: TabPanelProps) => {
 
 const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Element => {
 	const { data } = props
-	const [details, setDetails] = useState<IProjectDoc>(data)
+	const [details, setDetails] = useState<ProjectDoc>(data)
 	const [currentTab, setCurrentTab] = useState(0)
 	const [uploadStemOpen, setUploadStemOpen] = useState<boolean>(false)
 	const [successOpen, setSuccessOpen] = useState<boolean>(false)
@@ -87,7 +87,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 		setUploadStemOpen(false)
 	}
 
-	const onStemUploadSuccess = (projectData: IProjectDoc): void => {
+	const onStemUploadSuccess = (projectData: ProjectDoc): void => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
@@ -99,7 +99,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	////////////////////////////////////////////////////////////////////////
 	// Stem Queue Voting Registration
 	////////////////////////////////////////////////////////////////////////
-	const onRegisterSuccess = (projectData: IProjectDoc): void => {
+	const onRegisterSuccess = (projectData: ProjectDoc): void => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
@@ -109,7 +109,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	////////////////////////////////////////////////////////////////////////
 	// Stem Queue Voting
 	////////////////////////////////////////////////////////////////////////
-	const onVoteSuccess = (projectData: IProjectDoc, stemName: string): void => {
+	const onVoteSuccess = (projectData: ProjectDoc, stemName: string): void => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)
@@ -119,7 +119,7 @@ const ProjectDetailsContainer = (props: ProjectDetailsContainerProps): JSX.Eleme
 	////////////////////////////////////////////////////////////////////////
 	// Stem Queue Approval
 	////////////////////////////////////////////////////////////////////////
-	const onApprovedSuccess = (projectData: IProjectDoc, stemName: string): void => {
+	const onApprovedSuccess = (projectData: ProjectDoc, stemName: string): void => {
 		// Refresh UI
 		setDetails(projectData)
 		setSuccessOpen(true)

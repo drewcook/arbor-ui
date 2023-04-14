@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 
 import ProjectCard from '../../components/ProjectCard'
 import { get } from '../../lib/http'
-import { IProjectDoc } from '../../models/project.model'
+import { ProjectDoc } from '../../models'
 import { indexStyles as styles } from '../../styles/Projects.styles'
 
 const propTypes = {
@@ -71,7 +71,7 @@ ProjectsPage.propTypes = propTypes
 export const getServerSideProps: GetServerSideProps = async () => {
 	// Get all Projects
 	const res = await get(`/projects`)
-	const data: IProjectDoc[] | null = res.success ? res.data : null
+	const data: ProjectDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,

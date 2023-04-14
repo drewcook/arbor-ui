@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { get } from '../../lib/http'
-import { IStemDoc } from '../../models/stem.model'
+import { StemDoc } from '../../models'
 import { detailsStyles as styles } from '../../styles/Stems.styles'
 import formatDate from '../../utils/formatDate'
 import formatStemName from '../../utils/formatStemName'
@@ -158,7 +158,7 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 export const getServerSideProps: GetServerSideProps = async context => {
 	const stemId = context.query.id
 	const res = await get(`/stems/${stemId}`)
-	const data: IStemDoc | null = res.success ? res.data : null
+	const data: StemDoc | null = res.success ? res.data : null
 	return {
 		props: {
 			data,

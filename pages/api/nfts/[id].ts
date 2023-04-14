@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { update } from '../../../lib/http'
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import { getEntityById, updateEntityById } from '../../../lib/redisClient'
+import { getEntityById, updateEntityById, UpdateEntityOptions } from '../../../lib/redisClient'
 import { NftDoc } from '../../../models'
 
 /**
@@ -56,8 +56,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'PUT':
 			try {
 				// Update NFT in MongoDB and Redis cache
-				const updates = { isListed: body.isListed, listPrice: body.listPrice, owner: body.owner }
-				const nft: NftDoc | null = await updateEntityById('nft', id, updates)
+				const options: UpdateEntityOptions = {
+					set: {
+						isListed: body.isListed,
+						listPrice: body.listPrice,
+						owner: body.owner,
+					},
+				}
+				const nft: NftDoc | null = await updateEntityById('nft', id, options)
 
 				// If changing ownership, update user entities
 				if (body.buyer && body.seller) {

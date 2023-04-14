@@ -9,7 +9,7 @@ import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_
 import { get, post } from '../lib/http'
 import logger from '../lib/logger'
 import NFTStorageClient from '../lib/NFTStorageClient'
-import type { IUserDoc } from '../models/user.model'
+import type { UserDoc } from '../models'
 
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
@@ -19,7 +19,7 @@ type Web3ContextProps = {
 	connected: boolean
 	handleConnectWallet: any
 	handleDisconnectWallet: any
-	currentUser: IUserDoc | null
+	currentUser: UserDoc | null
 	updateCurrentUser: any
 }
 
@@ -40,7 +40,7 @@ const Web3Context = createContext<Web3ContextProps>({})
 export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
-	const [currentUser, setCurrentUser] = useState<IUserDoc | null>(null)
+	const [currentUser, setCurrentUser] = useState<UserDoc | null>(null)
 	const [contracts, setContracts] = useState<PolyechoContracts>({ nft: {} as Contract, stemQueue: {} as Contract })
 
 	const checkForSupportedNetwork = async (provider: any) => {
@@ -213,7 +213,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	/**
 	 * Utility handler for updating the global state of the current user so that UI's can respond
 	 */
-	const updateCurrentUser = (newUserData: IUserDoc) => {
+	const updateCurrentUser = (newUserData: UserDoc) => {
 		setCurrentUser(newUserData)
 	}
 

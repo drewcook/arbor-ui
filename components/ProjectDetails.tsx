@@ -31,9 +31,8 @@ import { NETWORK_CURRENCY } from '../constants/networks'
 import { post } from '../lib/http'
 import logger from '../lib/logger'
 import logoBinary from '../lib/logoBinary'
+import type { ProjectDoc, StemDoc } from '../models'
 import type { INft } from '../models/nft.model'
-import type { IProjectDoc } from '../models/project.model'
-import type { IStemDoc } from '../models/stem.model'
 import OneIcon from '../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../styles/Projects.styles'
 import formatAddress from '../utils/formatAddress'
@@ -46,11 +45,11 @@ import { useWeb3 } from './Web3Provider'
 const StemPlayer = dynamic(() => import('./StemPlayer'), { ssr: false })
 
 type ProjectDetailsProps = {
-	details: IProjectDoc
+	details: ProjectDoc
 	uploadStemOpen: boolean
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
-	onStemUploadSuccess: (project: IProjectDoc) => void
+	onStemUploadSuccess: (project: ProjectDoc) => void
 }
 
 const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
@@ -172,7 +171,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 		try {
 			setDownloading(true)
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
-			const stemData = details.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
+			const stemData = details.stems.map((stem: StemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
 			const zip = new JSZip()
 			while (stemData.length != files.size) {
 				await new Promise(r => setTimeout(r, 500))

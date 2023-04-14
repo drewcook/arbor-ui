@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 
 import NFTCard from '../../components/NFTCard'
 import { get } from '../../lib/http'
-import type { INftDoc } from '../../models/nft.model'
+import type { NftDoc } from '../../models'
 import { indexStyles as styles } from '../../styles/Stems.styles'
 
 const propTypes = {
@@ -65,7 +65,7 @@ NftsPage.propTypes = propTypes
 export const getServerSideProps: GetServerSideProps = async () => {
 	// Get all NFTs
 	const res = await get(`/nfts`)
-	const data: INftDoc[] | null = res.success ? res.data : null
+	const data: NftDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,

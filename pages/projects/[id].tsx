@@ -5,10 +5,10 @@ import Link from 'next/link'
 
 import ProjectDetailsContainer from '../../components/ProjectDetails.container'
 import { get } from '../../lib/http'
-import type { IProjectDoc } from '../../models/project.model'
+import type { ProjectDoc } from '../../models'
 
 type ProjectDetailsPageProps = {
-	data: IProjectDoc | null
+	data: ProjectDoc | null
 }
 
 const ProjectPage: NextPage<ProjectDetailsPageProps> = props => {
@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
 	if (projectId !== '[object Blob]') {
 		const res = await get(`/projects/${projectId}`)
-		const data: IProjectDoc | null = res.success ? res.data : null
+		const data: ProjectDoc | null = res.success ? res.data : null
 		return {
 			props: {
 				data,

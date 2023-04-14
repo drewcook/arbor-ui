@@ -3,16 +3,8 @@ import { createClient } from 'redis'
 import { EntityType, getModelFromEntityType, MongoEntity } from '../models'
 import logger from './logger'
 
-// Generate Redis keys that map to our data models in mongo and can be stored and queried as hashes
-// Collections = hashes
-// Documents = id fields within the hash
-// Each id field will store the entire JSON structure of the document
-export const allProjectsKey = 'projects:all'
-export const allStemsKey = 'stems:all'
-export const allNftsKey = 'nfts:all'
-
-// Default expiration for all keys stored in the cache is: 1hr
-export const DEFAULT_EXPIRY = 3600
+// Default expiration for all keys stored in the cache is: 24hr
+export const DEFAULT_EXPIRY = 86400
 
 // Client instance
 const redisClient = createClient({
@@ -55,8 +47,8 @@ export const updateRedisHash = async (
 	objectValue.forEach(entity => {
 		const fieldKey = entity.id.toString()
 		multi.hSet(hashKey, fieldKey, JSON.stringify(entity))
-		multi.expire(`${hashKey}:${fieldKey}`, expiry)
 	})
+	multi.expire(hashKey, expiry)
 	await multi.exec()
 }
 
@@ -85,11 +77,12 @@ export const updateRedisHashField = async (
  * in Redis, they are returned immediately. Otherwise, the function fetches all entities
  * from MongoDB, writes them to Redis, and returns them.
  *
+ * @async
  * @param {EntityType} entityType - The type of entity to retrieve.
  * @returns {Promise<Array<MongoEntity>>} - An array of entities.
  * @throws {Error} - Throws an error if the Redis or MongoDB queries fail.
  */
-export const getAllEntitiesOfType = async (entityType: EntityType): Promise<MongoEntity[]> => {
+export const getAllEntitiesOfType = async (entityType: EntityType): Promise<any[]> => {
 	const redisKey = `${entityType}:all`
 	let entities: MongoEntity[] = []
 
@@ -120,10 +113,19 @@ export const getAllEntitiesOfType = async (entityType: EntityType): Promise<Mong
 	}
 }
 
-export const getEntityById = async (entityType: EntityType, entityId: string | string[] | undefined) => {
+/**
+ * Retrieves an entity from Redis cache or MongoDB by its ID.
+ * @async
+ * @function getEntityById
+ * @param {EntityType} entityType - The type of entity to retrieve (e.g. "nft", "user").
+ * @param {string|string[]|undefined} entityId - The ID or IDs of the entity to retrieve.
+ * @throws {Error} If the entity is not found in MongoDB or Redis.
+ * @returns {Promise<any>} The retrieved entity object
+ */
+export const getEntityById = async (entityType: EntityType, entityId: string | string[] | undefined): Promise<any> => {
 	const redisKey = `${entityType}:all`
 	const entityKey = String(entityId)
-	let entity = null
+	let entity: MongoEntity | null = null
 
 	try {
 		// Connect to Redis
@@ -138,7 +140,12 @@ export const getEntityById = async (entityType: EntityType, entityId: string | s
 			// Redis data does not exist, fetch from MongoDB
 			logger.magenta('Redis miss')
 			const Model = getModelFromEntityType(entityType)
-			entity = await Model.findById(entityId)
+			// Handle getting Users by their address
+			if (entityType === 'user') {
+				entity = await Model.findOne({ address: entityId })
+			} else {
+				entity = await Model.findById(entityId)
+			}
 			// Return 404 if entity doesn't exist
 			if (!entity) {
 				throw new Error(`${entityType} with ID '${entityId}' not found`)
@@ -157,29 +164,156 @@ export const getEntityById = async (entityType: EntityType, entityId: string | s
 	}
 }
 
+/**
+ * Create a new entity and write to both MongoDB and Redis.
+ * @async
+ * @param {EntityType} entityType - The type of entity to create.
+ * @param {Object} entityData - The data for the new entity.
+ * @returns {Promise<MongoEntity>} The created entity object.
+ * @throws {Error} If the entity could not be created.
+ */
+export const createEntity = async (entityType, entityData): Promise<any> => {
+	const redisKey = `${entityType}:all`
+	let createdEntity: MongoEntity | null = null
+
+	try {
+		// Create entity in MongoDB
+		const Model = getModelFromEntityType(entityType)
+		createdEntity = await Model.create(entityData)
+
+		// Catch error
+		if (!createdEntity) {
+			throw new Error(`Failed to create the new ${Model.modelName} record in MongoDB`)
+		}
+
+		// Write to Redis
+		await connectRedis()
+		const entityKey = String(createdEntity._id)
+		await updateRedisHashField(redisKey, entityKey, createdEntity)
+		return createdEntity.toObject()
+	} catch (error) {
+		// If there was an error creating the entity in MongoDB, delete it from Redis (if it was added)
+		if (createdEntity) {
+			await deleteEntityById(entityType, createdEntity._id)
+		}
+		logger.red(error)
+		throw error
+	} finally {
+		// Close Redis connection
+		await disconnectRedis()
+	}
+}
+
+/**
+ * Updates a single entity in MongoDB and Redis cache, writing to MongoDB first and then updating the Redis field
+ *
+ * @async
+ * @function updateEntityById
+ * @param {string} entityType - The type of the entity to update (e.g. "nft", "user").
+ * @param {string|string[]|undefined} entityId - The ID or IDs of the entity to update.
+ * @param {UpdateEntityOptions} [options={}] - The update options to apply (e.g. `$set`, `$addToSet`).
+ * @returns {Promise<Object>} The updated entity object.
+ * @throws {Error} If the entity fails to update in MongoDB.
+ * @throws {Error} If the Redis cache fails to update.
+ */
+export interface UpdateEntityOptions {
+	set?: Record<string, unknown>
+	addToSet?: Record<string, unknown>
+	pull?: Record<string, unknown>
+	push?: Record<string, unknown>
+}
 export const updateEntityById = async (
 	entityType: EntityType,
 	entityId: string | string[] | undefined,
-	body: Record<string, unknown>,
+	options: UpdateEntityOptions = {},
 ): Promise<any> => {
+	const { set, addToSet, pull, push } = options
 	const redisKey = `${entityType}:all`
 	const entityKey = String(entityId)
 
 	try {
 		// Update entity in MongoDB
+		const updateQuery = {}
+		if (set) {
+			updateQuery['$set'] = set
+		}
+		if (addToSet) {
+			updateQuery['$addToSet'] = addToSet
+		}
+		if (pull) {
+			updateQuery['$pull'] = pull
+		}
+		if (push) {
+			updateQuery['$push'] = push
+		}
 		const Model = getModelFromEntityType(entityType)
-		const entity = await Model.findByIdAndUpdate(entityId, { $set: body }, { new: true, runValidators: true })
+		let updatedEntity: MongoEntity | null
+		// Handle getting Users by their address
+		if (entityType === 'user') {
+			updatedEntity = await Model.findOneAndUpdate({ address: entityId }, updateQuery, {
+				new: true,
+				runValidators: true,
+			})
+		} else {
+			updatedEntity = await Model.findByIdAndUpdate(entityId, updateQuery, {
+				new: true,
+				runValidators: true,
+			})
+		}
 
 		// Catch error
-		if (!entity) {
+		if (!updatedEntity) {
 			throw new Error(`Failed to update the ${Model.modelName} in MongoDB`)
 		}
 
 		// Update entity Redis cache
 		await connectRedis()
-		await updateRedisHashField(redisKey, entityKey, entity)
+		await updateRedisHashField(redisKey, entityKey, updatedEntity)
 
-		return entity.toObject()
+		return updatedEntity.toObject()
+	} catch (error) {
+		logger.red(error)
+		throw error
+	} finally {
+		// Close Redis connection
+		await disconnectRedis()
+	}
+}
+
+/**
+ * Deletes an entity from both Redis and MongoDB.
+ * @async
+ * @param {string} entityType - The type of entity to delete (e.g. "nft", "user").
+ * @param {string | string[] | undefined} entityId - The ID or IDs of the entity to delete.
+ * @returns {Promise<any>} The deleted entity.
+ * @throws {Error} If the entity does not exist in MongoDB or if there was an error deleting the entity.
+ */
+export const deleteEntityById = async (
+	entityType: EntityType,
+	entityId: string | string[] | undefined,
+): Promise<any> => {
+	const redisKey = `${entityType}:all`
+	const entityKey = String(entityId)
+	let deletedEntity: MongoEntity | null = null
+
+	try {
+		// Connect to Redis
+		await connectRedis()
+		// Check if Redis has the desired data
+		const redisData = await redisClient.hGet(redisKey, entityKey)
+		if (redisData) {
+			// Redis data exists, delete it
+			logger.magenta('Redis hit')
+			await redisClient.hDel(redisKey, entityKey)
+		}
+		// Delete the entity from MongoDB
+		const Model = getModelFromEntityType(entityType)
+		deletedEntity = await Model.findByIdAndDelete(entityId)
+		// Catch error
+		if (!deletedEntity) {
+			throw new Error(`Failed to delete the ${Model.modelName} with ID '${entityId}' in MongoDB`)
+		}
+		return deletedEntity
 	} catch (error) {
 		logger.red(error)
 		throw error

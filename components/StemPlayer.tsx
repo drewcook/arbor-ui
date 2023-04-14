@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
 
-import type { IStemDoc } from '../models/stem.model'
+import { StemDoc } from '../models'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
 import { stemTypesToColor } from './ArborThemeProvider'
@@ -13,7 +13,7 @@ import styles from './StemPlayer.styles'
 // We have to pass back up callbacks because we use global controls outside of this player's track
 type StemPlayerProps = {
 	idx: number
-	details: IStemDoc | any
+	details: StemDoc | any
 	onWavesInit: (idx: number, ws: any) => any
 	onFinish?: (idx: number, ws: any) => any
 	isStemDetails?: boolean

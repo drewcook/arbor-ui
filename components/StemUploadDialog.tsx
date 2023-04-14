@@ -24,7 +24,7 @@ import { useState } from 'react'
 import { post, update } from '../lib/http'
 import logger from '../lib/logger'
 import logoBinary from '../lib/logoBinary'
-import type { IProjectDoc } from '../models/project.model'
+import type { ProjectDoc } from '../models'
 import signMessage from '../utils/signMessage'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
@@ -79,8 +79,8 @@ type StemUploadDialogProps = {
 	// PropTypes.InferProps<typeof propTypes>
 	open: boolean
 	onClose: () => void
-	onSuccess: (project: IProjectDoc) => void
-	projectDetails: IProjectDoc
+	onSuccess: (project: ProjectDoc) => void
+	projectDetails: ProjectDoc
 }
 
 const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {

@@ -9,7 +9,7 @@ import { useState } from 'react'
 import StemCard from '../../components/StemCard'
 import StemList from '../../components/StemList'
 import { get } from '../../lib/http'
-import type { IStemDoc } from '../../models/stem.model'
+import { StemDoc } from '../../models'
 import { indexStyles as styles } from '../../styles/Stems.styles'
 
 const propTypes = {
@@ -101,7 +101,7 @@ StemsPage.propTypes = propTypes
 export const getServerSideProps: GetServerSideProps = async () => {
 	// Get all Stems
 	const res = await get(`/stems`)
-	const data: IStemDoc[] | null = res.success ? res.data : null
+	const data: StemDoc[] | null = res.success ? res.data : null
 	return {
 		props: {
 			data,

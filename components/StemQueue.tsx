@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react'
 
 import { update } from '../lib/http'
 import logger from '../lib/logger'
-import type { IProjectDoc } from '../models/project.model'
-import { IStemDoc } from '../models/stem.model'
+import type { ProjectDoc } from '../models'
+import { StemDoc } from '../models'
 import { IUserIdentity } from '../models/user.model'
 import signMessage from '../utils/signMessage'
 import styles from './StemQueue.styles'
@@ -24,16 +24,16 @@ const IDENTITY_MSG =
 	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
 
 type StemQueueProps = {
-	details: IProjectDoc
+	details: ProjectDoc
 	userIsCollaborator: boolean
 	userIsRegisteredVoter: boolean
 	uploadStemOpen: boolean
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
-	onStemUploadSuccess: (project: IProjectDoc) => void
-	onRegisterSuccess: (project: IProjectDoc) => void
-	onVoteSuccess: (project: IProjectDoc, stemName: string) => void
-	onApprovedSuccess: (project: IProjectDoc, stemName: string) => void
+	onStemUploadSuccess: (project: ProjectDoc) => void
+	onRegisterSuccess: (project: ProjectDoc) => void
+	onVoteSuccess: (project: ProjectDoc, stemName: string) => void
+	onApprovedSuccess: (project: ProjectDoc, stemName: string) => void
 	onFailure: (msg: string) => void
 }
 
@@ -175,7 +175,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		setRegisterLoading(false)
 	}
 
-	const handleVote = async (stem: IStemDoc, idx: number) => {
+	const handleVote = async (stem: StemDoc, idx: number) => {
 		try {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
@@ -297,9 +297,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	 * This allows a collaborator to approve a stem that has at least one vote onto the project
 	 * The stem will move from the queue to the list of project stems
 	 * The user who uploaded the stem will become a collaborator
-	 * @param {IStemDoc} stem - The stem to be added onto the project
+	 * @param {StemDoc} stem - The stem to be added onto the project
 	 */
-	const handleApprove = async (stem: IStemDoc) => {
+	const handleApprove = async (stem: StemDoc) => {
 		try {
 			// User must be a collaborator
 			if (!userIsCollaborator) return

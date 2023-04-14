@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import logger from '../../../lib/logger'
 import connectMongo from '../../../lib/mongoClient'
-import { getEntityById } from '../../../lib/redisClient'
-import { User, UserDoc } from '../../../models'
+import { deleteEntityById, getEntityById, updateEntityById, UpdateEntityOptions } from '../../../lib/redisClient'
+import { UserDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -13,6 +13,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
+	// Normalize the ID, which should be an address
+	const address = String(id).toLowerCase()
+
 	// Connect to MongoDB
 	await connectMongo()
 
@@ -20,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		case 'GET':
 			try {
 				// Get the cached entity or fetch it from MongoDB
-				const user: UserDoc | null = await getEntityById('user', id)
+				const user: UserDoc | null = await getEntityById('user', address)
 
 				// Return 200
 				return res.status(200).json({ success: true, data: user })
@@ -31,134 +34,68 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 		case 'PUT':
 			try {
-				let user
-				if (body.newProject) {
-					// Update the Projects list
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$addToSet: {
-								projectIds: body.newProject,
+				// Update User in MongoDB and Redis cache
+				const { newProject, newStem, addNFT, base64, imageFormat, removeNFT, ...bodyToUpdate } = body
+				let options: UpdateEntityOptions = {}
+				if (newProject) {
+					options = {
+						addToSet: {
+							projectIds: newProject,
+						},
+					}
+				} else if (newStem) {
+					options = {
+						addToSet: {
+							stemIds: newStem,
+						},
+					}
+				} else if (addNFT) {
+					options = {
+						addToSet: {
+							nftIds: addNFT,
+						},
+					}
+				} else if (base64) {
+					options = {
+						set: {
+							avatar: {
+								base64,
+								imageFormat,
 							},
 						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add project to user' })
 					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.newStem) {
-					// Update the stems list for the user, add to it if doesn't exist
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$addToSet: {
-								stemIds: body.newStem,
-							},
+				} else if (removeNFT) {
+					options = {
+						pull: {
+							nftIds: removeNFT,
 						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add stem to user' })
 					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.addNFT) {
-					// Update the NFTs list
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$addToSet: {
-								nftIds: body.addNFT,
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
-					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.base64) {
-					// Update the db
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$set: {
-								avatar: {
-									base64: body.base64,
-									imageFormat: body.imageFormat,
-								},
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
-					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.removeNFT) {
-					// Update the NFTs list
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$pull: {
-								nftIds: body.removeNFT,
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
-					}
-					res.status(200).json({ success: true, data: user })
 				} else {
-					user = await User.findOneAndUpdate({ address: id }, body, {
-						new: true,
-						runValidators: true,
-					})
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to update user' })
+					options = {
+						set: bodyToUpdate,
 					}
-					res.status(200).json({ success: true, data: user })
 				}
-			} catch (e) {
-				logger.red(e)
-				res.status(400).json({ success: false, error: e })
+
+				const user: UserDoc = await updateEntityById('user', address, options)
+
+				// Return 200
+				res.status(200).json({ success: true, data: user })
+			} catch (error) {
+				logger.red(error)
+				res.status(400).json({ success: false, error })
 			}
-			break
 
 		case 'DELETE':
 			try {
-				const deletedUser = await User.deleteOne({ _id: id })
-				if (!deletedUser) {
-					return res.status(400).json({ success: false, error: 'failed to delete user' })
-				}
-				res.status(200).json({ success: true, data: deletedUser })
-			} catch (e) {
-				logger.red(e)
-				res.status(400).json({ success: false, error: e })
+				// Delete User from MongoDB and Redis
+				const deletedUser: UserDoc = await deleteEntityById('user', address)
+
+				// Return 200
+				return res.status(200).json({ success: true, data: deletedUser })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })
