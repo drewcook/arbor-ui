@@ -286,9 +286,16 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 						</Grid>
 					</>
 				) : (
-					<Typography sx={styles.error} color="error">
-						Sorry, no details were found for this NFT.
-					</Typography>
+					<Box textAlign="center">
+						<Typography mb={4}>
+							Sorry, there are no details to show for this NFT. The ID being used may exist.
+						</Typography>
+						<Link href="/nfts">
+							<Button variant="contained" color="secondary">
+								Back To Arboretum
+							</Button>
+						</Link>
+					</Box>
 				)}
 				{successOpen && (
 					<Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />
@@ -302,22 +309,25 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 NftDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	// Get NFT details based off ID
+	// Get NFT details from ID
 	let nftId = context.query.id
 	if (typeof nftId === 'object') nftId = nftId[0].toLowerCase()
 	else nftId = nftId?.toLowerCase()
 
-	// Get NFT data from database
-	const res = await get(`/nfts/${nftId}`)
-	const data: any | null = res.success ? res.data : null
+	if (nftId !== '[object Blob]') {
+		const res = await get(`/nfts/${nftId}`)
+		const data: any | null = res.success ? res.data : null
 
-	return {
-		props: {
-			data,
-		},
+		return {
+			props: {
+				data,
+			},
+		}
 	}
+
+	// Fallback, typically if server returns a 404 or 400
+	return { props: { data: null } }
 }
 
 NftDetailsPage.propTypes = propTypes
-
 export default NftDetailsPage

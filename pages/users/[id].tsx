@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import EditIcon from '@mui/icons-material/Edit'
-import { Box, Container, Divider, Grid, IconButton, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Grid, IconButton, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 
@@ -319,9 +320,16 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						</Grid>
 					</>
 				) : (
-					<Typography sx={styles.error} color="error">
-						Sorry, no details were found for this user.
-					</Typography>
+					<Box textAlign="center">
+						<Typography mb={4}>
+							Sorry, there are no details to show for this user. The ID being used may exist.
+						</Typography>
+						<Link href="/">
+							<Button variant="contained" color="secondary">
+								Back To Home
+							</Button>
+						</Link>
+					</Box>
 				)}
 			</Container>
 		</>
@@ -331,15 +339,21 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 UserDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	// Get user object
+	// Get user details from ID
 	const userId = context.query.id
-	const userData = await getFullUserDetails(userId)
 
-	return {
-		props: {
-			data: userData,
-		},
+	if (userId !== '[object Blob]') {
+		const userData = await getFullUserDetails(userId)
+
+		return {
+			props: {
+				data: userData,
+			},
+		}
 	}
+
+	// Fallback, typically if server returns a 404 or 400
+	return { props: { data: null } }
 }
 
 export default UserDetailsPage

@@ -119,11 +119,11 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 							</Typography>
 						</Typography>
 					</Grid>
-					<Grid item xs={2} sx={{ textAlign: 'right' }}>
+					{/* <Grid item xs={2} sx={{ textAlign: 'right' }}>
 						<Button variant="outlined" size="small" sx={styles.forkBtn} disabled>
 							Fork
 						</Button>
-					</Grid>
+					</Grid> */}
 				</Grid>
 			</Box>
 			<Box sx={styles.playback}>

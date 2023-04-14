@@ -252,6 +252,7 @@ export const detailsStyles = {
 		py: 3,
 		px: 2,
 		border: '3px solid #000',
+		borderTop: 'none',
 		borderBottomLeftRadius: '10px',
 		borderBottomRightRadius: '10px',
 	},
