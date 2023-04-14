@@ -197,10 +197,10 @@ export const detailsStyles = {
 			display: 'block',
 			backgroundColor: '#000',
 			width: '3px',
-			height: '60px',
+			height: '64px',
 			position: 'absolute',
-			top: '-60px',
-			left: '43px',
+			top: '-64px',
+			left: '40px',
 		},
 		'.MuiAvatar-root': {
 			cursor: 'pointer',
@@ -269,10 +269,10 @@ export const detailsStyles = {
 			display: 'block',
 			backgroundColor: '#000',
 			width: '3px',
-			height: '35px', // margin top + 2px border
+			height: '36px', // margin top + 2px border
 			position: 'absolute',
-			top: '-35px',
-			left: '43px',
+			top: '-36px',
+			left: '40px',
 		},
 	},
 }

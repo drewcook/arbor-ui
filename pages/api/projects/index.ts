@@ -1,9 +1,11 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { IProject, IProjectDoc, Project } from '../../../models/project.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
+import { update } from '../../../lib/http'
+import logger from '../../../lib/logger'
+import connectMongo from '../../../lib/mongoClient'
+import { createEntity, getAllEntitiesOfType } from '../../../lib/redisClient'
+import { Project, ProjectDoc } from '../../../models'
 
 export type CreateProjectPayload = {
 	createdBy: string
@@ -17,48 +19,58 @@ export type CreateProjectPayload = {
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const { method } = req
-	await dbConnect()
+	const { body, method } = req
+
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':
 			try {
-				/* find all the data in our database */
-				const projects: IProject[] = await Project.find({})
-				res.status(200).json({ success: true, data: projects })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				const projects: ProjectDoc[] = await getAllEntitiesOfType('project')
+				return res.status(200).json({ success: true, data: projects })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
+
 		case 'POST':
 			try {
-				// Create the new project record
-				const { createdBy, collaborators, name, description, bpm, trackLimit, tags, votingGroupId } = req.body
+				// Create the new project record in MongoDB
 				const payload: CreateProjectPayload = {
-					createdBy,
-					collaborators,
-					name,
-					description,
-					bpm,
-					trackLimit,
-					tags,
-					votingGroupId,
+					createdBy: body.createdBy,
+					collaborators: body.collaborators,
+					name: body.name,
+					description: body.description,
+					bpm: body.bpm,
+					trackLimit: body.trackLimit,
+					tags: body.tags,
+					votingGroupId: body.votingGroupId,
 				}
-				const project: IProjectDoc = await Project.create(payload)
+
+				const project: ProjectDoc = await createEntity('project', payload)
 
 				// Add new project to creator's user details
-				const userUpdated = await update(`/users/${req.body.createdBy}`, { newProject: project._id })
+				const userUpdated = await update(`/users/${body.createdBy}`, { newProject: project._id })
 				if (!userUpdated) {
+					logger.red('Failed to update user')
+					await Project.findByIdAndDelete(project.id) // Delete the project record if user update fails
 					return res.status(400).json({ success: false, error: "Failed to update user's projects" })
 				}
 
-				// Return back the new Project record
-				res.status(201).json({ success: true, data: project })
-			} catch (e: any) {
-				console.error(e.message)
-				res.status(400).json({ success: false, error: e })
+				// Return 201 with new project data
+				return res.status(201).json({
+					success: true,
+					data: {
+						...project,
+						votingGroupId: payload.votingGroupId, // Include the votingGroupId in the response data
+					},
+				})
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
+
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' not supported` })
 			break

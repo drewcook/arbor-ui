@@ -1,8 +1,8 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import connectMongo from '../../../../lib/mongoClient'
 import { IProject, Project } from '../../../../models/project.model'
-import dbConnect from '../../../../utils/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -10,7 +10,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
-	await dbConnect()
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
 		case 'GET' /* Get a model by its ID */:

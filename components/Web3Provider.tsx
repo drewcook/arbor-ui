@@ -6,9 +6,10 @@ import { createContext, useContext, useState } from 'react'
 
 import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
-import type { IUserDoc } from '../models/user.model'
-import { get, post } from '../utils/http'
-import NFTStorageClient from '../utils/NFTStorageClient'
+import { get, post } from '../lib/http'
+import logger from '../lib/logger'
+import NFTStorageClient from '../lib/NFTStorageClient'
+import type { UserDoc } from '../models'
 
 // Context types
 // NOTE: We have to use 'any' because I believe the Partial<Web3ContextProps> makes them possibly undefined
@@ -18,7 +19,7 @@ type Web3ContextProps = {
 	connected: boolean
 	handleConnectWallet: any
 	handleDisconnectWallet: any
-	currentUser: IUserDoc | null
+	currentUser: UserDoc | null
 	updateCurrentUser: any
 }
 
@@ -39,7 +40,7 @@ const Web3Context = createContext<Web3ContextProps>({})
 export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	const [NFTStore, setNFTStore] = useState<NFTStorage | null>(null)
 	const [connected, setConnected] = useState<boolean>(false)
-	const [currentUser, setCurrentUser] = useState<IUserDoc | null>(null)
+	const [currentUser, setCurrentUser] = useState<UserDoc | null>(null)
 	const [contracts, setContracts] = useState<PolyechoContracts>({ nft: {} as Contract, stemQueue: {} as Contract })
 
 	const checkForSupportedNetwork = async (provider: any) => {
@@ -81,10 +82,10 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 							],
 						})
 					} catch (addError) {
-						console.error(addError)
+						logger.red(addError)
 					}
 				}
-				console.error(error)
+				logger.red(error)
 			}
 		} else {
 			console.info(`Network ID ${chainId} is supported`)
@@ -138,7 +139,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			return { connectedAccount: signerAddress }
 		} catch (e: any) {
 			// Catch any errors for any of the above operations.
-			console.error(e.message)
+			logger.red(e.message)
 			// Disconnect and clean up for fail safe
 			handleDisconnectWallet()
 			return { connectedAccount: null }
@@ -156,7 +157,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				console.info('Connected to NFT.storage')
 			}
 		} catch (err) {
-			console.error('Failed to connect to NFT.storage', err)
+			logger.red(`Failed to connect to NFT.storage - ${err}`)
 		}
 	}
 
@@ -168,7 +169,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			const { connectedAccount } = await loadWeb3()
 			if (connectedAccount) await findOrCreateUser(connectedAccount)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -190,7 +191,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				setCurrentUser(createRes.data)
 			}
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -205,14 +206,14 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 			console.info('Successfully disconnected wallet')
 			window.location.reload()
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
 	/**
 	 * Utility handler for updating the global state of the current user so that UI's can respond
 	 */
-	const updateCurrentUser = (newUserData: IUserDoc) => {
+	const updateCurrentUser = (newUserData: UserDoc) => {
 		setCurrentUser(newUserData)
 	}
 

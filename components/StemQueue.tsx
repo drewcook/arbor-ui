@@ -5,16 +5,18 @@ import { utils } from 'ethers'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 
-import type { IProjectDoc } from '../../models/project.model'
-import { IStemDoc } from '../../models/stem.model'
-import { IUserIdentity } from '../../models/user.model'
-import { update } from '../../utils/http'
-import signMessage from '../../utils/signMessage'
-import StemUploadDialog from '../StemUploadDialog'
-import { useWeb3 } from '../Web3Provider'
+import { update } from '../lib/http'
+import logger from '../lib/logger'
+import type { ProjectDoc } from '../models'
+import { StemDoc } from '../models'
+import { IUserIdentity } from '../models/user.model'
+import signMessage from '../utils/signMessage'
 import styles from './StemQueue.styles'
+import StemUploadDialog from './StemUploadDialog'
+import { useWeb3 } from './Web3Provider'
 
-const StemPlayer = dynamic(() => import('../StemPlayer'), { ssr: false })
+const StemPlayer = dynamic(() => import('./StemPlayer'), { ssr: false })
+
 const generateMerkleProof = require('@zk-kit/protocols').generateMerkleProof
 const Semaphore = require('@zk-kit/protocols').Semaphore
 
@@ -22,16 +24,16 @@ const IDENTITY_MSG =
 	"Sign this message to register for this Arbor project's anonymous voting group. You are signing to create your anonymous identity with Semaphore."
 
 type StemQueueProps = {
-	details: IProjectDoc
+	details: ProjectDoc
 	userIsCollaborator: boolean
 	userIsRegisteredVoter: boolean
 	uploadStemOpen: boolean
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
-	onStemUploadSuccess: (project: IProjectDoc) => void
-	onRegisterSuccess: (project: IProjectDoc) => void
-	onVoteSuccess: (project: IProjectDoc, stemName: string) => void
-	onApprovedSuccess: (project: IProjectDoc, stemName: string) => void
+	onStemUploadSuccess: (project: ProjectDoc) => void
+	onRegisterSuccess: (project: ProjectDoc) => void
+	onVoteSuccess: (project: ProjectDoc, stemName: string) => void
+	onApprovedSuccess: (project: ProjectDoc, stemName: string) => void
 	onFailure: (msg: string) => void
 }
 
@@ -173,7 +175,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 		setRegisterLoading(false)
 	}
 
-	const handleVote = async (stem: IStemDoc, idx: number) => {
+	const handleVote = async (stem: StemDoc, idx: number) => {
 		try {
 			// Preliminary requirement to be connected
 			if (!currentUser) return
@@ -285,7 +287,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 				onFailure('Uh oh! Failed to cast the vote.')
 			}
 
-			console.error(e)
+			logger.red(e)
 		}
 
 		setVoteIsLoading(idx, false)
@@ -295,22 +297,22 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 	 * This allows a collaborator to approve a stem that has at least one vote onto the project
 	 * The stem will move from the queue to the list of project stems
 	 * The user who uploaded the stem will become a collaborator
-	 * @param {IStemDoc} stem - The stem to be added onto the project
+	 * @param {StemDoc} stem - The stem to be added onto the project
 	 */
-	const handleApprove = async (stem: IStemDoc) => {
+	const handleApprove = async (stem: StemDoc) => {
 		try {
 			// User must be a collaborator
 			if (!userIsCollaborator) return
 
 			// Stem must be in the queue
 			if (details.queue.filter(q => q.stem._id === stem._id).length === 0) {
-				console.error("The stem must be in the project's stem queue")
+				logger.red("The stem must be in the project's stem queue")
 				return
 			}
 
 			// Stem must have at least one vote
 			if (details.queue.filter(q => q.stem._id === stem._id)[0].votes === 0) {
-				console.error('The stem must have at least one vote')
+				logger.red('The stem must have at least one vote')
 				return
 			}
 
@@ -334,7 +336,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 			onApprovedSuccess(projectRes.data, stem.name)
 		} catch (e: any) {
 			onFailure('Uh oh! Failed to approve the stem onto the project')
-			console.error(e)
+			logger.red(e)
 		}
 		setApproveLoading(false)
 	}
@@ -393,7 +395,7 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						>
 							{voteIsLoading(idx) ? (
 								<>
-									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {'  Vote Pending'}
+									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {' Vote Pending'}
 								</>
 							) : (
 								'Cast Vote'

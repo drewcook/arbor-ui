@@ -14,12 +14,13 @@ import NFTCard from '../../components/NFTCard'
 import ProjectCard from '../../components/ProjectCard'
 import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
-import type { IProjectDoc } from '../../models/project.model'
+import { get } from '../../lib/http'
+import logger from '../../lib/logger'
+import { ProjectDoc } from '../../models'
 import type { IUserFull } from '../../models/user.model'
 import styles from '../../styles/UserProfile.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
-import { get } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.shape({
@@ -86,31 +87,31 @@ const getFullUserDetails = async (userAddress: any): Promise<IUserFull | null> =
 		for (const nftId of userData.nftIds) {
 			const nftRes = await get(`/nfts/${nftId}`)
 			if (nftRes.success) fullUser.nfts.push(nftRes.data)
-			else console.error(`Failed to find user NFT of ID - ${nftId}`)
+			else logger.red(`Failed to find user NFT of ID - ${nftId}`)
 		}
 
 		// Get user's projects' creations
 		for (const projectId of userData.projectIds) {
 			const projectRes = await get(`/projects/${projectId}`)
 			if (projectRes.success) fullUser.projects.push(projectRes.data)
-			else console.error(`Failed to find user project of ID - ${projectId}`)
+			else logger.red(`Failed to find user project of ID - ${projectId}`)
 		}
 
 		// Get user's project collaborations
 		const userCollaborationsRes = await get(`/users/collaborator/${userAddress}`)
 		if (userCollaborationsRes.success) fullUser.projectCollaborations = userCollaborationsRes.data
-		else console.warn('Failed to find user project collaborations')
+		else logger.red('Failed to find user project collaborations')
 
 		// Get user's stems' details
 		for (const stemId of userData.stemIds) {
 			const stemRes = await get(`/stems/${stemId}`)
 			if (stemRes.success) fullUser.stems.push(stemRes.data)
-			else console.error(`Failed to find user stem of ID - ${stemId}`)
+			else logger.red(`Failed to find user stem of ID - ${stemId}`)
 		}
 
 		return fullUser
 	} catch (e: any) {
-		console.error(e.message)
+		logger.red(e.message)
 		return null
 	}
 }
@@ -263,7 +264,7 @@ const UserDetailsPage: NextPage<UserDetailsPageProps> = props => {
 						<Typography sx={styles.sectionMeta}>Projects this user has created</Typography>
 						<Grid container spacing={4}>
 							{details.projects.length > 0 ? (
-								details.projects.map((project: IProjectDoc) => (
+								details.projects.map((project: ProjectDoc) => (
 									<Grid item sm={6} md={4} key={project._id}>
 										<ProjectCard details={project} />
 									</Grid>
