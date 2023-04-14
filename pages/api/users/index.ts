@@ -1,8 +1,10 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { IUser, User } from '../../../models/user.model'
-import dbConnect from '../../../utils/db'
+import logger from '../../../lib/logger'
+import connectMongo from '../../../lib/mongoClient'
+import { createEntity, getAllEntitiesOfType } from '../../../lib/redisClient'
+import { UserDoc } from '../../../models'
 
 type Avatar = {
 	base64: string
@@ -20,21 +22,23 @@ export type CreateUserPayload = {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method } = req
-	await dbConnect()
+
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':
 			try {
-				/* find all the data in our database */
-				const users: IUser[] = await User.find({})
-				res.status(200).json({ success: true, data: users })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				const users: UserDoc[] = await getAllEntitiesOfType('user')
+				return res.status(200).json({ success: true, data: users })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
+
 		case 'POST':
 			try {
-				const accountAddress = req.body.address.toLowerCase()
+				const accountAddress: string = req.body.address.toLowerCase()
 				// Genearate a Robohash.org avatar - https://robohash.org
 				const baseURL = 'https://robohash.org/'
 				let avatarUrl = baseURL
@@ -42,6 +46,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				avatarUrl += '?set=set1' // Use Robots type
 				avatarUrl += '&bgset=bg1' // Add random background
 				avatarUrl += '&size=300x300' // Make 300x300 size
+
+				// Create a new User entity
 				const payload: CreateUserPayload = {
 					address: accountAddress,
 					displayName: accountAddress,
@@ -50,15 +56,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					stemIds: [],
 					nftIds: [],
 				}
-
-				/* create a new model in the database */
-				const user: IUser = await User.create(payload)
-
-				res.status(201).json({ success: true, data: user })
-			} catch (e: any) {
-				res.status(400).json({ success: false, error: e.message })
+				const user: UserDoc = await createEntity('user', payload)
+				// Return a 201 with the User data
+				return res.status(201).json({ success: true, data: user })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
+
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' not supported` })
 			break

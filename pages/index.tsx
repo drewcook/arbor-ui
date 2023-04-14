@@ -6,8 +6,8 @@ import Link from 'next/link'
 
 import Faq from '../components/Faq'
 import RecentProjectActivity from '../components/RecentProjectActivity'
+import { get } from '../lib/http'
 import styles from '../styles/Home.styles'
-import { get } from '../utils/http'
 
 type Project = {
 	_id: string

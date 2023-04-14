@@ -23,11 +23,15 @@ const nextConfig = {
 		PYTHON_HTTP_HOST: process.env.PYTHON_HTTP_HOST,
 		ALCHEMY_POLYGON_KEY: process.env.ALCHEMY_POLYGON_KEY,
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
+		NEW_RELIC_LICENSE_KEY: process.env.NEW_RELIC_LICENSE_KEY,
 		SENTRY_DSN: process.env.SENTRY_DSN,
 		SENTRY_PROJECT_NAME: process.env.SENTRY_PROJECT_NAME,
 		SENTRY_LOG_LEVEL: process.env.SENTRY_LOG_LEVEL,
 		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
+		REDIS_HOST: process.env.REDIS_HOST,
+		REDIS_USER: process.env.REDIS_USER,
+		REDIS_AUTH: process.env.REDIS_AUTH,
 	},
 	images: {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -36,7 +40,7 @@ const nextConfig = {
 			'ipfs.io', // Anything from IPFS directly
 			'dweb.link', // Anything from NFT.storage
 			'nft.storage',
-			'bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link', // Default PE Logo NFT Placeholder Image
+			'bafkreia7jo3bjr2mirr5h2okf5cjsgg6zkz7znhdboyikchoe6btqyy32u.ipfs.dweb.link', // Default Logo NFT Placeholder Image
 			'robohash.org', // User avatars
 			'gravatar.com',
 		],
@@ -63,9 +67,6 @@ const nextConfig = {
 		]
 	},
 	reactStrictMode: true,
-	sentry: {
-		hideSourceMaps: process.env.NODE_ENV === 'production',
-	},
 	webpack: (config, options) => {
 		if (!options.isServer) {
 			config.resolve.fallback.fs = false
@@ -90,10 +91,11 @@ const nextConfig = {
  * 	- release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
  */
 const sentryWebpackPluginOptions = {
+	authToken: process.env.SENTRY_AUTH_TOKEN,
 	org: 'arbor-labs',
 	project: process.env.SENTRY_PROJECT_NAME,
 	silent: process.env.NODE_ENV === 'production',
-	authToken: process.env.SENTRY_AUTH_TOKEN,
+	hideSourceMaps: process.env.NODE_ENV === 'production',
 }
 
 /**

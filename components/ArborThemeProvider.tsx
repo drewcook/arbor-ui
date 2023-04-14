@@ -56,7 +56,7 @@ const arborTheme = createTheme({
 		),
 	},
 	palette: {
-		mode: 'dark',
+		mode: 'light',
 		// Colors
 		primary: {
 			main: '#1B2021',
