@@ -6,19 +6,22 @@ const styles = {
 		position: 'absolute',
 		top: '1.5rem',
 		right: '-1rem',
-		backgroundColor: '#ff5200',
+		backgroundColor: '#FC898F',
 		py: 2.5,
-		color: '#fff',
+		color: '#0C0101',
 		zIndex: 1,
 	},
 	card: {
 		minWidth: '200px',
 		position: 'relative',
 		overflow: 'visible',
+		border: '2px solid #000',
+		borderRadius: 2,
 	},
 	img: {
 		borderTopLeftRadius: 4,
 		borderTopRightRadius: 4,
+		borderBottom: '2px solid #000',
 	},
 	projectIconLink: {
 		ml: 1,
@@ -30,7 +33,7 @@ const styles = {
 	},
 	detailItem: {
 		textTransform: 'uppercase',
-		color: '#a8a8a8',
+		color: '#3C3839',
 		fontWeight: 600,
 		mb: 1,
 	},
@@ -51,7 +54,7 @@ const styles = {
 		alignItems: 'center',
 	},
 	eth: {
-		color: '#aaa',
+		color: '#B9BDCB',
 		fontSize: '1rem',
 	},
 }

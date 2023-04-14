@@ -1,10 +1,11 @@
-import mongoose, { Document } from 'mongoose'
-import type { IStemDoc } from './stem.model'
+import mongoose from 'mongoose'
+
+import { ProjectDoc, StemDoc } from '.'
 import { stemSchema } from './stem.model'
 import { IUserIdentity } from './user.model'
 
 export interface IQueuedStem {
-	stem: IStemDoc
+	stem: StemDoc
 	votes: number
 }
 
@@ -16,15 +17,13 @@ export interface IProject {
 	bpm: number
 	trackLimit: number
 	tags: string[]
-	stems: IStemDoc[]
+	stems: StemDoc[]
 	queue: IQueuedStem[]
 	votingGroupId: number
 	voterIdentities: IUserIdentity[] // Should all pertain to this votingGroupId
 }
 
-export interface IProjectDoc extends Document, IProject {}
-
-export const projectSchema = new mongoose.Schema<IProjectDoc>(
+export const projectSchema = new mongoose.Schema<ProjectDoc>(
 	{
 		createdBy: {
 			type: String,
@@ -92,4 +91,4 @@ export const projectSchema = new mongoose.Schema<IProjectDoc>(
 // Require that projects have unique names
 projectSchema.index({ name: 1 }, { unique: true })
 
-export const Project = mongoose.models.project || mongoose.model<IProjectDoc>('project', projectSchema)
+export const Project = mongoose.models.project || mongoose.model<ProjectDoc>('project', projectSchema)

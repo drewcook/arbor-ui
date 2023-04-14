@@ -2,6 +2,8 @@ import { withSentry } from '@sentry/nextjs'
 import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import logger from '../../lib/logger'
+
 const pythonServer = axios.create({ baseURL: process.env.PYTHON_HTTP_HOST })
 
 /**
@@ -18,8 +20,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		try {
 			const response = await pythonServer.post('/merge', body)
 			return res.status(200).json(response.data) // { success: true, cid: '...' }
-		} catch (e: any) {
-			console.error(e)
+		} catch (e) {
+			logger.red(e)
 			return { success: false, error: e }
 		}
 	}

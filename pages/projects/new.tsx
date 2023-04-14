@@ -7,8 +7,9 @@ import { useState } from 'react'
 import Notification from '../../components/Notification'
 import TagsInput from '../../components/TagsInput'
 import { useWeb3 } from '../../components/Web3Provider'
+import { post } from '../../lib/http'
+import logger from '../../lib/logger'
 import { newProjectStyles as styles } from '../../styles/Projects.styles'
-import { post } from '../../utils/http'
 import type { CreateProjectPayload } from '../api/projects'
 
 const NewProjectPage: NextPage = () => {
@@ -61,22 +62,6 @@ const NewProjectPage: NextPage = () => {
 			setLoading(true)
 
 			/*
-				Increment the global voting group counter, and use this as the ID for the new Semaphore group
-				- Call PUT /api/voting-groups to increment the value
-				- Get the returned data, inspect the new totalGroupCount value
-				- Use this as the new groupId for the on-chain group
-					- This will need to be done on the client-side, so we'll get this from the response
-				- Use this as the groupId value for the new project record as well
-				- TODO: revert this, or decrement if any of the following requests fail
-			*/
-			/*
-
-				const votingGroupRes = await update('/voting-groups')
-				if (!votingGroupRes.success) throw new Error('Failed to increment voting group count')
-				const votingGroupId = votingGroupRes.data.totalGroupCount
-			*/
-
-			/*
 				Create new Semaphore group for given project
 				- Create new group with project creator as group admin
 				- Do not add in the project creator as a voting member (yet)
@@ -115,7 +100,7 @@ const NewProjectPage: NextPage = () => {
 			setLoading(false)
 		} catch (e: any) {
 			setLoading(false)
-			console.error('Project creation failed', e.message)
+			logger.red(`Project creation failed - ${e.message}`)
 		}
 	}
 

@@ -35,7 +35,7 @@ const AppHeader = (): JSX.Element => {
 					<Link href="/" passHref>
 						<Box sx={styles.logoDesktop}>
 							<ImageOptimized src="/arbor_logo_text_wave_black.svg" width={180} height={60} />
-							<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
+							<Chip label="Alpha" size="small" sx={styles.alphaChip} />
 						</Box>
 					</Link>
 
@@ -79,7 +79,7 @@ const AppHeader = (): JSX.Element => {
 						<Link href="/" passHref>
 							<Box sx={styles.logoMobile}>
 								<ImageOptimized src="/arbor_logo_text_wave_black.svg" width={180} height={60} />
-								<Chip label="Alpha" size="small" color="secondary" sx={styles.alphaChip} />
+								<Chip label="Alpha" size="small" sx={styles.alphaChip} />
 							</Box>
 						</Link>
 					</Box>

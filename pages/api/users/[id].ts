@@ -1,9 +1,10 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import type { IUser } from '../../../models/user.model'
-import { User } from '../../../models/user.model'
-import dbConnect from '../../../utils/db'
+import logger from '../../../lib/logger'
+import connectMongo from '../../../lib/mongoClient'
+import { deleteEntityById, getEntityById, updateEntityById, UpdateEntityOptions } from '../../../lib/redisClient'
+import { UserDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -12,153 +13,89 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
-	await dbConnect()
+	// Normalize the ID, which should be an address
+	const address = String(id).toLowerCase()
+
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':
 			try {
-				// We will always be getting users by their address, not their MongoDB _id.
-				const user: IUser | null = await User.findOne({ address: id })
+				// Get the cached entity or fetch it from MongoDB
+				const user: UserDoc | null = await getEntityById('user', address)
 
-				if (!user) {
-					return res.status(404).json({ success: false })
-				}
-
-				res.status(200).json({ success: true, data: user })
+				// Return 200
+				return res.status(200).json({ success: true, data: user })
 			} catch (error) {
-				console.error(error)
-				res.status(400).json({ success: false })
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		case 'PUT':
 			try {
-				let user
-				if (body.newProject) {
-					// Update the Projects list
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$addToSet: {
-								projectIds: body.newProject,
+				// Update User in MongoDB and Redis cache
+				const { newProject, newStem, addNFT, base64, imageFormat, removeNFT, ...bodyToUpdate } = body
+				let options: UpdateEntityOptions = {}
+				if (newProject) {
+					options = {
+						addToSet: {
+							projectIds: newProject,
+						},
+					}
+				} else if (newStem) {
+					options = {
+						addToSet: {
+							stemIds: newStem,
+						},
+					}
+				} else if (addNFT) {
+					options = {
+						addToSet: {
+							nftIds: addNFT,
+						},
+					}
+				} else if (base64) {
+					options = {
+						set: {
+							avatar: {
+								base64,
+								imageFormat,
 							},
 						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add project to user' })
 					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.newStem) {
-					// Update the stems list for the user, add to it if doesn't exist
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$addToSet: {
-								stemIds: body.newStem,
-							},
+				} else if (removeNFT) {
+					options = {
+						pull: {
+							nftIds: removeNFT,
 						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add stem to user' })
 					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.addNFT) {
-					// Update the NFTs list
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$addToSet: {
-								nftIds: body.addNFT,
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
-					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.base64) {
-					// Update the db
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$set: {
-								avatar: {
-									base64: body.base64,
-									imageFormat: body.imageFormat,
-								},
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
-					}
-					res.status(200).json({ success: true, data: user })
-				} else if (body.removeNFT) {
-					// Update the NFTs list
-					user = await User.findOneAndUpdate(
-						{ address: id },
-						{
-							$pull: {
-								nftIds: body.removeNFT,
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to add NFT to user' })
-					}
-					res.status(200).json({ success: true, data: user })
 				} else {
-					user = await User.findOneAndUpdate({ address: id }, body, {
-						new: true,
-						runValidators: true,
-					})
-					// Returns
-					if (!user) {
-						return res.status(400).json({ success: false, error: 'failed to update user' })
+					options = {
+						set: bodyToUpdate,
 					}
-					res.status(200).json({ success: true, data: user })
 				}
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+
+				const user: UserDoc = await updateEntityById('user', address, options)
+
+				// Return 200
+				res.status(200).json({ success: true, data: user })
+			} catch (error) {
+				logger.red(error)
+				res.status(400).json({ success: false, error })
 			}
-			break
 
 		case 'DELETE':
 			try {
-				const deletedUser = await User.deleteOne({ _id: id })
-				if (!deletedUser) {
-					return res.status(400).json({ success: false, error: 'failed to delete user' })
-				}
-				res.status(200).json({ success: true, data: deletedUser })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				// Delete User from MongoDB and Redis
+				const deletedUser: UserDoc = await deleteEntityById('user', address)
+
+				// Return 200
+				return res.status(200).json({ success: true, data: deletedUser })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })

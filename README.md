@@ -36,7 +36,7 @@ The workflow for the zkSNARK use with Semaphore groups within the dApp are as fo
 
 1. A user creates a new project.  A new Semaphore group is created on chain and tied to a unique identifier for the project.
 2. A user uploads a stem onto a project.  The stem is put into the Stem Queue.
-3. With stems availabe in the queue, a user can register to be a voter for this project.  A message is signed and an identity commitment is created from the signature.  The commitment is then submitted to the on-chain group and stored in the Merkle tree for the given group that is tied to the given Project.
+3. With stems available in the queue, a user can register to be a voter for this project.  A message is signed and an identity commitment is created from the signature.  The commitment is then submitted to the on-chain group and stored in the Merkle tree for the given group that is tied to the given Project.
 4. Only registered users can cast votes on available stems within the Stem Queue.  When a user votes on a stem, the signal is the stem's unique identifier stored in MongoDB.  A Merkle proof is generated from the voter's identity along with all the other identities stored from other users within the voting group. A witness is generated from this proof and used to create a full proof with the WASM and verification key SNARK-based files initially created from the trusted setup. This full proof is then submitted along with the signal to the StemQueue.sol contract.  The contract function then verifies the proof.  If all is okay, the function will succeed and the vote is stored on-chain, anonymously.
 5. With stems having at least one vote, a collaborator of the Project can then approve the stem to be added on for the next slot.  This will remove the stem from the Stem Queue.
 6. The user who uploaded the approved stem will now become a collaborator on the Project and will gain approval permissions.
@@ -109,7 +109,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Setting Up A Local Database (MongoDB)
 
-This client application is using the built-in Next.js API routes that read and write to a local Mongo database. Here are our recommended steps for getting up and running with a local MongoDB environemnt:
+This client application is using the built-in Next.js API routes that read and write to a local Mongo database. Here are our recommended steps for getting up and running with a local MongoDB environment:
 
 ### 1. Install a MongoDB Host
 

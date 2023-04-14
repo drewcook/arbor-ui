@@ -27,29 +27,29 @@ import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
 import web3 from 'web3'
 
-import ImageOptimized from '../../components/ImageOptimized'
-import Notification from '../../components/Notification'
-import StemUploadDialog from '../../components/StemUploadDialog'
-import { useWeb3 } from '../../components/Web3Provider'
-import { NETWORK_CURRENCY } from '../../constants/networks'
-import logoBinary from '../../lib/logoBinary'
-import type { INft } from '../../models/nft.model'
-import type { IProjectDoc } from '../../models/project.model'
-import type { IStemDoc } from '../../models/stem.model'
-import OneIcon from '../../public/harmony_icon.svg'
-import { detailsStyles as styles } from '../../styles/Projects.styles'
-import formatAddress from '../../utils/formatAddress'
-import { post } from '../../utils/http'
+import { NETWORK_CURRENCY } from '../constants/networks'
+import { post } from '../lib/http'
+import logger from '../lib/logger'
+import logoBinary from '../lib/logoBinary'
+import type { ProjectDoc, StemDoc } from '../models'
+import type { INft } from '../models/nft.model'
+import OneIcon from '../public/harmony_icon.svg'
+import { detailsStyles as styles } from '../styles/Projects.styles'
+import formatAddress from '../utils/formatAddress'
+import ImageOptimized from './ImageOptimized'
+import Notification from './Notification'
+import StemUploadDialog from './StemUploadDialog'
+import { useWeb3 } from './Web3Provider'
 
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
-const StemPlayer = dynamic(() => import('../../components/StemPlayer'), { ssr: false })
+const StemPlayer = dynamic(() => import('./StemPlayer'), { ssr: false })
 
 type ProjectDetailsProps = {
-	details: IProjectDoc
+	details: ProjectDoc
 	uploadStemOpen: boolean
 	handleUploadStemOpen: () => void
 	handleUploadStemClose: () => void
-	onStemUploadSuccess: (project: IProjectDoc) => void
+	onStemUploadSuccess: (project: ProjectDoc) => void
 }
 
 const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
@@ -171,7 +171,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 		try {
 			setDownloading(true)
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
-			const stemData = details.stems.map((stem: IStemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
+			const stemData = details.stems.map((stem: StemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
 			const zip = new JSZip()
 			while (stemData.length != files.size) {
 				await new Promise(r => setTimeout(r, 500))
@@ -184,14 +184,14 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 			if (!downloading) setDownloading(true)
 			setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 			// After the stems zip is downloaded, prompt the user to chose a save file location
-			saveAs(content, `PEStems_${details.name}_${Date.now()}.zip`)
+			saveAs(content, `ArborStems_${details.name}_${Date.now()}.zip`)
 			setDownloading(false)
 			setDownloadingMsg('')
 			setSuccessOpen(true)
 			// TODO: Await until they confirm the selection from the saveAs window
 			setSuccessMsg(`Stem(s) downloaded succussfully`)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 			setErrorOpen(true)
 			setErrorMsg('Failed to download all stems')
 		}
@@ -301,7 +301,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				router.push(`/users/${currentUser.address}`)
 			}
 		} catch (e: any) {
-			console.error(e)
+			logger.red(e)
 			// Notify error
 			setMintingOpen(false)
 			setMintingMsg('')
@@ -403,6 +403,39 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				<Typography variant="h4" component="h3" sx={styles.stemsTitle}>
 					Song Stems
 				</Typography>
+				<Box sx={styles.playSection}>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handlePlayPauseStems}
+						disableRipple
+						disableFocusRipple
+						title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
+					>
+						{isPlayingAll ? (
+							<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
+						) : (
+							<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
+						)}
+					</IconButton>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handleStop}
+						disableRipple
+						disableFocusRipple
+						title="Stop playback"
+					>
+						<Square />
+					</IconButton>
+					<IconButton
+						sx={styles.playStopBtn}
+						onClick={handleSkipPrev}
+						disableRipple
+						disableFocusRipple
+						title="Skip to beginning"
+					>
+						<SkipPrevious />
+					</IconButton>
+				</Box>
 				<Box sx={styles.stemsMeta}>
 					<Typography>
 						{details.stems.length} Stem{details.stems.length === 1 ? '' : 's'} from {details.collaborators.length}{' '}
@@ -432,58 +465,22 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				</Box>
 			</Box>
 			{details.stems.length > 0 ? (
-				<>
-					<Box sx={styles.playSection}>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handlePlayPauseStems}
-							disableRipple
-							disableFocusRipple
-							title={isPlayingAll ? 'Pause playback' : 'Play all stems simultaneously'}
-						>
-							{isPlayingAll ? (
-								<PauseRounded sx={{ width: '2rem', height: '2rem' }} />
-							) : (
-								<PlayArrowRounded sx={{ width: '2rem', height: '2rem' }} />
-							)}
-						</IconButton>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handleStop}
-							disableRipple
-							disableFocusRipple
-							title="Stop playback"
-						>
-							<Square />
-						</IconButton>
-						<IconButton
-							sx={styles.playStopBtn}
-							onClick={handleSkipPrev}
-							disableRipple
-							disableFocusRipple
-							title="Skip to beginning"
-						>
-							<SkipPrevious />
-						</IconButton>
-						<Box sx={styles.playTracker} />
-					</Box>
-					{details.stems.map((stem, idx) => (
-						<Fragment key={idx}>
-							<StemPlayer
-								idx={idx + 1}
-								details={stem}
-								onWavesInit={onWavesInit}
-								onFinish={() => setIsPlayingAll(false)}
-								onNewFile={onNewFile}
-								onPlay={handlePlay}
-								onSolo={handleSolo}
-								onMute={handleMute}
-								onStop={onStop}
-								handleUnmuteAll={handleUnmuteAll}
-							/>
-						</Fragment>
-					))}
-				</>
+				details.stems.map((stem, idx) => (
+					<Fragment key={idx}>
+						<StemPlayer
+							idx={idx + 1}
+							details={stem}
+							onWavesInit={onWavesInit}
+							onFinish={() => setIsPlayingAll(false)}
+							onNewFile={onNewFile}
+							onPlay={handlePlay}
+							onSolo={handleSolo}
+							onMute={handleMute}
+							onStop={onStop}
+							handleUnmuteAll={handleUnmuteAll}
+						/>
+					</Fragment>
+				))
 			) : (
 				<Typography sx={styles.noStemsMsg}>No stems to show, upload one!</Typography>
 			)}
