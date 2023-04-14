@@ -395,7 +395,9 @@ const StemQueue = (props: StemQueueProps): JSX.Element => {
 						>
 							{voteIsLoading(idx) ? (
 								<>
-									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" /> {' Vote Pending'}
+									<CircularProgress size={20} sx={styles.loadingIcon} color="inherit" />
+									&nbsp;&nbsp;
+									{'Vote Pending'}
 								</>
 							) : (
 								'Cast Vote'

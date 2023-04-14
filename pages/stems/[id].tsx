@@ -1,5 +1,5 @@
 import { /*Loop,*/ PauseRounded, PlayArrowRounded } from '@mui/icons-material'
-import { Box, Container, Divider, Fab, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Fab, Typography } from '@mui/material'
 import type { GetServerSideProps, NextPage } from 'next'
 // Because our stem player uses Web APIs for audio, we must ignore it for SSR to avoid errors
 import dynamic from 'next/dynamic'
@@ -146,9 +146,16 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 						onStop={handleStop}
 					/>
 				) : (
-					<Typography sx={styles.error} color="error">
-						Sorry, no details were found for this stem.
-					</Typography>
+					<Box textAlign="center">
+						<Typography mb={4}>
+							Sorry, there are no details to show for this stem. The ID being used may exist.
+						</Typography>
+						<Link href="/stems">
+							<Button variant="contained" color="secondary">
+								Back To Stems
+							</Button>
+						</Link>
+					</Box>
 				)}
 			</Container>
 		</>
@@ -156,14 +163,21 @@ const StemDetailsPage: NextPage<StemDetailsPageProps> = props => {
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
+	// Get stem details from ID
 	const stemId = context.query.id
-	const res = await get(`/stems/${stemId}`)
-	const data: StemDoc | null = res.success ? res.data : null
-	return {
-		props: {
-			data,
-		},
+
+	if (stemId !== '[object Blob]') {
+		const res = await get(`/stems/${stemId}`)
+		const data: StemDoc | null = res.success ? res.data : null
+		return {
+			props: {
+				data,
+			},
+		}
 	}
+
+	// Fallback, typically if server returns a 404 or 400
+	return { props: { data: null } }
 }
 
 export default StemDetailsPage

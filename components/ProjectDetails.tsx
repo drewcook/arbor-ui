@@ -184,7 +184,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 			if (!downloading) setDownloading(true)
 			setDownloadingMsg('Stems downloaded and compressed, please select a location to save them')
 			// After the stems zip is downloaded, prompt the user to chose a save file location
-			saveAs(content, `PEStems_${details.name}_${Date.now()}.zip`)
+			saveAs(content, `ArborStems_${details.name}_${Date.now()}.zip`)
 			setDownloading(false)
 			setDownloadingMsg('')
 			setSuccessOpen(true)
