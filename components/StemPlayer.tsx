@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
 
-import type { IStemDoc } from '../models/stem.model'
+import { StemDoc } from '../models'
 import formatAddress from '../utils/formatAddress'
 import formatStemName from '../utils/formatStemName'
 import { stemTypesToColor } from './ArborThemeProvider'
@@ -13,7 +13,7 @@ import styles from './StemPlayer.styles'
 // We have to pass back up callbacks because we use global controls outside of this player's track
 type StemPlayerProps = {
 	idx: number
-	details: IStemDoc | any
+	details: StemDoc | any
 	onWavesInit: (idx: number, ws: any) => any
 	onFinish?: (idx: number, ws: any) => any
 	isStemDetails?: boolean
@@ -43,11 +43,26 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		onNewFile,
 		handleUnmuteAll,
 	} = props
+
 	const [isMuted, setIsMuted] = useState<boolean>(false)
 	const [isSoloed, setIsSoloed] = useState<boolean>(false)
 	const [blob, setBlob] = useState<Blob>()
 	const [loadingBlob, setLoadingBlob] = useState<boolean>(false)
+
 	useEffect(() => {
+		const ws = WaveSurfer.create({
+			container: `#waveform-${details._id}-${idx}`,
+			waveColor: '#bbb',
+			progressColor: '#444',
+			cursorColor: '#656565',
+			barWidth: 3,
+			barRadius: 3,
+			cursorWidth: 1,
+			height: 80,
+			barGap: 2,
+		})
+
+		// Load audio from an XHR request,
 		if (!blob) {
 			if (!loadingBlob) {
 				setLoadingBlob(true)
@@ -60,21 +75,7 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 				setLoadingBlob(false)
 			}
 		} else {
-			const ws = WaveSurfer.create({
-				container: `#waveform-${details._id}-${idx}`,
-				waveColor: '#bbb',
-				progressColor: '#444',
-				cursorColor: '#656565',
-				barWidth: 3,
-				barRadius: 3,
-				cursorWidth: 1,
-				height: 80,
-				barGap: 2,
-			})
-
-			// Load audio from an XHR request
 			ws.loadBlob(blob)
-
 			// Skip back to zero when finished playing
 			ws.on('finish', () => {
 				ws.seekTo(0)
@@ -118,11 +119,11 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 							</Typography>
 						</Typography>
 					</Grid>
-					<Grid item xs={2} sx={{ textAlign: 'right' }}>
+					{/* <Grid item xs={2} sx={{ textAlign: 'right' }}>
 						<Button variant="outlined" size="small" sx={styles.forkBtn} disabled>
 							Fork
 						</Button>
-					</Grid>
+					</Grid> */}
 				</Grid>
 			</Box>
 			<Box sx={styles.playback}>
