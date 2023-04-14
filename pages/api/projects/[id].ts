@@ -1,110 +1,78 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { IProjectDoc, Project } from '../../../models/project.model'
-import dbConnect from '../../../utils/db'
+import logger from '../../../lib/logger'
+import connectMongo from '../../../lib/mongoClient'
+import { deleteEntityById, getEntityById, updateEntityById, UpdateEntityOptions } from '../../../lib/redisClient'
+import { ProjectDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+	// Extract request params
 	const {
 		query: { id },
 		body,
 		method,
 	} = req
 
-	await dbConnect()
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
-		case 'GET' /* Get a model by its ID */:
+		case 'GET':
 			try {
-				const project: IProjectDoc | null = await Project.findById(id)
-				if (!project) {
-					return res.status(400).json({ success: false })
-				}
-				res.status(200).json({ success: true, data: project })
+				// Get the cached entity or fetch it from MongoDB
+				const project: ProjectDoc | null = await getEntityById('project', id)
+
+				// Return 200
+				return res.status(200).json({ success: true, data: project })
 			} catch (error) {
-				res.status(400).json({ success: false })
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
-		case 'PUT' /* Edit a model by its ID */:
+		case 'PUT':
 			try {
-				// Update stems
-				let project: IProjectDoc | null
-				if (body.approvedStem) {
-					project = await Project.findByIdAndUpdate(
-						id,
-						{
-							$set: {
-								// Update the collaborators
-								collaborators: body.collaborators,
-							},
-							$push: {
-								// Add the stem to the queue with 0 votes
-								queue: body.approvedStem,
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
-				} else if (body.queuedStem) {
-					project = await Project.findByIdAndUpdate(
-						id,
-						{
-							$push: {
-								// Add the stem to the queue with 0 votes
-								queue: {
-									stem: body.queuedStem,
-									votes: 0,
-								},
-							},
-						},
-						{
-							new: true,
-							runValidators: true,
-						},
-					)
+				// Update Project in MongoDB and Redis cache
+				const { approvedStem, queuedStem, ...bodyToUpdate } = body
+				let options: UpdateEntityOptions = {}
 
-					// Catch error
-					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to add stems or collaborators to project' })
+				// Add the approved stem to the queue with the amount of votes it has
+				// Or, add the newly accepted queued stem to the queue with zero votes
+				// Otherwise, don't push anything
+				if (approvedStem) {
+					options = {
+						push: { queue: { stem: approvedStem, votes: approvedStem.votes } },
 					}
-
-					res.status(200).json({ success: true, data: project })
+				} else if (queuedStem) {
+					options = {
+						push: { queue: { stem: queuedStem, votes: 0 } },
+					}
 				} else {
-					// Update anything else,
-					project = await Project.findByIdAndUpdate(id, body, {
-						new: true,
-						runValidators: true,
-					})
-
-					// Catch error
-					if (!project) {
-						return res.status(400).json({ success: false, error: 'failed to update project' })
+					options = {
+						set: bodyToUpdate,
 					}
-
-					res.status(200).json({ success: true, data: project })
 				}
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
-			}
-			break
 
-		case 'DELETE' /* Delete a model by its ID */:
+				const project: ProjectDoc = await updateEntityById('project', id, options)
+
+				// Return 200
+				return res.status(200).json({ success: true, data: project })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
+			}
+
+		case 'DELETE':
 			try {
-				const deletedProject = await Project.deleteOne({ _id: id })
-				if (!deletedProject) {
-					return res.status(400).json({ success: false, error: 'failed to delete project' })
-				}
+				// Delete Project from MongoDB and Redis
+				const deletedProject: ProjectDoc = await deleteEntityById('project', id)
 
-				// TODO: Delete from user's projects
-
-				res.status(200).json({ success: true, data: deletedProject })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				// Return 200
+				return res.status(200).json({ success: true, data: deletedProject })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })

@@ -43,15 +43,16 @@ const styles = {
 		display: 'inline-block',
 		verticalAlign: 'middle',
 	},
-	forkBtn: {
-		backgroundColor: '#1B2021',
-		color: '#FFFFFF',
-		textTransform: 'uppercase',
-		fontWeight: 800,
-		'&:hover': {
-			backgroundColor: '#1B2021',
-		},
-	},
+	// forkBtn: {
+	// 	backgroundColor: '#fff',
+	// 	color: '#ccc',
+	// 	textTransform: 'uppercase',
+	// 	fontWeight: 800,
+	// 	'&:hover': {
+	// 		backgroundColor: '#1B2021',
+	// 	},
+	// 	cursor: 'not-allowed',
+	// },
 	playback: {
 		backgroundColor: '#f4f4f4',
 		py: 3,

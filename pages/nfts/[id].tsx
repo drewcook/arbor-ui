@@ -15,11 +15,12 @@ import StemCard from '../../components/StemCard'
 import { useWeb3 } from '../../components/Web3Provider'
 import { NFT_CONTRACT_ADDRESS } from '../../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER } from '../../constants/networks'
+import { get, update } from '../../lib/http'
+import logger from '../../lib/logger'
 import OneIcon from '../../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../../styles/NFTs.styles'
 import formatAddress from '../../utils/formatAddress'
 import formatDate from '../../utils/formatDate'
-import { get, update } from '../../utils/http'
 
 const propTypes = {
 	data: PropTypes.shape({
@@ -97,7 +98,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			}
 		} catch (e: any) {
 			// Log and notify error
-			console.error(e.message)
+			logger.red(e.message)
 			setErrorOpen(true)
 			setErrorMsg('Uh oh, failed to buy the NFT')
 			setLoading(false)
@@ -118,7 +119,7 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 			const data: any | null = res.success ? res.data : null
 			setDetails(data)
 		} catch (e: any) {
-			console.error(e.message)
+			logger.red(e.message)
 		}
 	}
 
@@ -285,9 +286,16 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 						</Grid>
 					</>
 				) : (
-					<Typography sx={styles.error} color="error">
-						Sorry, no details were found for this NFT.
-					</Typography>
+					<Box textAlign="center">
+						<Typography mb={4}>
+							Sorry, there are no details to show for this NFT. The ID being used may exist.
+						</Typography>
+						<Link href="/nfts">
+							<Button variant="contained" color="secondary">
+								Back To Arboretum
+							</Button>
+						</Link>
+					</Box>
 				)}
 				{successOpen && (
 					<Notification open={successOpen} msg={successMsg} type="success" onClose={onNotificationClose} />
@@ -301,22 +309,25 @@ const NftDetailsPage: NextPage<NftDetailsPageProps> = props => {
 NftDetailsPage.propTypes = propTypes
 
 export const getServerSideProps: GetServerSideProps = async context => {
-	// Get NFT details based off ID
+	// Get NFT details from ID
 	let nftId = context.query.id
 	if (typeof nftId === 'object') nftId = nftId[0].toLowerCase()
 	else nftId = nftId?.toLowerCase()
 
-	// Get NFT data from database
-	const res = await get(`/nfts/${nftId}`)
-	const data: any | null = res.success ? res.data : null
+	if (nftId !== '[object Blob]') {
+		const res = await get(`/nfts/${nftId}`)
+		const data: any | null = res.success ? res.data : null
 
-	return {
-		props: {
-			data,
-		},
+		return {
+			props: {
+				data,
+			},
+		}
 	}
+
+	// Fallback, typically if server returns a 404 or 400
+	return { props: { data: null } }
 }
 
 NftDetailsPage.propTypes = propTypes
-
 export default NftDetailsPage

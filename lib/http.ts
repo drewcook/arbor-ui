@@ -1,3 +1,12 @@
+/**
+ * This file is an axios wrapper that sits between the client components and the backend API handled by Next.js routes.
+ * This is essentially middleware in the context of Axios, and for simplicity, allows easy to use functions with common error handling
+ * - get
+ * - post
+ * - update
+ * - remove
+ */
+
 import axios, { AxiosInstance, AxiosRequestHeaders } from 'axios'
 import normalizeHeaderName from 'axios/lib/helpers/normalizeHeaderName'
 import utils from 'axios/lib/utils'

@@ -1,8 +1,10 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { IStemDoc, Stem } from '../../../models/stem.model'
-import dbConnect from '../../../utils/db'
+import logger from '../../../lib/logger'
+import connectMongo from '../../../lib/mongoClient'
+import { deleteEntityById, getEntityById, updateEntityById, UpdateEntityOptions } from '../../../lib/redisClient'
+import { StemDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const {
@@ -11,54 +13,48 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		method,
 	} = req
 
-	await dbConnect()
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
-		case 'GET' /* Get a model by its ID */:
+		case 'GET':
 			try {
-				const stem: IStemDoc | null = await Stem.findById(id)
-				if (!stem) {
-					return res.status(400).json({ success: false })
-				}
-				res.status(200).json({ success: true, data: stem })
+				// Get the cached entity or fetch it from MongoDB
+				const stem: StemDoc = await getEntityById('stem', id)
+
+				// Return 200
+				return res.status(200).json({ success: true, data: stem })
 			} catch (error) {
-				res.status(400).json({ success: false })
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
-		case 'PUT' /* Edit a model by its ID */:
+		case 'PUT':
 			try {
-				// Update anything passed through,
-				const stem: IStemDoc | null = await Stem.findByIdAndUpdate(id, body, {
-					new: true,
-					runValidators: true,
-				})
+				// Update NFT in MongoDB and Redis cache
+				const options: UpdateEntityOptions = { set: body }
+				const stem: StemDoc = await updateEntityById('stem', id, options)
 
-				// Catch error
-				if (!stem) {
-					return res.status(400).json({ success: false, error: 'failed to update stem' })
-				}
-
-				res.status(200).json({ success: true, data: stem })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				// Return 200
+				return res.status(200).json({ success: true, data: stem })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
-		case 'DELETE' /* Delete a model by its ID */:
+		case 'DELETE':
 			try {
-				const deletedStem = await Stem.deleteOne({ _id: id })
-				if (!deletedStem) {
-					return res.status(400).json({ success: false, error: 'failed to delete stem' })
-				}
+				// Delete Stem from MongoDB and Redis
+				const deletedStem: StemDoc = await deleteEntityById('stem', id)
 
-				// TODO: Delete from user's stems
+				// TODO: delete stem from user object
 
-				res.status(200).json({ success: true, data: deletedStem })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				// Return 200
+				return res.status(200).json({ success: true, data: deletedStem })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' is not supported` })
