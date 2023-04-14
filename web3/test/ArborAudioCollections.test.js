@@ -10,8 +10,11 @@ const toWei = eth => web3.utils.toWei(`${eth}`, 'ether')
 
 // ArborAudioCollections instance
 const provider = new providers.JsonRpcProvider('http://localhost:8545')
-const polyechoNft = new Contract('0x7bc06c482dead17c0e297afbc32f6e63d3846650', ArborAudioCollections.abi)
-const nftContract = polyechoNft.connect(provider.getSigner())
+const arborAudioCollectionsContract = new Contract(
+	'0x7bc06c482dead17c0e297afbc32f6e63d3846650',
+	ArborAudioCollections.abi,
+)
+const nftContract = arborAudioCollectionsContract.connect(provider.getSigner())
 
 contract('ArborAudioCollections: deployment', () => {
 	it('has been deployed', async () => {
@@ -56,7 +59,7 @@ contract('ArborAudioCollections: state properties', accounts => {
 
 		it('Should prevent non-owners from updating the collection name', async () => {
 			try {
-				await nftContract.updateCollectionName('Polyecho Branches', {
+				await nftContract.updateCollectionName('Arbor Branches', {
 					from: nonOwner,
 				})
 			} catch (err) {
@@ -65,8 +68,8 @@ contract('ArborAudioCollections: state properties', accounts => {
 		})
 
 		it('Should allow owners to be able to update the collection name', async () => {
-			const tx = await nftContract.updateCollectionName('Polyecho Branches', { from: owner })
-			const expectedValue = 'Polyecho Branches'
+			const tx = await nftContract.updateCollectionName('Arbor Branches', { from: owner })
+			const expectedValue = 'Arbor Branches'
 			const actualValue = tx.logs[0].args.name
 			assert.equal(actualValue, expectedValue, 'events should match')
 		})

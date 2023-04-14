@@ -1,17 +1,18 @@
 const styles = {
 	icon: {
-		color: '#30343F',
+		color: '#3C3839',
+		fontSize: '60px',
 		'&:hover': {
-			color: '#30343F',
+			color: '#B6A0A0',
 		},
 	},
 	cardMediaIcon: {
-		color: '#000',
+		color: '',
 		fontSize: '2rem',
 	},
 	detailItem: {
 		textTransform: 'uppercase',
-		color: '#a8a8a8',
+		color: '#3C3839',
 		fontWeight: 700,
 		mb: 1,
 	},

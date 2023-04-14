@@ -6,6 +6,7 @@ const styles = {
 	},
 	alphaChip: {
 		color: '#fff',
+		backgroundColor: '#9F86C0',
 		ml: 1,
 		fontSize: '.6rem',
 		height: '1.25rem',

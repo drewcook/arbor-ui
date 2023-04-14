@@ -74,7 +74,7 @@ export const detailsStyles = {
 		justifyContent: 'flex-start',
 	},
 	createdBy: {
-		color: '#a8a8a8',
+		color: '#3C3839',
 		fontStyle: 'italic',
 		fontWeight: 300,
 		textTransform: 'uppercase',
@@ -129,7 +129,7 @@ export const detailsStyles = {
 	metadataKey: {
 		mr: 0.5,
 		display: 'inline-block',
-		color: '#a8a8a8',
+		color: '#3C3839',
 	},
 	desc: {
 		color: '#777',
@@ -161,7 +161,7 @@ export const detailsStyles = {
 		pl: 3,
 	},
 	eth: {
-		color: '#aaa',
+		color: '#B9BDCB',
 		fontSize: '1rem',
 	},
 	divider: {
@@ -180,10 +180,11 @@ export const detailsStyles = {
 		},
 	},
 	stemsHeader: {
+		border: '3px solid #000',
 		borderTopLeftRadius: '10px',
 		borderTopRightRadius: '10px',
-		backgroundColor: '#000',
-		color: '#fff',
+		background: 'linear-gradient(94.22deg, #20163B 9.36%, #5E548E 33.65%, #9F86C0 65.94%, #D8C5F2 89.96%)',
+		color: '#FFFFFF',
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center',
@@ -196,15 +197,17 @@ export const detailsStyles = {
 			display: 'block',
 			backgroundColor: '#000',
 			width: '3px',
-			height: '60px',
+			height: '64px',
 			position: 'absolute',
-			top: '-60px',
-			left: '43px',
+			top: '-64px',
+			left: '40px',
 		},
 		'.MuiAvatar-root': {
 			cursor: 'pointer',
+			borderColor: '#901148',
+			backgroundColor: '#E95D87',
 			'&:hover': {
-				backgroundColor: '#aaa',
+				backgroundColor: '#FF7070',
 			},
 		},
 	},
@@ -215,8 +218,22 @@ export const detailsStyles = {
 		fontWeight: 600,
 		textTransform: 'uppercase',
 	},
+	playSection: {
+		p: 2,
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	playStopBtn: {
+		color: '#FFADAD',
+		'&:hover': {
+			color: '#FFC2C2',
+		},
+	},
 	stemsMeta: {
 		display: 'flex',
+		flexGrow: 1,
+		justifyContent: 'center',
 		alignItems: 'center',
 		fontStyle: 'italic',
 		textTransform: 'uppercase',
@@ -225,37 +242,17 @@ export const detailsStyles = {
 		ml: 2,
 	},
 	exportStemsBtn: {
+		color: '#1B2021',
 		fontStyle: 'italic',
 		fontWeight: 800,
 		textTransform: 'uppercase',
-		color: '#fff',
-		'&:hover': {
-			color: '#4CE79D',
-		},
-	},
-	playSection: {
-		p: 2,
-		border: '3px solid #000',
-		// borderRight: '3px solid #000',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	playStopBtn: {
-		color: '#000',
-	},
-	playTracker: {
-		flexGrow: 1,
-		backgroundColor: '#eaeaea',
-		ml: 2,
-		p: 2,
-		textAlign: 'center',
 	},
 	noStemsMsg: {
 		textAlign: 'center',
 		py: 3,
 		px: 2,
 		border: '3px solid #000',
+		borderTop: 'none',
 		borderBottomLeftRadius: '10px',
 		borderBottomRightRadius: '10px',
 	},
@@ -273,10 +270,10 @@ export const detailsStyles = {
 			display: 'block',
 			backgroundColor: '#000',
 			width: '3px',
-			height: '35px', // margin top + 2px border
+			height: '36px', // margin top + 2px border
 			position: 'absolute',
-			top: '-35px',
-			left: '43px',
+			top: '-36px',
+			left: '40px',
 		},
 	},
 }
