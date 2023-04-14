@@ -21,9 +21,10 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 
+import { post, update } from '../lib/http'
+import logger from '../lib/logger'
 import logoBinary from '../lib/logoBinary'
-import type { IProjectDoc } from '../models/project.model'
-import { post, update } from '../utils/http'
+import type { ProjectDoc } from '../models'
 import signMessage from '../utils/signMessage'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
@@ -33,9 +34,19 @@ import { useWeb3 } from './Web3Provider'
 
 const stemTypes = [
 	{
+		key: 'vocals',
+		displayName: 'Vocals',
+		styles: 'swatchVocals',
+	},
+	{
 		key: 'drums',
 		displayName: 'Drums',
 		styles: 'swatchDrums',
+	},
+	{
+		key: 'percussion',
+		displayName: 'Percussion',
+		styles: 'swatchPercussion',
 	},
 	{
 		key: 'bass',
@@ -53,11 +64,6 @@ const stemTypes = [
 		styles: 'swatchMelody',
 	},
 	{
-		key: 'vocals',
-		displayName: 'Vocals',
-		styles: 'swatchVocals',
-	},
-	{
 		key: 'combo',
 		displayName: 'Combo',
 		styles: 'swatchCombo',
@@ -73,8 +79,8 @@ type StemUploadDialogProps = {
 	// PropTypes.InferProps<typeof propTypes>
 	open: boolean
 	onClose: () => void
-	onSuccess: (project: IProjectDoc) => void
-	projectDetails: IProjectDoc
+	onSuccess: (project: ProjectDoc) => void
+	projectDetails: ProjectDoc
 }
 
 const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
@@ -114,7 +120,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				setFile(fileToUpload)
 			}
 		} catch (err) {
-			console.error(err)
+			logger.red(err)
 		}
 	}
 
@@ -138,6 +144,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setUploadingMsg('Uploading stem to NFT.storage...')
 
 			// Upload to NFT.storage
+			// TODO: look into storing all stems within a single Arbor directory, or one for each user, and storing each stem within that directory -  https://github.com/nftstorage/nftup/blob/eed72d1bc6b1373d0656ac30b5a40bf251a7cefe/public/electron.js#L106
 			const nftsRes = await NFTStore.store({
 				name: file.name,
 				description: 'An audio file uploaded through the Arbor Protocol',
@@ -176,6 +183,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			if (!stemRes.success) throw new Error(stemRes.error)
 			const stemCreated = stemRes.data
 
+			// TODO: add these to the backend api
 			// Add new stem to user's stems' details
 			const userUpdated = await update(`/users/${currentUser.address}`, { newStem: stemCreated._id })
 			if (!userUpdated.success) throw new Error(userUpdated.error)
@@ -189,8 +197,8 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 			setLoading(false)
 			onSuccess(projectRes.data)
 			handleClose()
-		} catch (e: any) {
-			console.error(e)
+		} catch (err: any) {
+			logger.red(err)
 			// Notify error
 			setUploadingOpen(false)
 			setUploadingMsg('')

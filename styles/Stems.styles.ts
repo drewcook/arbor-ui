@@ -100,7 +100,7 @@ export const detailsStyles = {
 			pointerEvents: 'none',
 		},
 		'&.looping': {
-			backgroundColor: '#4CE79D',
+			backgroundColor: '#E95D87',
 			color: '#000',
 		},
 	},
@@ -137,7 +137,7 @@ export const detailsStyles = {
 	metadataKey: {
 		mr: 1,
 		display: 'inline-block',
-		color: '#a8a8a8',
+		color: '#3C3839',
 	},
 	divider: {
 		borderColor: '#000',

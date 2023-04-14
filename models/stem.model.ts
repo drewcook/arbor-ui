@@ -1,6 +1,9 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose from 'mongoose'
 
-export type StemType = 'drums' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
+import { StemDoc } from '.'
+
+export type StemType = 'drums' | 'percussion' | 'bass' | 'chords' | 'melody' | 'vocals' | 'combo' | 'other'
+export type StemFileType = 'audio/wav'
 
 export interface IStem {
 	name: string
@@ -9,14 +12,12 @@ export interface IStem {
 	audioUrl: string
 	audioHref: string
 	filename: string
-	filetype: string
+	filetype: StemFileType
 	filesize: number
 	createdBy: string
 }
 
-export interface IStemDoc extends Document, IStem {}
-
-export const stemSchema = new mongoose.Schema<IStemDoc>(
+export const stemSchema = new mongoose.Schema<StemDoc>(
 	{
 		name: {
 			type: String,
@@ -63,4 +64,4 @@ export const stemSchema = new mongoose.Schema<IStemDoc>(
 	{ timestamps: true },
 )
 
-export const Stem = mongoose.models.stem || mongoose.model<IStemDoc>('stem', stemSchema)
+export const Stem = mongoose.models.stem || mongoose.model<StemDoc>('stem', stemSchema)

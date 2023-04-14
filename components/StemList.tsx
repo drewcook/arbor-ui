@@ -16,20 +16,11 @@ import formatAddress from '../utils/formatAddress'
 import formatDate from '../utils/formatDate'
 import formatLength from '../utils/formatLength'
 import formatStemName from '../utils/formatStemName'
+import { stemTypesToColor } from './ArborThemeProvider'
 import styles from './StemList.styles'
 
 interface StyledTableRowProps extends TableRowProps {
 	type?: string
-}
-
-const stemTypesToColor: Record<string, string> = {
-	drums: '#FFA1A1',
-	bass: '#D6A1FF',
-	chords: '#FDFFA1',
-	melody: '#A1EEFF',
-	vocals: '#A1FFBB',
-	combo: '#FFA1F0',
-	other: '##FFC467',
 }
 
 const StyledTableRow = styled(TableRow, { shouldForwardProp: prop => prop !== 'type' })<StyledTableRowProps>(
@@ -67,18 +58,30 @@ const StemList = (props: any) => {
 		<TableContainer component={Paper}>
 			<Table aria-label="collapsible table">
 				<TableHead>
-					<TableRow>
-						<TableCell width={50} />
-						<TableCell>TITLE</TableCell>
-						<TableCell align="right">LENGTH</TableCell>
-						<TableCell align="right">DATE UPLOADED</TableCell>
-						<TableCell align="right">UPLOADED BY</TableCell>
+					<TableRow
+						sx={{
+							th: {
+								backgroundColor: '#1B2021',
+							},
+						}}
+					>
+						<TableCell variant="head" width={50} />
+						<TableCell variant="head">TITLE</TableCell>
+						<TableCell variant="head" align="right">
+							LENGTH
+						</TableCell>
+						<TableCell variant="head" align="right">
+							DATE UPLOADED
+						</TableCell>
+						<TableCell variant="head" align="right">
+							UPLOADED BY
+						</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
 					{details.map((stem, i) => (
 						<Fragment key={stem._id}>
-							<StyledTableRow type={stem.type} sx={styles.tableRow}>
+							<StyledTableRow type={stem.type}>
 								<TableCell>
 									<IconButton aria-label="row">
 										<PlayCircleIcon sx={styles.icon} />
