@@ -1,70 +1,63 @@
 import { withSentry } from '@sentry/nextjs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { INft, INftDoc, Nft } from '../../../models/nft.model'
-import dbConnect from '../../../utils/db'
-import { update } from '../../../utils/http'
+import { update } from '../../../lib/http'
+import logger from '../../../lib/logger'
+import connectMongo from '../../../lib/mongoClient'
+import { createEntity, getAllEntitiesOfType } from '../../../lib/redisClient'
+import { Nft, NftDoc } from '../../../models'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { method, body } = req
-	await dbConnect()
+
+	// Connect to MongoDB
+	await connectMongo()
 
 	switch (method) {
 		case 'GET':
 			try {
-				/* find all the data in our database */
-				const nfts: INftDoc[] = await Nft.find({})
-				res.status(200).json({ success: true, data: nfts })
-			} catch (e) {
-				res.status(400).json({ success: false, error: e })
+				const nfts: NftDoc[] = await getAllEntitiesOfType('nft')
+				return res.status(200).json({ success: true, data: nfts })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
+
 		case 'POST':
 			try {
-				// Construct payload
-				const {
-					createdBy,
-					owner,
-					isListed,
-					listPrice,
-					token,
-					metadataUrl,
-					audioHref,
-					name,
-					projectId,
-					collaborators,
-					stems,
-				} = body
-				const payload: INft = {
-					createdBy,
-					owner,
-					isListed,
-					listPrice,
-					token,
-					metadataUrl,
-					audioHref,
-					name,
-					projectId,
-					collaborators,
-					stems,
+				// Create the new NFT record in MongoDB
+				const payload = {
+					createdBy: body.createdBy,
+					owner: body.owner,
+					isListed: body.isListed,
+					listPrice: body.listPrice,
+					token: body.token,
+					metadataUrl: body.metadataUrl,
+					audioHref: body.audioHref,
+					name: body.name,
+					projectId: body.projectId,
+					collaborators: body.collaborators,
+					stems: body.stems,
 				}
-
-				/* create a new model in the database */
-				const nftCreated: any = await Nft.create(payload)
-				if (!nftCreated) throw new Error('Failed to create the NFT')
+				const nftCreated: NftDoc = await createEntity('nft', payload)
 
 				// Add the new NFT reference to list of User NFTs field
-				const userUpdated = await update(`/users/${createdBy}`, { addNFT: nftCreated._id })
-				if (!userUpdated.success) return res.status(400).json({ success: false, error: "Failed to update user's NFTs" })
+				const userUpdated = await update(`/users/${body.createdBy}`, { addNFT: nftCreated._id })
+				if (!userUpdated) {
+					logger.red('Failed to update user')
+					await Nft.findByIdAndDelete(nftCreated.id) // Delete the NFT record if user update fails
+					return res.status(400).json({ success: false, error: "Failed to update user's NFTs" })
+				}
 
 				// TODO: Add the new NFT reference to list of the Project's NFTs that have been minted for given projectId
 				// Note - this doesn't exist yet, but a project record could have a 'mintedNfts' of ObjectId[]
 
-				res.status(201).json({ success: true, data: nftCreated })
-			} catch (e: any) {
-				res.status(400).json({ success: false, error: e.message })
+				// Return 201 with new project data
+				return res.status(201).json({ success: true, data: nftCreated })
+			} catch (error) {
+				logger.red(error)
+				return res.status(400).json({ success: false, error })
 			}
-			break
 		default:
 			res.status(400).json({ success: false, error: `HTTP method '${method}' not supported` })
 			break

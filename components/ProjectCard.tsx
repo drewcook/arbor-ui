@@ -2,11 +2,11 @@ import QueueMusicIcon from '@mui/icons-material/QueueMusic'
 import { Box, Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
 import Link from 'next/link'
 
-import type { IProjectDoc } from '../models/project.model'
+import type { ProjectDoc } from '../models'
 import styles from './ProjectCard.styles'
 
 type ProjectCardProps = {
-	details: IProjectDoc | any
+	details: ProjectDoc | any
 }
 
 const ProjectCard = (props: ProjectCardProps): JSX.Element => {
