@@ -1,6 +1,5 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { Contract, providers } from 'ethers'
-import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
 
@@ -8,7 +7,7 @@ import { collectionsContract, stemQueueContract } from '../constants/contracts'
 import { NETWORK_CURRENCY, NETWORK_EXPLORER, NETWORK_HEX, NETWORK_NAME, NETWORK_RPC } from '../constants/networks'
 import { get, post } from '../lib/http'
 import logger from '../lib/logger'
-import NFTStorageClient from '../lib/NFTStorageClient'
+import NFTStorageClient, { NFTStorage } from '../lib/NFTStorageClient'
 import type { UserDoc } from '../models'
 
 // Context types

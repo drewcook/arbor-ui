@@ -18,12 +18,12 @@ type StemPlayerProps = {
 	onFinish?: (idx: number, ws: any) => any
 	isStemDetails?: boolean
 	isQueued?: boolean
+	onNewFile?: (newFileName: string, newFile: Blob) => void
 	onPlay?: (idx: number) => any
 	onSolo?: (idx: number) => any
 	onMute?: (idx: number) => any
 	onSkipPrev?: () => any
 	onStop?: (idx: number) => any
-	onNewFile?: (newFileName: string, newFile: Blob) => void
 	handleUnmuteAll?: boolean
 }
 
@@ -35,12 +35,12 @@ const StemPlayer = (props: StemPlayerProps): JSX.Element => {
 		onFinish,
 		isStemDetails,
 		isQueued,
+		onNewFile,
 		onPlay,
 		onSolo,
 		onMute,
 		onSkipPrev,
 		onStop,
-		onNewFile,
 		handleUnmuteAll,
 	} = props
 

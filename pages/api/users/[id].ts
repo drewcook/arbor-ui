@@ -75,7 +75,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 						set: bodyToUpdate,
 					}
 				}
-
 				const user: UserDoc = await updateEntityById('user', address, options)
 
 				// Return 200

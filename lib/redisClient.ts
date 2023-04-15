@@ -13,8 +13,15 @@ const redisClient = createClient({
 	socket: {
 		host: process.env.REDIS_HOST,
 		port: 18864,
+		// tls: true,
+		// key: readFileSync('./redis_user_private.key'),
+		// cert: readFileSync('./redis_user.crt'),
+		// ca: [readFileSync('./redis_ca.pem')],
 	},
 })
+
+// Increase the max memory limit to assist with storing audio blob data
+// redisClient.configSet('maxmemory', '4gb')
 
 // Global error handler
 redisClient.on('error', err => logger.red(`Redis Client Error - ${err}`))
@@ -190,7 +197,7 @@ export const createEntity = async (entityType, entityData): Promise<any> => {
 		await connectRedis()
 		const entityKey = String(createdEntity._id)
 		await updateRedisHashField(redisKey, entityKey, createdEntity)
-		return createdEntity.toObject()
+		return createdEntity
 	} catch (error) {
 		// If there was an error creating the entity in MongoDB, delete it from Redis (if it was added)
 		if (createdEntity) {
@@ -270,7 +277,7 @@ export const updateEntityById = async (
 		await connectRedis()
 		await updateRedisHashField(redisKey, entityKey, updatedEntity)
 
-		return updatedEntity.toObject()
+		return updatedEntity
 	} catch (error) {
 		logger.red(error)
 		throw error

@@ -43,48 +43,50 @@ const StemsPage: NextPage<StemsPageProps> = props => {
 								and start a new project with them.
 							</Typography>
 						</Container>
-						<Box sx={styles.icons}>
-							<ButtonGroup
-								color="inherit"
-								variant="outlined"
-								aria-label="outlined button group"
-								disableElevation
-								disableRipple
-								disableFocusRipple
-							>
-								<Button
-									sx={styles.stemListBtn}
-									variant={listView ? 'outlined' : 'contained'}
-									onClick={() => showListView(!listView)}
-								>
-									<AppsIcon />
-								</Button>
-								<Button
-									sx={styles.stemListBtn}
-									variant={listView ? 'contained' : 'outlined'}
-									onClick={() => showListView(!listView)}
-								>
-									<FormatListBulletedIcon />
-								</Button>
-							</ButtonGroup>
-						</Box>
 						{data.length > 0 ? (
-							<Box>
-								{listView ? (
-									<StemList details={data} />
-								) : (
-									<Grid container spacing={4}>
-										{data.map((stem: any) => (
-											<Grid item sm={6} md={4} key={stem._id}>
-												<StemCard details={stem} />
-											</Grid>
-										))}
-									</Grid>
-								)}
-							</Box>
+							<>
+								<Box sx={styles.icons}>
+									<ButtonGroup
+										color="inherit"
+										variant="outlined"
+										aria-label="outlined button group"
+										disableElevation
+										disableRipple
+										disableFocusRipple
+									>
+										<Button
+											sx={styles.stemListBtn}
+											variant={listView ? 'outlined' : 'contained'}
+											onClick={() => showListView(!listView)}
+										>
+											<AppsIcon />
+										</Button>
+										<Button
+											sx={styles.stemListBtn}
+											variant={listView ? 'contained' : 'outlined'}
+											onClick={() => showListView(!listView)}
+										>
+											<FormatListBulletedIcon />
+										</Button>
+									</ButtonGroup>
+								</Box>
+								<Box>
+									{listView ? (
+										<StemList details={data} />
+									) : (
+										<Grid container spacing={4}>
+											{data.map((stem: any) => (
+												<Grid item sm={6} md={4} key={stem._id}>
+													<StemCard details={stem} />
+												</Grid>
+											))}
+										</Grid>
+									)}
+								</Box>
+							</>
 						) : (
 							<Box sx={styles.noProjects}>
-								<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one!</Typography>
+								<Typography sx={styles.noProjectsMsg}>No stems to show. Upload one to a project!</Typography>
 							</Box>
 						)}
 					</>

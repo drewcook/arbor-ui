@@ -4,7 +4,6 @@
 ////////////////////////////////////////////////////////////////////////////////////
 import type { OnboardAPI, WalletState } from '@web3-onboard/core'
 import { Contract } from 'ethers'
-import type { NFTStorage } from 'nft.storage'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
 
@@ -13,7 +12,7 @@ import { NETWORK_HEX, NETWORK_NAME } from '../constants/networks'
 import getWeb3 from '../lib/getWeb3'
 import { get, post } from '../lib/http'
 import logger from '../lib/logger'
-import NFTStorageClient from '../lib/NFTStorageClient'
+import NFTStorageClient, { NFTStorage } from '../lib/NFTStorageClient'
 import web3Onboard from '../lib/web3Onboard'
 import type { UserDoc } from '../models'
 

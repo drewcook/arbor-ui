@@ -86,8 +86,8 @@ export const get = async (pathname: string, params?: any): Promise<any> => {
 	try {
 		const { data } = await instance.get(`/api${pathname}`, { params })
 		return data
-	} catch (e: any) {
-		return { success: false, error: e.message }
+	} catch (error: any) {
+		return { success: false, error }
 	}
 }
 
@@ -101,8 +101,8 @@ export const post = async (pathname: string, data?: any): Promise<any> => {
 	try {
 		const res = await instance.post(`/api${pathname}`, _cloneDeep(data))
 		return res.data
-	} catch (e: any) {
-		return { success: false, error: e.message }
+	} catch (error: any) {
+		return { success: false, error }
 	}
 }
 
@@ -116,8 +116,8 @@ export const update = async (pathname: string, data?: any): Promise<any> => {
 	try {
 		const res = await instance.put(`/api${pathname}`, data)
 		return res.data
-	} catch (e: any) {
-		return { success: false, error: e.message }
+	} catch (error: any) {
+		return { success: false, error }
 	}
 }
 
@@ -131,7 +131,7 @@ export const remove = async (pathname: string, data?: any): Promise<any> => {
 	try {
 		const res = await instance.delete(`/api${pathname}`, { data: _cloneDeep(data) })
 		return res.data
-	} catch (e: any) {
-		return { success: false, error: e.message }
+	} catch (error: any) {
+		return { success: false, error }
 	}
 }
