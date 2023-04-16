@@ -32,6 +32,7 @@ import { post } from '../lib/http'
 import logger from '../lib/logger'
 // import logoBinary from '../lib/logoBinary'
 import type { ProjectDoc, StemDoc } from '../models'
+import { AudioFile } from '../pages/api/flatten'
 // import type { INft } from '../models/nft.model'
 import OneIcon from '../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../styles/Projects.styles'
@@ -205,8 +206,11 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				setMintingMsg('Combining stems into a single song...')
 
 				// Construct files and call flattening service
-				const cids: string[] = details.stems.map(s => s.audioUrl.replace('ipfs://', ''))
-				const flattenRes = await post('/flatten', { cids })
+				const audioFiles: AudioFile[] = details.stems.map(s => ({
+					cid: s.audioUrl.replace('ipfs://', '').replace('/blob', ''),
+					filename: s.filename,
+				}))
+				const flattenRes = await post('/flatten', { audioFiles })
 				console.log({ flattenRes })
 
 				/*

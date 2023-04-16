@@ -1,15 +1,39 @@
 import { withSentry } from '@sentry/nextjs'
+import axios from 'axios'
 import { spawn } from 'child_process'
 import ffmpeg from 'ffmpeg-static'
-import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import os from 'os'
+import { Stream } from 'stream'
 
 import logger from '../../lib/logger'
 
-type AudioFile = {
+export type AudioFile = {
 	cid: string
 	filename: string
+	contents: Buffer
+}
+
+/**
+ * Fetches an audio stream from the IPFS network via the a provided IPFS gateway.
+ * @async
+ * @param {string} cid - The CID of the audio file on IPFS.
+ * @returns {Promise<Stream.PassThrough>} A Promise that resolves to a PassThrough stream containing the audio data.
+ * @throws {Error} If the request to fetch the audio fails with a non-200 status code.
+ */
+const fetchAudioStream = async (cid: string) => {
+	// Use the Infura gateway
+	const url = `https://arbor-audio.infura-ipfs.io/${cid}/blob`
+	console.log({ url })
+	const response = await axios.get(url, { responseType: 'stream' })
+
+	if (response.status !== 200) {
+		throw new Error(`Failed to fetch audio: ${response.status} ${response.statusText}`)
+	}
+
+	// Pipe the contents into the audio stream passthrough and return it
+	const audioStream = new Stream.PassThrough()
+	response.data.pipe(audioStream)
+	return audioStream
 }
 
 /**
@@ -20,38 +44,29 @@ type AudioFile = {
  * @param {string[]} cids - The array of CIDs of the audio files to download.
  * @returns {Promise<AudioFile[]>} A promise that resolves with the array of AudioFiles that have been downloaded from IPFS
  */
-async function downloadAudio(cids: string[]): Promise<AudioFile[]> {
-	logger.cyan(cids)
-	const nftStorageApiBaseUrl = 'https://api.nft.storage/'
-	const files: AudioFile[] = await Promise.all(
-		cids.map(async cid => {
-			// TODO: the CIDs are coming back as 404 not founds
-			const resp = await fetch(`${nftStorageApiBaseUrl}${cid}`, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${process.env.NFT_STORAGE_KEY}`,
-				},
-			})
-			console.log({ resp })
-			return { cid, filename: 'test' }
-			// const { name, ext } = await NFTStorageClient.get(cid)
-			// const filename = `${name}.${ext}`
-			// // Download and write the contents to a file to the temp dir
-			// const { path: outputFilePath } = tmp.fileSync({ prefix: 'audio-', postfix: `.${ext}` })
+async function downloadAudio(audioFiles: AudioFile[]): Promise<AudioFile[]> {
+	try {
+		const files: AudioFile[] = await Promise.all(
+			audioFiles.map(async file => {
+				// Fetch each audio file as a stream from IPFS
+				const audioStream = await fetchAudioStream(file.cid)
 
-			// const outputFilePath = `${os.tmpdir()}/${filename}`
-			// const writer = fs.createWriteStream(outputFilePath)
-			// const response = await NFTStorageClient.download(cid)
-			// response.pipe(writer)
-			// await new Promise<void>((resolve, reject) => {
-			// 	writer.on('finish', resolve)
-			// 	writer.on('error', reject)
-			// })
-			// return { cid, filename }
-		}),
-	)
+				// Pipe the audio stream into a buffer
+				const chunks: Uint8Array[] = []
+				for await (const chunk of audioStream) {
+					chunks.push(chunk)
+				}
+				const buffer = Buffer.concat(chunks)
 
-	return files
+				// Return the file with its contents as a buffer
+				return { ...file, contents: buffer }
+			}),
+		)
+
+		return files
+	} catch (error) {
+		logger.red(`Error occurred in downloadAudio() - ${error}`)
+	}
 }
 
 /**
@@ -64,93 +79,111 @@ async function downloadAudio(cids: string[]): Promise<AudioFile[]> {
  * @throws {Error} Throws an error if the FFmpeg process exits with a non-zero exit code, or if the output buffer is empty.
  */
 async function mergeAudioFiles(inputFiles: AudioFile[]): Promise<Buffer | void> {
-	if (!ffmpeg) return
+	try {
+		if (!ffmpeg) throw new Error('The FFMpeg library is required to call this function')
+		if (!inputFiles) throw new Error('No input files provided')
 
-	const inputFilesListPath = `${os.tmpdir()}/input.txt`
-	const outputFilePath = `${os.tmpdir()}/output.mp3`
+		// Create an array of input file streams from the buffer contents
+		const inputStreams = inputFiles.map(({ contents }) => Stream.Readable.from(contents))
 
-	// Write input file list to a temporary file
-	fs.writeFileSync(inputFilesListPath, inputFiles.map(({ filename }) => `file '${os.tmpdir()}/${filename}'`).join('\n'))
+		// Concatenate input files and convert to MP3 using FFmpeg
+		const args = [
+			'-y', // Overwrite output files without asking
+			'-hide_banner', // Hide console banner
+			'-nostdin', // Do not expect any user input
+			'-f',
+			'concat', // Use concat filter
+			'-safe',
+			'0', // Allow unsafe input files
+			'-i',
+			'-', // Read input files from stdin
+			'-f',
+			'mp3', // Output format
+			'-c:a',
+			'libmp3lame', // Use the LAME MP3 audio encoder
+			'-q:a',
+			'2', // Set audio quality to 2 (128 Kbps)
+			'-', // Output to stdout
+		]
 
-	// Concatenate input files and convert to MP3 using FFmpeg
-	const args = [
-		'-y', // Overwrite output files without asking
-		'-hide_banner', // Hide console banner
-		'-nostdin', // Do not expect any user input
-		'-f',
-		'concat', // Use concat filter
-		'-safe',
-		'0', // Allow unsafe input files
-		'-i',
-		inputFilesListPath, // Input files list
-		'-f',
-		'mp3', // Output format
-		'-c:a',
-		'libmp3lame', // Use the LAME MP3 audio encoder
-		'-q:a',
-		'2', // Set audio quality to 2 (128 Kbps)
-		outputFilePath, // Output file path
-	]
+		const ffmpegProcess = spawn(ffmpeg, args)
 
-	await new Promise((resolve, reject) => {
-		if (!ffmpeg) return
+		// Pipe each input file stream into FFmpeg's stdin
+		for (const stream of inputStreams) {
+			stream.pipe(ffmpegProcess.stdin, { end: false })
+		}
 
-		const process = spawn(ffmpeg, args, { stdio: 'ignore' })
-		process.on('error', reject)
-		process.on('exit', code => {
-			if (code === 0) {
-				resolve(null)
-			} else {
-				reject(new Error(`FFmpeg process exited with code ${code}`))
-			}
+		// Handle output from FFmpeg's stdout
+		const outputChunks: Uint8Array[] = []
+		ffmpegProcess.stdout.on('data', chunk => {
+			outputChunks.push(chunk)
 		})
-	})
 
-	// Read output file into buffer and return
-	const outputBuffer = fs.readFileSync(outputFilePath)
+		// Handle errors and completion of the FFmpeg process
+		const processError = new Promise<void>((resolve, reject) => {
+			ffmpegProcess.on('error', reject)
+			ffmpegProcess.on('exit', code => {
+				if (code === 0) {
+					resolve()
+				} else {
+					reject(new Error(`FFmpeg process exited with code ${code}`))
+				}
+			})
+		})
 
-	// Clean up temporary files
-	fs.unlinkSync(inputFilesListPath)
-	inputFiles.forEach(({ filename }) => fs.unlinkSync(`${os.tmpdir()}/${filename}`))
-	fs.unlinkSync(outputFilePath)
+		// Wait for the FFmpeg process to complete and output
+		const processComplete = new Promise<void>((resolve, reject) => {
+			ffmpegProcess.stdout?.on('end', resolve)
+			ffmpegProcess.stdout?.on('error', reject)
+		})
 
-	return outputBuffer
+		await Promise.all([processError, processComplete])
+
+		// Combine the output chunks into a single buffer
+		const outputBuffer = Buffer.concat(outputChunks)
+
+		return outputBuffer
+	} catch (error) {
+		logger.red(`Error occurred in mergeAudioFiles() - ${error}`)
+	}
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const {
-		method,
-		body: { cids },
-	} = req
-
-	// Handle for unsupported request methods
-	if (method !== 'POST') {
-		return res.status(405).end()
-	}
-
-	// Ensure that there is an array of at least two CIDs being passed in
-	if (!Array.isArray(cids) || cids.length < 2) {
-		return res.status(400).json({ error: 'Invalid CIDs parameter' })
-	}
-
 	try {
+		const { method, body } = req
+
+		// Handle for unsupported request methods
+		if (method !== 'POST') {
+			return res.status(405).end()
+		}
+
+		// Ensure the payload includes the proper 'audioFiles' property
+		if (!body?.audioFiles) {
+			return res.status(400).json({ error: 'Missing audioFiles property in request body' })
+		}
+
+		const { audioFiles } = body
+
+		// Ensure that there is an array of at least two audio files being passed in
+		if (!Array.isArray(audioFiles) || audioFiles.length < 2) {
+			return res.status(400).json({ error: 'Invalid CIDs parameter' })
+		}
+
 		// Download the audio files in parallel from IPFS
-		const inputFiles = await downloadAudio(cids)
-		console.log({ inputFiles })
-		return res.status(200).json({ success: true, data: cids })
+		const inputFiles = await downloadAudio(audioFiles)
 
 		// Merge them together using FFMpeg
-		// const outputBuffer = await mergeAudioFiles(inputFiles)
-		// console.log({ outputBuffer })
+		const outputBuffer = await mergeAudioFiles(inputFiles)
+		console.log({ outputBuffer })
 
-		// if (!outputBuffer) {
-		// 	throw new Error('Failed to merge audio files')
-		// }
+		if (!outputBuffer) {
+			throw new Error('Failed to merge audio files')
+		}
 
 		// Return 200 with the buffer, set the proper headers
-		// res.setHeader('Content-Type', 'audio/mpeg')
-		// res.setHeader('Content-Disposition', 'attachment; filename="output.mp3"')
-		// return res.status(200).send(outputBuffer)
+		res.setHeader('Content-Type', 'audio/mpeg')
+		res.setHeader('Content-Disposition', 'attachment; filename="output.mp3"')
+		return res.status(200).send(outputBuffer)
 	} catch (error) {
 		logger.red(error)
 		return res.status(500).json({ success: false, error })
