@@ -6370,6 +6370,13 @@ circom_runtime@0.1.20:
   dependencies:
     ffjavascript "0.2.55"
 
+circom_runtime@0.1.24:
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/circom_runtime/-/circom_runtime-0.1.24.tgz#60ca8a31c3675802fbab5a0bcdeb02556e510733"
+  integrity sha512-H7/7I2J/cBmRnZm9docOCGhfxzS61BEm4TMCWcrZGsWNBQhePNfQq88Oj2XpUfzmBTCd8pRvRb3Mvazt3TMrJw==
+  dependencies:
+    ffjavascript "0.2.60"
+
 circom_tester@^0.0.12:
   version "0.0.12"
   resolved "https://registry.yarnpkg.com/circom_tester/-/circom_tester-0.0.12.tgz#97ea84fb76c2b5ca034cad47d801fd917f41fcae"
@@ -8626,13 +8633,22 @@ ffjavascript@0.2.55:
     wasmcurves "0.1.0"
     web-worker "^1.2.0"
 
-ffjavascript@^0.2.30, ffjavascript@^0.2.38, ffjavascript@^0.2.45, ffjavascript@^0.2.48:
-  version "0.2.57"
-  resolved "https://registry.yarnpkg.com/ffjavascript/-/ffjavascript-0.2.57.tgz#ba1be96015b2688192e49f2f4de2cc5150fd8594"
-  integrity sha512-V+vxZ/zPNcthrWmqfe/1YGgqdkTamJeXiED0tsk7B84g40DKlrTdx47IqZuiygqAVG6zMw4qYuvXftIJWsmfKQ==
+ffjavascript@0.2.60:
+  version "0.2.60"
+  resolved "https://registry.yarnpkg.com/ffjavascript/-/ffjavascript-0.2.60.tgz#4d8ae613d6bf4e98b3cc29ba10c626f5853854cf"
+  integrity sha512-T/9bnEL5xAZRDbQoEMf+pM9nrhK+C3JyZNmqiWub26EQorW7Jt+jR54gpqDhceA4Nj0YctPQwYnl8xa52/A26A==
   dependencies:
     wasmbuilder "0.0.16"
-    wasmcurves "0.2.0"
+    wasmcurves "0.2.2"
+    web-worker "^1.2.0"
+
+ffjavascript@0.2.62, ffjavascript@^0.2.30, ffjavascript@^0.2.38, ffjavascript@^0.2.45, ffjavascript@^0.2.48:
+  version "0.2.62"
+  resolved "https://registry.yarnpkg.com/ffjavascript/-/ffjavascript-0.2.62.tgz#f508dfe662a70181598ec5eb8ce5127eb342f624"
+  integrity sha512-uJ7MTrdzhX/3f+hxn0XhdXbJCqYZJSBB6y2/ui4t21vKYVjyTMlU80pPXu40ir6qpqbrdzUeKdlOdJ0aFG9UNA==
+  dependencies:
+    wasmbuilder "0.0.16"
+    wasmcurves "0.2.2"
     web-worker "^1.2.0"
 
 file-entry-cache@^6.0.1:
@@ -13512,6 +13528,16 @@ r1csfile@0.0.40:
     fastfile "0.0.20"
     ffjavascript "0.2.55"
 
+r1csfile@0.0.47:
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/r1csfile/-/r1csfile-0.0.47.tgz#ed95a0dc8e910e9c070253906f7a31bd8c5333c8"
+  integrity sha512-oI4mAwuh1WwuFg95eJDNDDL8hCaZkwnPuNZrQdLBWvDoRU7EG+L/MOHL7SwPW2Y+ZuYcTLpj3rBkgllBQZN/JA==
+  dependencies:
+    "@iden3/bigarray" "0.0.2"
+    "@iden3/binfileutils" "0.0.11"
+    fastfile "0.0.20"
+    ffjavascript "0.2.60"
+
 rabin-wasm@^0.1.4:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/rabin-wasm/-/rabin-wasm-0.1.5.tgz#5b625ca007d6a2cbc1456c78ae71d550addbc9c9"
@@ -14507,7 +14533,7 @@ snarkjs@0.4.10:
     r1csfile "0.0.33"
     readline "^1.3.0"
 
-snarkjs@^0.4.13, snarkjs@^0.4.22:
+snarkjs@^0.4.13:
   version "0.4.27"
   resolved "https://registry.yarnpkg.com/snarkjs/-/snarkjs-0.4.27.tgz#6f00e17e2b0b197dd69029a65ee570085b49a5f0"
   integrity sha512-2CH4JpOIkaoEiPvc/d9eiA7Vs0mC2ZnQAhFIFF+qp8eVxhHpDXFZn50hEZhcb8lypGry8ZiiEQ73a3hOFOUbYQ==
@@ -14522,6 +14548,22 @@ snarkjs@^0.4.13, snarkjs@^0.4.22:
     js-sha3 "^0.8.0"
     logplease "^1.2.15"
     r1csfile "0.0.40"
+
+snarkjs@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/snarkjs/-/snarkjs-0.7.2.tgz#ab719b065fcd9867d9ea14bed92f3acdca3c766f"
+  integrity sha512-A8yPFm9pRnZ7XYXfPSjSFnugEV1rsHGjb8W7c0Qk7nzXl5h3WANTkpVC5FYxakmw/GKWekz7wjjHaOFtPp823Q==
+  dependencies:
+    "@iden3/binfileutils" "0.0.11"
+    bfj "^7.0.2"
+    blake2b-wasm "^2.4.0"
+    circom_runtime "0.1.24"
+    ejs "^3.1.6"
+    fastfile "0.0.20"
+    ffjavascript "0.2.62"
+    js-sha3 "^0.8.0"
+    logplease "^1.2.15"
+    r1csfile "0.0.47"
 
 socks@^2.7.1:
   version "2.7.1"
@@ -15919,10 +15961,10 @@ wasmcurves@0.1.0:
     big-integer "^1.6.42"
     blakejs "^1.1.0"
 
-wasmcurves@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/wasmcurves/-/wasmcurves-0.2.0.tgz#ccfc5a7d3778b6e0768b82a9336c80054f9bc0cf"
-  integrity sha512-3e2rbxdujOwaod657gxgmdhZNn+i1qKdHO3Y/bK+8E7bV8ttV/fu5FO4/WLBACF375cK0QDLOP+65Na63qYuWA==
+wasmcurves@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/wasmcurves/-/wasmcurves-0.2.2.tgz#ca444f6a6f6e2a5cbe6629d98ff478a62b4ccb2b"
+  integrity sha512-JRY908NkmKjFl4ytnTu5ED6AwPD+8VJ9oc94kdq7h5bIwbj0L4TDJ69mG+2aLs2SoCmGfqIesMWTEJjtYsoQXQ==
   dependencies:
     wasmbuilder "0.0.16"
 
