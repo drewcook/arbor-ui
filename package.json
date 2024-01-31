@@ -46,7 +46,7 @@
     "@semaphore-protocol/group": "^2.0.0",
     "@semaphore-protocol/identity": "^2.0.0",
     "@semaphore-protocol/proof": "^2.1.0",
-    "@sentry/nextjs": "^7.28.1",
+    "@sentry/nextjs": "^7.99.0",
     "@web3-onboard/core": "^2.8.5",
     "@web3-onboard/injected-wallets": "^2.2.4",
     "@web3-onboard/ledger": "^2.3.1",
