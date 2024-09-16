@@ -25,14 +25,15 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
-import web3 from 'web3'
 
+// import web3 from 'web3'
 import { NETWORK_CURRENCY } from '../constants/networks'
 import { post } from '../lib/http'
 import logger from '../lib/logger'
-import logoBinary from '../lib/logoBinary'
+// import logoBinary from '../lib/logoBinary'
 import type { ProjectDoc, StemDoc } from '../models'
-import type { INft } from '../models/nft.model'
+import { AudioFile } from '../pages/api/flatten'
+// import type { INft } from '../models/nft.model'
 import OneIcon from '../public/harmony_icon.svg'
 import { detailsStyles as styles } from '../styles/Projects.styles'
 import formatAddress from '../utils/formatAddress'
@@ -66,17 +67,16 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	const [mintingOpen, setMintingOpen] = useState<boolean>(false)
 	const [mintingMsg, setMintingMsg] = useState<string>('')
 	// Stems
-	const [files, setFiles] = useState<Map<string, Blob>>(new Map())
-	// Play/Pause
 	const [stems, setStems] = useState<Map<number, any>>(new Map())
+	const [stemBlobs, setStemBlobs] = useState<Map<string, Blob>>(new Map())
+	// Play/Pause/Mute/Solo
 	const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false)
-	// Hooks
-	const router = useRouter()
-	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
-
 	const [mutedTracks, setMutedTracks] = useState<number[]>([])
 	const [soloedTracks, setSoloedTracks] = useState<number[]>([])
 	const [handleUnmuteAll, setHandleUnmuteAll] = useState<boolean>(false)
+	// Hooks
+	const router = useRouter()
+	const { NFTStore, contracts, connected, currentUser, handleConnectWallet } = useWeb3()
 
 	useEffect(() => {
 		if (soloedTracks.length > 0 && soloedTracks.length === stems.size) {
@@ -109,7 +109,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 	}
 
 	const onNewFile = (filename: string, newFile: Blob) => {
-		setFiles(files => new Map(files.set(filename, newFile)))
+		setStemBlobs(files => new Map(files.set(filename, newFile)))
 	}
 
 	/*
@@ -173,10 +173,10 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 			setDownloadingMsg('Downloading project stems... please wait as we ping IPFS')
 			const stemData = details.stems.map((stem: StemDoc) => ({ url: stem.audioUrl, filename: stem.filename })) ?? []
 			const zip = new JSZip()
-			while (stemData.length != files.size) {
+			while (stemData.length != stemBlobs.size) {
 				await new Promise(r => setTimeout(r, 500))
 			}
-			files.forEach((data: Blob, filename: string) => {
+			stemBlobs.forEach((data: Blob, filename: string) => {
 				zip.file(filename + '.wav', data)
 			})
 			const content = await zip.generateAsync({ type: 'blob' })
@@ -205,12 +205,15 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 				if (!mintingOpen) setMintingOpen(true)
 				setMintingMsg('Combining stems into a single song...')
 
-				// Construct files and post to flattening service
-				const formData = new FormData()
-				files.forEach((data: Blob) => {
-					formData.append('files', data)
-				})
+				// Construct files and call flattening service
+				const audioFiles: AudioFile[] = details.stems.map(s => ({
+					cid: s.audioUrl.replace('ipfs://', '').replace('/blob', ''),
+					filename: s.filename,
+				}))
+				const flattenRes = await post('/flatten', { audioFiles })
+				console.log({ flattenRes })
 
+				/*
 				// NOTE: We hit this directly with fetch because Next.js API routes have a 4MB limit
 				// See - https://nextjs.org/docs/messages/api-routes-response-size-limit
 				if (!process.env.PYTHON_HTTP_HOST) throw new Error('Flattening host not set.')
@@ -299,6 +302,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 
 				// Route to user's profile page
 				router.push(`/users/${currentUser.address}`)
+				*/
 			}
 		} catch (e: any) {
 			logger.red(e)
@@ -458,7 +462,7 @@ const ProjectDetails = (props: ProjectDetailsProps): JSX.Element | null => {
 						sx={styles.exportStemsBtn}
 						onClick={handleDownloadAll}
 						endIcon={<Download />}
-						disabled={details.stems.length !== files.size || details.stems.length === 0}
+						disabled={details.stems.length !== stemBlobs.size || details.stems.length === 0}
 					>
 						Export Stems
 					</Button>

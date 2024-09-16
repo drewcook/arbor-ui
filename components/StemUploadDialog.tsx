@@ -21,10 +21,12 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 
-import { post, update } from '../lib/http'
+import { post } from '../lib/http'
 import logger from '../lib/logger'
 import logoBinary from '../lib/logoBinary'
 import type { ProjectDoc } from '../models'
+import { StemType } from '../models/stem.model'
+import { encodeBlobToBase64 } from '../utils/blobUtils'
 import signMessage from '../utils/signMessage'
 import Notification from './Notification'
 import type { IFileToUpload } from './StemDropzone'
@@ -32,7 +34,13 @@ import StemDropzone from './StemDropzone'
 import styles from './StemUploadDialog.styles'
 import { useWeb3 } from './Web3Provider'
 
-const stemTypes = [
+interface StemTypesDropdown {
+	key: StemType
+	displayName: string
+	styles: string
+}
+
+const stemTypes: StemTypesDropdown[] = [
 	{
 		key: 'vocals',
 		displayName: 'Vocals',
@@ -145,6 +153,10 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 
 			// Upload to NFT.storage
 			// TODO: look into storing all stems within a single Arbor directory, or one for each user, and storing each stem within that directory -  https://github.com/nftstorage/nftup/blob/eed72d1bc6b1373d0656ac30b5a40bf251a7cefe/public/electron.js#L106
+			const audioBlob = new Blob([file], { type: file.type })
+			// TODO: do something with the base64 string or Blob and upload to S3 for quicker retrieval and redundancy from IPFS
+			const audioBase64 = await encodeBlobToBase64(audioBlob)
+			console.log({ file, audioBlob, audioBase64 })
 			const nftsRes = await NFTStore.store({
 				name: file.name,
 				description: 'An audio file uploaded through the Arbor Protocol',
@@ -152,7 +164,7 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				properties: {
 					name: stemName,
 					type: stemType,
-					audio: new Blob([file], { type: file.type }),
+					audio: audioBlob,
 					createdBy: currentUser.address,
 					createdOn: new Date().toISOString(),
 				},
@@ -179,23 +191,14 @@ const StemUploadDialog = (props: StemUploadDialogProps): JSX.Element => {
 				filetype: file.type,
 				filesize: file.size,
 				createdBy: currentUser.address, // Use address rather than MongoDB ID
+				projectId: projectDetails._id,
 			})
 			if (!stemRes.success) throw new Error(stemRes.error)
-			const stemCreated = stemRes.data
-
-			// TODO: add these to the backend api
-			// Add new stem to user's stems' details
-			const userUpdated = await update(`/users/${currentUser.address}`, { newStem: stemCreated._id })
-			if (!userUpdated.success) throw new Error(userUpdated.error)
-
-			// Add the new stem to the project stem queue
-			const projectRes = await update(`/projects/${projectDetails._id}`, { queuedStem: stemCreated })
-			if (!projectRes.success) throw new Error(projectRes.error)
 
 			// Notify success
 			onNotificationClose()
 			setLoading(false)
-			onSuccess(projectRes.data)
+			onSuccess(stemRes.data.project)
 			handleClose()
 		} catch (err: any) {
 			logger.red(err)
