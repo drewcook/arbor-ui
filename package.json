@@ -27,9 +27,6 @@
     "contracts:test": "cd web3 && hardhat test",
     "report-gas": "REPORT_GAS=true hardhat test"
   },
-  "engines": {
-    "node": ">=16"
-  },
   "nextBundleAnalysis": {
     "budget": null,
     "budgetPercentIncreaseRed": 20,
