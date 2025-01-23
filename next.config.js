@@ -1,5 +1,3 @@
-const { withSentryConfig } = require('@sentry/nextjs')
-
 /** @type {import('next').NextConfig} */
 
 // eslint-disable-next-line
@@ -24,8 +22,6 @@ const nextConfig = {
 		ALCHEMY_POLYGON_KEY: process.env.ALCHEMY_POLYGON_KEY,
 		ALCHEMY_POLYGON_TESTNET_KEY: process.env.ALCHEMY_POLYGON_TESTNET_KEY,
 		NEW_RELIC_LICENSE_KEY: process.env.NEW_RELIC_LICENSE_KEY,
-		SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-		SENTRY_PROJECT_NAME: process.env.SENTRY_PROJECT,
 		GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
 		REDIS_HOST: process.env.REDIS_HOST,
 		REDIS_USER: process.env.REDIS_USER,
@@ -51,7 +47,6 @@ const nextConfig = {
 				// matching all API routes
 				source: '/api/:path*',
 				headers: [
-					{ key: 'X-Sentry-Auth', value: process.env.SENTRY_DSN },
 					{ key: 'Access-Control-Allow-Credentials', value: 'true' },
 					{ key: 'Access-Control-Allow-Origin', value: '*' }, // https://arbor-pr-*.herokuapp.com for preview builds
 					{ key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
@@ -80,28 +75,4 @@ const nextConfig = {
 	},
 }
 
-/**
- * Additional config options for the Sentry Webpack plugin.
- * For all available options, see:
- * https://github.com/getsentry/sentry-webpack-plugin#options
- * https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup
- * Keep in mind thatthe following options are set automatically, and overriding them is not recommended:
- * 	- release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
- */
-const sentryWebpackPluginOptions = {
-	authToken: process.env.SENTRY_AUTH_TOKEN,
-	org: 'arbor-labs',
-	project: process.env.SENTRY_PROJECT_NAME,
-	silent: process.env.NODE_ENV === 'production',
-	hideSourceMaps: process.env.NODE_ENV === 'production',
-}
-
-/**
- * Use Sentry on production environments - Make sure adding Sentry options is the last code to run
- * before exporting, to ensure that your source maps include changes from all other Webpack plugins
- * TODO: update to using two keys, one for all staging, and one for production
- */
-module.exports =
-	process.env.NODE_ENV === 'production'
-		? withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)
-		: withBundleAnalyzer(nextConfig)
+module.exports = withBundleAnalyzer(nextConfig)
