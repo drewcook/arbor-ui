@@ -1,3 +1,5 @@
+import newIdentity from '@interep/identity'
+import { calculateReputation, OAuthProvider } from '@interep/reputation'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { Contract, providers } from 'ethers'
 import type { NFTStorage } from 'nft.storage'
@@ -21,6 +23,8 @@ type Web3ContextProps = {
 	handleDisconnectWallet: any
 	currentUser: UserDoc | null
 	updateCurrentUser: any
+	createIdentity: any
+	calculateUserReputation: any
 }
 
 type Web3ProviderProps = {
@@ -166,6 +170,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 	 */
 	const handleConnectWallet = async () => {
 		try {
+			await createIdentity('Twitter')
 			const { connectedAccount } = await loadWeb3()
 			if (connectedAccount) await findOrCreateUser(connectedAccount)
 		} catch (e: any) {
@@ -217,6 +222,34 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 		setCurrentUser(newUserData)
 	}
 
+	/**
+	 * Creates an identity that the user can identify with
+	 * @param provider - Provider should be either 'Twitter' 'Github' or 'Reddit'
+	 * @returns identity - The identity of that user
+	 */
+	const createIdentity = async (provider: string) => {
+		const ethereumProvider = (await detectEthereumProvider()) as any
+		const ethersProvider = new providers.Web3Provider(ethereumProvider)
+		const signer = ethersProvider.getSigner()
+		await calculateUserReputation('TWITTER', { followers: 10000 })
+
+		const identity = await newIdentity(message => signer.signMessage(message), provider)
+
+		return identity
+	}
+
+	/**
+	 * Calculates a user reputation for the desired platform
+	 * @param provider - Provider is the platform the user is authorized on
+	 * @param params - Params is an object taking in details based off the social platform the user is using
+	 * @returns reputation - The reputation level of that user
+	 */
+	const calculateUserReputation = async (provider: string, params: object) => {
+		const reputation = calculateReputation(OAuthProvider[provider], params)
+
+		return reputation
+	}
+
 	return (
 		<Web3Context.Provider
 			value={{
@@ -227,6 +260,8 @@ export const Web3Provider = ({ children }: Web3ProviderProps): JSX.Element => {
 				handleDisconnectWallet,
 				currentUser,
 				updateCurrentUser,
+				createIdentity,
+				calculateUserReputation,
 			}}
 		>
 			{children}
